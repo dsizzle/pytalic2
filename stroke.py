@@ -358,7 +358,6 @@ class Stroke(shapes.splines.BezierSpline):
 		gc.setBrush(QtGui.QBrush(QtGui.QColor(RED_BRUSH[0], RED_BRUSH[1], RED_BRUSH[2]), RED_BRUSH[3]))
 			
 		verts = self.getCtrlVerticesAsList()
-		print verts
 		if len(verts) > 0:
 			self.__strokeShape = QtGui.QPainterPath()
 			path1 = QtGui.QPainterPath(self.__curvePath)
@@ -374,10 +373,6 @@ class Stroke(shapes.splines.BezierSpline):
 			gc.drawPath(self.__strokeShape)
 
 			self.__boundRect = self.__strokeShape.controlPointRect()
-			print self.__curvePath.elementCount()
-			for i in range(0, self.__curvePath.elementCount()):
-				print self.__curvePath.elementAt(i), self.__curvePath.elementAt(i).type, \
-					self.__curvePath.elementAt(i).x, self.__curvePath.elementAt(i).y
 		
 		if (self.__startSerif):
 			verts = self.getCtrlVerticesAsList()
@@ -391,8 +386,7 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__endSerif.setAngle(nib.getAngle())
 			self.__endSerif.draw(gc, nib)
 			
-		print "drawin", self, self.__isSelected
-		if self.__isSelected : #__selected: # or showCtrlVerts:
+		if self.__isSelected and showCtrlVerts:
 			for vert in self.__strokeCtrlVerts:
 				vert.draw(gc)
 
@@ -404,32 +398,45 @@ class Stroke(shapes.splines.BezierSpline):
 		gc.restore()
 		
 	def insideStroke(self, pt):
-		inside = 0
-		
 		minDist = 100
 
+		inside = self.__strokeShape.contains(pt)
+
 		if self.__boundRect.contains(pt):
-			if self.__strokeShape.contains(pt):
-				if self.__isSelected:
-
-					hitPoint = None
-					# check ctrl verts first?
-
+			if self.__isSelected:
+				if not inside:
+					# check ctrl verts first
+					for i in range(0, self.__curvePath.elementCount()):
+						element = self.__curvePath.elementAt(i)
+						dist = math.sqrt(
+								math.pow(element.x-pt.x(), 2) +
+								math.pow(element.y-pt.y(), 2)
+							)
+						if dist < self.__handleSize:
+							return (True, i, None)
+				else:
 					# get exact point
+					hitPoint = None
+
 					for i in range(0, 100):
 						pct = float(i) / 100.0
 						curvePt = self.__curvePath.pointAtPercent(pct)
-						dist = math.sqrt(math.pow(curvePt.x()-pt.x(), 2) + math.pow(curvePt.y()-pt.y(), 2))
+						dist = math.sqrt(
+							math.pow(curvePt.x()-pt.x(), 2) + 
+							math.pow(curvePt.y()-pt.y(), 2)
+						)
 						if dist < minDist:
 							dist = minDist
 							hitPoint = curvePt
-						elif hitPoint is not None:
+						
+						if hitPoint is not None:
 							break
 
 					return (True, -1, hitPoint)
 
+			elif inside:
 				return (True, -1, None)
-			
+
 		return (False, -1, None)
 
 	def getBoundRect(self):
