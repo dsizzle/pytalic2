@@ -6,13 +6,13 @@ import sys
 from PyQt4 import QtGui, QtCore
 
 import character_set
-import editui
+import edit_ui
 import stroke
 
 class editor_controller(): 
 	def __init__(self, w, h, label):
 		self.__label = label
-		self.__ui = editui.edit_interface(self, w, h, label)
+		self.__ui = edit_ui.edit_interface(self, w, h, label)
 
 		self.fileOpenDlg = QtGui.QFileDialog() 
 		self.fileSaveDlg = QtGui.QFileDialog() 
