@@ -121,7 +121,6 @@ class drawingArea(QtGui.QFrame):
 			tmpStrokes = self.__strokesToDraw[:]
 
 			while(len(tmpStrokes)):
-				print "drawing"+str(i)
 				tmpStrokes[0].draw(dc, True, nib=self.__nib)
 				tmpStrokes = tmpStrokes[1:]
 				i=i+1
