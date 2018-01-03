@@ -105,26 +105,22 @@ class drawingArea(QtGui.QFrame):
 			tmpPoints = self.__pointsToDraw[:]
 			dc.setPen(self.__grayPen)
 			dc.setBrush(self.__clearBrush)
-			dc.drawEllipse(QtCore.QPoint(tmpPoints[0][0], tmpPoints[0][1]), 5, 5)
 
-			prevPt = QtCore.QPoint(tmpPoints[0][0], tmpPoints[0][1])
-			tmpPoints = tmpPoints[1:]
-
+			prevPt = None
 			while(len(tmpPoints)):
-				dc.drawEllipse(QtCore.QPoint(tmpPoints[0][0], tmpPoints[0][1]), 5, 5)
-				dc.drawLine(prevPt, QtCore.QPoint(tmpPoints[0][0], tmpPoints[0][1]))
-				prevPt = QtCore.QPoint(tmpPoints[0][0], tmpPoints[0][1])
-				tmpPoints = tmpPoints[1:]
-
+				curPt = tmpPoints.pop()
+				qtPt = QtCore.QPoint(curPt[0], curPt[1])
+				dc.drawEllipse(qtPt, 5, 5)
+				if prevPt:
+					dc.drawLine(prevPt, qtPt)
+				prevPt = qtPt
+				
 		if len(self.__strokesToDraw) > 0:
-			i=0
 			tmpStrokes = self.__strokesToDraw[:]
 
 			while(len(tmpStrokes)):
-				tmpStrokes[0].draw(dc, True, nib=self.__nib)
-				tmpStrokes = tmpStrokes[1:]
-				i=i+1
-
+				tmpStrokes.pop().draw(dc, True, nib=self.__nib)
+				
 		dc.restore()
 		dc.end()
 		QtGui.QFrame.paintEvent(self,event)
