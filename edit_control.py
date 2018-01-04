@@ -27,13 +27,15 @@ class editor_controller():
 		self.__clipBoard = []
 		self.__undoStack = []
 		self.__redoStack = []
-		self.__charData = None
+		self.__selectedStrokes = []
+		self.__charSet = None
+		self.__curChar = None
 
 		self.__savedMousePosPaper = None
 		self.__movingPaper = None
 		self.__drawingNewStroke = False
 		
-		#self.__strokePts = []
+		self.__strokePts = []
 		self.__tmpStroke = None
 
 		charList = []
@@ -62,7 +64,6 @@ class editor_controller():
 		self.__fileName = None
 	
 		self.__charSet = character_set.character_set()
-		#self.__ui.dwgArea.setCharData(self.__charSet.currentChar)
 		
 		#self.charSelected()
 	 	#self.nibTypeSelected()
@@ -74,15 +75,16 @@ class editor_controller():
 		self.__ui.strokeSelectorList.clear()
 
 		self.__ui.charSelectorList.setCurrentRow(0)
+		self.__curChar = self.__charSet.getCurrentChar()
 
 		self.__undoStack[:] = []
 		self.__redoStack[:] = []
 
 	def createNewStroke(self, event):
 		self.__drawingNewStroke = True
-		self.__ui.dwgArea.points = []
+		self.__strokePts = []
 		self.__tmpStroke = stroke.Stroke()
-		self.__ui.dwgArea.strokes.append(self.__tmpStroke)
+		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
 
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
@@ -98,8 +100,6 @@ class editor_controller():
 				self.mouseMoveEventPaper(event)
 
 			event.accept()
-		else:
-			event.ignore()
 
 	def wheelEvent(self, event):
 		if self.__ui.dwgArea.underMouse():
@@ -110,8 +110,6 @@ class editor_controller():
 
 			event.accept()
 			self.__ui.repaint()
-		else:
-			event.ignore()
 
 	def mousePressEventPaper(self, event):
 		btn = event.buttons()
@@ -142,22 +140,30 @@ class editor_controller():
 		elif self.__drawingNewStroke:
 			if rightUp:
 				self.__drawingNewStroke = False
-				self.__ui.dwgArea.points = []
+				self.__strokePts = []
 				# add stroke to char
-				# self.__curChar.addStroke(tmpStroke)
+				self.__curChar.addStroke(self.__tmpStroke)
+				self.__ui.dwgArea.strokesSpecial = []
 				self.__tmpStroke = None
 			else:
-				self.__ui.dwgArea.points.append([paperPos.x(), paperPos.y()])
-				self.__tmpStroke.setCtrlVerticesFromList(self.__ui.dwgArea.points)
+				self.__strokePts.append([paperPos.x(), paperPos.y()])
+				self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)
 				self.__tmpStroke.updateCtrlVertices()
 
 		else:
 			if leftUp:
+				# if len(self.__selectedStrokes) > 0:
+				# 	for stroke in self.__selectedStrokes:
+				# 		insideInfo = stroke.insideStroke(paperPos)
+				# 		if insideInfo[1] >= 0:
+				# 			self.__selectedPoints = 
+
 				for stroke in self.__ui.dwgArea.strokes:
-					if stroke.insideStroke(paperPos)[0] == True:
+					insideInfo = stroke.insideStroke(paperPos)
+					if insideInfo[0] == True:
 						stroke.selected = True
 						print stroke, stroke.selected
-						print stroke, "selected"
+						print insideInfo
 
 					else:
 						stroke.selected = False
@@ -179,5 +185,10 @@ class editor_controller():
 			#self.__ui.dwgArea.drawStroke(self.__tmpStroke)
 			self.__ui.repaint()
 	
-
-
+	def charSelected(self, event):
+		curCharIdx = self.__ui.charSelectorList.currentRow()
+		self.__charSet.setCurrentChar(curCharIdx)
+		self.__curChar = self.__charSet.getCurrentChar()
+		self.__ui.dwgArea.strokesSpecial = []
+		self.__ui.dwgArea.strokes = self.__curChar.strokes
+		self.__ui.repaint()

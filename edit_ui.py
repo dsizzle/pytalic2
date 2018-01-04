@@ -46,7 +46,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.charSelectorList.resize(self.width(), gICON_SIZE*2)
 		self.charSelectorList.setMaximumHeight(gICON_SIZE*2)
 		self.charSelectorList.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
-		#self.charSelectorList.currentItemChanged.connect(self.charSelected)
+		self.charSelectorList.currentItemChanged.connect(self.__parent.charSelected)
 
 		self.charSelectorLayout.addWidget(self.charSelectorList, 0, QtCore.Qt.AlignTop)
 
