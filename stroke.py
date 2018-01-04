@@ -129,12 +129,6 @@ class Stroke(shapes.splines.BezierSpline):
 		return self.__startSerif
 
 	def calcCurvePoints(self):
-		#numPts = shapes.splines.BezierSpline.getNumCurvePoints(self)
-		#shapes.splines.BezierSpline.setNumCurvePoints(self, numPts)
-				         
-		#crvPts = shapes.splines.BezierSpline.calcCurvePoints(self)
-		
-		#return crvPts[:]
 		verts = self.getCtrlVerticesAsList()
 		self.__curvePath = QtGui.QPainterPath()
 		self.__curvePath.moveTo(verts[0][0], verts[0][1])
@@ -355,11 +349,15 @@ class Stroke(shapes.splines.BezierSpline):
 		gc.save()
 		gc.translate(self.__x, self.__y)		
 
-		gc.setBrush(QtGui.QBrush(QtGui.QColor(RED_BRUSH[0], RED_BRUSH[1], RED_BRUSH[2]), RED_BRUSH[3]))
-			
+		gc.setPen(nib.pen)
+		gc.setBrush(nib.brush)
+
 		verts = self.getCtrlVerticesAsList()
 		if len(verts) > 0:
 			self.__strokeShape = QtGui.QPainterPath()
+			if self.__curvePath is None:
+				self.calcCurvePoints()
+
 			path1 = QtGui.QPainterPath(self.__curvePath)
 			path2 = QtGui.QPainterPath(self.__curvePath).toReversed()
 			
@@ -386,14 +384,15 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__endSerif.setAngle(nib.getAngle())
 			self.__endSerif.draw(gc, nib)
 			
-		if self.__isSelected and showCtrlVerts:
+		if self.__isSelected or showCtrlVerts:
 			for vert in self.__strokeCtrlVerts:
 				vert.draw(gc)
 
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(CLEAR_BRUSH[0], CLEAR_BRUSH[1], CLEAR_BRUSH[2]), CLEAR_BRUSH[3]))
-			gc.setPen(QtGui.QPen(QtGui.QColor(DARK_GRAY_PEN[0], DARK_GRAY_PEN[1], DARK_GRAY_PEN[2],128), 2, DARK_GRAY_PEN[3], QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+			if self.__boundRect is not None:
+				gc.setBrush(QtGui.QBrush(QtGui.QColor(CLEAR_BRUSH[0], CLEAR_BRUSH[1], CLEAR_BRUSH[2]), CLEAR_BRUSH[3]))
+				gc.setPen(QtGui.QPen(QtGui.QColor(DARK_GRAY_PEN[0], DARK_GRAY_PEN[1], DARK_GRAY_PEN[2],128), 2, DARK_GRAY_PEN[3], QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
 		
-			gc.drawRect(self.__boundRect)
+				gc.drawRect(self.__boundRect)
 
 		gc.restore()
 		
