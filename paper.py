@@ -24,7 +24,9 @@ class drawingArea(QtGui.QFrame):
 		self.__drawGuidelines = True
 		self.__pointsToDraw = []
 		self.__strokesToDraw = []
+		self.__strokesToDrawSpecial = []
 		self.__nib = nibs.Nib()
+		self.__nibSpecial = nibs.Nib(color=QtGui.QColor(25,25,125))
 
 	def resizeEvent(self, event):
 		if self.__origin is None:
@@ -59,13 +61,13 @@ class drawingArea(QtGui.QFrame):
 
 	drawGuidelines = property(getDrawGuidelines, setDrawGuidelines)
 
-	def setDrawPoints(self, points):
-		self.__pointsToDraw = points
+	def setDrawStrokesSpecial(self, strokes):
+		self.__strokesToDrawSpecial = strokes
 
-	def getDrawPoints(self):
-		return self.__pointsToDraw
+	def getDrawStrokesSpecial(self):
+		return self.__strokesToDrawSpecial
 
-	points = property(getDrawPoints, setDrawPoints)
+	strokesSpecial = property(getDrawStrokesSpecial, setDrawStrokesSpecial)
 
 	def setDrawStrokes(self, strokes):
 		self.__strokesToDraw = strokes
@@ -100,26 +102,20 @@ class drawingArea(QtGui.QFrame):
 		dc.setPen(self.__grayPen)
 		dc.setBrush(self.__clearBrush)
 		dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)		
-			
-		if len(self.__pointsToDraw) > 0:
-			tmpPoints = self.__pointsToDraw[:]
-			dc.setPen(self.__grayPen)
-			dc.setBrush(self.__clearBrush)
-
-			prevPt = None
-			while(len(tmpPoints)):
-				curPt = tmpPoints.pop()
-				qtPt = QtCore.QPoint(curPt[0], curPt[1])
-				dc.drawEllipse(qtPt, 5, 5)
-				if prevPt:
-					dc.drawLine(prevPt, qtPt)
-				prevPt = qtPt
 				
 		if len(self.__strokesToDraw) > 0:
 			tmpStrokes = self.__strokesToDraw[:]
 
 			while(len(tmpStrokes)):
-				tmpStrokes.pop().draw(dc, True, nib=self.__nib)
+				stroke = tmpStrokes.pop()
+				stroke.draw(dc, False, nib=self.__nib)
+
+		if len(self.__strokesToDrawSpecial) > 0:
+			tmpStrokes = self.__strokesToDrawSpecial[:]
+
+			while(len(tmpStrokes)):
+				stroke = tmpStrokes.pop()
+				stroke.draw(dc, True, nib=self.__nibSpecial)
 				
 		dc.restore()
 		dc.end()
