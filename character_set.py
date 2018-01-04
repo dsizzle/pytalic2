@@ -1,4 +1,4 @@
-#import character
+import character
 import random
 import pickle
 
@@ -9,7 +9,7 @@ class character_set(object):
 		self.__savedStrokes = []
 
 	def newCharacter(self, charCode):
-		myChar = None #character.Character()
+		myChar = character.Character()
 		self.__characters[charCode] = myChar
 		self.__currentChar = charCode
 		
