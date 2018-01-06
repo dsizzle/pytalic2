@@ -145,6 +145,12 @@ class editor_controller():
 				self.__curChar.addStroke(self.__tmpStroke)
 				self.__ui.dwgArea.strokesSpecial = []
 				self.__tmpStroke = None
+				self.__ui.repaint()
+				iconBitmap = self.__ui.dwgArea.getBitmap()
+				if iconBitmap:
+					self.__curChar.bitmapPreview = iconBitmap
+					self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(self.__curChar.bitmapPreview))
+
 			else:
 				self.__strokePts.append([paperPos.x(), paperPos.y()])
 				self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)

@@ -27,11 +27,16 @@ class drawingArea(QtGui.QFrame):
 		self.__strokesToDrawSpecial = []
 		self.__nib = nibs.Nib()
 		self.__nibSpecial = nibs.Nib(color=QtGui.QColor(25,25,125))
+		self.__bitmap = None
+		self.__bitmapSize = 40
 
 	def resizeEvent(self, event):
 		if self.__origin is None:
 			self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
 		self.repaint()
+
+	def getBitmap(self):
+		return self.__bitmap
 
 	def getScale(self):
 		return self.__scale
@@ -85,10 +90,28 @@ class drawingArea(QtGui.QFrame):
 		return normPos
 
 	def paintEvent(self, event):
-		dc = QtGui.QPainter(self)
-		dc.setRenderHint(QtGui.QPainter.Antialiasing)
-
 		bgBrush = self.__bgBrush
+
+		pixMap = QtGui.QPixmap(self.width(), self.height())
+		dc = QtGui.QPainter()
+
+ 		dc.begin(pixMap)
+ 		dc.setBackground(bgBrush)
+ 		dc.eraseRect(self.frameRect())
+ 		dc.translate(self.__origin)
+ 		if len(self.__strokesToDraw) > 0:
+			tmpStrokes = self.__strokesToDraw[:]
+
+			while(len(tmpStrokes)):
+				stroke = tmpStrokes.pop()
+				stroke.draw(dc, False, nib=self.__nib)
+
+ 		dc.end()
+ 		
+ 		self.__bitmap = pixMap.scaled(self.__bitmapSize, self.__bitmapSize, QtCore.Qt.KeepAspectRatioByExpanding, 1)
+
+		dc.begin(self)
+		dc.setRenderHint(QtGui.QPainter.Antialiasing)
 
 		dc.setBackground(bgBrush)
 		dc.eraseRect(self.frameRect())
