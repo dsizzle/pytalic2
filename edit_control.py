@@ -63,11 +63,23 @@ class editor_controller():
 		self.__ui.raise_()
 	
 	def quit_cb(self, event):
-		reply = QtGui.QMessageBox.question(self.__ui, 'Quit Program', "Are you sure you want to quit?", \
-			QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-
-		if reply == QtGui.QMessageBox.Yes:
+		if self.__cmdStack.undoIsEmpty():
 			self.__ui.close()
+		else:
+			reply = self.__ui.messageDialog.question(self.__ui, 'Quit Program', "Are you sure you want to quit?", \
+				QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+			if reply == QtGui.QMessageBox.Yes:
+				self.__ui.close()
+
+
+	def undo_cb(self, event):
+		self.__cmdStack.undo()
+		self.__ui.repaint()
+
+	def redo_cb(self, event):
+		self.__cmdStack.redo()
+		self.__ui.repaint()
 
 	def fileNew_cb(self, event):
 		self.__fileName = None

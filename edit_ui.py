@@ -19,6 +19,9 @@ class edit_interface(QtGui.QMainWindow):
 		self.resize(w, h)
 		self.setWindowTitle(label)
 	 	
+	 	self.messageDialog = QtGui.QMessageBox()
+		self.fileOpenDialog = QtGui.QFileDialog() 
+		self.fileSaveDialog = QtGui.QFileDialog() 
 		self.__parent = parent
 		
 		self.dwgArea = None
@@ -154,7 +157,7 @@ class edit_interface(QtGui.QMainWindow):
 		editUndo.setShortcut('Ctrl+Z')
 		editUndo.setIcon(QtGui.QIcon("icons/arrow_undo.png"))
 		editUndo.setIconText("Undo")
-		#editUndo.triggered.connect(self.undo_cb)
+		editUndo.triggered.connect(self.__parent.undo_cb)
 		editMenu.addAction(editUndo)
 		self.toolBar.addAction(editUndo)
 		
@@ -162,7 +165,7 @@ class edit_interface(QtGui.QMainWindow):
 		editRedo.setShortcut('Ctrl+Shift+Z')
 		editRedo.setIcon(QtGui.QIcon("icons/arrow_redo.png"))
 		editRedo.setIconText("Redo")
-		#editRedo.triggered.connect(self.redo_cb)
+		editRedo.triggered.connect(self.__parent.redo_cb)
 		editMenu.addAction(editRedo)
 		self.toolBar.addAction(editRedo)
 		
