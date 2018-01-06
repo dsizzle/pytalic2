@@ -10,6 +10,8 @@ import commands
 import edit_ui
 import stroke
 
+gICON_SIZE = 40
+
 class editor_controller(): 
 	def __init__(self, w, h, label):
 		self.__label = label
@@ -45,6 +47,12 @@ class editor_controller():
 
 		self.__ui.createUI()
 		self.__ui.charSelectorList.addItems(QtCore.QStringList(charList))
+		blankPixmap = QtGui.QPixmap(gICON_SIZE, gICON_SIZE)
+		blankPixmap.fill(QtGui.QColor(240, 240, 240))
+		for idx in range(0, self.__ui.charSelectorList.count()):
+			self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(blankPixmap))
+		self.__ui.dwgArea.bitmapSize = gICON_SIZE
+
 		self.mainMenu = None
 		self.toolBar = None
 		self.fileNew_cb(None)

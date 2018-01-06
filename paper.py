@@ -9,7 +9,7 @@ class drawingArea(QtGui.QFrame):
 		self.setFocusPolicy(QtCore.Qt.ClickFocus)
 		self.setMouseTracking(True)
 
-		self.__origin = None #QtCore.QPoint(self.size().width()/2, self.size().height()/2)
+		self.__origin = None
 		self.__scale = 1.0
 		self.__bgColor = QtGui.QColor(240, 240, 230)
 		self.__bgBrush = QtGui.QBrush(self.__bgColor, QtCore.Qt.SolidPattern) 
@@ -38,6 +38,14 @@ class drawingArea(QtGui.QFrame):
 	def getBitmap(self):
 		return self.__bitmap
 
+	def getBitmapSize(self):
+		return self.__bitmapSize
+
+	def setBitmapSize(self, newBitmapSize):
+		self.__bitmapSize = newBitmapSize
+
+	bitmapSize = property(getBitmapSize, setBitmapSize)
+	
 	def getScale(self):
 		return self.__scale
 
