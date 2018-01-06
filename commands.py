@@ -29,14 +29,17 @@ class commandStack(object):
 
 			lastCmd.doIt()
 
-	def doCommand(newCmd):
+	def doCommand(self, newCmd):
 		self.addToUndo(newCmd)
 
 		newCmd.doIt()
 
-	def addToUndo(newCmd):
+	def addToUndo(self, newCmd):
 		self.__undoStack.append(newCmd)
 		self.clearRedo()
+
+	def undoIsEmpty(self):
+		return len(self.__undoStack) == 0
 
 
 class command(object):
