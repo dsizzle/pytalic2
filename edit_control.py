@@ -6,6 +6,7 @@ import sys
 from PyQt4 import QtGui, QtCore
 
 import character_set
+import commands
 import edit_ui
 import stroke
 
@@ -77,8 +78,7 @@ class editor_controller():
 		self.__ui.charSelectorList.setCurrentRow(0)
 		self.__curChar = self.__charSet.getCurrentChar()
 
-		self.__undoStack[:] = []
-		self.__redoStack[:] = []
+		self.__cmdStack = commands.commandStack()
 
 	def createNewStroke(self, event):
 		self.__drawingNewStroke = True
