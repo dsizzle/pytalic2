@@ -465,6 +465,9 @@ class Stroke(shapes.splines.BezierSpline):
 	
 	bitmapPreview = property(getBitmap, setBitmap, delBitmap, "bitmapPreview property")	
 
+	def deselectCtrlVerts(self):
+		for vert in self.__strokeCtrlVerts:
+			vert.selectHandle(None)
 
 class StrokeInstance(object):
 	def __init__(self, parent=None):
