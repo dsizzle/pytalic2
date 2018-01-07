@@ -10,6 +10,7 @@ class drawingArea(QtGui.QFrame):
 		self.setMouseTracking(True)
 
 		self.__origin = None
+		self.__originDelta = QtCore.QPoint(0, 0)
 		self.__scale = 1.0
 		self.__bgColor = QtGui.QColor(240, 240, 230)
 		self.__bgBrush = QtGui.QBrush(self.__bgColor, QtCore.Qt.SolidPattern) 
@@ -45,7 +46,7 @@ class drawingArea(QtGui.QFrame):
 		self.__bitmapSize = newBitmapSize
 
 	bitmapSize = property(getBitmapSize, setBitmapSize)
-	
+
 	def getScale(self):
 		return self.__scale
 
@@ -58,13 +59,13 @@ class drawingArea(QtGui.QFrame):
 
 	scale = property(getScale, setScale)
 		
-	def getOrigin(self):
-		return self.__origin
+	def getOriginDelta(self):
+		return self.__originDelta
 
-	def setOrigin(self, newOrigin):
-		self.__origin = newOrigin
+	def setOriginDelta(self, newOriginDelta):
+		self.__originDelta = newOriginDelta
 
-	origin = property(getOrigin, setOrigin)
+	originDelta = property(getOriginDelta, setOriginDelta)
 
 	def getDrawGuidelines(self):
 		return self.__drawGuidelines
@@ -93,7 +94,7 @@ class drawingArea(QtGui.QFrame):
 	def getNormalizedPosition(self, rawPos):
 		normPos = rawPos
 		normPos = normPos / self.__scale
-		normPos = normPos - self.__origin
+		normPos = normPos - self.__origin - self.__originDelta
 
 		return normPos
 
@@ -106,6 +107,7 @@ class drawingArea(QtGui.QFrame):
  		dc.begin(pixMap)
  		dc.setBackground(bgBrush)
  		dc.eraseRect(self.frameRect())
+ 		# for icon only translate to origin, not actual view position
  		dc.translate(self.__origin)
  		if len(self.__strokesToDraw) > 0:
 			tmpStrokes = self.__strokesToDraw[:]
@@ -125,10 +127,10 @@ class drawingArea(QtGui.QFrame):
 		dc.eraseRect(self.frameRect())
 		dc.save()
 		dc.scale(self.__scale, self.__scale)
-		dc.translate(self.__origin)
+		dc.translate(self.__origin + self.__originDelta)
 
 		if self.__drawGuidelines:
-			self.__guideLines.draw(dc, self.size(), self.__origin)
+			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
 
 		dc.setPen(self.__grayPen)
 		dc.setBrush(self.__clearBrush)

@@ -198,6 +198,20 @@ class edit_interface(QtGui.QMainWindow):
 
 		self.toolBar.addSeparator()
 		
+		viewResetOrigin = QtGui.QAction("Reset View Origin", self)
+		viewResetOrigin.setShortcut('Ctrl+.')
+		viewResetOrigin.setStatusTip('Reset origin of view')
+		viewResetOrigin.triggered.connect(self.__parent.viewResetOrigin)
+		viewMenu.addAction(viewResetOrigin)
+
+		viewResetZoom = QtGui.QAction("Zoom 100%", self)
+		viewResetZoom.setShortcut('Ctrl+0')
+		viewResetZoom.setStatusTip('Reset zoom of view')
+		viewResetZoom.triggered.connect(self.__parent.viewResetZoom)
+		viewMenu.addAction(viewResetZoom)
+
+		viewMenu.addSeparator()
+
 		viewGuides = QtGui.QAction("Guidelines", self)
 		viewGuides.setStatusTip('Toggle guidelines on/off')
 		viewGuides.triggered.connect(self.__parent.viewToggleGuidelines)

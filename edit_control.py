@@ -106,6 +106,14 @@ class editor_controller():
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
 		self.__ui.repaint()
 
+	def viewResetOrigin(self, event):
+		self.__ui.dwgArea.originDelta = QtCore.QPoint(0, 0)
+		self.__ui.repaint()
+
+	def viewResetZoom(self, event):
+		self.__ui.dwgArea.scale = 1
+		self.__ui.repaint()
+
 	def mouseEvent(self, event):
 		if self.__ui.dwgArea.underMouse():
 			if event.type() == QtCore.QEvent.MouseButtonPress:
@@ -220,7 +228,7 @@ class editor_controller():
 		
 		if self.__movingPaper:
 			delta = paperPos - self.__savedMousePosPaper
-			self.__ui.dwgArea.origin += delta
+			self.__ui.dwgArea.originDelta += delta
 			self.__savedMousePosPaper = paperPos
 
 		self.__ui.repaint()
