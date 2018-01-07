@@ -252,7 +252,7 @@ class Stroke(shapes.splines.BezierSpline):
 	def updateCtrlVertices(self):
 		pts = self.getCtrlVerticesAsList()
 		
-		shapes.splines.BezierSpline.setCtrlVertices(self, pts)	
+		#shapes.splines.BezierSpline.setCtrlVertices(self, pts)	
 		if len(pts) > 3:
 			self.calcCurvePoints()
 		
@@ -403,17 +403,16 @@ class Stroke(shapes.splines.BezierSpline):
 
 		if self.__boundRect.contains(pt):
 			if self.__isSelected:
-				if not inside:
-					# check ctrl verts first
-					for i in range(0, self.__curvePath.elementCount()):
-						element = self.__curvePath.elementAt(i)
-						dist = math.sqrt(
-								math.pow(element.x-pt.x(), 2) +
-								math.pow(element.y-pt.y(), 2)
-							)
-						if dist < self.__handleSize:
-							return (True, i, None)
-				else:
+				for i in range(0, self.__curvePath.elementCount()):
+					element = self.__curvePath.elementAt(i)
+					dist = math.sqrt(
+						math.pow(element.x-pt.x(), 2) +
+						math.pow(element.y-pt.y(), 2)
+					)
+					if dist < self.__handleSize:
+						return (True, i, None)
+				
+				if inside:
 					# get exact point
 					hitPoint = None
 
