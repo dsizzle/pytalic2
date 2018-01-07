@@ -31,6 +31,7 @@ class editor_controller():
 		self.__undoStack = []
 		self.__redoStack = []
 		self.__selectedStrokes = []
+		self.__selectedPoints = []
 		self.__charSet = None
 		self.__curChar = None
 
@@ -72,7 +73,6 @@ class editor_controller():
 			if reply == QtGui.QMessageBox.Yes:
 				self.__ui.close()
 
-
 	def undo_cb(self, event):
 		self.__cmdStack.undo()
 		self.__ui.repaint()
@@ -86,10 +86,6 @@ class editor_controller():
 	
 		self.__charSet = character_set.character_set()
 		
-		#self.charSelected()
-	 	#self.nibTypeSelected()
-		#self.setNibColor({'color': self.__color__})
-
 		self.name = (self.__label + " - Untitled")
 		self.__ui.setWindowTitle(self.name)
 
@@ -178,22 +174,29 @@ class editor_controller():
 
 		else:
 			if leftUp:
-				# if len(self.__selectedStrokes) > 0:
-				# 	for stroke in self.__selectedStrokes:
-				# 		insideInfo = stroke.insideStroke(paperPos)
-				# 		if insideInfo[1] >= 0:
-				# 			self.__selectedPoints = 
+				if len(self.__selectedStrokes) > 0:
+					oldSelectedStrokes = self.__selectedStrokes[:]
+					self.__selectedStrokes = []
+					for stroke in oldSelectedStrokes:
+						insideInfo = stroke.insideStroke(paperPos)
+						if insideInfo[1] >= 0:
+				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
+				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+				 			ctrlVert.selectHandle((insideInfo[1]+1) % 3 +1)
+				 			self.__selectedPoints.append(ctrlVert)
+				 			stroke.selected = True
+				 			self.__selectedStrokes.append(stroke)
+				 		else:
+				 			self.selected = False
 
-				for stroke in self.__ui.dwgArea.strokes:
-					insideInfo = stroke.insideStroke(paperPos)
-					if insideInfo[0] == True:
-						stroke.selected = True
-						print stroke, stroke.selected
-						print insideInfo
-
-					else:
-						stroke.selected = False
-						print stroke, "unselected"
+				if len(self.__selectedStrokes) == 0:
+					for stroke in self.__ui.dwgArea.strokes:
+						insideInfo = stroke.insideStroke(paperPos)
+						if insideInfo[0] == True:
+							stroke.selected = True
+							self.__selectedStrokes.append(stroke)	
+						else:
+							stroke.selected = False
 
 		self.__ui.repaint()
 
