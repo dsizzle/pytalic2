@@ -7,8 +7,29 @@ SHARP		= 2
 SYMMETRIC 	= 3
 
 LEFT_HANDLE 	= 1
-RIGHT_HANDLE 	= 2
-KNOT 		= 3
+RIGHT_HANDLE 	= 3
+KNOT 			= 2
+
+HANDLE_SIZE		= 10
+
+SMOOTH_HANDLE_PATH = QtGui.QPainterPath()
+SHARP_HANDLE_PATH = QtGui.QPainterPath()
+SYMMETRIC_HANDLE_PATH = QtGui.QPainterPath()
+KNOT_PATH = QtGui.QPainterPath()
+
+SMOOTH_HANDLE_PATH.addEllipse(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
+
+SHARP_HANDLE_PATH.moveTo(0, HANDLE_SIZE/2)
+SHARP_HANDLE_PATH.lineTo(-HANDLE_SIZE/2, HANDLE_SIZE/2)
+SHARP_HANDLE_PATH.lineTo(0, -HANDLE_SIZE/2)
+SHARP_HANDLE_PATH.lineTo(HANDLE_SIZE/2, HANDLE_SIZE/2)
+SHARP_HANDLE_PATH.lineTo(0, HANDLE_SIZE/2)
+
+SYMMETRIC_HANDLE_PATH.moveTo(0, 0)
+SYMMETRIC_HANDLE_PATH.arcTo(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE, 270, 180) 
+SYMMETRIC_HANDLE_PATH.lineTo(0, 0)
+
+KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 
 class controlVertex(object):
 	def __init__(self):
@@ -17,14 +38,14 @@ class controlVertex(object):
 		self.__behavior = SMOOTH
 		self.__leftHandlePos = ()
 		self.__rightHandlePos = ()
-		self.__handleSize = 10
+		self.__handleScale = 1
 		self.__grayPen = (200,200,200,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(200, 200, 200), 1, wx.SOLID)
 		self.__grayBrush = (200,200,200,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(200,200,200), wx.SOLID)
 		self.__dkGrayPen = (128,128,128,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(128, 128, 128), 1, wx.SOLID)
 		self.__dkGrayBrush = (128,128,128,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(128,128,128), wx.SOLID)
 		self.__clearBrush = (0,0,0,QtCore.Qt.NoBrush) #QtGui.QBrush(QtGui.QColor(0,0,0), wx.TRANSPARENT)
 		self.__selected = None
-		
+
 	def setPos(self, x, y):
 		oldPos = self.__pos
 		if (oldPos):
@@ -199,10 +220,10 @@ class controlVertex(object):
 		return 0
 
 	def handleHit(self, x, y, pt, offset):
-		vxmin = pt[0]+offset[0]-self.__handleSize/2 
-		vxmax = vxmin+self.__handleSize
-		vymin = pt[1]+offset[1]-self.__handleSize/2 
-		vymax = vymin+self.__handleSize 
+		vxmin = pt[0]+offset[0]-self.__handleScale/2 
+		vxmax = vxmin+self.__handleScale
+		vymin = pt[1]+offset[1]-self.__handleScale/2 
+		vymax = vymin+self.__handleScale 
 		if (x >= vxmin) and (x <= vxmax) and \
 			(y >= vymin) and (y <= vymax):	
 			return True		
@@ -241,15 +262,22 @@ class controlVertex(object):
 			if (self.__selected == KNOT):
 				gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
 			else:
-				gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 196, 0), QtCore.Qt.SolidPattern))
+				gc.setBrush(QtGui.QBrush(QtGui.QColor(196, 196, 0), QtCore.Qt.SolidPattern))
 		else:
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__dkGrayBrush[0], self.__dkGrayBrush[1], self.__dkGrayBrush[2]), self.__dkGrayBrush[3]))
 			
-		gc.drawRect (vert[0]-self.__handleSize/2,
-					vert[1]-self.__handleSize/2,
-					self.__handleSize, 
-					self.__handleSize)
-						
+		gc.save()
+		gc.translate(vert[0], vert[1])
+		gc.scale(self.__handleScale, self.__handleScale)
+		gc.drawPath(KNOT_PATH)
+		gc.restore()
+			
+		if (self.__behavior == SMOOTH):
+			path = QtGui.QPainterPath(SMOOTH_HANDLE_PATH)
+		elif (self.__behavior == SHARP):
+			path = QtGui.QPainterPath(SHARP_HANDLE_PATH)
+		else:	
+			path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
 		
 		if ((self.__selected is not None) and (self.__selected == LEFT_HANDLE)):
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
@@ -261,27 +289,13 @@ class controlVertex(object):
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
 			gc.drawLine(self.__pos[0], self.__pos[1], vert[0], vert[1])
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			
-			if (self.__behavior == SMOOTH):
-				path = QtGui.QPainterPath()
-				path.addEllipse(vert[0]-self.__handleSize/2, vert[1]-self.__handleSize/2, self.__handleSize, self.__handleSize)
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			elif (self.__behavior == SHARP):
-				path = QtGui.QPainterPath()
-				path.moveTo(vert[0], vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0]-self.__handleSize/2, vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0], vert[1]-self.__handleSize/2)
-				path.lineTo(vert[0]+self.__handleSize/2, vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0], vert[1]+self.__handleSize/2)
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			else:	
-				path = QtGui.QPainterPath()
-				path.moveTo(vert[0], vert[1])
-				path.arcTo(vert[0]-self.__handleSize/2, vert[1]-self.__handleSize/2, self.__handleSize, self.__handleSize, 90, 180) #math.pi/2.0, 3.0*math.pi/2.0)
-				path.lineTo(vert[0], vert[1])
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-				
-					
+
+			gc.save()
+			gc.translate(vert[0], vert[1])
+			gc.scale(self.__handleScale, self.__handleScale)
+			gc.drawPath(path) #, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))	
+			gc.restore()
+
 		if ((self.__selected is not None) and (self.__selected == RIGHT_HANDLE)):
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
 		else:
@@ -293,24 +307,9 @@ class controlVertex(object):
 			gc.drawLine(self.__pos[0], self.__pos[1], vert[0], vert[1])
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
 			
-			if (self.__behavior == SMOOTH):
-				path = QtGui.QPainterPath()
-				path.addEllipse(vert[0]-self.__handleSize/2, vert[1]-self.__handleSize/2, self.__handleSize, self.__handleSize)
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			elif (self.__behavior == SHARP):
-				path = QtGui.QPainterPath()
-				path.moveTo(vert[0], vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0]-self.__handleSize/2, vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0], vert[1]-self.__handleSize/2)
-				path.lineTo(vert[0]+self.__handleSize/2, vert[1]+self.__handleSize/2)
-				path.lineTo(vert[0], vert[1]+self.__handleSize/2)
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			else:
-				path = QtGui.QPainterPath()
-				path.moveTo(vert[0], vert[1])
-				path.arcTo(vert[0]-self.__handleSize/2, vert[1]-self.__handleSize/2, self.__handleSize, self.__handleSize, 270, 180)
-				path.lineTo(vert[0], vert[1])
-				gc.strokePath(path, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-				
-				
-		
+			gc.save()
+			gc.translate(vert[0], vert[1])
+			
+			gc.scale(-self.__handleScale, self.__handleScale)
+			gc.drawPath(path)
+			gc.restore()
