@@ -141,15 +141,21 @@ class editor_controller():
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
 			
 		if leftDown and altDown:
-			self.__savedMousePosPaper = paperPos
+			self.__savedMousePosPaper = paperPos		
 			self.__movingPaper = True
 
 	def mouseReleaseEventPaper(self, event):
 		btn = event.button()
-		paperPos = self.__ui.dwgArea.getNormalizedPosition(event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
-				
+		mod = event.modifiers()
+		
+		cmdDown = mod & QtCore.Qt.ControlModifier
+		altDown = mod & QtCore.Qt.AltModifier
+		shiftDown = mod & QtCore.Qt.ShiftModifier
+
 		leftUp = btn & QtCore.Qt.LeftButton
-		rightUp = btn & QtCore.Qt.RightButton 
+		rightUp = btn & QtCore.Qt.RightButton
+
+		paperPos = self.__ui.dwgArea.getNormalizedPosition(event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
 
 		if self.__movingPaper and leftUp:
 			self.__movingPaper = False
@@ -157,7 +163,6 @@ class editor_controller():
 			if rightUp:
 				self.__drawingNewStroke = False
 				self.__strokePts = []
-				# add stroke to char
 				self.__curChar.addStroke(self.__tmpStroke)
 				self.__ui.dwgArea.strokesSpecial = []
 				self.__tmpStroke = None
@@ -182,38 +187,44 @@ class editor_controller():
 						if insideInfo[1] >= 0:
 				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
 				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+				 			if not shiftDown:
+				 				stroke.deselectCtrlVerts()
+
 				 			ctrlVert.selectHandle((insideInfo[1]+1) % 3 +1)
 				 			self.__selectedPoints.append(ctrlVert)
 				 			stroke.selected = True
 				 			self.__selectedStrokes.append(stroke)
 				 		else:
-				 			self.selected = False
+				 			if shiftDown:
+				 				self.__selectedStrokes.append(stroke)
+				 			else:
+				 				stroke.selected = False
+				 				stroke.deselectCtrlVerts()
 
-				if len(self.__selectedStrokes) == 0:
+				if len(self.__selectedStrokes) == 0 or shiftDown:
 					for stroke in self.__ui.dwgArea.strokes:
 						insideInfo = stroke.insideStroke(paperPos)
 						if insideInfo[0] == True:
 							stroke.selected = True
 							self.__selectedStrokes.append(stroke)	
-						else:
+						elif not shiftDown:
 							stroke.selected = False
+							stroke.deselectCtrlVerts()
 
 		self.__ui.repaint()
 
-			
 	def mouseMoveEventPaper(self, event):
-		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
+		btn = event.buttons()
 
+		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
+		
 		if self.__movingPaper:
 			delta = paperPos - self.__savedMousePosPaper
 			self.__ui.dwgArea.origin += delta
 			self.__savedMousePosPaper = paperPos
 
-			self.__ui.repaint()
-		elif self.__drawingNewStroke:
-			#self.__ui.dwgArea.drawStroke(self.__tmpStroke)
-			self.__ui.repaint()
-	
+		self.__ui.repaint()
+		
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()
 		self.__charSet.setCurrentChar(curCharIdx)
