@@ -139,8 +139,10 @@ class controlVertex(object):
 		self.__rightHandlePos = ()
 	
 	def selectHandle(self, select):
-		if (select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT):
+		if (select) and ((select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT)):
 			self.__selected = select
+		else:
+			self.__selected = None
 		
 	def selectLeftHandle(self, select=False):
 		if (select):
