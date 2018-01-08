@@ -53,13 +53,6 @@ class Stroke(shapes.splines.BezierSpline):
 
 		self.seed = time.localtime()
 
-	def __getstate__(self):
-		saveDict = self.__dict__.copy()
-
-		saveDict["_Stroke__bitmapPreview"] = None
-
-		return saveDict
-
 	def addInstance(self, inst):
 		self.__instances[inst] = 1
 		
