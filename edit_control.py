@@ -12,6 +12,11 @@ import stroke
 
 gICON_SIZE = 40
 
+IDLE = 0
+MOVING_PAPER = 1
+DRAWING_NEW_STROKE = 2
+MOVING_STROKES = 3
+
 class editor_controller(): 
 	def __init__(self, w, h, label):
 		self.__label = label
@@ -36,8 +41,7 @@ class editor_controller():
 		self.__curChar = None
 
 		self.__savedMousePosPaper = None
-		self.__movingPaper = None
-		self.__drawingNewStroke = False
+		self.__state = 0
 		
 		self.__strokePts = []
 		self.__tmpStroke = None
@@ -97,7 +101,7 @@ class editor_controller():
 		self.__cmdStack = commands.commandStack()
 
 	def createNewStroke(self, event):
-		self.__drawingNewStroke = True
+		self.__state = DRAWING_NEW_STROKE
 		self.__strokePts = []
 		self.__tmpStroke = stroke.Stroke()
 		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
@@ -150,7 +154,7 @@ class editor_controller():
 			
 		if leftDown and altDown:
 			self.__savedMousePosPaper = paperPos		
-			self.__movingPaper = True
+			self.__state = MOVING_PAPER
 
 	def mouseReleaseEventPaper(self, event):
 		btn = event.button()
@@ -165,11 +169,11 @@ class editor_controller():
 
 		paperPos = self.__ui.dwgArea.getNormalizedPosition(event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
 
-		if self.__movingPaper and leftUp:
-			self.__movingPaper = False
-		elif self.__drawingNewStroke:
+		if self.__state == MOVING_PAPER and leftUp:
+			self.__state = IDLE
+		elif self.__state == DRAWING_NEW_STROKE:
 			if rightUp:
-				self.__drawingNewStroke = False
+				self.__state = IDLE
 				self.__strokePts = []
 				self.__curChar.addStroke(self.__tmpStroke)
 				self.__ui.dwgArea.strokesSpecial = []
@@ -226,7 +230,7 @@ class editor_controller():
 
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
 		
-		if self.__movingPaper:
+		if self.__state == MOVING_PAPER:
 			delta = paperPos - self.__savedMousePosPaper
 			self.__ui.dwgArea.originDelta += delta
 			self.__savedMousePosPaper = paperPos
