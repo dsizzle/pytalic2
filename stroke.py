@@ -46,7 +46,6 @@ class Stroke(shapes.splines.BezierSpline):
 		self.__startFlourish = None
 		self.__endFlourish = None
 		self.__handleSize = 10
-		self.__bitmapPreview = None
 		self.__instances = {}
 		self.__parent = parent
 		
@@ -301,30 +300,6 @@ class Stroke(shapes.splines.BezierSpline):
 		self.setCtrlVerticesFromList(pts)	
 			
 		self.calcCurvePoints()
-	
-	def makePreview(self, size=200, nib=None):
-		if self.__boundRect is None:
-			return
-
-		xscale = (self.__boundRect.width())*1.25
-		yscale = (self.__boundRect.height())*1.25
-
-		scale = max(xscale, yscale)
-		
-		tmpBitmap = QtGui.QPixmap(scale, scale)
-		tmpBitmap.fill(QtGui.QColor(240, 240, 230))
-		
-		qp = QtGui.QPainter(tmpBitmap)
-		qp.save()
-		qp.translate(-(self.__x + self.__boundRect.topLeft().x()), -(self.__y + self.__boundRect.topLeft().y()))
-		qp.translate(scale/2-xscale/2.5, scale/2-yscale/2.5)
-		
-		self.draw(qp, 0, nib)
-
-		qp.restore()
-
-		self.__bitmapPreview = tmpBitmap.scaled(size, size, QtCore.Qt.KeepAspectRatioByExpanding, 1)
-		qp.end()
 
 	def setParent(self, parent):
 		self.__parent = parent
@@ -454,17 +429,6 @@ class Stroke(shapes.splines.BezierSpline):
 
 	selected = property(getSelectState, setSelectState)
 
-	def getBitmap(self):
-		return self.__bitmapPreview
-	
-	def setBitmap(self, bmap):
-		self.__bitmapPreview = bmap
-		
-	def delBitmap(self):
-		del self.__bitmapPreview
-	
-	bitmapPreview = property(getBitmap, setBitmap, delBitmap, "bitmapPreview property")	
-
 	def deselectCtrlVerts(self):
 		for vert in self.__strokeCtrlVerts:
 			vert.selectHandle(None)
@@ -583,9 +547,6 @@ class StrokeInstance(object):
 			gc.restore()
 
 		self.__boundBoxes = strokeToDraw.getBoundBoxes() #True)
-
-	def getBitmap(self):
-		return self.__stroke.getBitmap()
 
 	def getHitPoint(self, idx):
 		return self.__stroke.getHitPoint(idx)
