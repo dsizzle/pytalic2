@@ -33,11 +33,11 @@ KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 
 class controlVertex(object):
 	def __init__(self):
-		self.__pos = ()
+		self.__pos = QtCore.QPoint(0, 0)
 		self.__pressure = 1.0
 		self.__behavior = SMOOTH
-		self.__leftHandlePos = ()
-		self.__rightHandlePos = ()
+		self.__leftHandlePos = QtCore.QPoint(0, 0)
+		self.__rightHandlePos = QtCore.QPoint(0, 0)
 		self.__handleScale = 1
 		self.__grayPen = (200,200,200,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(200, 200, 200), 1, wx.SOLID)
 		self.__grayBrush = (200,200,200,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(200,200,200), wx.SOLID)
@@ -46,56 +46,53 @@ class controlVertex(object):
 		self.__clearBrush = (0,0,0,QtCore.Qt.NoBrush) #QtGui.QBrush(QtGui.QColor(0,0,0), wx.TRANSPARENT)
 		self.__selected = None
 
-	def setPos(self, x, y):
+	def setPos(self, pt):
 		oldPos = self.__pos
 		if (oldPos):
-			dx = oldPos[0]-x
-			dy = oldPos[1]-y
+			delta = oldPos - pt
 			
 			lPos = self.__leftHandlePos
 			if (lPos):
-				self.__leftHandlePos = (lPos[0]-dx, lPos[1]-dy)
+				self.__leftHandlePos = lPos - delta
 					
 			rPos = self.__rightHandlePos
 			if (rPos):
-				self.__rightHandlePos = (rPos[0]-dx, rPos[1]-dy)
+				self.__rightHandlePos = rPos - delta
 			
-		self.__pos = (x, y)
+		self.__pos = pt
 		
 	def getPos(self):
 		return self.__pos
 
+	pos = property(getPos, setPos)
+
 	def getSelectedHandle(self):
 		return self.__selected
 		
-	def setLeftHandlePos(self, x, y):
+	def setLeftHandlePos(self, pt):
 		oldLPos = self.__leftHandlePos
 		oldRPos = self.__rightHandlePos
 		
 		if (self.__behavior == SMOOTH):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldx = oldLPos[0] - self.__pos[0]
-				oldy = oldLPos[1] - self.__pos[1]
-				ordx = self.__pos[0] - oldRPos[0]
-				ordy = self.__pos[1] - oldRPos[1]
-				llen = math.sqrt(float(oldx * oldx) + float(oldy * oldy))
-				rlen = math.sqrt(float(ordx * ordx) + float(ordy * ordy))
+				oldDel = oldLPos - self.__pos
+				oldRDel = self.__pos - oldRPos
+				llen = math.sqrt(float(oldDel.x() * oldDel.x()) + float(oldDel.y() * oldDel.y()))
+				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
 				if (llen == 0):
 					llen = 0.00001
-				normldx = oldx / llen
-				normldy = oldy / llen
-				rdx = (0 - normldx) * rlen
-				rdy = (0 - normldy) * rlen
+				normldx = oldDel.x() / llen
+				normldy = oldDel.y() / llen
+				rDel = QtCore.QPoint((0 - normldx) * rlen, (0 - normldy) * rlen)
 				
-				self.__rightHandlePos = (self.__pos[0] + rdx, self.__pos[1] + rdy)
+				self.__rightHandlePos = self.__pos + rDel
 		elif (self.__behavior == SYMMETRIC):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldx = oldLPos[0] - self.__pos[0]
-				oldy = oldLPos[1] - self.__pos[1]
+				oldDel = oldLPos - self.__pos
 				
-				self.__rightHandlePos = (self.__pos[0] - oldx, self.__pos[1] - oldy)
-	
-		self.__leftHandlePos = (x, y)
+				self.__rightHandlePos = self.__pos - oldDel
+
+		self.__leftHandlePos = pt
 		
 	def getLeftHandlePos(self):
 		return self.__leftHandlePos
@@ -103,34 +100,31 @@ class controlVertex(object):
 	def clearLeftHandlePos(self):
 		self.__leftHandlePos = ()
 		
-	def setRightHandlePos(self, x, y):
+	def setRightHandlePos(self, pt):
 		oldLPos = self.__leftHandlePos
 		oldRPos = self.__rightHandlePos
 
 		if (self.__behavior == SMOOTH):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldx = oldLPos[0] - self.__pos[0]
-				oldy = oldLPos[1] - self.__pos[1]
-				ordx = self.__pos[0] - oldRPos[0]
-				ordy = self.__pos[1] - oldRPos[1]
-				llen = math.sqrt(float(oldx * oldx) + float(oldy * oldy))
-				rlen = math.sqrt(float(ordx * ordx) + float(ordy * ordy))
+				oldDel = oldLPos - self.__pos
+				oldRDel = self.__pos - oldRPos
+
+				llen = math.sqrt(float(oldDel.x() * oldDel.x()) + float(oldDel.y() * oldDel.y()))
+				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
 				if (rlen == 0):
 					rlen = 0.00001
-				normrdx = ordx / rlen
-				normrdy = ordy / rlen
-				ldx = (0 - normrdx) * llen
-				ldy = (0 - normrdy) * llen
+				normrdx = oldRDel.x() / rlen
+				normrdy = oldRDel.y() / rlen
+				lDel = QtCore.QPoint((0 - normrdx) * llen, (0 - normrdy) * llen)
 				
-				self.__leftHandlePos = (self.__pos[0] - ldx, self.__pos[1] - ldy)
+				self.__leftHandlePos = self.__pos - lDel
 		elif (self.__behavior == SYMMETRIC):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				ordx = self.__pos[0] - oldRPos[0]
-				ordy = self.__pos[1] - oldRPos[1]
+				oldRDel = self.__pos - oldRPos
 				
-				self.__leftHandlePos = (self.__pos[0] + ordx, self.__pos[1] + ordy)
-				
-		self.__rightHandlePos = (x, y)
+				self.__leftHandlePos = self.__pos + oldRDel
+
+		self.__rightHandlePos = pt
 
 	def getRightHandlePos(self):
 		return self.__rightHandlePos
@@ -180,15 +174,15 @@ class controlVertex(object):
 		else:
 			return False
 
-	def setPosOfSelected(self, x, y):
+	def setPosOfSelected(self, pt):
 		if (self.__selected is None):
 			pass
 		elif (self.__selected == KNOT):
-			self.setPos(x,y)
+			self.setPos(pt)
 		elif (self.__selected == LEFT_HANDLE):
-			self.setLeftHandlePos(x,y)
+			self.setLeftHandlePos(pt)
 		elif (self.__selected == RIGHT_HANDLE):
-			self.setRightHandlePos(x,y)
+			self.setRightHandlePos(pt)
 	
 	def getPosOfSelected(self):
 		if (self.__selected is None):
@@ -202,6 +196,8 @@ class controlVertex(object):
 		else:
 			return None
 	
+	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)
+
 	def checkForHit(self, x, y, offset):
 		pt = self.getLeftHandlePos()
 		if (pt) and (self.handleHit(x, y, pt, offset)):
@@ -269,7 +265,7 @@ class controlVertex(object):
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__dkGrayBrush[0], self.__dkGrayBrush[1], self.__dkGrayBrush[2]), self.__dkGrayBrush[3]))
 			
 		gc.save()
-		gc.translate(vert[0], vert[1])
+		gc.translate(vert)
 		gc.scale(self.__handleScale, self.__handleScale)
 		gc.drawPath(KNOT_PATH)
 		gc.restore()
@@ -289,11 +285,11 @@ class controlVertex(object):
 		vert = self.__leftHandlePos	
 		if (vert):
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
-			gc.drawLine(self.__pos[0], self.__pos[1], vert[0], vert[1])
+			gc.drawLine(self.__pos, vert)
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
 
 			gc.save()
-			gc.translate(vert[0], vert[1])
+			gc.translate(vert)
 			gc.scale(self.__handleScale, self.__handleScale)
 			gc.drawPath(path) #, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))	
 			gc.restore()
@@ -306,11 +302,11 @@ class controlVertex(object):
 		vert = self.__rightHandlePos	
 		if (vert):
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
-			gc.drawLine(self.__pos[0], self.__pos[1], vert[0], vert[1])
+			gc.drawLine(self.__pos, vert)
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
 			
 			gc.save()
-			gc.translate(vert[0], vert[1])
+			gc.translate(vert)
 			
 			gc.scale(-self.__handleScale, self.__handleScale)
 			gc.drawPath(path)
