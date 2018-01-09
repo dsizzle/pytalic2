@@ -15,7 +15,7 @@ gICON_SIZE = 40
 IDLE = 0
 MOVING_PAPER = 1
 DRAWING_NEW_STROKE = 2
-MOVING_STROKES = 3
+DRAGGING = 3
 
 class editor_controller(): 
 	def __init__(self, w, h, label):
@@ -36,7 +36,7 @@ class editor_controller():
 		self.__undoStack = []
 		self.__redoStack = []
 		self.__selectedStrokes = []
-		self.__selectedPoints = []
+		self.__selectedPoints = {}
 		self.__charSet = None
 		self.__curChar = None
 
@@ -155,6 +155,10 @@ class editor_controller():
 		if leftDown and altDown:
 			self.__savedMousePosPaper = paperPos		
 			self.__state = MOVING_PAPER
+		elif leftDown and self.__state != DRAWING_NEW_STROKE:
+		 	if len(self.__selectedStrokes) > 0: 
+		 		self.__savedMousePosPaper = paperPos		
+				self.__state = DRAGGING
 
 	def mouseReleaseEventPaper(self, event):
 		btn = event.button()
@@ -191,19 +195,32 @@ class editor_controller():
 
 		else:
 			if leftUp:
+				if len(self.__selectedStrokes) == 0:
+					self.__state = IDLE
+
 				if len(self.__selectedStrokes) > 0:
 					oldSelectedStrokes = self.__selectedStrokes[:]
 					self.__selectedStrokes = []
 					for stroke in oldSelectedStrokes:
 						insideInfo = stroke.insideStroke(paperPos)
+						if self.__selectedPoints.has_key(stroke):
+							oldSelectedPoints = self.__selectedPoints[stroke]
+							del self.__selectedPoints[stroke] 
+						
+						stroke.deselectCtrlVerts()
+
 						if insideInfo[1] >= 0:
 				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
 				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
-				 			if not shiftDown:
-				 				stroke.deselectCtrlVerts()
-
+				 			
 				 			ctrlVert.selectHandle((insideInfo[1]+1) % 3 +1)
-				 			self.__selectedPoints.append(ctrlVert)
+				 			if not self.__selectedPoints.has_key(stroke):
+				 				self.__selectedPoints[stroke] = []
+				 			self.__selectedPoints[stroke].append(ctrlVert)
+				 			
+				 			if shiftDown:
+				 				self.__selectedPoints[stroke].extend(oldSelectedPoints)
+
 				 			stroke.selected = True
 				 			self.__selectedStrokes.append(stroke)
 				 		else:
@@ -221,7 +238,7 @@ class editor_controller():
 							self.__selectedStrokes.append(stroke)	
 						elif not shiftDown:
 							stroke.selected = False
-							stroke.deselectCtrlVerts()
+							stroke.deselectCtrlVerts()		
 
 		self.__ui.repaint()
 
@@ -229,11 +246,24 @@ class editor_controller():
 		btn = event.buttons()
 
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-		
+			
 		if self.__state == MOVING_PAPER:
 			delta = paperPos - self.__savedMousePosPaper
 			self.__ui.dwgArea.originDelta += delta
 			self.__savedMousePosPaper = paperPos
+		if self.__state == DRAGGING:
+			delta = paperPos - self.__savedMousePosPaper
+			self.__savedMousePosPaper = paperPos
+			if len(self.__selectedPoints.values()) > 0:
+				for stroke in self.__selectedPoints.keys():
+					for strokePt in self.__selectedPoints[stroke]:
+						strokePt.selectedHandlePos += delta
+						stroke.calcCurvePoints()
+
+			elif len(self.__selectedStrokes) > 0:
+				for stroke in self.__selectedStrokes:
+					stroke.pos += delta
+					stroke.calcCurvePoints()
 
 		self.__ui.repaint()
 		
