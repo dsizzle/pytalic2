@@ -31,13 +31,12 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__endSerif = fromStroke.getEndSerif()
 			self.__strokeCtrlVerts = fromStroke.getCtrlVertices()
 			self.updateCtrlVertices()
-			(self.__x, self.__y) = fromStroke.getPos()
+			self.__pos = fromStroke.getPos()
 		else:	
 			self.__startSerif = None
 			self.__endSerif = None
 			self.__strokeCtrlVerts = []
-			self.__x = 0
-			self.__y = 0
+			self.__pos = QtCore.QPoint(0, 0)
 		
 		self.__boundRect = None
 		self.__curvePath = None
@@ -62,12 +61,11 @@ class Stroke(shapes.splines.BezierSpline):
 	def getInstances(self):
 		return self.__instances.keys()
 
-	def setPos(self, x, y):
-		self.__x = x
-		self.__y = y
+	def setPos(self, pt):
+		self.__pos = pt
 		
 	def getPos(self):
-		return (int(self.__x), int(self.__y))
+		return self.__pos
 
 	pos = property(getPos, setPos)
 	
@@ -154,11 +152,11 @@ class Stroke(shapes.splines.BezierSpline):
 			r = vert.getRightHandlePos()
 			
 			if (l):
-				pts.append(list(l))
+				pts.append((l.x(), l.y()))
 			if (k):
-				pts.append(list(k))
+				pts.append((k.x(), k.y()))
 			if (r):
-				pts.append(list(r))
+				pts.append((r.x(), r.y()))
 				
 		return list(pts)
 		
@@ -220,16 +218,17 @@ class Stroke(shapes.splines.BezierSpline):
 		newVert = control_vertex.controlVertex()
 		
 		for pt in pts:
+			qpt = QtCore.QPoint(pt[0], pt[1])
 			if (pos == 0):
 				newVert = control_vertex.controlVertex()
 				lPos = newVert.getLeftHandlePos()
-				newVert.setLeftHandlePos(pt[0], pt[1])
+				newVert.setLeftHandlePos(qpt)
 				pos = 1
 			elif (pos == 1):
-				newVert.setPos(pt[0], pt[1])
+				newVert.setPos(qpt)
 				pos = 2
 			elif (pos == 2):
-				newVert.setRightHandlePos(pt[0], pt[1])
+				newVert.setRightHandlePos(qpt)
 				pos = 0
 				self.__strokeCtrlVerts.append(newVert)
 				newVert = None
@@ -315,7 +314,7 @@ class Stroke(shapes.splines.BezierSpline):
 			return
 		
 		gc.save()
-		gc.translate(self.__x, self.__y)		
+		gc.translate(self.__pos)		
 
 		gc.setPen(nib.pen)
 		gc.setBrush(nib.brush)
@@ -366,16 +365,16 @@ class Stroke(shapes.splines.BezierSpline):
 		
 	def insideStroke(self, pt):
 		minDist = 100
+		testPt = pt - self.__pos
+		inside = self.__strokeShape.contains(testPt)
 
-		inside = self.__strokeShape.contains(pt)
-
-		if self.__boundRect.contains(pt):
+		if self.__boundRect.contains(testPt):
 			if self.__isSelected:
 				for i in range(0, self.__curvePath.elementCount()):
 					element = self.__curvePath.elementAt(i)
 					dist = math.sqrt(
-						math.pow(element.x-pt.x(), 2) +
-						math.pow(element.y-pt.y(), 2)
+						math.pow(element.x-testPt.x(), 2) +
+						math.pow(element.y-testPt.y(), 2)
 					)
 					if dist < self.__handleSize:
 						return (True, i, None)
@@ -388,8 +387,8 @@ class Stroke(shapes.splines.BezierSpline):
 						pct = float(i) / 100.0
 						curvePt = self.__curvePath.pointAtPercent(pct)
 						dist = math.sqrt(
-							math.pow(curvePt.x()-pt.x(), 2) + 
-							math.pow(curvePt.y()-pt.y(), 2)
+							math.pow(curvePt.x()-testPt.x(), 2) + 
+							math.pow(curvePt.y()-testPt.y(), 2)
 						)
 						if dist < minDist:
 							dist = minDist
@@ -429,8 +428,7 @@ class Stroke(shapes.splines.BezierSpline):
 class StrokeInstance(object):
 	def __init__(self, parent=None):
 		self.__stroke = None
-		self.__x = 0
-		self.__y = 0
+		self.__pos = QtCore.QPoint(0, 0)
 		self.__instNib = None
 		self.__color = QtGui.QColor(128, 128, 192, 90)
 		self.__boundRect = None
@@ -455,12 +453,11 @@ class StrokeInstance(object):
 		self.__instNib = None
 		self.__color = QtGui.QColor(128, 128, 192, 90)
 
-	def setPos(self, x, y):
-		self.__x = x
-		self.__y = y
+	def setPos(self, pt):
+		self.__pos = pt
 	
 	def getPos(self):
-		return (int(self.__x), int(self.__y))
+		return self.__pos
 
 	pos = property(getPos, setPos)
 
@@ -472,7 +469,7 @@ class StrokeInstance(object):
 		self.__nib = nibs.Nib()
 		tmpNib = stroke.getNib()
 		
-		(self.__x, self.__y) = stroke.getPos()
+		self.__pos = stroke.getPos()
 
 		if tmpNib:
 			self.__nib.fromNib(tmpNib)
@@ -518,11 +515,11 @@ class StrokeInstance(object):
 		# perform overrides
 		#
 
-		(stroke_x, stroke_y) = self.__stroke.getPos()		
+		strokePos = self.__stroke.getPos()		
 		gc.save()
 
-		gc.translate(-stroke_x, -stroke_y)
-		gc.translate(self.__x, self.__y)
+		gc.translate(-strokePos)
+		gc.translate(self.__pos)
 
 		strokeToDraw.draw(gc, 0, self.__nib, selectedVert)
 		self.__boundRect = strokeToDraw.boundRect
@@ -531,7 +528,7 @@ class StrokeInstance(object):
 		if showCtrlVerts:
 			gc.save()
 
-			gc.translate(self.__x, self.__y)
+			gc.translate(self.__pos)
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(CLEAR_BRUSH[0], CLEAR_BRUSH[1], CLEAR_BRUSH[2]), CLEAR_BRUSH[3]))
 			gc.setPen(QtGui.QPen(QtGui.QColor(DARK_GRAY_PEN[0], DARK_GRAY_PEN[1], DARK_GRAY_PEN[2],128), 2, DARK_GRAY_PEN[3], QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
 		
