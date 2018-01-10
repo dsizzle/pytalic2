@@ -203,6 +203,7 @@ class editor_controller():
 					self.__selectedStrokes = []
 					for stroke in oldSelectedStrokes:
 						insideInfo = stroke.insideStroke(paperPos)
+						oldSelectedPoints = None
 						if self.__selectedPoints.has_key(stroke):
 							oldSelectedPoints = self.__selectedPoints[stroke]
 							del self.__selectedPoints[stroke] 
@@ -213,16 +214,26 @@ class editor_controller():
 				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
 				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
 				 			
-				 			ctrlVert.selectHandle((insideInfo[1]+1) % 3 +1)
+				 			handleIndex = (insideInfo[1]+1) % 3 +1
 				 			if not self.__selectedPoints.has_key(stroke):
-				 				self.__selectedPoints[stroke] = []
-				 			self.__selectedPoints[stroke].append(ctrlVert)
-				 			
-				 			if shiftDown:
-				 				self.__selectedPoints[stroke].extend(oldSelectedPoints)
+				 				self.__selectedPoints[stroke] = {}
 
+				 			if not self.__selectedPoints[stroke].has_key(ctrlVert):
+				 				self.__selectedPoints[stroke][ctrlVert] = []
+				 			
+				 			self.__selectedPoints[stroke][ctrlVert] = handleIndex
+
+				 			if shiftDown and oldSelectedPoints is not None:
+				 				for ctrlVert in oldSelectedPoints.keys():
+									self.__selectedPoints[stroke][ctrlVert] = oldSelectedPoints[ctrlVert]
+
+				 			print self.__selectedPoints
+				 			for ctrlVert in self.__selectedPoints[stroke].keys():
+				 				ctrlVert.selectHandle(self.__selectedPoints[stroke][ctrlVert])
+				 			
 				 			stroke.selected = True
 				 			self.__selectedStrokes.append(stroke)
+
 				 		else:
 				 			if shiftDown:
 				 				self.__selectedStrokes.append(stroke)
@@ -256,9 +267,10 @@ class editor_controller():
 			self.__savedMousePosPaper = paperPos
 			if len(self.__selectedPoints.values()) > 0:
 				for stroke in self.__selectedPoints.keys():
-					for strokePt in self.__selectedPoints[stroke]:
+					for strokePt in self.__selectedPoints[stroke].keys():
+						strokePt.selectHandle(self.__selectedPoints[stroke][strokePt])
 						strokePt.selectedHandlePos += delta
-						stroke.calcCurvePoints()
+					stroke.calcCurvePoints()
 
 			elif len(self.__selectedStrokes) > 0:
 				for stroke in self.__selectedStrokes:
