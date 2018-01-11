@@ -100,6 +100,9 @@ class editor_controller():
 		self.__cmdStack = commands.commandStack()
 
 	def createNewStroke(self, event):
+		if self.__state == DRAWING_NEW_STROKE:
+			return
+			
 		self.__state = DRAWING_NEW_STROKE
 		self.__strokePts = []
 		self.__tmpStroke = stroke.Stroke()
