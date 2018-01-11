@@ -197,8 +197,7 @@ class editor_controller():
 
 		else:
 			if leftUp:
-				if len(self.__selection.keys()) == 0:
-					self.__state = IDLE
+				self.__state = IDLE
 
 				if len(self.__selection.keys()) > 0:
 					for stroke in self.__selection.keys():
