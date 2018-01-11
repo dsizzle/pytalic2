@@ -35,8 +35,7 @@ class editor_controller():
 		self.__clipBoard = []
 		self.__undoStack = []
 		self.__redoStack = []
-		self.__selectedStrokes = []
-		self.__selectedPoints = {}
+		self.__selection = {}
 		self.__charSet = None
 		self.__curChar = None
 
@@ -156,7 +155,7 @@ class editor_controller():
 			self.__savedMousePosPaper = paperPos		
 			self.__state = MOVING_PAPER
 		elif leftDown and self.__state != DRAWING_NEW_STROKE:
-		 	if len(self.__selectedStrokes) > 0: 
+		 	if len(self.__selection.keys()) > 0: 
 		 		self.__savedMousePosPaper = paperPos		
 				self.__state = DRAGGING
 
@@ -195,62 +194,56 @@ class editor_controller():
 
 		else:
 			if leftUp:
-				if len(self.__selectedStrokes) == 0:
+				if len(self.__selection.keys()) == 0:
 					self.__state = IDLE
 
-				if len(self.__selectedStrokes) > 0:
-					oldSelectedStrokes = self.__selectedStrokes[:]
-					self.__selectedStrokes = []
-					for stroke in oldSelectedStrokes:
+				if len(self.__selection.keys()) > 0:
+					for stroke in self.__selection.keys():
 						insideInfo = stroke.insideStroke(paperPos)
-						oldSelectedPoints = None
-						if self.__selectedPoints.has_key(stroke):
-							oldSelectedPoints = self.__selectedPoints[stroke]
-							del self.__selectedPoints[stroke] 
 						
-						stroke.deselectCtrlVerts()
-
 						if insideInfo[1] >= 0:
 				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
 				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
 				 			
 				 			handleIndex = (insideInfo[1]+1) % 3 +1
-				 			if not self.__selectedPoints.has_key(stroke):
-				 				self.__selectedPoints[stroke] = {}
+				 			if not shiftDown:
+				 				stroke.deselectCtrlVerts()
+				 				self.__selection[stroke] = {}
 
-				 			if not self.__selectedPoints[stroke].has_key(ctrlVert):
-				 				self.__selectedPoints[stroke][ctrlVert] = []
-				 			
-				 			self.__selectedPoints[stroke][ctrlVert] = handleIndex
+				 			self.__selection[stroke][ctrlVert] = handleIndex
 
-				 			if shiftDown and oldSelectedPoints is not None:
-				 				for ctrlVert in oldSelectedPoints.keys():
-									self.__selectedPoints[stroke][ctrlVert] = oldSelectedPoints[ctrlVert]
-
-				 			print self.__selectedPoints
-				 			for ctrlVert in self.__selectedPoints[stroke].keys():
-				 				ctrlVert.selectHandle(self.__selectedPoints[stroke][ctrlVert])
+				 			for ctrlVert in self.__selection[stroke].keys():
+				 				ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
 				 			
 				 			stroke.selected = True
-				 			self.__selectedStrokes.append(stroke)
-
+				 			
 				 		else:
 				 			if shiftDown:
-				 				self.__selectedStrokes.append(stroke)
+				 				if not self.__selection.has_key(stroke):
+									self.__selection[stroke] = {}
+									stroke.deselectCtrlVerts()
+
+								stroke.selected = True
 				 			else:
+				 				if self.__selection.has_key(stroke):
+				 					del self.__selection[stroke]
+
 				 				stroke.selected = False
 				 				stroke.deselectCtrlVerts()
 
-				if len(self.__selectedStrokes) == 0 or shiftDown:
+				if len(self.__selection.keys()) == 0 or shiftDown:
 					for stroke in self.__ui.dwgArea.strokes:
 						insideInfo = stroke.insideStroke(paperPos)
 						if insideInfo[0] == True:
-							stroke.selected = True
-							self.__selectedStrokes.append(stroke)	
+							if not self.__selection.has_key(stroke):
+								self.__selection[stroke] = {}	
+								stroke.deselectCtrlVerts()
+
+							stroke.selected = True	
 						elif not shiftDown:
 							stroke.selected = False
-							stroke.deselectCtrlVerts()		
-
+							stroke.deselectCtrlVerts()
+							
 		self.__ui.repaint()
 
 	def mouseMoveEventPaper(self, event):
@@ -265,17 +258,15 @@ class editor_controller():
 		if self.__state == DRAGGING:
 			delta = paperPos - self.__savedMousePosPaper
 			self.__savedMousePosPaper = paperPos
-			if len(self.__selectedPoints.values()) > 0:
-				for stroke in self.__selectedPoints.keys():
-					for strokePt in self.__selectedPoints[stroke].keys():
-						strokePt.selectHandle(self.__selectedPoints[stroke][strokePt])
+			for stroke in self.__selection.keys():
+				if len(self.__selection[stroke].keys()) > 0:
+					for strokePt in self.__selection[stroke].keys():
+						strokePt.selectHandle(self.__selection[stroke][strokePt])
 						strokePt.selectedHandlePos += delta
-					stroke.calcCurvePoints()
-
-			elif len(self.__selectedStrokes) > 0:
-				for stroke in self.__selectedStrokes:
+				else:
 					stroke.pos += delta
-					stroke.calcCurvePoints()
+				
+				stroke.calcCurvePoints()
 
 		self.__ui.repaint()
 		
