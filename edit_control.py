@@ -102,7 +102,7 @@ class editor_controller():
 	def createNewStroke(self, event):
 		if self.__state == DRAWING_NEW_STROKE:
 			return
-			
+
 		self.__state = DRAWING_NEW_STROKE
 		self.__strokePts = []
 		self.__tmpStroke = stroke.Stroke()
@@ -157,10 +157,6 @@ class editor_controller():
 		if leftDown and altDown:
 			self.__savedMousePosPaper = paperPos		
 			self.__state = MOVING_PAPER
-		elif leftDown and self.__state != DRAWING_NEW_STROKE:
-		 	if len(self.__selection.keys()) > 0: 
-		 		self.__savedMousePosPaper = paperPos		
-				self.__state = DRAGGING
 
 	def mouseReleaseEventPaper(self, event):
 		btn = event.button()
@@ -197,59 +193,63 @@ class editor_controller():
 
 		else:
 			if leftUp:
-				self.__state = IDLE
+				if self.__state == DRAGGING:
+					self.__state = IDLE
+				else:
+					if len(self.__selection.keys()) > 0:
+						for stroke in self.__selection.keys():
+							insideInfo = stroke.insideStroke(paperPos)
+							
+							if insideInfo[1] >= 0:
+					 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
+					 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+					 			
+					 			handleIndex = (insideInfo[1]+1) % 3 +1
+					 			if not shiftDown:
+					 				stroke.deselectCtrlVerts()
+					 				self.__selection[stroke] = {}
 
-				if len(self.__selection.keys()) > 0:
-					for stroke in self.__selection.keys():
-						insideInfo = stroke.insideStroke(paperPos)
-						
-						if insideInfo[1] >= 0:
-				 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
-				 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
-				 			
-				 			handleIndex = (insideInfo[1]+1) % 3 +1
-				 			if not shiftDown:
-				 				stroke.deselectCtrlVerts()
-				 				self.__selection[stroke] = {}
+					 			self.__selection[stroke][ctrlVert] = handleIndex
 
-				 			self.__selection[stroke][ctrlVert] = handleIndex
+					 			for ctrlVert in self.__selection[stroke].keys():
+					 				ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
+					 			
+					 			stroke.selected = True
+					 			
+					 		else:
+					 			if shiftDown:
+					 				if not self.__selection.has_key(stroke):
+										self.__selection[stroke] = {}
+										stroke.deselectCtrlVerts()
 
-				 			for ctrlVert in self.__selection[stroke].keys():
-				 				ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
-				 			
-				 			stroke.selected = True
-				 			
-				 		else:
-				 			if shiftDown:
-				 				if not self.__selection.has_key(stroke):
-									self.__selection[stroke] = {}
+									stroke.selected = True
+					 			else:
+					 				if self.__selection.has_key(stroke):
+					 					del self.__selection[stroke]
+
+					 				stroke.selected = False
+					 				stroke.deselectCtrlVerts()
+
+					if len(self.__selection.keys()) == 0 or shiftDown:
+						for stroke in self.__ui.dwgArea.strokes:
+							insideInfo = stroke.insideStroke(paperPos)
+							if insideInfo[0] == True:
+								if not self.__selection.has_key(stroke):
+									self.__selection[stroke] = {}	
 									stroke.deselectCtrlVerts()
 
-								stroke.selected = True
-				 			else:
-				 				if self.__selection.has_key(stroke):
-				 					del self.__selection[stroke]
-
-				 				stroke.selected = False
-				 				stroke.deselectCtrlVerts()
-
-				if len(self.__selection.keys()) == 0 or shiftDown:
-					for stroke in self.__ui.dwgArea.strokes:
-						insideInfo = stroke.insideStroke(paperPos)
-						if insideInfo[0] == True:
-							if not self.__selection.has_key(stroke):
-								self.__selection[stroke] = {}	
+								stroke.selected = True	
+							elif not shiftDown:
+								stroke.selected = False
 								stroke.deselectCtrlVerts()
-
-							stroke.selected = True	
-						elif not shiftDown:
-							stroke.selected = False
-							stroke.deselectCtrlVerts()
-							
+								
 		self.__ui.repaint()
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
+
+		leftDown = btn & QtCore.Qt.LeftButton
+		rightDown = btn & QtCore.Qt.RightButton
 
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
 			
@@ -257,7 +257,7 @@ class editor_controller():
 			delta = paperPos - self.__savedMousePosPaper
 			self.__ui.dwgArea.originDelta += delta
 			self.__savedMousePosPaper = paperPos
-		if self.__state == DRAGGING:
+		elif self.__state == DRAGGING:
 			delta = paperPos - self.__savedMousePosPaper
 			self.__savedMousePosPaper = paperPos
 			for stroke in self.__selection.keys():
@@ -269,6 +269,9 @@ class editor_controller():
 					stroke.pos += delta
 				
 				stroke.calcCurvePoints()
+		elif leftDown and self.__state == IDLE:
+			self.__state = DRAGGING
+			self.__savedMousePosPaper = paperPos
 
 		self.__ui.repaint()
 		
