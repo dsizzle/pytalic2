@@ -264,7 +264,7 @@ class editor_controller():
 				if len(self.__selection[stroke].keys()) > 0:
 					for strokePt in self.__selection[stroke].keys():
 						strokePt.selectHandle(self.__selection[stroke][strokePt])
-						strokePt.selectedHandlePos += delta
+						strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
 				else:
 					stroke.pos += delta
 				
