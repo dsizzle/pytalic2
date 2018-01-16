@@ -69,59 +69,11 @@ class controlVertex(object):
 	def getSelectedHandle(self):
 		return self.__selected
 		
-	def setLeftHandlePos(self, pt):
-		oldLPos = self.__leftHandlePos
-		oldRPos = self.__rightHandlePos
-		
-		if (self.__behavior == SMOOTH):
-			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldLDel = oldLPos - self.__pos
-				oldRDel = self.__pos - oldRPos
-				llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
-				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
-				if (llen == 0):
-					llen = 0.00001
-				rDel = -oldLDel * rlen / llen
-				
-				self.__rightHandlePos = self.__pos + rDel
-		elif (self.__behavior == SYMMETRIC):
-			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldDel = oldLPos - self.__pos
-				
-				self.__rightHandlePos = self.__pos - oldDel
-
-		self.__leftHandlePos = pt
-		
 	def getLeftHandlePos(self):
 		return self.__leftHandlePos
 	
 	def clearLeftHandlePos(self):
 		self.__leftHandlePos = ()
-		
-	def setRightHandlePos(self, pt):
-		oldLPos = self.__leftHandlePos
-		oldRPos = self.__rightHandlePos
-
-		if (self.__behavior == SMOOTH):
-			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldLDel = oldLPos - self.__pos
-				oldRDel = self.__pos - oldRPos
-
-				llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
-				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
-				if (rlen == 0):
-					rlen = 0.00001
-				
-				lDel = -oldRDel * llen / rlen 
-
-				self.__leftHandlePos = self.__pos - lDel
-		elif (self.__behavior == SYMMETRIC):
-			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldRDel = self.__pos - oldRPos
-				
-				self.__leftHandlePos = self.__pos + oldRDel
-
-		self.__rightHandlePos = pt
 
 	def getRightHandlePos(self):
 		return self.__rightHandlePos
@@ -129,6 +81,41 @@ class controlVertex(object):
 	def clearRightHandlePos(self):
 		self.__rightHandlePos = ()
 	
+	def setHandlePos(self, pt, handle):
+		oldLPos = self.__leftHandlePos
+		oldRPos = self.__rightHandlePos
+		oldLDel = oldLPos - self.__pos
+		oldRDel = self.__pos - oldRPos
+		llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
+		rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
+		
+		if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
+			
+			if (self.__behavior == SMOOTH):
+				if handle == RIGHT_HANDLE:
+					if (rlen == 0):
+						rlen = 0.00001
+			
+					lDel = -oldRDel * llen / rlen 
+					self.__leftHandlePos = self.__pos - lDel
+				else:
+					if (llen == 0):
+						llen = 0.00001
+
+					rDel = -oldLDel * rlen / llen
+					self.__rightHandlePos = self.__pos + rDel
+
+			elif (self.__behavior == SYMMETRIC):
+				if handle == RIGHT_HANDLE:
+					self.__leftHandlePos = self.__pos + oldRDel
+				else:
+					self.__rightHandlePos = self.__pos - oldLDel
+
+		if handle == LEFT_HANDLE:
+			self.__leftHandlePos = pt
+		else:
+			self.__rightHandlePos = pt
+
 	def selectHandle(self, select):
 		if (select) and ((select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT)):
 			self.__selected = select
@@ -176,10 +163,12 @@ class controlVertex(object):
 			pass
 		elif (self.__selected == KNOT):
 			self.setPos(pt)
-		elif (self.__selected == LEFT_HANDLE):
-			self.setLeftHandlePos(pt)
-		elif (self.__selected == RIGHT_HANDLE):
-			self.setRightHandlePos(pt)
+		else:
+			self.setHandlePos(pt, self.__selected)
+		# elif (self.__selected == LEFT_HANDLE):
+		# 	self.setLeftHandlePos(pt)
+		# elif (self.__selected == RIGHT_HANDLE):
+		# 	self.setRightHandlePos(pt)
 	
 	def getPosOfSelected(self):
 		if (self.__selected is None):
