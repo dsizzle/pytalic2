@@ -75,15 +75,13 @@ class controlVertex(object):
 		
 		if (self.__behavior == SMOOTH):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldDel = oldLPos - self.__pos
+				oldLDel = oldLPos - self.__pos
 				oldRDel = self.__pos - oldRPos
-				llen = math.sqrt(float(oldDel.x() * oldDel.x()) + float(oldDel.y() * oldDel.y()))
+				llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
 				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
 				if (llen == 0):
 					llen = 0.00001
-				normldx = oldDel.x() / llen
-				normldy = oldDel.y() / llen
-				rDel = QtCore.QPoint((0 - normldx) * rlen, (0 - normldy) * rlen)
+				rDel = -oldLDel * rlen / llen
 				
 				self.__rightHandlePos = self.__pos + rDel
 		elif (self.__behavior == SYMMETRIC):
@@ -106,17 +104,16 @@ class controlVertex(object):
 
 		if (self.__behavior == SMOOTH):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-				oldDel = oldLPos - self.__pos
+				oldLDel = oldLPos - self.__pos
 				oldRDel = self.__pos - oldRPos
 
-				llen = math.sqrt(float(oldDel.x() * oldDel.x()) + float(oldDel.y() * oldDel.y()))
+				llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
 				rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
 				if (rlen == 0):
 					rlen = 0.00001
-				normrdx = oldRDel.x() / rlen
-				normrdy = oldRDel.y() / rlen
-				lDel = QtCore.QPoint((0 - normrdx) * llen, (0 - normrdy) * llen)
 				
+				lDel = -oldRDel * llen / rlen 
+
 				self.__leftHandlePos = self.__pos - lDel
 		elif (self.__behavior == SYMMETRIC):
 			if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
