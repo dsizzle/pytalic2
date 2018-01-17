@@ -32,12 +32,10 @@ SYMMETRIC_HANDLE_PATH.lineTo(0, 0)
 KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 
 class controlVertex(object):
-	def __init__(self):
-		self.__pos = QtCore.QPoint(0, 0)
+	def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint()):
 		self.__pressure = 1.0
 		self.__behavior = SMOOTH
-		self.__leftHandlePos = QtCore.QPoint(0, 0)
-		self.__rightHandlePos = QtCore.QPoint(0, 0)
+		self.__handlePos = [0, left, knot, right]
 		self.__handleScale = 1
 		self.__grayPen = (200,200,200,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(200, 200, 200), 1, wx.SOLID)
 		self.__grayBrush = (200,200,200,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(200,200,200), wx.SOLID)
@@ -47,74 +45,74 @@ class controlVertex(object):
 		self.__selected = None
 
 	def setPos(self, pt):
-		oldPos = self.__pos
-		if (oldPos):
-			delta = oldPos - pt
-			
-			lPos = self.__leftHandlePos
-			if (lPos):
-				self.__leftHandlePos = lPos - delta
-					
-			rPos = self.__rightHandlePos
-			if (rPos):
-				self.__rightHandlePos = rPos - delta
-			
-		self.__pos = pt
+		self.setHandlePos(pt, KNOT)
 		
 	def getPos(self):
-		return self.__pos
+		return self.__handlePos[KNOT]
 
 	pos = property(getPos, setPos)
 
 	def getSelectedHandle(self):
 		return self.__selected
 		
-	def getLeftHandlePos(self):
-		return self.__leftHandlePos
+	def getHandlePos(self, handle):
+		return self.__handlePos[handle]
 	
-	def clearLeftHandlePos(self):
-		self.__leftHandlePos = ()
+	def clearHandlePos(self, handle):
+		self.__handlePos[handle] = QtCore.QPoint(0, 0)
 
-	def getRightHandlePos(self):
-		return self.__rightHandlePos
-	
-	def clearRightHandlePos(self):
-		self.__rightHandlePos = ()
-	
 	def setHandlePos(self, pt, handle):
-		oldLPos = self.__leftHandlePos
-		oldRPos = self.__rightHandlePos
-		oldLDel = oldLPos - self.__pos
-		oldRDel = self.__pos - oldRPos
+		oldLDel = self.__handlePos[LEFT_HANDLE] - self.__handlePos[KNOT]
+		oldKnotDel = self.__handlePos[KNOT] - pt
+		oldRDel = self.__handlePos[KNOT] - self.__handlePos[RIGHT_HANDLE] 
 		llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
 		rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
+			
+		if handle == KNOT:
+			if self.__handlePos[LEFT_HANDLE]:
+				self.__handlePos[LEFT_HANDLE] -= oldKnotDel
+			if self.__handlePos[RIGHT_HANDLE]:
+				self.__handlePos[RIGHT_HANDLE] -= oldKnotDel
+
+		elif (self.__behavior == SMOOTH):
+			if handle == RIGHT_HANDLE and self.__handlePos[LEFT_HANDLE]:
+				if (rlen == 0):
+					rlen = 0.00001
 		
-		if (self.__leftHandlePos and self.__rightHandlePos and self.__pos):
-			
-			if (self.__behavior == SMOOTH):
-				if handle == RIGHT_HANDLE:
-					if (rlen == 0):
-						rlen = 0.00001
-			
-					lDel = -oldRDel * llen / rlen 
-					self.__leftHandlePos = self.__pos - lDel
-				else:
-					if (llen == 0):
-						llen = 0.00001
+				lDel = -oldRDel * llen / rlen 
+				self.__handlePos[LEFT_HANDLE] = self.__handlePos[KNOT] - lDel
+			elif self.__handlePos[RIGHT_HANDLE]:
+				if (llen == 0):
+					llen = 0.00001
 
-					rDel = -oldLDel * rlen / llen
-					self.__rightHandlePos = self.__pos + rDel
+				rDel = -oldLDel * rlen / llen
+				self.__handlePos[RIGHT_HANDLE] = self.__handlePos[KNOT] + rDel
 
-			elif (self.__behavior == SYMMETRIC):
-				if handle == RIGHT_HANDLE:
-					self.__leftHandlePos = self.__pos + oldRDel
-				else:
-					self.__rightHandlePos = self.__pos - oldLDel
+		elif (self.__behavior == SYMMETRIC):
+			if handle == RIGHT_HANDLE and self.__handlePos[LEFT_HANDLE]:
+				self.__handlePos[LEFT_HANDLE] = self.__handlePos[KNOT] + oldRDel
+			elif self.__handlePos[RIGHT_HANDLE]:
+				self.__handlePos[RIGHT_HANDLE] = self.__handlePos[KNOT] - oldLDel
 
-		if handle == LEFT_HANDLE:
-			self.__leftHandlePos = pt
+		self.__handlePos[handle] = pt
+	
+	def getHandlePosAsList(self):
+		knot = (self.__handlePos[KNOT].x(), self.__handlePos[KNOT].y())
+		handleList = []
+
+		if self.__handlePos[LEFT_HANDLE]:
+			handleList.append((self.__handlePos[LEFT_HANDLE].x(), self.__handlePos[LEFT_HANDLE].y()))
 		else:
-			self.__rightHandlePos = pt
+			handleList.append(None)
+
+		handleList.append(knot)
+
+		if self.__handlePos[RIGHT_HANDLE]:
+			handleList.append((self.__handlePos[RIGHT_HANDLE].x(), self.__handlePos[RIGHT_HANDLE].y()))
+		else:
+			handleList.append(None)
+
+		return handleList
 
 	def selectHandle(self, select):
 		if (select) and ((select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT)):
@@ -165,37 +163,27 @@ class controlVertex(object):
 			self.setPos(pt)
 		else:
 			self.setHandlePos(pt, self.__selected)
-		# elif (self.__selected == LEFT_HANDLE):
-		# 	self.setLeftHandlePos(pt)
-		# elif (self.__selected == RIGHT_HANDLE):
-		# 	self.setRightHandlePos(pt)
 	
 	def getPosOfSelected(self):
 		if (self.__selected is None):
 			return None
-		elif (self.__selected == KNOT):
-			return self.__pos
-		elif (self.__selected == LEFT_HANDLE):
-			return self.__leftHandlePos
-		elif (self.__selected == RIGHT_HANDLE):
-			return self.__rightHandlePos
 		else:
-			return None
-	
+			return self.__handlePos[self.__selected]
+		
 	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)
 
 	def checkForHit(self, x, y, offset):
-		pt = self.getLeftHandlePos()
+		pt = self.getHandlePos(LEFT_HANDLE)
 		if (pt) and (self.handleHit(x, y, pt, offset)):
 			self.__selected = LEFT_HANDLE
 			return 1
 
-		pt = self.getRightHandlePos()
+		pt = self.getHandlePos(RIGHT_HANDLE)
 		if (pt) and (self.handleHit(x, y, pt, offset)):
 			self.__selected = RIGHT_HANDLE
 			return 1
 		
-		pt = self.getPos()
+		pt = self.getHandlePos(KNOT)
 		if (pt) and (self.handleHit(x, y, pt, offset)):
 			self.__selected = KNOT
 			return 1
@@ -218,12 +206,7 @@ class controlVertex(object):
 		if (self.__behavior == SHARP):
 			return
 		
-		if (self.__selected == LEFT_HANDLE):
-			lPos = self.__leftHandlePos
-			self.setLeftHandlePos(lPos[0], lPos[1])
-		elif (self.__selected == RIGHT_HANDLE):
-			rPos = self.__rightHandlePos
-			self.setRightHandlePos(rPos[0], rPos[1])
+		self.setHandlePos(self.__handlePos[self.__selected], self.__selected)
 			
 	def setBehaviorToSmooth(self):
 		self.setBehavior(SMOOTH)
@@ -238,7 +221,7 @@ class controlVertex(object):
 		return self.__behavior
 			
 	def draw(self, gc):
-		vert = self.__pos
+		vert = self.__handlePos[KNOT]
 		
 		gc.setPen(QtGui.QPen(QtGui.QColor(self.__dkGrayPen[0], self.__dkGrayPen[1], self.__dkGrayPen[2]), 1, self.__dkGrayPen[3]))
 		
@@ -268,10 +251,10 @@ class controlVertex(object):
 		else:
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__clearBrush[0], self.__clearBrush[1], self.__clearBrush[2]), self.__clearBrush[3]))
 		
-		vert = self.__leftHandlePos	
+		vert = self.__handlePos[LEFT_HANDLE]	
 		if (vert):
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
-			gc.drawLine(self.__pos, vert)
+			gc.drawLine(self.__handlePos[KNOT], vert)
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
 
 			gc.save()
@@ -285,10 +268,10 @@ class controlVertex(object):
 		else:
 			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__clearBrush[0], self.__clearBrush[1], self.__clearBrush[2]), self.__clearBrush[3]))
 
-		vert = self.__rightHandlePos	
+		vert = self.__handlePos[RIGHT_HANDLE]	
 		if (vert):
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
-			gc.drawLine(self.__pos, vert)
+			gc.drawLine(self.__handlePos[KNOT], vert)
 			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
 			
 			gc.save()
