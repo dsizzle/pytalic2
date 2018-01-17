@@ -33,8 +33,7 @@ class editor_controller():
 		self.__mainNib = None 
 		self.__tempChar = None
 		self.__clipBoard = []
-		self.__undoStack = []
-		self.__redoStack = []
+		self.__cmdStack = []
 		self.__selection = {}
 		self.__charSet = None
 		self.__curChar = None
@@ -173,7 +172,23 @@ class editor_controller():
 			if rightUp:
 				self.__state = IDLE
 				self.__strokePts = []
-				self.__curChar.addStroke(self.__tmpStroke)
+				addStrokeCmd = commands.command('addStrokeCmd')
+				doArgs = {
+					'stroke' : self.__tmpStroke,
+					'copyStroke' : False,
+				}
+
+				undoArgs = {
+					'stroke' : self.__tmpStroke,
+				}
+
+				addStrokeCmd.setDoArgs(doArgs)
+				addStrokeCmd.setUndoArgs(undoArgs)
+				addStrokeCmd.setDoFunction(self.__curChar.addStroke)
+				addStrokeCmd.setUndoFunction(self.__curChar.deleteStroke)
+				
+				self.__cmdStack.doCommand(addStrokeCmd)
+
 				self.__ui.dwgArea.strokesSpecial = []
 				self.__tmpStroke = None
 				self.__ui.repaint()
