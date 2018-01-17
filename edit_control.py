@@ -153,10 +153,6 @@ class editor_controller():
 		rightDown = btn & QtCore.Qt.RightButton
 
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-			
-		if leftDown and altDown:
-			self.__savedMousePosPaper = paperPos		
-			self.__state = MOVING_PAPER
 
 	def mouseReleaseEventPaper(self, event):
 		btn = event.button()
@@ -247,9 +243,12 @@ class editor_controller():
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
-
+		mod = event.modifiers()
+		
 		leftDown = btn & QtCore.Qt.LeftButton
 		rightDown = btn & QtCore.Qt.RightButton
+
+		altDown = mod & QtCore.Qt.AltModifier
 
 		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
 			
@@ -269,6 +268,9 @@ class editor_controller():
 					stroke.pos += delta
 				
 				stroke.calcCurvePoints()
+		elif leftDown and altDown and self.__state == IDLE:
+			self.__savedMousePosPaper = paperPos		
+			self.__state = MOVING_PAPER
 		elif leftDown and self.__state == IDLE:
 			self.__state = DRAGGING
 			self.__savedMousePosPaper = paperPos
