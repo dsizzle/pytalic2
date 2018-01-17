@@ -147,17 +147,15 @@ class Stroke(shapes.splines.BezierSpline):
 	def getCtrlVerticesAsList(self):
 		pts = []
 		for vert in self.__strokeCtrlVerts:
-			l = vert.getLeftHandlePos()
-			k = vert.getPos()
-			r = vert.getRightHandlePos()
+			l, k, r = vert.getHandlePosAsList() 
 			
 			if (l):
-				pts.append((l.x(), l.y()))
+				pts.append((l[0], l[1]))
 			if (k):
-				pts.append((k.x(), k.y()))
+				pts.append((k[0], k[1]))
 			if (r):
-				pts.append((r.x(), r.y()))
-				
+				pts.append((r[0], r[1]))
+
 		return list(pts)
 		
 	def setCtrlVerticesFromList(self, pts):	
@@ -191,11 +189,11 @@ class Stroke(shapes.splines.BezierSpline):
 				
 				dxA = (pts[i-1][0]-pts[i][0])
 				dyA = (pts[i-1][1]-pts[i][1])
-				vLenA = math.sqrt(float(dxA)*float(dxA) + float(dyA)*float(dyA))
+				vLenA = math.sqrt(float(dxA)*float(dxA) + float(dyA)*float(dyA))+0.001
 				dxB = (pts[i+1][0]-pts[i][0])
 				dyB = (pts[i+1][1]-pts[i][1])
-				vLenB = math.sqrt(float(dxB)*float(dxB) + float(dyB)*float(dyB))
-				
+				vLenB = math.sqrt(float(dxB)*float(dxB) + float(dyB)*float(dyB))+0.001
+
 				if (vLenA > vLenB):
 					ratio = (vLenA / vLenB) / 2.
 					midPts.append([pts[i][0]-dxT*ratio, pts[i][1]-dyT*ratio])
@@ -211,30 +209,25 @@ class Stroke(shapes.splines.BezierSpline):
 			pts.extend(midPts)
 			pts.extend(lastPts)
 
-		shapes.splines.BezierSpline.setCtrlVertices(self, pts)
+		#shapes.splines.BezierSpline.setCtrlVertices(self, pts)
 		self.__strokeCtrlVerts = []
 		
-		pos = 1
-		newVert = control_vertex.controlVertex()
+		left = QtCore.QPoint()
 		
-		for pt in pts:
-			qpt = QtCore.QPoint(pt[0], pt[1])
-			if (pos == 0):
-				newVert = control_vertex.controlVertex()
-				lPos = newVert.getLeftHandlePos()
-				newVert.setLeftHandlePos(qpt)
-				pos = 1
-			elif (pos == 1):
-				newVert.setPos(qpt)
-				pos = 2
-			elif (pos == 2):
-				newVert.setRightHandlePos(qpt)
-				pos = 0
-				self.__strokeCtrlVerts.append(newVert)
-				newVert = None
-		
-		if (newVert):
-			self.__strokeCtrlVerts.append(newVert)
+		while (pts):
+			pt = pts.pop()
+			center = QtCore.QPoint(pt[0], pt[1])
+			if len(pts):
+				pt = pts.pop()
+				right = QtCore.QPoint(pt[0], pt[1])
+			else: 
+				right = QtCore.QPoint(pt[0], pt[1])
+
+			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
+
+			if len(pts):
+				pt = pts.pop()
+				left = QtCore.QPoint(pt[0], pt[1])
 	
 	def setCtrlVertices(self, ctrlVerts):
 		self.__strokeCtrlVerts = ctrlVerts[:]
