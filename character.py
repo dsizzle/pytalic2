@@ -7,6 +7,8 @@ import copy
 
 CURVE_RESOLUTION = 10
 
+STROKE = 'stroke'
+
 class Character(object):
 	def __init__(self):
 		self.__strokes = []
@@ -70,9 +72,19 @@ class Character(object):
 		myStroke.setParent(self)
 		return myStroke
 		
-	def addStroke (self, strokeToAdd, copyStroke=True):
+	def addStroke (self, args):
+		copyStroke = True
+
+		if args.has_key(STROKE):
+			strokeToAdd = args[STROKE]
+		else:
+			return
+
+		if args.has_key('copyStroke'):
+			copyStroke=args['copyStroke']
+
 		if copyStroke:
-			newStroke = self.copyStroke(strokeToAdd)
+			newStroke = self.copyStroke({STROKE: strokeToAdd})
 			newStroke.setParent(self)
 		else:
 			newStroke = strokeToAdd
@@ -80,8 +92,13 @@ class Character(object):
 		self.__strokes.append(newStroke)
 		
 		return newStroke
-		
-	def addStrokeInstance (self, strokeToAdd):
+
+	def addStrokeInstance (self, args):
+		if args.has_key(STROKE):
+			strokeToAdd = args[STROKE]
+		else:
+			return
+
 		newStrokeInstance = stroke.StrokeInstance()
 		if not isinstance(strokeToAdd, stroke.Stroke):
 			strokeToAdd = strokeToAdd.getStroke()
@@ -92,7 +109,12 @@ class Character(object):
 
 		return newStrokeInstance
 
-	def copyStroke(self, strokeToCopy):
+	def copyStroke(self, args):
+		if args.has_key(STROKE):
+			strokeToCopy = args[STROKE]
+		else:
+			return
+
 		if isinstance(strokeToCopy, stroke.Stroke):
 			copiedStroke = stroke.Stroke(fromStroke=strokeToCopy)
 		else:
@@ -102,7 +124,12 @@ class Character(object):
 
 		return copiedStroke
 		
-	def deleteStroke(self, strokeToDelete):
+	def deleteStroke(self, args):
+		if args.has_key(STROKE):
+			strokeToDelete = args[STROKE]
+		else:
+			return
+
 		try:
 			self.__strokes.remove(strokeToDelete)
 		except:
@@ -185,7 +212,11 @@ class Character(object):
 		return initStroke
 		
 	def unjoinStrokes (self, args): 
-		joinedStroke = args['joinedStroke']
+		if args.has_key(STROKE):
+			joinedStroke = args[STROKE]
+		else:
+			return
+
 		strokesToUnjoin = args['strokesToUnjoin']
 	
 		for stroke in strokesToUnjoin:
@@ -193,8 +224,12 @@ class Character(object):
 		
 		self.deleteStroke(joinedStroke)
 	
-	def rejoinStrokes (self, args): 
-		joinedStroke = args['joinedStroke']
+	def rejoinStrokes (self, args):
+		if args.has_key(STROKE):
+			joinedStroke = args[STROKE]
+		else:
+			return
+
 		strokesToJoin = args['strokesToJoin']
 
 		for stroke in strokesToJoin:
