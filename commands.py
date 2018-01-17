@@ -43,14 +43,14 @@ class commandStack(object):
 
 
 class command(object):
-	def __init__(self):
+	def __init__(self, description=""):
 		self.__doArgs = {}
 		self.__doFunction = None
 
 		self.__undoArgs = {}
 		self.__undoFunction = None
 
-		self.__description = ""
+		self.__description = description
 
 	def doIt(self):
 		self.__doFunction(self.__doArgs)
