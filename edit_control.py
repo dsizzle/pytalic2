@@ -39,6 +39,7 @@ class editor_controller():
 		self.__curChar = None
 
 		self.__savedMousePosPaper = None
+		self.__moveDelta = QtCore.QPoint(0, 0)
 		self.__state = 0
 		
 		self.__strokePts = []
@@ -205,7 +206,27 @@ class editor_controller():
 		else:
 			if leftUp:
 				if self.__state == DRAGGING:
+					moveCmd = commands.command('moveStrokeCmd')
+					selectionCopy = self.__selection.copy()
+					doArgs = {
+						'strokes' : selectionCopy, 
+						'delta' : self.__moveDelta,
+					}
+
+					undoArgs = {
+						'strokes' : selectionCopy,
+						'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
+					}
+
+					moveCmd.setDoArgs(doArgs)
+					moveCmd.setUndoArgs(undoArgs)
+					moveCmd.setDoFunction(self.moveSelected)
+					moveCmd.setUndoFunction(self.moveSelected)
+				
+					self.__cmdStack.addToUndo(moveCmd)
+
 					self.__state = IDLE
+					self.__moveDelta = QtCore.QPoint(0, 0)
 				else:
 					if len(self.__selection.keys()) > 0:
 						for stroke in self.__selection.keys():
@@ -273,25 +294,44 @@ class editor_controller():
 			self.__savedMousePosPaper = paperPos
 		elif self.__state == DRAGGING:
 			delta = paperPos - self.__savedMousePosPaper
+			self.__moveDelta += delta
 			self.__savedMousePosPaper = paperPos
-			for stroke in self.__selection.keys():
-				if len(self.__selection[stroke].keys()) > 0:
-					for strokePt in self.__selection[stroke].keys():
-						strokePt.selectHandle(self.__selection[stroke][strokePt])
-						strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
-				else:
-					stroke.pos += delta
-				
-				stroke.calcCurvePoints()
+			args = {
+				'strokes' : self.__selection,
+				'delta' : delta,
+			}
+			self.moveSelected(args)
 		elif leftDown and altDown and self.__state == IDLE:
 			self.__savedMousePosPaper = paperPos		
 			self.__state = MOVING_PAPER
 		elif leftDown and self.__state == IDLE:
 			self.__state = DRAGGING
 			self.__savedMousePosPaper = paperPos
+			self.__moveDelta = QtCore.QPoint(0, 0)
 
 		self.__ui.repaint()
-		
+	
+	def moveSelected(self, args):
+		if args.has_key('strokes'):
+			selection = args['strokes']
+		else:
+			return
+
+		if args.has_key('delta'):
+			delta = args['delta']
+		else:
+			return
+
+		for stroke in selection.keys():
+				if len(selection[stroke].keys()) > 0:
+					for strokePt in selection[stroke].keys():
+						strokePt.selectHandle(selection[stroke][strokePt])
+						strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
+				else:
+					stroke.pos += delta
+				
+				stroke.calcCurvePoints()
+
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()
 		self.__charSet.setCurrentChar(curCharIdx)
