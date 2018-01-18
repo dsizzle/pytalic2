@@ -170,9 +170,7 @@ class Stroke(shapes.splines.BezierSpline):
 		if (2 == numPts):
 			dX = (pts[1][0]-pts[0][0])/3.
 			dY = (pts[1][1]-pts[0][1])/3.
-			cp1 = [pts[0][0]+dX, pts[0][1]+dY]
-			cp2 = [pts[1][0]-dX, pts[1][1]-dY]
-			pts = [pts[0], cp1, cp2, pts[1]]
+			pts = [pts[0], [pts[0][0]+dX, pts[0][1]+dY], [pts[1][0]-dX, pts[1][1]-dY], pts[1]]
 		elif (3 == numPts):
 			dX1 = (pts[1][0]-pts[0][0])/4.
 			dY1 = (pts[1][1]-pts[0][1])/4.
