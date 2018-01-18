@@ -345,3 +345,6 @@ class edit_interface(QtGui.QMainWindow):
 
 	def paintEvent(self, event):
 		QtGui.QMainWindow.paintEvent(self,event)
+
+	def closeEvent(self, event):
+		self.__parent.quit_cb(event)
