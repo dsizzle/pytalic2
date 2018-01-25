@@ -124,13 +124,60 @@ class guideLines(object):
 		
 	nibWidth = property(getNibWidth, setNibWidth)
 
-	def calculateGridPts(self, size, nibWidth=0):
-		self.__gridPts = []
+	def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
+		gridPt = QtCore.QPoint(-1, -1)
+
 		if self.nibWidth == 0:
-			if self.__lastNibWidth == 0:
-				return
-			else:
-				self.nibWidth = self.__lastNibWidth
+	 		if self.__lastNibWidth == 0:
+	 			return gridPt 
+	 		else:
+	 			self.nibWidth = self.__lastNibWidth
+
+	 	yLines = [self.__baseHeightPixels]
+		widthX = self.__halfBaseWidthPixels + self.__baseWidthPixels
+	 	
+	 	for yLine in yLines:
+	 		testY = pt.y() % yLine
+
+	 		print "y", pt, testY, yLine - testY, "<=", tolerance
+
+	 		ysign = 1
+	 		if pt.y() < 0:
+	 			ysign = -1
+
+	 		if abs(testY) <= tolerance or abs(yLine - testY) <= tolerance:
+	 			y = int(float(pt.y() + (ysign * tolerance)) / float(yLine)) * yLine
+	 			
+	 			print "YMATCH", y
+
+	 			sign = 1
+	 			if pt.x() < 0:
+	 				sign = -1
+
+	 			dx = int(y * self.__angleDX) * sign # * ysign
+	 			testX = (pt.x() - dx) % widthX
+
+	 			print "x", pt, dx, widthX, testX, widthX - testX, tolerance
+
+	 			if abs(testX) <= tolerance or abs(widthX - testX) <= tolerance:
+	 				x = int(float(pt.x() + (sign * tolerance)) / float(widthX)) * widthX + (dx * ysign) 
+
+	 				print "XMATCH", x, pt, tolerance, widthX, dx
+	 				print int(float(pt.x() + (sign * tolerance)) / float(widthX))
+	 				print int(float(pt.x() + (sign * tolerance)) / float(widthX)) * widthX
+	 				print "ENDXMATCH"
+	 				return QtCore.QPoint(x, y)
+
+	 	return gridPt
+
+
+	# def calculateGridPts(self, size, nibWidth=0):
+	# 	self.__gridPts = []
+	# 	if self.nibWidth == 0:
+	# 		if self.__lastNibWidth == 0:
+	# 			return
+	# 		else:
+	# 			self.nibWidth = self.__lastNibWidth
 			
 		# wdiv2 = size.width()/2
 		# hdiv2 = size.height()/2
@@ -177,7 +224,7 @@ class guideLines(object):
 		nibWidth = 20 #nib.getWidth() << 1
 		if not self.__lastNibWidth == nibWidth:
 
-			self.calculateGridPts(size, nibWidth)
+			#self.calculateGridPts(size, nibWidth)
 			self.__lastNibWidth = nibWidth
 			self.nibWidth = nibWidth
 
