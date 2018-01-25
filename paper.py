@@ -91,6 +91,9 @@ class drawingArea(QtGui.QFrame):
 
 	strokes = property(getDrawStrokes, setDrawStrokes)
 
+	def getGuidelines(self):
+		return self.__guideLines
+		
 	def getNormalizedPosition(self, rawPos):
 		normPos = rawPos
 		normPos = normPos / self.__scale

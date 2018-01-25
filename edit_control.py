@@ -17,6 +17,12 @@ MOVING_PAPER = 1
 DRAWING_NEW_STROKE = 2
 DRAGGING = 3
 
+SNAP_TO_GRID 		= 0x0001
+SNAP_TO_AXES 		= 0x0002
+SNAP_TO_NIB_AXES 	= 0x0004
+SNAP_TO_CTRL_PTS	= 0x0008
+SNAP_TO_STROKES		= 0x0010
+
 class editor_controller(): 
 	def __init__(self, w, h, label):
 		self.__label = label
@@ -44,6 +50,7 @@ class editor_controller():
 		
 		self.__strokePts = []
 		self.__tmpStroke = None
+		self.__snap = 0
 
 		charList = []
 		for i in range(32, 128):
@@ -293,6 +300,14 @@ class editor_controller():
 			self.__ui.dwgArea.originDelta += delta
 			self.__savedMousePosPaper = paperPos
 		elif self.__state == DRAGGING:
+			normPaperPos = self.__ui.dwgArea.getNormalizedPosition(paperPos)
+			deltaPos = paperPos - normPaperPos
+			
+			if self.__snap > 0:
+				snappedPoint = self.getSnappedPoint(paperPos)
+				if snappedPoint != QtCore.QPoint(-1, -1):
+					paperPos = snappedPoint + deltaPos
+
 			delta = paperPos - self.__savedMousePosPaper
 			self.__moveDelta += delta
 			self.__savedMousePosPaper = paperPos
@@ -331,6 +346,12 @@ class editor_controller():
 					stroke.pos += delta
 				
 				stroke.calcCurvePoints()
+
+	def getSnappedPoint(self, pos):
+		if self.__snap & SNAP_TO_GRID:
+			snappedPoint = self.__ui.dwgArea.getGuidelines().closestGridPoint(pos)
+			
+		return snappedPoint
 
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()
