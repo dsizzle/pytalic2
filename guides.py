@@ -154,7 +154,7 @@ class guideLines(object):
 	 			if pt.x() < 0:
 	 				sign = -1
 
-	 			dx = int(y * self.__angleDX) * sign # * ysign
+	 			dx =  0 - int(y * self.__angleDX) * ysign
 	 			testX = (pt.x() - dx) % widthX
 
 	 			print "x", pt, dx, widthX, testX, widthX - testX, tolerance

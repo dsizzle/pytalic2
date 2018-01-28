@@ -304,7 +304,7 @@ class editor_controller():
 			deltaPos = paperPos - normPaperPos
 			
 			if self.__snap > 0:
-				snappedPoint = self.getSnappedPoint(paperPos)
+				snappedPoint = self.getSnappedPoint(normPaperPos)
 				if snappedPoint != QtCore.QPoint(-1, -1):
 					paperPos = snappedPoint + deltaPos
 
