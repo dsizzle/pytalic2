@@ -170,35 +170,7 @@ class controlVertex(object):
 		else:
 			return self.__handlePos[self.__selected]
 		
-	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)
-
-	def checkForHit(self, x, y, offset):
-		pt = self.getHandlePos(LEFT_HANDLE)
-		if (pt) and (self.handleHit(x, y, pt, offset)):
-			self.__selected = LEFT_HANDLE
-			return 1
-
-		pt = self.getHandlePos(RIGHT_HANDLE)
-		if (pt) and (self.handleHit(x, y, pt, offset)):
-			self.__selected = RIGHT_HANDLE
-			return 1
-		
-		pt = self.getHandlePos(KNOT)
-		if (pt) and (self.handleHit(x, y, pt, offset)):
-			self.__selected = KNOT
-			return 1
-
-		self.__selected = None
-		return 0
-
-	def handleHit(self, x, y, pt, offset):
-		vxmin = pt[0]+offset[0]-self.__handleScale/2 
-		vxmax = vxmin+self.__handleScale
-		vymin = pt[1]+offset[1]-self.__handleScale/2 
-		vymax = vymin+self.__handleScale 
-		if (x >= vxmin) and (x <= vxmax) and \
-			(y >= vymin) and (y <= vymax):	
-			return True		
+	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)	
 	
 	def setBehavior(self, newBehavior):
 		self.__behavior = newBehavior
