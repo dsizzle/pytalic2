@@ -2,6 +2,8 @@
 import math
 from PyQt4 import QtCore, QtGui
 
+import shared_qt
+
 SMOOTH 		= 1
 SHARP		= 2
 SYMMETRIC 	= 3
@@ -37,11 +39,6 @@ class controlVertex(object):
 		self.__behavior = SMOOTH
 		self.__handlePos = [0, left, knot, right]
 		self.__handleScale = 1
-		self.__grayPen = (200,200,200,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(200, 200, 200), 1, wx.SOLID)
-		self.__grayBrush = (200,200,200,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(200,200,200), wx.SOLID)
-		self.__dkGrayPen = (128,128,128,QtCore.Qt.SolidLine) #QtGui.QPen(QtGui.QColor(128, 128, 128), 1, wx.SOLID)
-		self.__dkGrayBrush = (128,128,128,QtCore.Qt.SolidPattern) #QtGui.QBrush(QtGui.QColor(128,128,128), wx.SOLID)
-		self.__clearBrush = (0,0,0,QtCore.Qt.NoBrush) #QtGui.QBrush(QtGui.QColor(0,0,0), wx.TRANSPARENT)
 		self.__selected = None
 
 	def setPos(self, pt):
@@ -195,15 +192,15 @@ class controlVertex(object):
 	def draw(self, gc):
 		vert = self.__handlePos[KNOT]
 		
-		gc.setPen(QtGui.QPen(QtGui.QColor(self.__dkGrayPen[0], self.__dkGrayPen[1], self.__dkGrayPen[2]), 1, self.__dkGrayPen[3]))
+		gc.setPen(shared_qt.PEN(shared_qt.COLOR_MD_GRAY))
 		
 		if (self.__selected is not None):
 			if (self.__selected == KNOT):
-				gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
+				gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
 			else:
-				gc.setBrush(QtGui.QBrush(QtGui.QColor(196, 196, 0), QtCore.Qt.SolidPattern))
+				gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_YELLOW))
 		else:
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__dkGrayBrush[0], self.__dkGrayBrush[1], self.__dkGrayBrush[2]), self.__dkGrayBrush[3]))
+			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_MD_GRAY))
 			
 		gc.save()
 		gc.translate(vert)
@@ -219,33 +216,33 @@ class controlVertex(object):
 			path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
 		
 		if ((self.__selected is not None) and (self.__selected == LEFT_HANDLE)):
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
+			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
 		else:
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__clearBrush[0], self.__clearBrush[1], self.__clearBrush[2]), self.__clearBrush[3]))
-		
+			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_BLACK, shared_qt.BRUSH_CLEAR))
+
 		vert = self.__handlePos[LEFT_HANDLE]	
 		if (vert):
-			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
+			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY))
 			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
+			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY, 2))
 
 			gc.save()
 			gc.translate(vert)
 			gc.scale(self.__handleScale, self.__handleScale)
-			gc.drawPath(path) #, QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))	
+			gc.drawPath(path)	
 			gc.restore()
 
 		if ((self.__selected is not None) and (self.__selected == RIGHT_HANDLE)):
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(0, 255, 0), QtCore.Qt.SolidPattern))
+			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
 		else:
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(self.__clearBrush[0], self.__clearBrush[1], self.__clearBrush[2]), self.__clearBrush[3]))
+			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_BLACK, shared_qt.BRUSH_CLEAR))
 
 		vert = self.__handlePos[RIGHT_HANDLE]	
 		if (vert):
-			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 1, self.__grayPen[3]))
+			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY))
 			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(QtGui.QPen(QtGui.QColor(self.__grayPen[0], self.__grayPen[1], self.__grayPen[2]), 2, self.__grayPen[3]))
-			
+			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY, 2))
+
 			gc.save()
 			gc.translate(vert)
 			
