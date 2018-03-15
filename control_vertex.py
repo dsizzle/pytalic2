@@ -192,15 +192,15 @@ class controlVertex(object):
 	def draw(self, gc):
 		vert = self.__handlePos[KNOT]
 		
-		gc.setPen(shared_qt.PEN(shared_qt.COLOR_MD_GRAY))
+		gc.setPen(shared_qt.PEN_MD_GRAY)
 		
 		if (self.__selected is not None):
 			if (self.__selected == KNOT):
-				gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
+				gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
 			else:
-				gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_YELLOW))
+				gc.setBrush(shared_qt.BRUSH_YELLOW_SOLID)
 		else:
-			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_MD_GRAY))
+			gc.setBrush(shared_qt.BRUSH_MD_GRAY_SOLID)
 			
 		gc.save()
 		gc.translate(vert)
@@ -216,15 +216,15 @@ class controlVertex(object):
 			path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
 		
 		if ((self.__selected is not None) and (self.__selected == LEFT_HANDLE)):
-			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
+			gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
 		else:
-			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_BLACK, shared_qt.BRUSH_CLEAR))
+			gc.setBrush(shared_qt.BRUSH_CLEAR)
 
 		vert = self.__handlePos[LEFT_HANDLE]	
 		if (vert):
-			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY))
+			gc.setPen(shared_qt.PEN_LT_GRAY)
 			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY, 2))
+			gc.setPen(shared_qt.PEN_LT_GRAY_2)
 
 			gc.save()
 			gc.translate(vert)
@@ -233,15 +233,15 @@ class controlVertex(object):
 			gc.restore()
 
 		if ((self.__selected is not None) and (self.__selected == RIGHT_HANDLE)):
-			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_GREEN))
+			gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
 		else:
-			gc.setBrush(shared_qt.BRUSH(shared_qt.COLOR_BLACK, shared_qt.BRUSH_CLEAR))
+			gc.setBrush(shared_qt.BRUSH_CLEAR)
 
 		vert = self.__handlePos[RIGHT_HANDLE]	
 		if (vert):
-			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY))
+			gc.setPen(shared_qt.PEN_LT_GRAY)
 			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(shared_qt.PEN(shared_qt.COLOR_LT_GRAY, 2))
+			gc.setPen(shared_qt.PEN_LT_GRAY_2)
 
 			gc.save()
 			gc.translate(vert)

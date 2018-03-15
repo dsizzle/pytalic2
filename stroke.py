@@ -10,17 +10,15 @@ import math
 import time
 import random
 
+from PyQt4 import QtCore, QtGui
+
 import shapes.splines
 import shapes.polygon
 import control_vertex
 #import serif
-
-from PyQt4 import QtCore, QtGui
+import shared_qt
 
 DEBUG_BBOXES = False
-DARK_GRAY_PEN = (128,128,128,QtCore.Qt.DotLine) 
-CLEAR_BRUSH = (0,0,0,QtCore.Qt.NoBrush) 
-RED_BRUSH = (128,0,0,QtCore.Qt.SolidPattern)
 
 class Stroke(shapes.splines.BezierSpline):
 	def __init__(self, dimension=2, fromStroke=None, parent=None):
@@ -350,8 +348,8 @@ class Stroke(shapes.splines.BezierSpline):
 				vert.draw(gc)
 
 			if self.__boundRect is not None:
-				gc.setBrush(QtGui.QBrush(QtGui.QColor(CLEAR_BRUSH[0], CLEAR_BRUSH[1], CLEAR_BRUSH[2]), CLEAR_BRUSH[3]))
-				gc.setPen(QtGui.QPen(QtGui.QColor(DARK_GRAY_PEN[0], DARK_GRAY_PEN[1], DARK_GRAY_PEN[2],128), 2, DARK_GRAY_PEN[3], QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+				gc.setBrush(shared_qt.BRUSH_CLEAR)
+				gc.setPen(shared_qt.PEN_MD_GRAY_DOT_2)
 		
 				gc.drawRect(self.__boundRect)
 
@@ -523,9 +521,9 @@ class StrokeInstance(object):
 			gc.save()
 
 			gc.translate(self.__pos)
-			gc.setBrush(QtGui.QBrush(QtGui.QColor(CLEAR_BRUSH[0], CLEAR_BRUSH[1], CLEAR_BRUSH[2]), CLEAR_BRUSH[3]))
-			gc.setPen(QtGui.QPen(QtGui.QColor(DARK_GRAY_PEN[0], DARK_GRAY_PEN[1], DARK_GRAY_PEN[2],128), 2, DARK_GRAY_PEN[3], QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
-		
+			gc.setBrush(shared_qt.BRUSH_CLEAR)
+			gc.setPen(shared_qt.PEN_MD_GRAY_DOT_2)
+			
 			gc.drawRect(self.__boundRect)
 			
 			gc.restore()
