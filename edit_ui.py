@@ -311,7 +311,7 @@ class edit_interface(QtGui.QMainWindow):
 	
 		strokeMenu.addSeparator()
 		strokeSave = QtGui.QAction("Save Stroke", self)
-		#strokeSave.triggered.connect(self.saveStroke_cb)
+		strokeSave.triggered.connect(self.__parent.saveStroke_cb)
 		strokeMenu.addAction(strokeSave)
 
 		strokeLoad = QtGui.QAction("Paste From Saved", self)

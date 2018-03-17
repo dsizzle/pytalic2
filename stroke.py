@@ -30,15 +30,17 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__strokeCtrlVerts = fromStroke.getCtrlVertices()
 			self.updateCtrlVertices()
 			self.__pos = fromStroke.getPos()
+			self.__strokeShape = fromStroke.getStrokeShape()
+			self.__curvePath = fromStroke.getCurvePath()
+			self.__boundRect = fromStroke.getBoundRect()
 		else:	
 			self.__startSerif = None
 			self.__endSerif = None
 			self.__strokeCtrlVerts = []
 			self.__pos = QtCore.QPoint(0, 0)
-		
-		self.__boundRect = None
-		self.__curvePath = None
-		self.__strokeShape = None
+			self.__strokeShape = None
+			self.__curvePath = None
+			self.__boundRect = None
 
 		self.__startFlourish = None
 		self.__endFlourish = None
@@ -401,7 +403,7 @@ class Stroke(shapes.splines.BezierSpline):
 
 	def setBoundRect(self, newBoundRect):
 		if newBoundRect is not None:
-			self.__boundRect = boundRect
+			self.__boundRect = newBoundRect
 		
 	boundRect = property(getBoundRect, setBoundRect)
 
@@ -417,33 +419,35 @@ class Stroke(shapes.splines.BezierSpline):
 		for vert in self.__strokeCtrlVerts:
 			vert.selectHandle(None)
 
+	def getStrokeShape(self):
+		return self.__strokeShape
+
+	def setStrokeShape(self, newStrokeShape):
+		self.__strokeShape = newStrokeShape
+
+	strokeShape = property(getStrokeShape, setStrokeShape)
+
+	def getCurvePath(self):
+		return self.__curvePath
+
+	def setCurvePath(self, newCurvePath):
+		self.__curvePath = newCurvePath
+
+	curvePath = property(getCurvePath, setCurvePath)
+
+
 class StrokeInstance(object):
 	def __init__(self, parent=None):
 		self.__stroke = None
 		self.__pos = QtCore.QPoint(0, 0)
-		self.__instNib = None
 		self.__color = QtGui.QColor(128, 128, 192, 90)
 		self.__boundRect = None
 		self.__parent = parent
+		self.__isSelected = False
 		
 	def __del__(self):
 		if self.__stroke:
 			self.__stroke.removeInstance(self)
-
-	def __getstate__(self):
-		saveDict = self.__dict__.copy()
-
-		saveDict["_strokeInstance__nib"] = None
-		saveDict["_strokeInstance__instNib"] = None
-		saveDict["_strokeInstance__parent"] = None
-
-		return saveDict
-
-	def __setstate__(self, d):
-		self.__dict__ = d
-
-		self.__instNib = None
-		self.__color = QtGui.QColor(128, 128, 192, 90)
 
 	def setPos(self, pt):
 		self.__pos = pt
@@ -458,15 +462,10 @@ class StrokeInstance(object):
 			self.__stroke.removeInstance(self)
 
 		self.__stroke = stroke
-		self.__nib = nibs.Nib()
-		tmpNib = stroke.getNib()
 		
 		self.__pos = stroke.getPos()
+		self.__boundRect = stroke.getBoundRect()
 
-		if tmpNib:
-			self.__nib.fromNib(tmpNib)
-			self.__nib.setColor(self.__color)
-			
 		self.__stroke.addInstance(self)
 
 	def getStroke(self):
@@ -482,9 +481,6 @@ class StrokeInstance(object):
 
 	parent = property(getParent, setParent)
 
-	def getNib(self):
-		return self.__nib
-
 	def getStartSerif(self):
 		return self.__stroke.getStartSerif()
 
@@ -496,12 +492,7 @@ class StrokeInstance(object):
 		if self.__stroke == None:
 			return
 
-		if nib is not None:
-			self.__nib = nibs_qt.Nib()
-			self.__nib.fromNib(nib)
-			self.__nib.setColor(self.__color)
-
-		strokeToDraw = stroke_qt.Stroke(fromStroke=self.__stroke)
+		strokeToDraw = Stroke(fromStroke=self.__stroke)
 
 		#
 		# perform overrides
@@ -513,11 +504,11 @@ class StrokeInstance(object):
 		gc.translate(-strokePos)
 		gc.translate(self.__pos)
 
-		strokeToDraw.draw(gc, 0, self.__nib, selectedVert)
+		strokeToDraw.draw(gc, 0, nib, selectedVert)
 		self.__boundRect = strokeToDraw.boundRect
 		gc.restore()
 
-		if showCtrlVerts:
+		if self.__isSelected or showCtrlVerts:
 			gc.save()
 
 			gc.translate(self.__pos)
@@ -528,7 +519,6 @@ class StrokeInstance(object):
 			
 			gc.restore()
 
-		self.__boundBoxes = strokeToDraw.getBoundBoxes() #True)
 
 	def getHitPoint(self, idx):
 		return self.__stroke.getHitPoint(idx)
@@ -545,8 +535,8 @@ class StrokeInstance(object):
 			return vertIdx, origbboxIdx, idxPerVert
 
 		if self.__boundRect:
-			strokeToTest = stroke_qt.Stroke(fromStroke=self.__stroke)
-			strokeToTest.boundRect(self.__boundRect)
+			strokeToTest = Stroke(fromStroke=self.__stroke)
+			strokeToTest.boundRect = self.__boundRect
 
 			(vertIdx, origbboxIdx, idxPerVert) = strokeToTest.insideStroke(pt)
 
@@ -554,3 +544,19 @@ class StrokeInstance(object):
 
 	def getCtrlVertices(self, copy=False):
 		return []
+
+	def deselectCtrlVerts(self):
+		if self.__stroke:
+			self.__stroke.deselectCtrlVerts()
+
+	def getSelectState(self):
+		return self.__isSelected
+
+	def setSelectState(self, newState):
+		self.__isSelected = newState
+
+	selected = property(getSelectState, setSelectState)
+
+	def calcCurvePoints(self):
+		if self.__stroke:
+			self.__stroke.calcCurvePoints()

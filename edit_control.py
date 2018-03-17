@@ -115,6 +115,29 @@ class editor_controller():
 		self.__tmpStroke = stroke.Stroke()
 		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
 
+	def saveStroke_cb(self, event):
+		
+		for strk in self.__selection.keys():
+			if isinstance(strk, stroke.Stroke):
+				bitmap = self.__ui.dwgArea.drawIcon(None, [strk])
+				itemNum = self.__ui.strokeSelectorList.count()
+				self.__ui.strokeSelectorList.addItem(str(itemNum))
+				curItem = self.__ui.strokeSelectorList.item(itemNum)
+				self.__ui.strokeSelectorList.setCurrentRow(itemNum)
+				curItem.setIcon(QtGui.QIcon(bitmap))
+				self.__charSet.saveStroke(stroke.Stroke(fromStroke=strk))
+				curChar = self.__charSet.getCurrentChar()
+				curChar.deleteStroke({'stroke' : strk})
+				strk = self.__charSet.getSavedStroke(itemNum)
+				curChar.addStrokeInstance({'stroke' : strk})
+				if not self.__selection.has_key(strk):
+					self.__selection[strk] = {}
+					strk.deselectCtrlVerts()
+
+				strk.selected = True
+				
+		self.__ui.repaint()
+
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
 		self.__ui.repaint()
