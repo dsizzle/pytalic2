@@ -116,26 +116,34 @@ class editor_controller():
 		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
 
 	def saveStroke_cb(self, event):
-		
-		for strk in self.__selection.keys():
-			if isinstance(strk, stroke.Stroke):
-				bitmap = self.__ui.dwgArea.drawIcon(None, [strk])
+		deletedStrokes = []
+
+		for selStroke in self.__selection.keys():
+			if type(selStroke).__name__ == 'Stroke':
+				bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
 				itemNum = self.__ui.strokeSelectorList.count()
 				self.__ui.strokeSelectorList.addItem(str(itemNum))
 				curItem = self.__ui.strokeSelectorList.item(itemNum)
 				self.__ui.strokeSelectorList.setCurrentRow(itemNum)
 				curItem.setIcon(QtGui.QIcon(bitmap))
-				self.__charSet.saveStroke(stroke.Stroke(fromStroke=strk))
+				self.__charSet.saveStroke(stroke.Stroke(fromStroke=selStroke))
 				curChar = self.__charSet.getCurrentChar()
-				curChar.deleteStroke({'stroke' : strk})
-				strk = self.__charSet.getSavedStroke(itemNum)
-				curChar.addStrokeInstance({'stroke' : strk})
-				if not self.__selection.has_key(strk):
-					self.__selection[strk] = {}
-					strk.deselectCtrlVerts()
+				deletedStrokes.append(selStroke)
+				curChar.deleteStroke({'stroke' : selStroke})
+				selStroke = self.__charSet.getSavedStroke(itemNum)
+				curChar.addStrokeInstance({'stroke' : selStroke})
+				if not self.__selection.has_key(selStroke):
+					self.__selection[selStroke] = {}
+					selStroke.deselectCtrlVerts()
 
-				strk.selected = True
+				selStroke.selected = True
 				
+		for selStroke in deletedStrokes:
+			if self.__selection.has_key(selStroke):
+				del self.__selection[selStroke]
+
+			selStroke.selected = False	
+
 		self.__ui.repaint()
 
 	def viewToggleGuidelines(self, event):
