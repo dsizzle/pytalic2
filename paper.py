@@ -3,7 +3,6 @@ from PyQt4 import QtCore, QtGui
 import guides
 import nibs
 import shared_qt
-import stroke
 
 class drawingArea(QtGui.QFrame):
 	def __init__(self, parent):
@@ -162,7 +161,7 @@ class drawingArea(QtGui.QFrame):
 
 			while(len(tmpStrokes)):
 				strk = tmpStrokes.pop()
-				if isinstance(strk, stroke.Stroke):
+				if type(strk).__name__ == 'Stroke':
 					strk.draw(dc, False, nib=self.__nib)
 				else:
 					strk.draw(dc, False, nib=self.__instNib)
