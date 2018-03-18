@@ -217,7 +217,7 @@ class editor_controller():
 			self.__charSet.removeSavedStroke(selStroke)
 			curChar = self.__charSet.getCurrentChar()
 			curChar.deleteStroke({'stroke' : inst})
-			curChar.addStroke({'stroke' : selStroke})
+			curChar.addStroke({'stroke' : selStroke, 'copyStroke' : False})
 			addedStrokes.append(selStroke)
 			i -= 1
 			
