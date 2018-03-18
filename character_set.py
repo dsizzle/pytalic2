@@ -67,3 +67,6 @@ class character_set(object):
 		tmpStroke = self.__savedStrokes[idx]
 		self.__savedStrokes[idx] = stroke
 		del(tmpStroke)
+
+	def removeSavedStroke(self, item):
+		self.__savedStrokes.remove(item)

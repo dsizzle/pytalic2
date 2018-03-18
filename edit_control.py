@@ -116,27 +116,78 @@ class editor_controller():
 		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
 
 	def saveStroke_cb(self, event):
-		deletedStrokes = []
+		selectedStrokes = []
+		instances = []
 
 		for selStroke in self.__selection.keys():
 			if type(selStroke).__name__ == 'Stroke':
-				bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
-				itemNum = self.__ui.strokeSelectorList.count()
-				self.__ui.strokeSelectorList.addItem(str(itemNum))
-				curItem = self.__ui.strokeSelectorList.item(itemNum)
-				self.__ui.strokeSelectorList.setCurrentRow(itemNum)
-				curItem.setIcon(QtGui.QIcon(bitmap))
-				self.__charSet.saveStroke(stroke.Stroke(fromStroke=selStroke))
-				curChar = self.__charSet.getCurrentChar()
-				deletedStrokes.append(selStroke)
-				curChar.deleteStroke({'stroke' : selStroke})
-				selStroke = self.__charSet.getSavedStroke(itemNum)
-				curChar.addStrokeInstance({'stroke' : selStroke})
-				if not self.__selection.has_key(selStroke):
-					self.__selection[selStroke] = {}
-					selStroke.deselectCtrlVerts()
+				selectedStrokes.append(selStroke)
 
-				selStroke.selected = True
+				newStrokeInstance = stroke.StrokeInstance()
+				instances.append(newStrokeInstance)
+
+		itemNum = self.__ui.strokeSelectorList.count()
+
+		saveStrokeCmd = commands.command('saveStrokeCmd')
+		
+		doArgs = {
+			'strokes' : selectedStrokes,
+			'instances' : instances,
+			'firstItem' : itemNum,
+		}
+
+		undoArgs = {
+			'instances' : instances,
+			'firstItem' : itemNum,
+		}
+
+		saveStrokeCmd.setDoArgs(doArgs)
+		saveStrokeCmd.setUndoArgs(undoArgs)
+		saveStrokeCmd.setDoFunction(self.saveStrokes)
+		saveStrokeCmd.setUndoFunction(self.unsaveStrokes)
+		
+		self.__cmdStack.doCommand(saveStrokeCmd)
+
+		self.__ui.repaint()
+
+	def saveStrokes(self, args):
+		deletedStrokes = []
+		i = 0
+
+		if args.has_key('strokes'):
+			selection = args['strokes']
+		else:
+			return
+
+		if args.has_key('instances'):
+			instances = args['instances']
+		else:
+			return
+
+		if args.has_key('firstItem'):
+			firstItem = args['firstItem']
+		else:
+			return
+
+		for selStroke in selection:
+			bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
+			self.__ui.strokeSelectorList.addItem(str(firstItem+i))
+			curItem = self.__ui.strokeSelectorList.item(firstItem+i)
+			self.__ui.strokeSelectorList.setCurrentRow(firstItem+i)
+			curItem.setIcon(QtGui.QIcon(bitmap))
+			self.__charSet.saveStroke(selStroke)
+			curChar = self.__charSet.getCurrentChar()
+			deletedStrokes.append(selStroke)
+			curChar.deleteStroke({'stroke' : selStroke})
+			selStroke = self.__charSet.getSavedStroke(firstItem+i)
+			instances[i].setStroke(selStroke)
+			curChar.addStrokeInstance(instances[i])
+			if not self.__selection.has_key(selStroke):
+				self.__selection[selStroke] = {}
+				selStroke.deselectCtrlVerts()
+
+			selStroke.selected = True
+			i += 1
 				
 		for selStroke in deletedStrokes:
 			if self.__selection.has_key(selStroke):
@@ -144,7 +195,39 @@ class editor_controller():
 
 			selStroke.selected = False	
 
-		self.__ui.repaint()
+	def unsaveStrokes(self, args):
+		addedStrokes = []
+		i = 0
+
+		if args.has_key('instances'):
+			instances = args['instances']
+			i = len(instances)-1
+		else:
+			return
+
+		if args.has_key('firstItem'):
+			firstItem = args['firstItem']
+		else:
+			return
+
+		instances.reverse()
+		for inst in instances:
+			selStroke = inst.getStroke()
+			self.__ui.strokeSelectorList.takeItem(firstItem+i)
+			self.__charSet.removeSavedStroke(selStroke)
+			curChar = self.__charSet.getCurrentChar()
+			curChar.deleteStroke({'stroke' : inst})
+			curChar.addStroke({'stroke' : selStroke})
+			addedStrokes.append(selStroke)
+			i -= 1
+			
+		for selStroke in addedStrokes:
+			if not self.__selection.has_key(selStroke):
+				self.__selection[selStroke] = {}
+				selStroke.deselectCtrlVerts()
+			
+			selStroke.selected = True
+						
 
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
@@ -271,34 +354,34 @@ class editor_controller():
 							insideInfo = stroke.insideStroke(paperPos)
 							
 							if insideInfo[1] >= 0:
-					 			ctrlVertexNum = int((insideInfo[1]+1) / 3)
-					 			ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
-					 			
-					 			handleIndex = (insideInfo[1]+1) % 3 +1
-					 			if not shiftDown:
-					 				stroke.deselectCtrlVerts()
-					 				self.__selection[stroke] = {}
+								ctrlVertexNum = int((insideInfo[1]+1) / 3)
+								ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+								
+								handleIndex = (insideInfo[1]+1) % 3 +1
+								if not shiftDown:
+									stroke.deselectCtrlVerts()
+									self.__selection[stroke] = {}
 
-					 			self.__selection[stroke][ctrlVert] = handleIndex
+								self.__selection[stroke][ctrlVert] = handleIndex
 
-					 			for ctrlVert in self.__selection[stroke].keys():
-					 				ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
-					 			
-					 			stroke.selected = True
-					 			
-					 		else:
-					 			if shiftDown:
-					 				if not self.__selection.has_key(stroke):
+								for ctrlVert in self.__selection[stroke].keys():
+									ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
+								
+								stroke.selected = True
+								
+							else:
+								if shiftDown:
+									if not self.__selection.has_key(stroke):
 										self.__selection[stroke] = {}
 										stroke.deselectCtrlVerts()
 
 									stroke.selected = True
-					 			else:
-					 				if self.__selection.has_key(stroke):
-					 					del self.__selection[stroke]
+								else:
+									if self.__selection.has_key(stroke):
+										del self.__selection[stroke]
 
-					 				stroke.selected = False
-					 				stroke.deselectCtrlVerts()
+									stroke.selected = False
+									stroke.deselectCtrlVerts()
 
 					if len(self.__selection.keys()) == 0 or shiftDown:
 						for stroke in self.__ui.dwgArea.strokes:

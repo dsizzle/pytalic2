@@ -93,7 +93,7 @@ class Character(object):
 		
 		return newStroke
 
-	def addStrokeInstance (self, args):
+	def newStrokeInstance (self, args):
 		if args.has_key(STROKE):
 			strokeToAdd = args[STROKE]
 		else:
@@ -108,6 +108,11 @@ class Character(object):
 		newStrokeInstance.setParent(self)
 
 		return newStrokeInstance
+
+	def addStrokeInstance (self, inst):
+		if not isinstance(inst, stroke.Stroke):
+			self.__strokes.append(inst)
+			inst.setParent(self)
 
 	def copyStroke(self, args):
 		if args.has_key(STROKE):
