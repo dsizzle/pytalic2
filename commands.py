@@ -41,6 +41,21 @@ class commandStack(object):
 	def undoIsEmpty(self):
 		return len(self.__undoStack) == 0
 
+	def dumpUndo(self):
+		for cmd in self.__undoStack:
+			print cmd
+
+	def dumpRedo(self):
+		for cmd in self.__redoStack:
+			print cmd
+
+	def dumpStacks(self):
+		print "UNDO\n"
+		self.dumpUndo()
+
+		print "\nREDO\n"
+		self.dumpRedo()
+
 
 class command(object):
 	def __init__(self, description=""):
@@ -77,3 +92,14 @@ class command(object):
 		return self.__description
 
 	description = property(getDescription, setDescription)
+
+	def __str__(self):
+		cmdstr = "{\n"
+		cmdstr += self.__description + "\n"
+ 		cmdstr += str(self.__doArgs) + "\n"
+		cmdstr += str(self.__doFunction) + "\n"
+		cmdstr += str(self.__undoArgs) + "\n"
+		cmdstr += str(self.__undoFunction) + "\n"
+		cmdstr += "}\n"
+
+		return cmdstr
