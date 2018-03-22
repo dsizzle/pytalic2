@@ -29,9 +29,9 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__endSerif = fromStroke.getEndSerif()
 			self.__strokeCtrlVerts = fromStroke.getCtrlVertices()
 			self.updateCtrlVertices()
-			self.__pos = fromStroke.getPos()
+			self.__pos = QtCore.QPoint(fromStroke.getPos())
 			self.__strokeShape = fromStroke.getStrokeShape()
-			self.__curvePath = fromStroke.getCurvePath()
+			self.__curvePath = self.calcCurvePoints()
 			self.__boundRect = fromStroke.getBoundRect()
 		else:	
 			self.__startSerif = None
@@ -329,10 +329,12 @@ class Stroke(shapes.splines.BezierSpline):
 			self.__strokeShape.connectPath(path2)
 			self.__strokeShape.closeSubpath()
 
-			gc.drawPath(self.__strokeShape)
+			self.__strokeShape.setFillRule(QtCore.Qt.WindingFill)
 
+			gc.drawPath(self.__strokeShape)
+			
 			self.__boundRect = self.__strokeShape.controlPointRect()
-		
+	
 		if (self.__startSerif):
 			verts = self.getCtrlVerticesAsList()
 			self.__startSerif.setCtrlVertices(verts)
@@ -360,7 +362,10 @@ class Stroke(shapes.splines.BezierSpline):
 	def insideStroke(self, pt):
 		minDist = 100
 		testPt = pt - self.__pos
-		inside = self.__strokeShape.contains(testPt)
+		if self.__strokeShape is not None:
+			inside = self.__strokeShape.contains(testPt)
+		else:
+			inside = False
 
 		if self.__boundRect.contains(testPt):
 			if self.__isSelected:
@@ -487,7 +492,7 @@ class StrokeInstance(object):
 	def getEndSerif(self):
 		return self.__stroke.getEndSerif()
 
-	def draw(self, gc, showCtrlVerts=0, nib=None, selectedVert=-1):
+	def draw(self, gc, showCtrlVerts=0, nib=None):
 
 		if self.__stroke == None:
 			return
@@ -504,7 +509,7 @@ class StrokeInstance(object):
 		gc.translate(-strokePos)
 		gc.translate(self.__pos)
 
-		strokeToDraw.draw(gc, 0, nib, selectedVert)
+		strokeToDraw.draw(gc, 0, nib)
 		self.__boundRect = strokeToDraw.boundRect
 		gc.restore()
 
