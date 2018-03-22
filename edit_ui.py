@@ -176,7 +176,7 @@ class edit_interface(QtGui.QMainWindow):
 		editCut.setShortcut('Ctrl+X')
 		editCut.setIcon(QtGui.QIcon("icons/cut.png"))
 		editCut.setIconText("Cut")
-		#editCut.triggered.connect(self.cutStrokes_cb)
+		editCut.triggered.connect(self.__parent.cutStrokes_cb)
 		editMenu.addAction(editCut)
 		self.toolBar.addAction(editCut)
 		
@@ -184,7 +184,7 @@ class edit_interface(QtGui.QMainWindow):
 		editCopy.setShortcut('Ctrl+C')
 		editCopy.setIcon(QtGui.QIcon("icons/page_white_copy.png"))
 		editCopy.setIconText("Copy")
-		#editCopy.triggered.connect(self.copyStrokes_cb)
+		editCopy.triggered.connect(self.__parent.copyStrokes_cb)
 		editMenu.addAction(editCopy)
 		self.toolBar.addAction(editCopy)
 		
@@ -192,7 +192,7 @@ class edit_interface(QtGui.QMainWindow):
 		editPaste.setShortcut('Ctrl+V')
 		editPaste.setIcon(QtGui.QIcon("icons/page_white_paste.png"))
 		editPaste.setIconText("Paste")
-		#editPaste.triggered.connect(self.pasteStrokes_cb)
+		editPaste.triggered.connect(self.__parent.pasteStrokes_cb)
 		editMenu.addAction(editPaste)
 		self.toolBar.addAction(editPaste)
 

@@ -39,7 +39,7 @@ class editor_controller():
 		self.__mainNib = None 
 		self.__tempChar = None
 		self.__clipBoard = []
-		self.__cmdStack = []
+		self.__cmdStack = commands.commandStack()
 		self.__selection = {}
 		self.__charSet = None
 		self.__curChar = None
@@ -228,6 +228,144 @@ class editor_controller():
 			
 			selStroke.selected = True
 						
+	def cutStrokes_cb(self, event):
+		cutStrokesCmd = commands.command('cutStrokesCmd')
+		charIndex = self.__charSet.getCurrentCharIndex()
+
+		doArgs = {
+			'strokes' : self.__selection.copy(),
+			'charIndex' : charIndex,
+		}
+
+		undoArgs = {
+			'strokes' : self.__selection.copy(),
+			'charIndex' : charIndex,
+		}
+
+		cutStrokesCmd.setDoArgs(doArgs)
+		cutStrokesCmd.setUndoArgs(undoArgs)
+		cutStrokesCmd.setDoFunction(self.cutClipboard)
+		cutStrokesCmd.setUndoFunction(self.pasteClipboard)
+		
+		self.__cmdStack.doCommand(cutStrokesCmd)
+
+		self.__ui.repaint()
+
+	def cutClipboard(self, args):
+		if args.has_key('charIndex'):
+			charIndex = args['charIndex']
+		else:
+			return
+
+		if args.has_key('strokes'):
+			strokesToCut = args['strokes']
+		else:
+			return
+
+		self.__ui.charSelectorList.setCurrentRow(charIndex)
+		self.__clipBoard = []
+		for selStroke in strokesToCut:
+			copiedStroke = stroke.Stroke(fromStroke=selStroke)
+			self.__curChar.deleteStroke({'stroke' : selStroke})
+			self.__clipBoard.append(copiedStroke)
+			if self.__selection.has_key(selStroke):
+				del self.__selection[selStroke]
+			selStroke.selected = False
+
+		self.__ui.repaint()	
+
+	def copyStrokes_cb(self, event):
+		copyStrokesCmd = commands.command('copyStrokesCmd')
+		charIndex = self.__charSet.getCurrentCharIndex()
+
+		doArgs = {
+			'strokes' : self.__selection.copy(),
+			'charIndex' : charIndex,
+		}
+
+		undoArgs = {
+			'strokes' : self.__selection.copy(),
+			'charIndex' : charIndex,
+		}
+
+		copyStrokesCmd.setDoArgs(doArgs)
+		copyStrokesCmd.setUndoArgs(undoArgs)
+		copyStrokesCmd.setDoFunction(self.copyClipboard)
+		copyStrokesCmd.setUndoFunction(self.pasteClipboard)
+		
+		self.__cmdStack.doCommand(copyStrokesCmd)
+
+		self.__ui.repaint()
+
+	def copyClipboard(self, args):
+		if args.has_key('charIndex'):
+			charIndex = args['charIndex']
+		else:
+			return
+
+		if args.has_key('strokes'):
+			strokesToCopy = args['strokes']
+		else:
+			return
+
+		self.__ui.charSelectorList.setCurrentRow(charIndex)
+		self.__clipBoard = []
+		for selStroke in strokesToCopy.keys():
+			copyStroke = stroke.Stroke(fromStroke=selStroke)
+			self.__clipBoard.append(selStroke)
+			
+		self.__ui.repaint()	
+
+	def pasteStrokes_cb(self, event):
+		pasteStrokesCmd = commands.command('pasteStrokesCmd')
+		charIndex = self.__charSet.getCurrentCharIndex()
+
+		doArgs = {
+			'strokes' : self.__clipBoard[:],
+			'charIndex' : charIndex,
+		}
+
+		undoArgs = {
+			'strokes' : self.__clipBoard[:],
+			'charIndex' : charIndex,
+		}
+
+		pasteStrokesCmd.setDoArgs(doArgs)
+		pasteStrokesCmd.setUndoArgs(undoArgs)
+		pasteStrokesCmd.setDoFunction(self.pasteClipboard)
+		pasteStrokesCmd.setUndoFunction(self.cutClipboard)
+		
+		self.__cmdStack.doCommand(pasteStrokesCmd)
+
+		self.__ui.repaint()
+
+	def pasteClipboard(self, args):
+		if args.has_key('charIndex'):
+			charIndex = args['charIndex']
+		else:
+			return
+
+		if args.has_key('strokes'):
+			strokesToPaste = args['strokes']
+		else:
+			return
+
+		self.__ui.charSelectorList.setCurrentRow(charIndex)
+		
+		for selStroke in self.__selection.keys():
+			selStroke.selected = False
+
+		self.__selection = {}
+
+		for selStroke in strokesToPaste:
+			copiedStroke = stroke.Stroke(fromStroke=selStroke)
+			self.__selection[copiedStroke] = {}
+			if type(copiedStroke).__name__ == 'Stroke':
+				self.__curChar.addStroke({'stroke' : copiedStroke, 'copyStroke' : False})
+			else:
+				self.__curChar.newStrokeInstance({'stroke' : copiedStroke})
+
+		self.__ui.repaint()	
 
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
@@ -386,7 +524,7 @@ class editor_controller():
 					if len(self.__selection.keys()) == 0 or shiftDown:
 						for stroke in self.__ui.dwgArea.strokes:
 							insideInfo = stroke.insideStroke(paperPos)
-							if insideInfo[0] == True:
+							if insideInfo[0] == True and (len(self.__selection.keys()) == 0 or shiftDown):
 								if not self.__selection.has_key(stroke):
 									self.__selection[stroke] = {}	
 									stroke.deselectCtrlVerts()
@@ -395,7 +533,7 @@ class editor_controller():
 							elif not shiftDown:
 								stroke.selected = False
 								stroke.deselectCtrlVerts()
-								
+				
 		self.__ui.repaint()
 
 	def mouseMoveEventPaper(self, event):
@@ -452,14 +590,14 @@ class editor_controller():
 			return
 
 		for stroke in selection.keys():
-				if len(selection[stroke].keys()) > 0:
-					for strokePt in selection[stroke].keys():
-						strokePt.selectHandle(selection[stroke][strokePt])
-						strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
-				else:
-					stroke.pos += delta
-				
-				stroke.calcCurvePoints()
+			if len(selection[stroke].keys()) > 0:
+				for strokePt in selection[stroke].keys():
+					strokePt.selectHandle(selection[stroke][strokePt])
+					strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
+			else:
+				stroke.pos += delta
+			
+			stroke.calcCurvePoints()
 
 	def getSnappedPoint(self, pos):
 		if self.__snap & SNAP_TO_GRID:
