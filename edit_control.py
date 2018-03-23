@@ -451,10 +451,6 @@ class editor_controller():
 				self.__ui.dwgArea.strokesSpecial = []
 				self.__tmpStroke = None
 				self.__ui.repaint()
-				iconBitmap = self.__ui.dwgArea.getBitmap()
-				if iconBitmap:
-					self.__curChar.bitmapPreview = iconBitmap
-					self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(self.__curChar.bitmapPreview))
 
 			else:
 				self.__strokePts.append([paperPos.x(), paperPos.y()])
@@ -534,6 +530,7 @@ class editor_controller():
 								stroke.deselectCtrlVerts()
 				
 		self.__ui.repaint()
+		self.setIcon()
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
@@ -576,6 +573,7 @@ class editor_controller():
 			self.__moveDelta = QtCore.QPoint(0, 0)
 
 		self.__ui.repaint()
+		self.setIcon()
 	
 	def moveSelected(self, args):
 		if args.has_key('strokes'):
@@ -611,3 +609,10 @@ class editor_controller():
 		self.__ui.dwgArea.strokesSpecial = []
 		self.__ui.dwgArea.strokes = self.__curChar.strokes
 		self.__ui.repaint()
+		self.setIcon()
+
+	def setIcon(self):
+		iconBitmap = self.__ui.dwgArea.getBitmap()
+		if iconBitmap:
+			self.__curChar.bitmapPreview = iconBitmap
+			self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
