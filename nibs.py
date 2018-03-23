@@ -7,7 +7,7 @@ import math
 import random
 import time
 
-import shapes.polygon
+#import shapes.polygon
 
 from PyQt4 import QtCore, QtGui
 
