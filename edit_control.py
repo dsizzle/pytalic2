@@ -265,9 +265,8 @@ class editor_controller():
 		self.__ui.charSelectorList.setCurrentRow(charIndex)
 		self.__clipBoard = []
 		for selStroke in strokesToCut:
-			copiedStroke = stroke.Stroke(fromStroke=selStroke)
 			self.__curChar.deleteStroke({'stroke' : selStroke})
-			self.__clipBoard.append(copiedStroke)
+			self.__clipBoard.append(selStroke)
 			if self.__selection.has_key(selStroke):
 				del self.__selection[selStroke]
 			selStroke.selected = False
@@ -311,7 +310,6 @@ class editor_controller():
 		self.__ui.charSelectorList.setCurrentRow(charIndex)
 		self.__clipBoard = []
 		for selStroke in strokesToCopy.keys():
-			copyStroke = stroke.Stroke(fromStroke=selStroke)
 			self.__clipBoard.append(selStroke)
 			
 		self.__ui.repaint()	
@@ -360,6 +358,7 @@ class editor_controller():
 		for selStroke in strokesToPaste:
 			copiedStroke = stroke.Stroke(fromStroke=selStroke)
 			self.__selection[copiedStroke] = {}
+			copiedStroke.selected = True
 			if type(copiedStroke).__name__ == 'Stroke':
 				self.__curChar.addStroke({'stroke' : copiedStroke, 'copyStroke' : False})
 			else:
