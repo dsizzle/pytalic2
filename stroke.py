@@ -12,18 +12,14 @@ import random
 
 from PyQt4 import QtCore, QtGui
 
-import shapes.splines
-import shapes.polygon
 import control_vertex
 #import serif
 import shared_qt
 
 DEBUG_BBOXES = False
 
-class Stroke(shapes.splines.BezierSpline):
+class Stroke(object):
 	def __init__(self, dimension=2, fromStroke=None, parent=None):
-		shapes.splines.BezierSpline.__init__(self, dimension)
-		
 		if fromStroke is not None:
 			self.__startSerif = fromStroke.getStartSerif()
 			self.__endSerif = fromStroke.getEndSerif()
