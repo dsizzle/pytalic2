@@ -423,114 +423,119 @@ class editor_controller():
 		leftUp = btn & QtCore.Qt.LeftButton
 		rightUp = btn & QtCore.Qt.RightButton
 
-		paperPos = self.__ui.dwgArea.getNormalizedPosition(event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
-
 		if self.__state == MOVING_PAPER and leftUp:
 			self.__state = IDLE
-		elif self.__state == DRAWING_NEW_STROKE:
-			if rightUp:
-				self.__state = IDLE
-				self.__strokePts = []
-				addStrokeCmd = commands.command('addStrokeCmd')
-				doArgs = {
-					'stroke' : self.__tmpStroke,
-					'copyStroke' : False,
-				}
-
-				undoArgs = {
-					'stroke' : self.__tmpStroke,
-				}
-
-				addStrokeCmd.setDoArgs(doArgs)
-				addStrokeCmd.setUndoArgs(undoArgs)
-				addStrokeCmd.setDoFunction(self.__curChar.addStroke)
-				addStrokeCmd.setUndoFunction(self.__curChar.deleteStroke)
-				
-				self.__cmdStack.doCommand(addStrokeCmd)
-
-				self.__ui.dwgArea.strokesSpecial = []
-				self.__tmpStroke = None
-				self.__ui.repaint()
-
-			else:
-				self.__strokePts.append([paperPos.x(), paperPos.y()])
-				self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)
-				self.__tmpStroke.updateCtrlVertices()
-
 		else:
-			if leftUp:
-				if self.__state == DRAGGING:
-					moveCmd = commands.command('moveStrokeCmd')
-					selectionCopy = self.__selection.copy()
-					doArgs = {
-						'strokes' : selectionCopy, 
-						'delta' : self.__moveDelta,
-					}
-
-					undoArgs = {
-						'strokes' : selectionCopy,
-						'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
-					}
-
-					moveCmd.setDoArgs(doArgs)
-					moveCmd.setUndoArgs(undoArgs)
-					moveCmd.setDoFunction(self.moveSelected)
-					moveCmd.setUndoFunction(self.moveSelected)
-				
-					self.__cmdStack.addToUndo(moveCmd)
-
-					self.__state = IDLE
-					self.__moveDelta = QtCore.QPoint(0, 0)
-				else:
-					if len(self.__selection.keys()) > 0:
-						for stroke in self.__selection.keys():
-							insideInfo = stroke.insideStroke(paperPos)
-							
-							if insideInfo[1] >= 0:
-								ctrlVertexNum = int((insideInfo[1]+1) / 3)
-								ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
-								
-								handleIndex = (insideInfo[1]+1) % 3 +1
-								if not shiftDown:
-									stroke.deselectCtrlVerts()
-									self.__selection[stroke] = {}
-
-								self.__selection[stroke][ctrlVert] = handleIndex
-
-								for ctrlVert in self.__selection[stroke].keys():
-									ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
-								
-								stroke.selected = True
-								
-							else:
-								if shiftDown:
-									if not self.__selection.has_key(stroke):
-										self.__selection[stroke] = {}
-										stroke.deselectCtrlVerts()
-
-									stroke.selected = True
-								else:
-									if self.__selection.has_key(stroke):
-										del self.__selection[stroke]
-
-									stroke.selected = False
-									stroke.deselectCtrlVerts()
-
-					if len(self.__selection.keys()) == 0 or shiftDown:
-						for stroke in self.__ui.dwgArea.strokes:
-							insideInfo = stroke.insideStroke(paperPos)
-							if insideInfo[0] == True and (len(self.__selection.keys()) == 0 or shiftDown):
-								if not self.__selection.has_key(stroke):
-									self.__selection[stroke] = {}	
-									stroke.deselectCtrlVerts()
-
-								stroke.selected = True	
-							elif not shiftDown:
-								stroke.selected = False
-								stroke.deselectCtrlVerts()
+			if rightUp:
+				self.__onRButtonUp()
+			elif leftUp:
+				self.__onLButtonUp(event.pos(), shiftDown)
 				
 		self.__ui.repaint()
 		self.setIcon()
+
+	def __onRButtonUp(self):
+		if self.__state == DRAWING_NEW_STROKE:
+			self.__state = IDLE
+			self.__strokePts = []
+			addStrokeCmd = commands.command('addStrokeCmd')
+			doArgs = {
+				'stroke' : self.__tmpStroke,
+				'copyStroke' : False,
+			}
+
+			undoArgs = {
+				'stroke' : self.__tmpStroke,
+			}
+
+			addStrokeCmd.setDoArgs(doArgs)
+			addStrokeCmd.setUndoArgs(undoArgs)
+			addStrokeCmd.setDoFunction(self.__curChar.addStroke)
+			addStrokeCmd.setUndoFunction(self.__curChar.deleteStroke)
+			
+			self.__cmdStack.doCommand(addStrokeCmd)
+
+			self.__ui.dwgArea.strokesSpecial = []
+			self.__tmpStroke = None
+			self.__ui.repaint()
+
+	def __onLButtonUp(self, pos, shiftDown):
+		paperPos = self.__ui.dwgArea.getNormalizedPosition(pos - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
+
+		if self.__state == DRAWING_NEW_STROKE:
+			self.__strokePts.append([paperPos.x(), paperPos.y()])
+			self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)
+			self.__tmpStroke.updateCtrlVertices()
+
+		elif self.__state == DRAGGING:
+			moveCmd = commands.command('moveStrokeCmd')
+			selectionCopy = self.__selection.copy()
+			doArgs = {
+				'strokes' : selectionCopy, 
+				'delta' : self.__moveDelta,
+			}
+
+			undoArgs = {
+				'strokes' : selectionCopy,
+				'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
+			}
+
+			moveCmd.setDoArgs(doArgs)
+			moveCmd.setUndoArgs(undoArgs)
+			moveCmd.setDoFunction(self.moveSelected)
+			moveCmd.setUndoFunction(self.moveSelected)
+		
+			self.__cmdStack.addToUndo(moveCmd)
+
+			self.__state = IDLE
+			self.__moveDelta = QtCore.QPoint(0, 0)
+		else:
+			if len(self.__selection.keys()) > 0:
+				for stroke in self.__selection.keys():
+					insideInfo = stroke.insideStroke(paperPos)
+					
+					if insideInfo[1] >= 0:
+						ctrlVertexNum = int((insideInfo[1]+1) / 3)
+						ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+						
+						handleIndex = (insideInfo[1]+1) % 3 +1
+						if not shiftDown:
+							stroke.deselectCtrlVerts()
+							self.__selection[stroke] = {}
+
+						self.__selection[stroke][ctrlVert] = handleIndex
+
+						for ctrlVert in self.__selection[stroke].keys():
+							ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
+						
+						stroke.selected = True
+						
+					else:
+						if shiftDown:
+							if not self.__selection.has_key(stroke):
+								self.__selection[stroke] = {}
+								stroke.deselectCtrlVerts()
+
+							stroke.selected = True
+						else:
+							if self.__selection.has_key(stroke):
+								del self.__selection[stroke]
+
+							stroke.selected = False
+							stroke.deselectCtrlVerts()
+
+			if len(self.__selection.keys()) == 0 or shiftDown:
+				for stroke in self.__ui.dwgArea.strokes:
+					insideInfo = stroke.insideStroke(paperPos)
+					if insideInfo[0] == True and (len(self.__selection.keys()) == 0 or shiftDown):
+						if not self.__selection.has_key(stroke):
+							self.__selection[stroke] = {}	
+							stroke.deselectCtrlVerts()
+
+						stroke.selected = True	
+					elif not shiftDown:
+						stroke.selected = False
+						stroke.deselectCtrlVerts()
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
