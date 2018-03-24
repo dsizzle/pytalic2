@@ -427,14 +427,14 @@ class editor_controller():
 			self.__state = IDLE
 		else:
 			if rightUp:
-				self.__onRButtonUp()
+				self.__onRButtonUpPaper()
 			elif leftUp:
-				self.__onLButtonUp(event.pos(), shiftDown)
+				self.__onLButtonUpPaper(event.pos(), shiftDown)
 				
 		self.__ui.repaint()
 		self.setIcon()
 
-	def __onRButtonUp(self):
+	def __onRButtonUpPaper(self):
 		if self.__state == DRAWING_NEW_STROKE:
 			self.__state = IDLE
 			self.__strokePts = []
@@ -459,7 +459,7 @@ class editor_controller():
 			self.__tmpStroke = None
 			self.__ui.repaint()
 
-	def __onLButtonUp(self, pos, shiftDown):
+	def __onLButtonUpPaper(self, pos, shiftDown):
 		paperPos = self.__ui.dwgArea.getNormalizedPosition(pos - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
 
 		if self.__state == DRAWING_NEW_STROKE:
