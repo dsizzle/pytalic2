@@ -464,7 +464,7 @@ class StrokeInstance(object):
 
 		self.__stroke = stroke
 		
-		self.__pos = stroke.getPos()
+		self.__pos = QtCore.QPoint(stroke.getPos())
 		self.__boundRect = stroke.getBoundRect()
 
 		self.__stroke.addInstance(self)
@@ -528,21 +528,15 @@ class StrokeInstance(object):
 		return self.__stroke.getBoundRect()
 
 	def insideStroke(self, pt):
-		vertIdx = 0
-		origbboxIdx = 0
-		idxPerVert = 0.0
+		if self.__stroke is not None:
+			strokePos = self.__stroke.getPos()
+			testPt = pt + strokePos - self.__pos
+			inside = self.__stroke.insideStroke(testPt)
+		else:
+			inside = (False, -1, None)
 
-		if self.__stroke == None:
-			return vertIdx, origbboxIdx, idxPerVert
-
-		if self.__boundRect:
-			strokeToTest = Stroke(fromStroke=self.__stroke)
-			strokeToTest.boundRect = self.__boundRect
-
-			(vertIdx, origbboxIdx, idxPerVert) = strokeToTest.insideStroke(pt)
-
-		return vertIdx, origbboxIdx, idxPerVert
-
+		return inside
+	
 	def getCtrlVertices(self, copy=False):
 		return []
 
