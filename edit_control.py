@@ -85,10 +85,16 @@ class editor_controller():
 
 	def undo_cb(self, event):
 		self.__cmdStack.undo()
+		if self.__cmdStack.undoIsEmpty():
+			self.__ui.editUndo.setEnabled(False)
+		self.__ui.editRedo.setEnabled(True)
 		self.__ui.repaint()
 
 	def redo_cb(self, event):
 		self.__cmdStack.redo()
+		if self.__cmdStack.redoIsEmpty():
+			self.__ui.editRedo.setEnabled(False)
+		self.__ui.editUndo.setEnabled(True)
 		self.__ui.repaint()
 
 	def fileNew_cb(self, event):
@@ -105,6 +111,8 @@ class editor_controller():
 		self.__curChar = self.__charSet.getCurrentChar()
 
 		self.__cmdStack = commands.commandStack()
+		self.__ui.editUndo.setEnabled(False)
+		self.__ui.editRedo.setEnabled(False)
 
 	def createNewStroke(self, event):
 		if self.__state == DRAWING_NEW_STROKE:
@@ -147,6 +155,7 @@ class editor_controller():
 		saveStrokeCmd.setUndoFunction(self.unsaveStrokes)
 		
 		self.__cmdStack.doCommand(saveStrokeCmd)
+		self.__ui.editUndo.setEnabled(True)
 
 		self.__ui.repaint()
 
@@ -248,6 +257,7 @@ class editor_controller():
 		cutStrokesCmd.setUndoFunction(self.pasteClipboard)
 		
 		self.__cmdStack.doCommand(cutStrokesCmd)
+		self.__ui.editUndo.setEnabled(True)
 
 		self.__ui.repaint()
 
@@ -293,6 +303,7 @@ class editor_controller():
 		copyStrokesCmd.setUndoFunction(self.pasteClipboard)
 		
 		self.__cmdStack.doCommand(copyStrokesCmd)
+		self.__ui.editUndo.setEnabled(True)
 
 		self.__ui.repaint()
 
@@ -334,6 +345,7 @@ class editor_controller():
 		pasteStrokesCmd.setUndoFunction(self.cutClipboard)
 		
 		self.__cmdStack.doCommand(pasteStrokesCmd)
+		self.__ui.editUndo.setEnabled(True)
 
 		self.__ui.repaint()
 
@@ -390,6 +402,7 @@ class editor_controller():
 		pasteInstanceSavedCmd.setUndoFunction(self.deleteInstance)
 		
 		self.__cmdStack.doCommand(pasteInstanceSavedCmd)
+		self.__ui.editUndo.setEnabled(True)
 
 		self.__ui.repaint()
 
@@ -517,6 +530,7 @@ class editor_controller():
 			addStrokeCmd.setUndoFunction(self.__curChar.deleteStroke)
 			
 			self.__cmdStack.doCommand(addStrokeCmd)
+			self.__ui.editUndo.setEnabled(True)
 
 			self.__ui.dwgArea.strokesSpecial = []
 			self.__tmpStroke = None
@@ -549,6 +563,7 @@ class editor_controller():
 			moveCmd.setUndoFunction(self.moveSelected)
 		
 			self.__cmdStack.addToUndo(moveCmd)
+			self.__ui.editUndo.setEnabled(True)
 
 			self.__state = IDLE
 			self.__moveDelta = QtCore.QPoint(0, 0)
