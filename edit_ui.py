@@ -315,7 +315,7 @@ class edit_interface(QtGui.QMainWindow):
 		strokeMenu.addAction(strokeSave)
 
 		strokeLoad = QtGui.QAction("Paste From Saved", self)
-		#strokeLoad.triggered.connect(self.pasteInstanceFromSaved_cb)
+		strokeLoad.triggered.connect(self.__parent.pasteInstanceFromSaved_cb)
 		strokeMenu.addAction(strokeLoad)
 
 		strokeSavedEdit = QtGui.QAction("Edit Saved", self)

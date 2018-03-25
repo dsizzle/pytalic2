@@ -366,6 +366,52 @@ class editor_controller():
 
 		self.__ui.repaint()	
 
+	def pasteInstanceFromSaved_cb(self, event):
+		pasteInstanceSavedCmd = commands.command('pasteInstanceSavedCmd')
+		charIndex = self.__charSet.getCurrentCharIndex()
+		strokeIndex = self.__ui.strokeSelectorList.currentRow()
+		savedStroke = self.__charSet.getSavedStroke(strokeIndex)
+		newStrokeInstance = stroke.StrokeInstance()
+		newStrokeInstance.setStroke(savedStroke)
+
+		doArgs = {
+			'strokes' : newStrokeInstance,
+			'charIndex' : charIndex,
+		}
+
+		undoArgs = {
+			'strokes' : [newStrokeInstance],
+			'charIndex' : charIndex,
+		}
+
+		pasteInstanceSavedCmd.setDoArgs(doArgs)
+		pasteInstanceSavedCmd.setUndoArgs(undoArgs)
+		pasteInstanceSavedCmd.setDoFunction(self.pasteInstance)
+		# this isn't really correct - don't save it to clipboard
+		pasteInstanceSavedCmd.setUndoFunction(self.cutClipboard)
+		
+		self.__cmdStack.doCommand(pasteInstanceSavedCmd)
+
+		self.__ui.repaint()
+
+	def pasteInstance(self, args):
+		if args.has_key('charIndex'):
+			charIndex = args['charIndex']
+		else:
+			return
+
+		if args.has_key('strokes'):
+			strokeInstance = args['strokes']
+		else:
+			return
+
+		self.__ui.charSelectorList.setCurrentRow(charIndex)
+
+		self.__curChar.newStrokeInstance({'stroke' : strokeInstance})
+		self.__selection[strokeInstance] = {}
+		
+		self.__ui.dwgArea.repaint()
+
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
 		self.__ui.repaint()
