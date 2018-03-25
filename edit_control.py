@@ -380,15 +380,14 @@ class editor_controller():
 		}
 
 		undoArgs = {
-			'strokes' : [newStrokeInstance],
+			'strokes' : newStrokeInstance,
 			'charIndex' : charIndex,
 		}
 
 		pasteInstanceSavedCmd.setDoArgs(doArgs)
 		pasteInstanceSavedCmd.setUndoArgs(undoArgs)
 		pasteInstanceSavedCmd.setDoFunction(self.pasteInstance)
-		# this isn't really correct - don't save it to clipboard
-		pasteInstanceSavedCmd.setUndoFunction(self.cutClipboard)
+		pasteInstanceSavedCmd.setUndoFunction(self.deleteInstance)
 		
 		self.__cmdStack.doCommand(pasteInstanceSavedCmd)
 
@@ -407,9 +406,27 @@ class editor_controller():
 
 		self.__ui.charSelectorList.setCurrentRow(charIndex)
 
-		self.__curChar.newStrokeInstance({'stroke' : strokeInstance})
+		self.__curChar.addStrokeInstance(strokeInstance)
 		self.__selection[strokeInstance] = {}
 		
+		self.__ui.dwgArea.repaint()
+		self.setIcon()
+
+	def deleteInstance(self, args):
+		if args.has_key('charIndex'):
+			charIndex = args['charIndex']
+		else:
+			return
+
+		if args.has_key('strokes'):
+			strokeToDel = args['strokes']
+		else:
+			return
+
+		self.__curChar.deleteStroke({'stroke' : strokeToDel})
+		if self.__selection.has_key(strokeToDel):
+			del self.__selection[strokeToDel]
+
 		self.__ui.dwgArea.repaint()
 
 	def viewToggleGuidelines(self, event):
