@@ -41,6 +41,9 @@ class commandStack(object):
 	def undoIsEmpty(self):
 		return len(self.__undoStack) == 0
 
+	def redoIsEmpty(self):
+		return len(self.__redoStack) == 0
+
 	def dumpUndo(self):
 		for cmd in self.__undoStack:
 			print cmd
