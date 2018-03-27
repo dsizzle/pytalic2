@@ -1,5 +1,7 @@
 from PyQt4 import QtCore, QtGui
 
+import math
+
 import guides
 import nibs
 import shared_qt
@@ -24,6 +26,7 @@ class drawingArea(QtGui.QFrame):
 		self.__pointsToDraw = []
 		self.__strokesToDraw = []
 		self.__strokesToDrawSpecial = []
+		self.__snapPoints = []
 		self.__nib = nibs.Nib()
 		self.__instNib = nibs.Nib(color=QtGui.QColor(25,125,25))
 		self.__nibSpecial = nibs.Nib(color=QtGui.QColor(25,25,125))
@@ -89,6 +92,14 @@ class drawingArea(QtGui.QFrame):
 		return self.__strokesToDraw
 
 	strokes = property(getDrawStrokes, setDrawStrokes)
+
+	def setSnapPoints(self, points):
+		self.__snapPoints = points
+
+	def getSnapPoints(self):
+		return self.__snapPoints
+
+	snapPoints = property(getSnapPoints, setSnapPoints)
 
 	def getGuidelines(self):
 		return self.__guideLines
@@ -173,6 +184,26 @@ class drawingArea(QtGui.QFrame):
 				strk = tmpStrokes.pop()
 				strk.draw(dc, True, nib=self.__nibSpecial)
 				
+
+		if len(self.__snapPoints) > 0:
+			dc.setPen(shared_qt.PEN_DK_GRAY_DASH_2)
+			dc.setBrush(shared_qt.BRUSH_CLEAR)
+			
+			if len(self.__snapPoints) > 1:
+				delta = self.__snapPoints[0] - self.__snapPoints[1]
+				 
+				vecLen = math.sqrt(delta.x() * delta.x() + delta.y() * delta.y())
+
+				if vecLen != 0:
+					delta = delta * 50 / vecLen
+				else:
+					delta = QtCore.QPoint(0, 0)
+					
+				dc.drawLine(self.__snapPoints[0], self.__snapPoints[0] + delta)
+				dc.drawLine(self.__snapPoints[1], self.__snapPoints[1] - delta)
+			else:
+				dc.drawEllipse(self.__snapPts[0], 20, 20)
+
 		dc.restore()
 		dc.end()
 		QtGui.QFrame.paintEvent(self,event)

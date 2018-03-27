@@ -238,10 +238,10 @@ class edit_interface(QtGui.QMainWindow):
 	
 		self.viewSnapToAxes = QtGui.QAction("To Axes", self)
 		self.viewSnapToAxes.setStatusTip('Toggle snapping to axes')
-		#viewSnapToAxes.triggered.connect(self.viewToggleSnapAxially_cb)
+		self.viewSnapToAxes.triggered.connect(self.__parent.viewToggleSnapAxially_cb)
 		self.viewSnapToAxes.setCheckable(True)
 		self.viewSnapToAxes.setChecked(True)
-		self.viewSnapToAxes.setEnabled(False)
+		#self.viewSnapToAxes.setEnabled(False)
 		self.viewSnapMenu.addAction(self.viewSnapToAxes)
 		
 		self.viewSnapToNibAxes = QtGui.QAction("To Nib Axes", self)

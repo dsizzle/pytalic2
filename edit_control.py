@@ -50,7 +50,7 @@ class editor_controller():
 		
 		self.__strokePts = []
 		self.__tmpStroke = None
-		self.__snap = 0
+		self.__snap = SNAP_TO_AXES
 
 		charList = []
 		for i in range(32, 128):
@@ -442,6 +442,9 @@ class editor_controller():
 
 		self.__ui.dwgArea.repaint()
 
+	def viewToggleSnapAxially_cb(self, event):
+		self.__snap |= SNAP_TO_AXES
+
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
 		self.__ui.repaint()
@@ -539,6 +542,7 @@ class editor_controller():
 	def __onLButtonUpPaper(self, pos, shiftDown):
 		paperPos = self.__ui.dwgArea.getNormalizedPosition(pos - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos())
 
+		self.__ui.dwgArea.snapPoints = []
 		if self.__state == DRAWING_NEW_STROKE:
 			self.__strokePts.append([paperPos.x(), paperPos.y()])
 			self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)
@@ -635,10 +639,10 @@ class editor_controller():
 			deltaPos = paperPos - normPaperPos
 			
 			if self.__snap > 0:
-				snappedPoint = self.getSnappedPoint(normPaperPos)
-				if snappedPoint != QtCore.QPoint(-1, -1):
-					paperPos = snappedPoint + deltaPos
-
+				self.__ui.dwgArea.snapPoints = self.getSnappedPoints(normPaperPos)
+				if len(self.__ui.dwgArea.snapPoints) > 0 and self.__ui.dwgArea.snapPoints[0] is not QtCore.QPoint(-1, -1):
+					paperPos = self.__ui.dwgArea.snapPoints[0] + deltaPos
+					
 			delta = paperPos - self.__savedMousePosPaper
 			self.__moveDelta += delta
 			self.__savedMousePosPaper = paperPos
@@ -679,11 +683,41 @@ class editor_controller():
 			
 			stroke.calcCurvePoints()
 
-	def getSnappedPoint(self, pos):
-		if self.__snap & SNAP_TO_GRID:
-			snappedPoint = self.__ui.dwgArea.getGuidelines().closestGridPoint(pos)
+	def getSnappedPoints(self, pos):
+		snappedPoints = []
+
+		if len(self.__selection.keys()) == 1:
+			selStroke = self.__selection.keys()[0]
+
+			if len(self.__selection[selStroke].keys()) == 1:
+				selPoint = self.__selection[selStroke].keys()[0]
 			
-		return snappedPoint
+				if self.__snap & SNAP_TO_GRID:
+					snapPoint = self.__ui.dwgArea.getGuidelines().closestGridPoint(pos)
+
+					if snapPoint != QtCore.QPoint(-1, -1):
+						snappedPoints.append(snapPoint)
+
+				elif self.__snap & SNAP_TO_AXES:
+					ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
+
+					vertIndex = ctrlVerts.index(selPoint)
+					
+					if selPoint.isKnotSelected():
+						if vertIndex == 0:
+							vertIndex += 1
+						else:
+							vertIndex -= 1
+					
+					vpos = ctrlVerts[vertIndex].getHandlePos(2)
+					
+					snapPoint = self.__ui.dwgArea.getGuidelines().snapToAxes(selStroke.getPos(), pos, vpos)
+					
+					if snapPoint != QtCore.QPoint(-1, -1):
+						snappedPoints.append(snapPoint)
+						snappedPoints.append(vpos + selStroke.getPos())
+					
+		return snappedPoints
 
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()

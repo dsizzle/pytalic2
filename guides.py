@@ -124,6 +124,37 @@ class guideLines(object):
 		
 	nibWidth = property(getNibWidth, setNibWidth)
 
+	def snapToAxes(self, strokePos, pos, vertPos, tolerance=10):
+		snapPt = QtCore.QPoint(-1, -1)
+
+		delta = pos - vertPos - strokePos
+
+		if abs(delta.y()) < tolerance:
+			snapPt = QtCore.QPoint(pos.x(), vertPos.y() + strokePos.y())
+		else:
+			vecLength = math.sqrt(float(delta.x())*float(delta.x()) + float(delta.y())*float(delta.y()))
+
+			guideAngle = -self.__angle
+
+			if guideAngle > 0:
+				delta.setX(-delta.x())
+
+			if delta.x() > 0 and delta.y() < 0:
+				guideAngle += 180
+			elif not (delta.x() < 0 and delta.y() > 0):
+				return snapPt
+
+			newPt = QtCore.QPoint(vecLength * math.sin(math.radians(guideAngle)), \
+				vecLength * math.cos(math.radians(guideAngle)))
+			newPt = newPt + vertPos + strokePos
+
+			newDelta = pos - newPt
+
+			if abs(newDelta.x()) < tolerance:
+				snapPt = newPt
+
+		return snapPt
+
 	def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
 		gridPt = QtCore.QPoint(-1, -1)
 
