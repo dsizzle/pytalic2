@@ -349,7 +349,7 @@ class Stroke(object):
 
 			if self.__boundRect is not None:
 				gc.setBrush(shared_qt.BRUSH_CLEAR)
-				gc.setPen(shared_qt.PEN_MD_GRAY_DOT_2)
+				gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
 		
 				gc.drawRect(self.__boundRect)
 
