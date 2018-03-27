@@ -445,6 +445,9 @@ class editor_controller():
 	def viewToggleSnapAxially_cb(self, event):
 		self.__snap |= SNAP_TO_AXES
 
+	def viewToggleSnapToGrid_cb(self, event):
+		self.__snap |= SNAP_TO_GRID
+
 	def viewToggleGuidelines(self, event):
 		self.__ui.dwgArea.drawGuidelines = not self.__ui.dwgArea.drawGuidelines
 		self.__ui.repaint()

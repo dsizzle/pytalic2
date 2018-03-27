@@ -202,7 +202,7 @@ class drawingArea(QtGui.QFrame):
 				dc.drawLine(self.__snapPoints[0], self.__snapPoints[0] + delta)
 				dc.drawLine(self.__snapPoints[1], self.__snapPoints[1] - delta)
 			else:
-				dc.drawEllipse(self.__snapPts[0], 20, 20)
+				dc.drawEllipse(self.__snapPoints[0], 20, 20)
 
 		dc.restore()
 		dc.end()
