@@ -210,9 +210,7 @@ class Stroke(object):
 			if len(pts):
 				pt = pts.pop()
 				right = QtCore.QPoint(pt[0], pt[1])
-			else: 
-				right = QtCore.QPoint(pt[0], pt[1])
-
+			
 			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
 
 			if len(pts):
