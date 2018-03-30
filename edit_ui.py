@@ -181,6 +181,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.editCut.setShortcut('Ctrl+X')
 		self.editCut.setIcon(QtGui.QIcon("icons/cut.png"))
 		self.editCut.setIconText("Cut")
+		self.editCut.setEnabled(False)
 		self.editCut.triggered.connect(self.__parent.cutStrokes_cb)
 		self.editMenu.addAction(self.editCut)
 		self.toolBar.addAction(self.editCut)
@@ -189,6 +190,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.editCopy.setShortcut('Ctrl+C')
 		self.editCopy.setIcon(QtGui.QIcon("icons/page_white_copy.png"))
 		self.editCopy.setIconText("Copy")
+		self.editCopy.setEnabled(False)
 		self.editCopy.triggered.connect(self.__parent.copyStrokes_cb)
 		self.editMenu.addAction(self.editCopy)
 		self.toolBar.addAction(self.editCopy)
@@ -197,6 +199,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.editPaste.setShortcut('Ctrl+V')
 		self.editPaste.setIcon(QtGui.QIcon("icons/page_white_paste.png"))
 		self.editPaste.setIconText("Paste")
+		self.editPaste.setEnabled(False)
 		self.editPaste.triggered.connect(self.__parent.pasteStrokes_cb)
 		self.editMenu.addAction(self.editPaste)
 		self.toolBar.addAction(self.editPaste)
@@ -329,10 +332,12 @@ class edit_interface(QtGui.QMainWindow):
 	
 		self.strokeMenu.addSeparator()
 		self.strokeSave = QtGui.QAction("Save Stroke", self)
+		self.strokeSave.setEnabled(False)
 		self.strokeSave.triggered.connect(self.__parent.saveStroke_cb)
 		self.strokeMenu.addAction(self.strokeSave)
 
 		self.strokeLoad = QtGui.QAction("Paste From Saved", self)
+		self.strokeLoad.setEnabled(False)
 		self.strokeLoad.triggered.connect(self.__parent.pasteInstanceFromSaved_cb)
 		self.strokeMenu.addAction(self.strokeLoad)
 

@@ -204,6 +204,8 @@ class editor_controller():
 
 			selStroke.selected = False	
 
+		self.__ui.strokeLoad.setEnabled(True)
+
 	def unsaveStrokes(self, args):
 		addedStrokes = []
 		i = 0
@@ -236,7 +238,10 @@ class editor_controller():
 				selStroke.deselectCtrlVerts()
 			
 			selStroke.selected = True
-						
+
+		if self.__ui.strokeSelectorList.count() == 0:
+			self.__ui.strokeLoad.setEnabled(False)
+		
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')
 		charIndex = self.__charSet.getCurrentCharIndex()
@@ -281,6 +286,7 @@ class editor_controller():
 				del self.__selection[selStroke]
 			selStroke.selected = False
 
+		self.__ui.editPaste.setEnabled(True)
 		self.__ui.repaint()	
 
 	def copyStrokes_cb(self, event):
@@ -323,6 +329,7 @@ class editor_controller():
 		for selStroke in strokesToCopy.keys():
 			self.__clipBoard.append(selStroke)
 			
+		self.__ui.editPaste.setEnabled(True)
 		self.__ui.repaint()	
 
 	def pasteStrokes_cb(self, event):
@@ -621,6 +628,16 @@ class editor_controller():
 					elif not shiftDown:
 						stroke.selected = False
 						stroke.deselectCtrlVerts()
+
+			if len(self.__selection.keys()) > 0:
+				self.__ui.strokeSave.setEnabled(True)
+				self.__ui.editCut.setEnabled(True)
+				self.__ui.editCopy.setEnabled(True)
+			else:
+				self.__ui.strokeSave.setEnabled(False)
+				self.__ui.editCut.setEnabled(False)
+				self.__ui.editCopy.setEnabled(False)
+								
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
