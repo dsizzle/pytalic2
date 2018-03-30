@@ -143,16 +143,9 @@ class Stroke(object):
 	def getCtrlVerticesAsList(self):
 		pts = []
 		for vert in self.__strokeCtrlVerts:
-			l, k, r = vert.getHandlePosAsList() 
+			pts.extend(vert.getHandlePosAsList())
 			
-			if (l):
-				pts.append((l[0], l[1]))
-			if (k):
-				pts.append((k[0], k[1]))
-			if (r):
-				pts.append((r[0], r[1]))
-
-		return list(pts)
+		return pts
 		
 	def setCtrlVerticesFromList(self, pts):	
 		tempCv = []

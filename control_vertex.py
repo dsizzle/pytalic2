@@ -99,15 +99,11 @@ class controlVertex(object):
 
 		if self.__handlePos[LEFT_HANDLE]:
 			handleList.append((self.__handlePos[LEFT_HANDLE].x(), self.__handlePos[LEFT_HANDLE].y()))
-		else:
-			handleList.append(None)
 
 		handleList.append(knot)
 
 		if self.__handlePos[RIGHT_HANDLE]:
 			handleList.append((self.__handlePos[RIGHT_HANDLE].x(), self.__handlePos[RIGHT_HANDLE].y()))
-		else:
-			handleList.append(None)
 
 		return handleList
 
