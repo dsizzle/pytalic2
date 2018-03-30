@@ -61,7 +61,12 @@ class controlVertex(object):
 	def setHandlePos(self, pt, handle):
 		oldLDel = self.__handlePos[LEFT_HANDLE] - self.__handlePos[KNOT]
 		oldKnotDel = self.__handlePos[KNOT] - pt
-		oldRDel = self.__handlePos[KNOT] - self.__handlePos[RIGHT_HANDLE] 
+		
+		if self.__handlePos[RIGHT_HANDLE]:
+			oldRDel = self.__handlePos[KNOT] - self.__handlePos[RIGHT_HANDLE] 
+		else:
+			oldRDel = QtCore.QPoint(0, 0)
+
 		llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
 		rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
 			

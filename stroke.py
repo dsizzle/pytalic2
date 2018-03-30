@@ -213,6 +213,7 @@ class Stroke(object):
 			
 			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
 
+			right = None
 			if len(pts):
 				pt = pts.pop()
 				left = QtCore.QPoint(pt[0], pt[1])
