@@ -147,7 +147,26 @@ class Stroke(object):
 			
 		return pts
 		
-	def setCtrlVerticesFromList(self, pts):	
+	def setCtrlVerticesFromList(self, pts):
+		self.__strokeCtrlVerts = []
+		
+		left = QtCore.QPoint()
+		
+		while (pts):
+			pt = pts.pop()
+			center = QtCore.QPoint(pt[0], pt[1])
+			if len(pts):
+				pt = pts.pop()
+				right = QtCore.QPoint(pt[0], pt[1])
+			
+			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
+
+			right = None
+			if len(pts):
+				pt = pts.pop()
+				left = QtCore.QPoint(pt[0], pt[1])
+
+	def generateCtrlVerticesFromPoints(self, pts):	
 		tempCv = []
 
 		numPts = len(pts)
@@ -199,24 +218,8 @@ class Stroke(object):
 			pts.extend(midPts)
 			pts.extend(lastPts)
 
-		#shapes.splines.BezierSpline.setCtrlVertices(self, pts)
-		self.__strokeCtrlVerts = []
+		self.setCtrlVerticesFromList(pts)
 		
-		left = QtCore.QPoint()
-		
-		while (pts):
-			pt = pts.pop()
-			center = QtCore.QPoint(pt[0], pt[1])
-			if len(pts):
-				pt = pts.pop()
-				right = QtCore.QPoint(pt[0], pt[1])
-			
-			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
-
-			right = None
-			if len(pts):
-				pt = pts.pop()
-				left = QtCore.QPoint(pt[0], pt[1])
 	
 	def setCtrlVertices(self, ctrlVerts):
 		self.__strokeCtrlVerts = ctrlVerts[:]
@@ -225,7 +228,6 @@ class Stroke(object):
 	def updateCtrlVertices(self):
 		pts = self.getCtrlVerticesAsList()
 		
-		#shapes.splines.BezierSpline.setCtrlVertices(self, pts)	
 		if len(pts) > 3:
 			self.calcCurvePoints()
 		
@@ -348,7 +350,7 @@ class Stroke(object):
 		gc.restore()
 		
 	def insideStroke(self, pt):
-		minDist = 100
+		minDist = 10
 		testPt = pt - self.__pos
 		if self.__strokeShape is not None:
 			inside = self.__strokeShape.contains(testPt)
@@ -379,12 +381,12 @@ class Stroke(object):
 						)
 						if dist < minDist:
 							dist = minDist
-							hitPoint = curvePt
-						
-						if hitPoint is not None:
-							break
-
-					return (True, -1, hitPoint)
+							hitPoint = pct
+ 
+					if hitPoint is not None:
+						return (True, int(math.ceil((len(self.__strokeCtrlVerts) - 1) * hitPoint)),  hitPoint)
+					else:
+						return (True, -1, None)
 
 			elif inside:
 				return (True, -1, None)

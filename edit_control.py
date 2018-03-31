@@ -555,7 +555,7 @@ class editor_controller():
 		self.__ui.dwgArea.snapPoints = []
 		if self.__state == DRAWING_NEW_STROKE:
 			self.__strokePts.append([paperPos.x(), paperPos.y()])
-			self.__tmpStroke.setCtrlVerticesFromList(self.__strokePts)
+			self.__tmpStroke.generateCtrlVerticesFromPoints(self.__strokePts)
 			self.__tmpStroke.updateCtrlVertices()
 
 		elif self.__state == DRAGGING:
