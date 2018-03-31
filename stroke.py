@@ -243,7 +243,6 @@ class Stroke(object):
 	
 	def addCtrlVertex(self, t, index):
 		pts = self.getCtrlVerticesAsList()
-		tmpCtrlVerts = self.getCtrlVertices()
 		
 		trueIndex = index*3
 		
@@ -253,7 +252,7 @@ class Stroke(object):
 		p0 = pts[trueIndex-3]
 	
 		newPts = []
-		for i in range (0, 7):
+		for i in range (0, 5):
 			newPts.append([0,0])
 			
 		for k in range (0, 2):
@@ -264,15 +263,14 @@ class Stroke(object):
 			p12_23 = float((1.0-t)*p1_2 + (t * p2_3))
 			p0112_1223 = float((1.0-t)*p01_12 + (t * p12_23))
 		
-			newPts[0][k] = p0[k]
-			newPts[1][k] = p0_1
-			newPts[2][k] = p01_12
-			newPts[3][k] = p0112_1223
-			newPts[4][k] = p12_23
-			newPts[5][k] = p2_3
-			newPts[6][k] = p3[k]
+			newPts[0][k] = p0_1
+			newPts[1][k] = p01_12
+			newPts[2][k] = p0112_1223
+			newPts[3][k] = p12_23
+			newPts[4][k] = p2_3
+			
+		pts[trueIndex-2:trueIndex] = newPts
 		
-		pts[trueIndex-3:trueIndex+1] = newPts
 		self.setCtrlVerticesFromList(pts)	
 			
 		self.calcCurvePoints()
