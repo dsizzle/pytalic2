@@ -243,6 +243,7 @@ class Stroke(object):
 		self.calcCurvePoints()
 	
 	def addCtrlVertex(self, t, index):
+	def divideCurveAtPoint(self, t, index):
 		pts = self.getCtrlVerticesAsList()
 		
 		trueIndex = index*3
@@ -272,8 +273,25 @@ class Stroke(object):
 			
 		pts[trueIndex-2:trueIndex] = newPts
 		
+		return (pts[:trueIndex], pts[trueIndex:])
+
+	def addCtrlVertex(self, t, index):
+		(pts, remainder) = self.divideCurveAtPoint(t, index)
+		
+		pts.extend(remainder)
+
 		self.setCtrlVerticesFromList(pts)	
 		self.calcCurvePoints()
+
+	def splitAtPoint(self, t, index):
+		(pts, remainder) = self.divideCurveAtPoint(t, index)
+		
+		pts.append(remainder[0])
+		
+		self.setCtrlVerticesFromList(pts)	
+		self.calcCurvePoints()
+
+		return remainder
 
 	def setParent(self, parent):
 		self.__parent = parent

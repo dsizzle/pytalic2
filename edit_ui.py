@@ -329,6 +329,11 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeAddVertex.setEnabled(False)
 		self.strokeAddVertex.triggered.connect(self.__parent.addControlPoint_cb)
 		self.strokeMenu.addAction(self.strokeAddVertex)
+
+		self.strokeSplitAtPoint = QtGui.QAction("Split At Point", self)
+		self.strokeSplitAtPoint.setEnabled(False)
+		self.strokeSplitAtPoint.triggered.connect(self.__parent.splitAtPoint_cb)
+		self.strokeMenu.addAction(self.strokeSplitAtPoint)
 	
 		self.strokeMenu.addSeparator()
 		self.strokeSave = QtGui.QAction("Save Stroke", self)

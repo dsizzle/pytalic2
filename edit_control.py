@@ -17,6 +17,7 @@ MOVING_PAPER = 1
 DRAWING_NEW_STROKE = 2
 DRAGGING = 3
 ADDING_CTRL_POINT = 4
+SPLIT_AT_POINT = 5
 
 SNAP_TO_GRID 		= 0x0001
 SNAP_TO_AXES 		= 0x0002
@@ -245,6 +246,9 @@ class editor_controller():
 		
 	def addControlPoint_cb(self, event):
 		self.__state = ADDING_CTRL_POINT
+
+	def splitAtPoint_cb(self, event):
+		self.__state = SPLIT_AT_POINT
 
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')
@@ -587,21 +591,21 @@ class editor_controller():
 			self.__moveDelta = QtCore.QPoint(0, 0)
 		elif self.__state == ADDING_CTRL_POINT:
 			if len(self.__selection.keys()) > 0:
-				for stroke in self.__selection.keys():
-					insideInfo = stroke.insideStroke(paperPos)
+				for selStroke in self.__selection.keys():
+					insideInfo = selStroke.insideStroke(paperPos)
 					if insideInfo[1] >= 0:
 						addVertexCmd = commands.command('addVertexCmd')
 						
 						undoArgs = {
-							'strokes' : stroke,
-							'ctrlVerts' : stroke.getCtrlVerticesAsList()
+							'strokes' : selStroke,
+							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
 						}
 
-						stroke.addCtrlVertex(insideInfo[2], insideInfo[1])
+						selStroke.addCtrlVertex(insideInfo[2], insideInfo[1])
 						
 						doArgs = {
-							'strokes' : stroke,
-							'ctrlVerts' : stroke.getCtrlVerticesAsList()
+							'strokes' : selStroke,
+							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
 						}
 
 						addVertexCmd.setDoArgs(doArgs)
@@ -614,61 +618,95 @@ class editor_controller():
 						break
 
 			self.__state = IDLE
+		elif self.__state == SPLIT_AT_POINT:
+			if len(self.__selection.keys()) > 0:
+				for selStroke in self.__selection.keys():
+					insideInfo = selStroke.insideStroke(paperPos)
+					if insideInfo[1] >= 0:
+						splitAtCmd = commands.command('splitAtCmd')
+						vertsBefore = selStroke.getCtrlVerticesAsList()
+
+						newVerts = selStroke.splitAtPoint(insideInfo[2], insideInfo[1])
+						newStroke = stroke.Stroke()
+						newStroke.setCtrlVerticesFromList(newVerts)
+
+						undoArgs = {
+							'strokes' : selStroke,
+							'ctrlVerts' : vertsBefore,
+							'strokeToDelete' : newStroke,
+						}
+
+						doArgs = {
+							'strokes' : newStroke,
+						}
+
+						splitAtCmd.setDoArgs(doArgs)
+						splitAtCmd.setUndoArgs(undoArgs)
+						splitAtCmd.setDoFunction(self.splitStroke)
+						splitAtCmd.setUndoFunction(self.unsplitStroke)
+						
+						self.__cmdStack.doCommand(splitAtCmd)
+						self.__ui.editUndo.setEnabled(True)
+						break
+
+			self.__state = IDLE
 		else:
 			if len(self.__selection.keys()) > 0:
-				for stroke in self.__selection.keys():
-					insideInfo = stroke.insideStroke(paperPos)
+				for selStroke in self.__selection.keys():
+					insideInfo = selStroke.insideStroke(paperPos)
 					
 					if insideInfo[1] >= 0:
 						ctrlVertexNum = int((insideInfo[1]+1) / 3)
-						ctrlVert = stroke.getCtrlVertex(ctrlVertexNum)
+						ctrlVert = selStroke.getCtrlVertex(ctrlVertexNum)
 						
 						handleIndex = (insideInfo[1]+1) % 3 +1
 						if not shiftDown:
-							stroke.deselectCtrlVerts()
-							self.__selection[stroke] = {}
+							selStroke.deselectCtrlVerts()
+							self.__selection[selStroke] = {}
 
-						self.__selection[stroke][ctrlVert] = handleIndex
+						self.__selection[selStroke][ctrlVert] = handleIndex
 
-						for ctrlVert in self.__selection[stroke].keys():
-							ctrlVert.selectHandle(self.__selection[stroke][ctrlVert])
+						for ctrlVert in self.__selection[selStroke].keys():
+							ctrlVert.selectHandle(self.__selection[selStroke][ctrlVert])
 						
-						stroke.selected = True
+						selStroke.selected = True
 						
 					else:
 						if shiftDown:
-							if not self.__selection.has_key(stroke):
-								self.__selection[stroke] = {}
-								stroke.deselectCtrlVerts()
+							if not self.__selection.has_key(selStroke):
+								self.__selection[selStroke] = {}
+								selStroke.deselectCtrlVerts()
 
-							stroke.selected = True
+							selStroke.selected = True
 						else:
-							if self.__selection.has_key(stroke):
-								del self.__selection[stroke]
+							if self.__selection.has_key(selStroke):
+								del self.__selection[selStroke]
 
-							stroke.selected = False
-							stroke.deselectCtrlVerts()
+							selStroke.selected = False
+							selStroke.deselectCtrlVerts()
 
 			if len(self.__selection.keys()) == 0 or shiftDown:
-				for stroke in self.__ui.dwgArea.strokes:
-					insideInfo = stroke.insideStroke(paperPos)
+				for selStroke in self.__ui.dwgArea.strokes:
+					insideInfo = selStroke.insideStroke(paperPos)
 					if insideInfo[0] == True and (len(self.__selection.keys()) == 0 or shiftDown):
-						if not self.__selection.has_key(stroke):
-							self.__selection[stroke] = {}	
-							stroke.deselectCtrlVerts()
+						if not self.__selection.has_key(selStroke):
+							self.__selection[selStroke] = {}	
+							selStroke.deselectCtrlVerts()
 
-						stroke.selected = True	
+						selStroke.selected = True	
 					elif not shiftDown:
-						stroke.selected = False
-						stroke.deselectCtrlVerts()
+						selStroke.selected = False
+						selStroke.deselectCtrlVerts()
 
 			if len(self.__selection.keys()) > 0:
 				self.__ui.strokeAddVertex.setEnabled(True)
+				self.__ui.strokeSplitAtPoint.setEnabled(True)
 				self.__ui.strokeSave.setEnabled(True)
 				self.__ui.editCut.setEnabled(True)
 				self.__ui.editCopy.setEnabled(True)
 			else:
 				self.__ui.strokeAddVertex.setEnabled(False)
+				self.__ui.strokeSplitAtPoint.setEnabled(False)
 				self.__ui.strokeSave.setEnabled(False)
 				self.__ui.editCut.setEnabled(False)
 				self.__ui.editCopy.setEnabled(False)
@@ -693,6 +731,35 @@ class editor_controller():
 		selStroke.calcCurvePoints()
 		self.__ui.repaint()
 
+	def splitStroke(self, args):
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		self.__curChar.addStroke({'stroke': selStroke, 'copyStroke': False})
+		self.__ui.repaint()
+
+	def unsplitStroke(self, args):
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if args.has_key('strokeToDelete'):
+			delStroke = args['strokeToDelete']
+		else:
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		self.__curChar.deleteStroke({'stroke': delStroke})
+		self.__ui.repaint()
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
