@@ -150,20 +150,21 @@ class Stroke(object):
 	def setCtrlVerticesFromList(self, pts):
 		self.__strokeCtrlVerts = []
 		
+		tmpPts = pts[:]
 		left = QtCore.QPoint()
 		
-		while (pts):
-			pt = pts.pop(0)
+		while (tmpPts):
+			pt = tmpPts.pop(0)
 			center = QtCore.QPoint(pt[0], pt[1])
-			if len(pts):
-				pt = pts.pop(0)
+			if len(tmpPts):
+				pt = tmpPts.pop(0)
 				right = QtCore.QPoint(pt[0], pt[1])
 			
 			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
 
 			right = None
-			if len(pts):
-				pt = pts.pop(0)
+			if len(tmpPts):
+				pt = tmpPts.pop(0)
 				left = QtCore.QPoint(pt[0], pt[1])
 
 	def generateCtrlVerticesFromPoints(self, pts):	
@@ -272,7 +273,6 @@ class Stroke(object):
 		pts[trueIndex-2:trueIndex] = newPts
 		
 		self.setCtrlVerticesFromList(pts)	
-			
 		self.calcCurvePoints()
 
 	def setParent(self, parent):

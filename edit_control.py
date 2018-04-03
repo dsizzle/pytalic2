@@ -16,6 +16,7 @@ IDLE = 0
 MOVING_PAPER = 1
 DRAWING_NEW_STROKE = 2
 DRAGGING = 3
+ADDING_CTRL_POINT = 4
 
 SNAP_TO_GRID 		= 0x0001
 SNAP_TO_AXES 		= 0x0002
@@ -242,6 +243,9 @@ class editor_controller():
 		if self.__ui.strokeSelectorList.count() == 0:
 			self.__ui.strokeLoad.setEnabled(False)
 		
+	def addControlPoint_cb(self, event):
+		self.__state = ADDING_CTRL_POINT
+
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')
 		charIndex = self.__charSet.getCurrentCharIndex()
@@ -581,6 +585,35 @@ class editor_controller():
 
 			self.__state = IDLE
 			self.__moveDelta = QtCore.QPoint(0, 0)
+		elif self.__state == ADDING_CTRL_POINT:
+			if len(self.__selection.keys()) > 0:
+				for stroke in self.__selection.keys():
+					insideInfo = stroke.insideStroke(paperPos)
+					if insideInfo[1] >= 0:
+						addVertexCmd = commands.command('addVertexCmd')
+						
+						undoArgs = {
+							'strokes' : stroke,
+							'ctrlVerts' : stroke.getCtrlVerticesAsList()
+						}
+
+						stroke.addCtrlVertex(insideInfo[2], insideInfo[1])
+						
+						doArgs = {
+							'strokes' : stroke,
+							'ctrlVerts' : stroke.getCtrlVerticesAsList()
+						}
+
+						addVertexCmd.setDoArgs(doArgs)
+						addVertexCmd.setUndoArgs(undoArgs)
+						addVertexCmd.setDoFunction(self.setStrokeControlVertices)
+						addVertexCmd.setUndoFunction(self.setStrokeControlVertices)
+						
+						self.__cmdStack.addToUndo(addVertexCmd)
+						self.__ui.editUndo.setEnabled(True)
+						break
+
+			self.__state = IDLE
 		else:
 			if len(self.__selection.keys()) > 0:
 				for stroke in self.__selection.keys():
@@ -630,14 +663,36 @@ class editor_controller():
 						stroke.deselectCtrlVerts()
 
 			if len(self.__selection.keys()) > 0:
+				self.__ui.strokeAddVertex.setEnabled(True)
 				self.__ui.strokeSave.setEnabled(True)
 				self.__ui.editCut.setEnabled(True)
 				self.__ui.editCopy.setEnabled(True)
 			else:
+				self.__ui.strokeAddVertex.setEnabled(False)
 				self.__ui.strokeSave.setEnabled(False)
 				self.__ui.editCut.setEnabled(False)
 				self.__ui.editCopy.setEnabled(False)
 								
+
+	def setStrokeControlVertices(self, args):
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if len(ctrlVerts) == 0:
+			self.__cmdStack.dumpStacks()
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		self.__ui.repaint()
+
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()

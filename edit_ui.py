@@ -327,7 +327,7 @@ class edit_interface(QtGui.QMainWindow):
 		
 		self.strokeAddVertex = QtGui.QAction("Add Control Point", self)
 		self.strokeAddVertex.setEnabled(False)
-		#strokeAddVertex.triggered.connect(self.addControlPoint_cb)
+		self.strokeAddVertex.triggered.connect(self.__parent.addControlPoint_cb)
 		self.strokeMenu.addAction(self.strokeAddVertex)
 	
 		self.strokeMenu.addSeparator()
