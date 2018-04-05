@@ -638,6 +638,8 @@ class editor_controller():
 						vertsBefore = selStroke.getCtrlVerticesAsList()
 
 						newVerts = selStroke.splitAtPoint(insideInfo[2], insideInfo[1])
+						vertsAfter = selStroke.getCtrlVerticesAsList()
+
 						newStroke = stroke.Stroke()
 						newStroke.setCtrlVerticesFromList(newVerts)
 
@@ -648,7 +650,9 @@ class editor_controller():
 						}
 
 						doArgs = {
-							'strokes' : newStroke,
+							'strokes' : selStroke,
+							'newStroke' : newStroke,
+							'ctrlVerts' : vertsAfter,
 						}
 
 						splitAtCmd.setDoArgs(doArgs)
@@ -748,7 +752,20 @@ class editor_controller():
 		else:
 			return
 
-		self.__curChar.addStroke({'stroke': selStroke, 'copyStroke': False})
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if args.has_key('newStroke'):
+			newStroke = args['newStroke']
+		else:
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		
+		self.__curChar.addStroke({'stroke': newStroke, 'copyStroke': False})
 		self.__ui.repaint()
 
 	def unsplitStroke(self, args):
