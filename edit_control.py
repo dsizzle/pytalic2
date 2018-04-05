@@ -262,6 +262,7 @@ class editor_controller():
 		undoArgs = {
 			'strokes' : self.__selection.copy(),
 			'charIndex' : charIndex,
+			'copy' : False,
 		}
 
 		cutStrokesCmd.setDoArgs(doArgs)
@@ -352,6 +353,7 @@ class editor_controller():
 		undoArgs = {
 			'strokes' : self.__clipBoard[:],
 			'charIndex' : charIndex,
+			'copy' : True,
 		}
 
 		pasteStrokesCmd.setDoArgs(doArgs)
@@ -375,6 +377,11 @@ class editor_controller():
 		else:
 			return
 
+		if args.has_key('copy'):
+			copyStrokes = args['copy']
+		else:
+			copyStrokes = True
+
 		self.__ui.charSelectorList.setCurrentRow(charIndex)
 		
 		for selStroke in self.__selection.keys():
@@ -383,13 +390,17 @@ class editor_controller():
 		self.__selection = {}
 
 		for selStroke in strokesToPaste:
-			copiedStroke = stroke.Stroke(fromStroke=selStroke)
-			self.__selection[copiedStroke] = {}
-			copiedStroke.selected = True
-			if type(copiedStroke).__name__ == 'Stroke':
-				self.__curChar.addStroke({'stroke' : copiedStroke, 'copyStroke' : False})
+			if copyStrokes:
+				pasteStroke = stroke.Stroke(fromStroke=selStroke)
 			else:
-				self.__curChar.newStrokeInstance({'stroke' : copiedStroke})
+				pasteStroke = selStroke
+
+			self.__selection[pasteStroke] = {}
+			pasteStroke.selected = True
+			if type(pasteStroke).__name__ == 'Stroke':
+				self.__curChar.addStroke({'stroke' : pasteStroke, 'copyStroke' : False})
+			else:
+				self.__curChar.newStrokeInstance({'stroke' : pasteStroke})
 
 		self.__ui.repaint()	
 
