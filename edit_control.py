@@ -564,6 +564,8 @@ class editor_controller():
 			self.__cmdStack.doCommand(addStrokeCmd)
 			self.__ui.editUndo.setEnabled(True)
 
+			self.__selection[self.__tmpStroke] = {}
+			self.__tmpStroke.selected = True
 			self.__ui.dwgArea.strokesSpecial = []
 			self.__tmpStroke = None
 			self.__ui.repaint()
