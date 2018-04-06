@@ -70,16 +70,22 @@ class Stroke(object):
 	
 	def straighten(self):
 		tempCv = []
-		oldCv = shapes.splines.BezierSpline.ctrlVertices(self)
+		ctrlVerts = self.getCtrlVerticesAsList()
+		numVerts = len(ctrlVerts)
+
+		start = ctrlVerts[0]
+		end = ctrlVerts[-1]
 		
-		start = self.ctrlVerts[0]
-		end = self.ctrlVerts[-1]
+		dX = (end[0]-start[0])/(numVerts-1)
+		dY = (end[1]-start[1])/(numVerts-1)
 		
-		dX = (end[0]-start[0])/(self.numVerts-1)
-		dY = (end[1]-start[1])/(self.numVerts-1)
-		
-		for i in range (0, self.numVerts):
-			tempCv.append([start[0]+dX*i, start[1]+dY*i])
+		xpos = start[0]
+		ypos = start[1]
+
+		for i in range (0, numVerts):
+			tempCv.append([xpos, ypos])
+			xpos += dX
+			ypos += dY
 		
 		self.setCtrlVerticesFromList(tempCv)
 		self.calcCurvePoints()
