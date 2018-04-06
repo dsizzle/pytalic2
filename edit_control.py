@@ -207,6 +207,7 @@ class editor_controller():
 			selStroke.selected = False	
 
 		self.__ui.strokeLoad.setEnabled(True)
+		self.setUIStateSelection(True)
 
 	def unsaveStrokes(self, args):
 		addedStrokes = []
@@ -243,6 +244,8 @@ class editor_controller():
 
 		if self.__ui.strokeSelectorList.count() == 0:
 			self.__ui.strokeLoad.setEnabled(False)
+
+		self.setUIStateSelection(True)
 		
 	def addControlPoint_cb(self, event):
 		self.__state = ADDING_CTRL_POINT
@@ -402,6 +405,7 @@ class editor_controller():
 			else:
 				self.__curChar.newStrokeInstance({'stroke' : pasteStroke})
 
+		self.setUIStateSelection(True)
 		self.__ui.repaint()	
 
 	def pasteInstanceFromSaved_cb(self, event):
@@ -568,6 +572,8 @@ class editor_controller():
 			self.__tmpStroke.selected = True
 			self.__ui.dwgArea.strokesSpecial = []
 			self.__tmpStroke = None
+
+			self.setUIStateSelection(True)
 			self.__ui.repaint()
 
 	def __onLButtonUpPaper(self, pos, shiftDown):
@@ -716,18 +722,16 @@ class editor_controller():
 						selStroke.deselectCtrlVerts()
 
 			if len(self.__selection.keys()) > 0:
-				self.__ui.strokeAddVertex.setEnabled(True)
-				self.__ui.strokeSplitAtPoint.setEnabled(True)
-				self.__ui.strokeSave.setEnabled(True)
-				self.__ui.editCut.setEnabled(True)
-				self.__ui.editCopy.setEnabled(True)
+				self.setUIStateSelection(True)
 			else:
-				self.__ui.strokeAddVertex.setEnabled(False)
-				self.__ui.strokeSplitAtPoint.setEnabled(False)
-				self.__ui.strokeSave.setEnabled(False)
-				self.__ui.editCut.setEnabled(False)
-				self.__ui.editCopy.setEnabled(False)
-								
+				self.setUIStateSelection(False)
+		
+	def setUIStateSelection(self, state):
+		self.__ui.strokeAddVertex.setEnabled(state)
+		self.__ui.strokeSplitAtPoint.setEnabled(state)
+		self.__ui.strokeSave.setEnabled(state)
+		self.__ui.editCut.setEnabled(state)
+		self.__ui.editCopy.setEnabled(state)
 
 	def setStrokeControlVertices(self, args):
 		if args.has_key('strokes'):
