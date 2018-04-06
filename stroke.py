@@ -307,7 +307,7 @@ class Stroke(object):
 
 	parent = property(getParent, setParent)
 
-	def draw(self, gc, showCtrlVerts=0, nib=None, selectedVert=-1):
+	def draw(self, gc, showCtrlVerts=0, nib=None):
 		minX = 9999
 		minY = 9999
 		maxX = 0
