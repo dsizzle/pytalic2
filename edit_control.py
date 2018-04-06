@@ -732,6 +732,7 @@ class editor_controller():
 		self.__ui.strokeSave.setEnabled(state)
 		self.__ui.editCut.setEnabled(state)
 		self.__ui.editCopy.setEnabled(state)
+		self.__ui.strokeStraighten.setEnabled(state)
 
 	def setStrokeControlVertices(self, args):
 		if args.has_key('strokes'):
@@ -894,6 +895,35 @@ class editor_controller():
 						snappedPoints.append(vpos + selStroke.getPos())
 					
 		return snappedPoints
+
+	def straightenStroke_cb(self, event):
+		if len(self.__selection.keys()) == 1:
+			selStroke = self.__selection.keys()[0]
+
+			vertsBefore = selStroke.getCtrlVerticesAsList()
+
+			strokeStraightenCmd = commands.command("strokeStraightenCmd")
+
+			undoArgs = {
+				'strokes' : selStroke,
+				'ctrlVerts' : vertsBefore
+			}
+
+			selStroke.straighten()
+
+			doArgs = {
+				'strokes' : selStroke,
+				'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+			}
+
+			strokeStraightenCmd.setDoArgs(doArgs)
+			strokeStraightenCmd.setUndoArgs(undoArgs)
+			strokeStraightenCmd.setDoFunction(self.setStrokeControlVertices)
+			strokeStraightenCmd.setUndoFunction(self.setStrokeControlVertices)
+						
+			self.__cmdStack.addToUndo(strokeStraightenCmd)
+			self.__ui.editUndo.setEnabled(True)
+
 
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()

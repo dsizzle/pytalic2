@@ -299,7 +299,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeStraighten = QtGui.QAction("Straighten", self)
 		self.strokeStraighten.setStatusTip('Make the stroke straight')
 		self.strokeStraighten.setEnabled(False)
-		#strokeStraighten.triggered.connect(self.straightenStroke_cb)
+		self.strokeStraighten.triggered.connect(self.__parent.straightenStroke_cb)
 		self.strokeMenu.addAction(self.strokeStraighten)
 		
 		self.strokeJoin = QtGui.QAction("Join", self)
