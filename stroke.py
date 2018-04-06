@@ -90,8 +90,6 @@ class Stroke(object):
 		self.setCtrlVerticesFromList(tempCv)
 		self.calcCurvePoints()
 		
-		return oldCv
-		
 	def addEndSerif(self, distance):
 		self.__endSerif = serif.Flick(serif.END)
 		verts = self.getCtrlVerticesAsList()
