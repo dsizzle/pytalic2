@@ -387,17 +387,13 @@ class Stroke(object):
 				if inside:
 					# get exact point
 					hitPoint = None
-
+					testBox = QtCore.QRect(testPt.x()-2, testPt.y()-2, 4, 4)
 					for i in range(0, 100):
 						pct = float(i) / 100.0
 						curvePt = self.__curvePath.pointAtPercent(pct)
-						dist = math.sqrt(
-							math.pow(curvePt.x()-testPt.x(), 2) + 
-							math.pow(curvePt.y()-testPt.y(), 2)
-						)
-						if dist < minDist:
-							dist = minDist
+						if testBox.contains(int(curvePt.x()), int(curvePt.y())):
 							hitPoint = pct
+							break
  
 					if hitPoint is not None:
 						return (True, int(math.ceil((len(self.__strokeCtrlVerts) - 1) * hitPoint)),  hitPoint)
