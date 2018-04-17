@@ -140,32 +140,6 @@ class Character(object):
 		except:
 			print "ERROR: stroke to delete doesn't exist!"
 	
-		
-	def unjoinStrokes (self, args): 
-		if args.has_key(STROKE):
-			joinedStroke = args[STROKE]
-		else:
-			return
-
-		strokesToUnjoin = args['strokesToUnjoin']
-	
-		for stroke in strokesToUnjoin:
-			self.__strokes.append(stroke)
-		
-		self.deleteStroke(joinedStroke)
-	
-	def rejoinStrokes (self, args):
-		if args.has_key(STROKE):
-			joinedStroke = args[STROKE]
-		else:
-			return
-
-		strokesToJoin = args['strokesToJoin']
-
-		for stroke in strokesToJoin:
-			self.deleteStroke(stroke)
-			
-		self.__strokes.append(joinedStroke)
 	
 	def distBetweenPts (self, x,y,x1,y1):
 		return math.sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1))
