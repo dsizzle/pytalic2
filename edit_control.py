@@ -548,6 +548,12 @@ class editor_controller():
 
 	def __onRButtonUpPaper(self):
 		if self.__state == DRAWING_NEW_STROKE:
+			verts = self.__tmpStroke.getCtrlVerticesAsList()
+			if len(verts) == 0:
+				self.__state = IDLE
+				self.__tmpStroke = None
+				return
+
 			self.__state = IDLE
 			self.__strokePts = []
 			addStrokeCmd = commands.command('addStrokeCmd')
