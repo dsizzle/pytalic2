@@ -48,6 +48,19 @@ class Stroke(object):
 
 		self.seed = time.localtime()
 
+	def __getstate__(self):
+		saveDict = self.__dict__.copy()
+
+		saveDict["_Stroke__strokeShape"] = None
+		saveDict["_Stroke__curvePath"] = None
+
+		return saveDict
+
+	def __setstate__(self, stateDict):
+		self.__dict__ = stateDict
+
+		self.calcCurvePoints()
+
 	def addInstance(self, inst):
 		self.__instances[inst] = 1
 		

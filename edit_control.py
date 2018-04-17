@@ -117,6 +117,80 @@ class editor_controller():
 		self.__ui.editUndo.setEnabled(False)
 		self.__ui.editRedo.setEnabled(False)
 
+	def fileSaveAs_cb(self, event):
+		fileName = self.__ui.fileSaveDialog.getSaveFileName(self.__ui,
+		     "Save Character Set", self.__dirName, "Character Set Files (*.cs)")
+			
+		if (fileName):
+			(self.__dirName, self.__fileName) = os.path.split(str(fileName))
+				
+			self.save(self.__fileName)
+			self.__ui.setWindowTitle(self.__label + " - " + self.__fileName)
+
+	def fileSave_cb(self, event):
+		if self.__fileName and os.path.isfile(self.__fileName):
+			self.save(self.__fileName)
+		else:
+			self.fileSaveAs_cb(event)
+
+	def fileOpen_cb(self):
+	 	fileName = None
+		fileName = self.__ui.fileOpenDialog.getOpenFileName(self.__ui,
+		     "Open Character Set", self.__dirName, "Character Set Files (*.cs)")
+
+		if (fileName):
+			self.load(fileName)
+
+			(self.__dirName, self.__fileName) = os.path.split(str(fileName))
+
+			self.__ui.setWindowTitle(self.__label + " - " + self.__fileName)
+		
+	 		self.__ui.strokeSelectorList.clear()
+
+			self.__ui.charSelectorList.setCurrentRow(0)
+			
+			self.__selection = {}
+	 		self.__ui.repaint()
+		
+			self.__cmdStack.clear()
+
+	def save(self, fileName):
+		try:
+			dataFileFd = open(fileName, 'wb')
+		except IOError:
+			print "ERROR: Couldn't open %s for writing." % (fileName)
+			return 1
+		
+		try:
+			dataPickler = pickle.Pickler(dataFileFd)
+			dataPickler.dump(self.__charSet)
+		except pickle.PicklingError:
+			print "ERROR: Couldn't serialize data"
+			return 1
+
+		if dataFileFd:
+			dataFileFd.close()
+
+	def load(self, fileName):
+		try:
+			dataFileFd = open(fileName, 'rb')
+		except IOError:
+			print "ERROR: Couldn't open %s for reading." % (fileName)
+			return 1
+		
+		try:
+			dataPickler = pickle.Unpickler(dataFileFd)		
+			self.__charSet = dataPickler.load()
+		except pickle.UnpicklingError:
+			print "ERROR: Couldn't unserialize data"
+			return 1
+		except:
+			print "ERROR: OTHER"
+			return 1
+
+		if dataFileFd:
+			dataFileFd.close()
+
 	def createNewStroke(self, event):
 		if self.__state == DRAWING_NEW_STROKE:
 			return
