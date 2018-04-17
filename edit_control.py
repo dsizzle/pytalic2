@@ -1,5 +1,6 @@
 import os
 import os.path
+import math
 import pickle
 import sys
 
@@ -739,6 +740,7 @@ class editor_controller():
 		self.__ui.editCut.setEnabled(state)
 		self.__ui.editCopy.setEnabled(state)
 		self.__ui.strokeStraighten.setEnabled(state)
+		self.__ui.strokeJoin.setEnabled(state)
 
 	def setStrokeControlVertices(self, args):
 		if args.has_key('strokes'):
@@ -930,6 +932,121 @@ class editor_controller():
 			self.__cmdStack.addToUndo(strokeStraightenCmd)
 			self.__ui.editUndo.setEnabled(True)
 
+	def joinStrokes_cb(self, event):
+		if len(self.__selection.keys()) > 1:
+			strokeJoinCmd = commands.command("strokeJoinCmd")
+			selectionCopy = self.__selection.copy()
+
+			newStroke = self.joinStrokes(selectionCopy)
+
+			doArgs = {
+				'strokes' : selectionCopy,
+				'joinedStroke' : newStroke
+			}
+
+			undoArgs = {
+				'strokes' : selectionCopy.copy(),
+				'joinedStroke' : newStroke
+			}
+			
+			strokeJoinCmd.setDoArgs(doArgs)
+			strokeJoinCmd.setUndoArgs(undoArgs)
+			strokeJoinCmd.setDoFunction(self.joinAllStrokes)
+			strokeJoinCmd.setUndoFunction(self.unjoinAllStrokes)
+
+			self.__cmdStack.addToUndo(strokeJoinCmd)
+			self.__ui.editUndo.setEnabled(True)
+			self.__ui.repaint()
+			
+	def joinStrokes(self, strokes):
+		strokeList = strokes.keys()
+		curStroke = strokeList.pop(0)
+		vertList = curStroke.getCtrlVerticesAsList()
+		self.__curChar.deleteStroke({'stroke': curStroke})
+		if self.__selection.has_key(curStroke):
+			del self.__selection[curStroke]
+			curStroke.selected = False
+
+		while len(strokeList):
+			curStroke = strokeList.pop(0)
+			curVerts = curStroke.getCtrlVerticesAsList()
+			self.__curChar.deleteStroke({'stroke': curStroke})
+			if self.__selection.has_key(curStroke):
+				del self.__selection[curStroke]
+				curStroke.selected = False
+
+			d1 = distBetweenPts(curVerts[0], vertList[0])
+			d2 = distBetweenPts(curVerts[-1], vertList[0])
+			d3 = distBetweenPts(curVerts[0], vertList[-1])
+			d4 = distBetweenPts(curVerts[-1], vertList[-1])
+
+			ptList = [d1, d2, d3, d4]
+			ptList.sort()
+
+			smallest = ptList[0]
+
+			if smallest == d1:
+				curVerts.reverse()
+
+			if smallest == d1 or smallest == d4:
+				vertList.reverse()
+
+			if smallest == d2:
+				(curVerts, vertList) = (vertList, curVerts)
+
+			vertList.extend(curVerts[1:])
+
+		newStroke = stroke.Stroke()
+		newStroke.setCtrlVerticesFromList(vertList)
+		newStroke.calcCurvePoints()
+		self.__curChar.addStroke({'stroke': newStroke, 'copyStroke': False})
+		
+		self.__selection[newStroke] = {}
+		newStroke.selected = True
+
+		return newStroke
+
+	def unjoinAllStrokes(self, args):
+		if args.has_key('strokes'):
+			strokes = args['strokes']
+		else:
+			return
+
+		if args.has_key('joinedStroke'):
+			joinedStroke = args['joinedStroke']
+		else:
+			return
+
+		self.__curChar.deleteStroke({'stroke': joinedStroke})
+		joinedStroke.selected = False
+		if self.__selection.has_key(joinedStroke):
+			del self.__selection[joinedStroke]
+
+		for selStroke in strokes.keys():
+			self.__curChar.addStroke({'stroke': selStroke, 'copyStroke': False})
+			self.__selection[selStroke] = {}
+			selStroke.selected = True
+
+	def joinAllStrokes(self, args):
+		if args.has_key('strokes'):
+			strokes = args['strokes']
+		else:
+			return
+
+		if args.has_key('joinedStroke'):
+			joinedStroke = args['joinedStroke']
+		else:
+			return
+
+		self.__curChar.addStroke({'stroke': joinedStroke, 'copyStroke': False})
+		joinedStroke.selected = True
+		self.__selection[joinedStroke] = {}
+
+		for selStroke in strokes.keys():
+			self.__curChar.deleteStroke({'stroke': selStroke})
+			if self.__selection.has_key(selStroke):
+				del self.__selection[selStroke]
+			selStroke.selected = False
 
 	def charSelected(self, event):
 		curCharIdx = self.__ui.charSelectorList.currentRow()
@@ -945,3 +1062,6 @@ class editor_controller():
 		if iconBitmap:
 			self.__curChar.bitmapPreview = iconBitmap
 			self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+
+def distBetweenPts (p0, p1):
+	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

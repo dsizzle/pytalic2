@@ -305,7 +305,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeJoin = QtGui.QAction("Join", self)
 		self.strokeJoin.setStatusTip('Join multiple strokes into one')
 		self.strokeJoin.setEnabled(False)
-		#strokeJoin.triggered.connect(self.joinStrokes_cb)
+		self.strokeJoin.triggered.connect(self.__parent.joinStrokes_cb)
 		self.strokeMenu.addAction(self.strokeJoin)
 		
 		self.strokeMenu.addSeparator()
