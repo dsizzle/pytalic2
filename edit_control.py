@@ -116,6 +116,7 @@ class editor_controller():
 		self.__cmdStack = commands.commandStack()
 		self.__ui.editUndo.setEnabled(False)
 		self.__ui.editRedo.setEnabled(False)
+		self.__ui.fileSave.setEnabled(False)
 
 	def fileSaveAs_cb(self, event):
 		fileName = self.__ui.fileSaveDialog.getSaveFileName(self.__ui,
@@ -127,6 +128,7 @@ class editor_controller():
 			self.save(self.__fileName)
 			self.__ui.setWindowTitle(self.__label + " - " + self.__fileName)
 			self.__cmdStack.resetSaveCount()
+			self.__ui.fileSave.setEnabled(True)
 
 	def fileSave_cb(self, event):
 		if self.__fileName and os.path.isfile(self.__fileName):
@@ -149,6 +151,18 @@ class editor_controller():
 		
 	 		self.__ui.strokeSelectorList.clear()
 
+	 		savedStrokeList = self.__charSet.getSavedStrokes()
+	 		if len(savedStrokeList) > 0:
+	 			i = 0
+	 			self.__ui.strokeLoad.setEnabled(True)	
+		 		for selStroke in savedStrokeList:
+					bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
+					self.__ui.strokeSelectorList.addItem(str(i))
+					curItem = self.__ui.strokeSelectorList.item(i)
+					self.__ui.strokeSelectorList.setCurrentRow(i)
+					curItem.setIcon(QtGui.QIcon(bitmap))
+					i += 1
+					
 			self.__ui.charSelectorList.setCurrentRow(0)
 			
 			self.__selection = {}
@@ -156,6 +170,7 @@ class editor_controller():
 		
 			self.__cmdStack.clear()
 			self.__cmdStack.resetSaveCount()
+			self.__ui.fileSave.setEnabled(True)
 
 	def save(self, fileName):
 		try:
