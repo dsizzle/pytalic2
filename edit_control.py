@@ -77,10 +77,10 @@ class editor_controller():
 		self.__ui.raise_()
 	
 	def quit_cb(self, event):
-		if self.__cmdStack.undoIsEmpty():
+		if self.__cmdStack.saveCount == 0: 
 			self.__ui.close()
 		else:
-			reply = self.__ui.messageDialog.question(self.__ui, 'Quit Program', "Are you sure you want to quit?", \
+			reply = self.__ui.messageDialog.question(self.__ui, 'Quit Program', "You have unsaved changes. Are you sure you want to quit?", \
 				QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
 
 			if reply == QtGui.QMessageBox.Yes:
@@ -126,10 +126,12 @@ class editor_controller():
 				
 			self.save(self.__fileName)
 			self.__ui.setWindowTitle(self.__label + " - " + self.__fileName)
+			self.__cmdStack.resetSaveCount()
 
 	def fileSave_cb(self, event):
 		if self.__fileName and os.path.isfile(self.__fileName):
 			self.save(self.__fileName)
+			self.__cmdStack.resetSaveCount()
 		else:
 			self.fileSaveAs_cb(event)
 
@@ -153,6 +155,7 @@ class editor_controller():
 	 		self.__ui.repaint()
 		
 			self.__cmdStack.clear()
+			self.__cmdStack.resetSaveCount()
 
 	def save(self, fileName):
 		try:
@@ -685,6 +688,7 @@ class editor_controller():
 			moveCmd.setUndoFunction(self.moveSelected)
 		
 			self.__cmdStack.addToUndo(moveCmd)
+			self.__cmdStack.saveCount += 1
 			self.__ui.editUndo.setEnabled(True)
 
 			self.__state = IDLE
@@ -714,6 +718,7 @@ class editor_controller():
 						addVertexCmd.setUndoFunction(self.setStrokeControlVertices)
 						
 						self.__cmdStack.addToUndo(addVertexCmd)
+						self.__cmdStack.saveCount += 1
 						self.__ui.editUndo.setEnabled(True)
 						break
 
@@ -1004,6 +1009,7 @@ class editor_controller():
 			strokeStraightenCmd.setUndoFunction(self.setStrokeControlVertices)
 						
 			self.__cmdStack.addToUndo(strokeStraightenCmd)
+			self.__cmdStack.saveCount += 1
 			self.__ui.editUndo.setEnabled(True)
 
 	def joinStrokes_cb(self, event):
@@ -1029,6 +1035,7 @@ class editor_controller():
 			strokeJoinCmd.setUndoFunction(self.unjoinAllStrokes)
 
 			self.__cmdStack.addToUndo(strokeJoinCmd)
+			self.__cmdStack.saveCount += 1
 			self.__ui.editUndo.setEnabled(True)
 			self.__ui.repaint()
 			

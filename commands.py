@@ -2,6 +2,18 @@ class commandStack(object):
 	def __init__(self):
 		self.__undoStack = []
 		self.__redoStack = []
+		self.__afterSaveCount = 0
+
+	def resetSaveCount(self):
+		self.__afterSaveCount = 0
+
+	def getSaveCount(self):
+		return self.__afterSaveCount
+
+	def setSaveCount(self, newSaveCount):
+		self.__afterSaveCount = newSaveCount
+
+	saveCount = property(getSaveCount, setSaveCount)
 
 	def clear(self):
 		self.clearUndo()
@@ -15,6 +27,7 @@ class commandStack(object):
 
 	def undo(self):
 		if len(self.__undoStack) > 0:
+			self.__afterSaveCount -= 1
 			lastCmd = self.__undoStack.pop()
 
 			self.__redoStack.append(lastCmd)
@@ -23,6 +36,7 @@ class commandStack(object):
 
 	def redo(self):
 		if len(self.__redoStack) > 0:
+			self.__afterSaveCount += 1
 			lastCmd = self.__redoStack.pop()
 
 			self.__undoStack.append(lastCmd)
@@ -31,6 +45,7 @@ class commandStack(object):
 
 	def doCommand(self, newCmd):
 		self.addToUndo(newCmd)
+		self.__afterSaveCount += 1
 
 		newCmd.doIt()
 
