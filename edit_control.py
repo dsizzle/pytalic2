@@ -61,10 +61,10 @@ class editor_controller():
 
 		self.__ui.createUI()
 		self.__ui.charSelectorList.addItems(QtCore.QStringList(charList))
-		blankPixmap = QtGui.QPixmap(gICON_SIZE, gICON_SIZE)
-		blankPixmap.fill(QtGui.QColor(240, 240, 240))
+		self.blankPixmap = QtGui.QPixmap(gICON_SIZE, gICON_SIZE)
+		self.blankPixmap.fill(QtGui.QColor(240, 240, 240))
 		for idx in range(0, self.__ui.charSelectorList.count()):
-			self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(blankPixmap))
+			self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blankPixmap))
 		self.__ui.dwgArea.bitmapSize = gICON_SIZE
 
 		self.mainMenu = None
@@ -109,6 +109,9 @@ class editor_controller():
 		self.__ui.setWindowTitle(self.name)
 
 		self.__ui.strokeSelectorList.clear()
+
+		for idx in range(0, self.__ui.charSelectorList.count()):
+			self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blankPixmap))
 
 		self.__ui.charSelectorList.setCurrentRow(0)
 		self.__curChar = self.__charSet.getCurrentChar()
@@ -163,6 +166,20 @@ class editor_controller():
 					curItem.setIcon(QtGui.QIcon(bitmap))
 					i += 1
 					
+			for idx in range(0, self.__ui.charSelectorList.count()):
+				self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blankPixmap))
+
+			idx = 0
+			charList = self.__charSet.getCharList()
+
+			for character in charList.keys():
+				if len(charList[character].strokes) > 0:
+					self.__ui.charSelectorList.setCurrentRow(idx)
+					self.__ui.repaint()
+
+				idx += 1
+
+			self.__ui.charSelectorList.setCurrentRow(1)
 			self.__ui.charSelectorList.setCurrentRow(0)
 			
 			self.__selection = {}
