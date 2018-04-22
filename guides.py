@@ -209,13 +209,14 @@ class guideLines(object):
 			self.nibWidth = nibWidth
 
 		scale = gc.worldTransform().m11()
+
 		csize = QtCore.QSize(size.width() / scale, size.height() / scale)
 		
-		coordsRect = QtCore.QRect(-origin.x(), -origin.y(), csize.width(), csize.height())
-			
-		topX = self.__angleDX * origin.y()
+		coordsRect = QtCore.QRect(-origin.x() / scale, -origin.y() / scale, csize.width(), csize.height())
+		
+		topX = self.__angleDX * origin.y() / scale
 		topY = coordsRect.topLeft().y()
-		botX = -(self.__angleDX * (csize.height() - origin.y()))
+		botX = -(self.__angleDX * (csize.height() - origin.y() / scale))
 		botY = coordsRect.bottomRight().y()
 		gc.setPen(self.__linePen)
 		gc.drawLine(botX, botY, topX, topY)
@@ -229,59 +230,58 @@ class guideLines(object):
 		 	gc.drawLine(botX+pos, botY, topX+pos, topY)
 		 	pos = pos + dist
 		 	gc.drawLine(botX-pos, botY, topX-pos, topY)
-		 	
 			
 		# baseline
 		gc.setPen(self.__linePen2)
-		gc.drawLine(-origin.x(), 0, coordsRect.bottomRight().x(), 0)
+		gc.drawLine(coordsRect.topLeft().x(), 0, coordsRect.bottomRight().x(), 0)
 			
 		# base height line
 		gc.setPen(self.__linePen)
-		gc.drawLine(-origin.x(), -self.__baseHeightPixels, coordsRect.bottomRight().x(), -self.__baseHeightPixels)
+		gc.drawLine(coordsRect.topLeft().x(), -self.__baseHeightPixels, coordsRect.bottomRight().x(), -self.__baseHeightPixels)
 		
-		gc.drawLine(-origin.x(), -self.__ascentHeightPixels, coordsRect.bottomRight().x(), -self.__ascentHeightPixels)
-		gc.drawLine(-origin.x(), self.__descentHeightPixels, coordsRect.bottomRight().x(), self.__descentHeightPixels)
+		gc.drawLine(coordsRect.topLeft().x(), -self.__ascentHeightPixels, coordsRect.bottomRight().x(), -self.__ascentHeightPixels)
+		gc.drawLine(coordsRect.topLeft().x(), self.__descentHeightPixels, coordsRect.bottomRight().x(), self.__descentHeightPixels)
 		
 		gc.setPen(self.__linePenDotted)
-		gc.drawLine(-origin.x(), -self.__capHeightPixels, coordsRect.bottomRight().x(), -self.__capHeightPixels)
+		gc.drawLine(coordsRect.topLeft().x(), -self.__capHeightPixels, coordsRect.bottomRight().x(), -self.__capHeightPixels)
 		
 		gc.setBrush(self.__spacerBrush)
-		gc.drawRect(-origin.x(), self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
+		gc.drawRect(coordsRect.topLeft().x(), self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
 
 		vpos = -self.__ascentHeightPixels - self.__gapHeightPixels - self.__descentHeightPixels
 		while (vpos+self.__descentHeightPixels > coordsRect.topLeft().y()):
 			gc.setPen(self.__linePen2)
-			gc.drawLine(-origin.x(), vpos, coordsRect.bottomRight().x(), vpos)
+			gc.drawLine(coordsRect.topLeft().x(), vpos, coordsRect.bottomRight().x(), vpos)
 
 			gc.setPen(self.__linePen)
-			gc.drawLine(-origin.x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
 		
-			gc.drawLine(-origin.x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
-			gc.drawLine(-origin.x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
 		
 			gc.setPen(self.__linePenDotted)
-			gc.drawLine(-origin.x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
 		
 			gc.setBrush(self.__spacerBrush)
-			gc.drawRect(-origin.x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
+			gc.drawRect(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
 			vpos = vpos -self.__ascentHeightPixels - self.__gapHeightPixels - self.__descentHeightPixels
 
 		vpos = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
 		while (vpos-self.__ascentHeightPixels < coordsRect.bottomRight().y()):
 			gc.setPen(self.__linePen2)
-			gc.drawLine(-origin.x(), vpos, coordsRect.bottomRight().x(), vpos)
+			gc.drawLine(coordsRect.topLeft().x(), vpos, coordsRect.bottomRight().x(), vpos)
 
 			gc.setPen(self.__linePen)
-			gc.drawLine(-origin.x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
 		
-			gc.drawLine(-origin.x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
-			gc.drawLine(-origin.x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
 		
 			gc.setPen(self.__linePenDotted)
-			gc.drawLine(-origin.x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
+			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
 		
 			gc.setBrush(self.__spacerBrush)
-			gc.drawRect(-origin.x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
+			gc.drawRect(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
 			vpos = vpos + self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
 
 

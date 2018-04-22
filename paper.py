@@ -34,8 +34,7 @@ class drawingArea(QtGui.QFrame):
 		self.__bitmapSize = 40
 
 	def resizeEvent(self, event):
-		if self.__origin is None:
-			self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
+		self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
 		self.repaint()
 
 	def getBitmap(self):
@@ -157,8 +156,8 @@ class drawingArea(QtGui.QFrame):
 		dc.setBackground(self.__bgBrush)
 		dc.eraseRect(self.frameRect())
 		dc.save()
-		dc.scale(self.__scale, self.__scale)
 		dc.translate(self.__origin + self.__originDelta)
+		dc.scale(self.__scale, self.__scale)
 
 		if self.__drawGuidelines:
 			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
