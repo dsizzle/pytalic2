@@ -613,10 +613,19 @@ class editor_controller():
 
 	def wheelEvent(self, event):
 		if self.__ui.dwgArea.underMouse():
+			scaleChange = 0
 			if event.delta() > 0:
-				self.__ui.dwgArea.scale -= 0.01
+				scaleChange = -0.02
 			else:
-				self.__ui.dwgArea.scale += 0.01
+				scaleChange = 0.02
+
+			self.__ui.dwgArea.scale += scaleChange
+			
+			paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
+			zoomPos = (paperPos - self.__ui.dwgArea.getOrigin()) * scaleChange
+
+			self.__ui.dwgArea.originDelta -= zoomPos
+			self.__savedMousePosPaper = paperPos
 
 			event.accept()
 			self.__ui.repaint()

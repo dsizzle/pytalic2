@@ -68,6 +68,9 @@ class drawingArea(QtGui.QFrame):
 
 	originDelta = property(getOriginDelta, setOriginDelta)
 
+	def getOrigin(self):
+		return self.__origin
+		
 	def getDrawGuidelines(self):
 		return self.__drawGuidelines
 
