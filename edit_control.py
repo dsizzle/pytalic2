@@ -291,12 +291,12 @@ class editor_controller():
 			return
 
 		for selStroke in selection:
+			self.__charSet.saveStroke(selStroke)
 			bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
 			self.__ui.strokeSelectorList.addItem(str(firstItem+i))
 			curItem = self.__ui.strokeSelectorList.item(firstItem+i)
 			self.__ui.strokeSelectorList.setCurrentRow(firstItem+i)
 			curItem.setIcon(QtGui.QIcon(bitmap))
-			self.__charSet.saveStroke(selStroke)
 			curChar = self.__charSet.getCurrentChar()
 			deletedStrokes.append(selStroke)
 			curChar.deleteStroke({'stroke' : selStroke})
