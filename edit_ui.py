@@ -15,6 +15,7 @@ class edit_interface(QtGui.QMainWindow):
 	def __init__(self, parent, w, h, label):
 		QtGui.QMainWindow.__init__(self)
 		self.setMouseTracking(True)
+		self.setFocusPolicy(QtCore.Qt.ClickFocus)
 
 		self.resize(w, h)
 		self.setWindowTitle(label)
@@ -35,41 +36,59 @@ class edit_interface(QtGui.QMainWindow):
 
 		#return
 		self.mainWidget = QtGui.QWidget()
-		
+		self.mainSplitter = splitter.MySplitter (self.mainWidget)
+
 		self.mainLayout = QtGui.QVBoxLayout()
-		self.viewLayout = QtGui.QVBoxLayout()
+		self.viewLayout = QtGui.QHBoxLayout()
 
 		self.charSelectorLayout = QtGui.QHBoxLayout()
 		self.charSelectorLayout.setMargin(0)
 		self.charSelectorLayout.setSpacing(0)
 		self.charSelectorLayout.setContentsMargins(0, 0, 0, 0)
 
-		self.charSelectorList = QtGui.QListWidget(self)
+		self.charSelectorList = QtGui.QListWidget(self.mainWidget)
 		self.charSelectorList.setFlow(QtGui.QListView.LeftToRight)
-		self.charSelectorList.resize(self.width(), gICON_SIZE*2)
-		self.charSelectorList.setMaximumHeight(gICON_SIZE*2)
+		self.charSelectorList.resize(self.width(), gICON_SIZE*1.75)
+		self.charSelectorList.setMaximumHeight(gICON_SIZE*1.75)
 		self.charSelectorList.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
 		self.charSelectorList.currentItemChanged.connect(self.__parent.charSelected)
-
 		self.charSelectorLayout.addWidget(self.charSelectorList, 0, QtCore.Qt.AlignTop)
 
-		self.strokeSelectorLayout = QtGui.QHBoxLayout()
+		#self.strokeSelectorLayout = QtGui.QVBoxLayout()
 		self.strokeSelectorList = QtGui.QListWidget(self)
-		self.strokeSelectorList.setFlow(QtGui.QListView.LeftToRight)
-		self.strokeSelectorList.resize(self.width(), gICON_SIZE)
-		self.strokeSelectorList.setMaximumHeight(gICON_SIZE*2)
+		#self.strokeSelectorList.setFlow(QtGui.QListView.LeftToRight)
+		self.strokeSelectorList.resize(gICON_SIZE*1.5, self.height())
+		self.strokeSelectorList.setMaximumWidth(gICON_SIZE*1.5)
 		self.strokeSelectorList.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
-		self.strokeSelectorLayout.addWidget(self.strokeSelectorList)
-
-		self.mainSplitter = splitter.MySplitter (self.mainWidget)
+		self.strokeSelectorList.currentItemChanged.connect(self.__parent.strokeSelected)
+		self.viewLayout.addWidget(self.strokeSelectorList)
+		#self.strokeSelectorLayout.addWidget(self.strokeSelectorList)
+		
 		self.dwgArea = paper.drawingArea(self.mainSplitter)
-		self.dwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken); 
+		self.dwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.dwgArea.setLineWidth(2)
 
 		self.toolPane = QtGui.QFrame(self.mainSplitter)
 		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
+		self.toolPaneLayout.addWidget(self.charSelectorList)
 
-		self.mainSplitter.addWidget(self.dwgArea)
+		self.strokeDwgArea = paper.drawingArea(self)
+		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.strokeDwgArea.setLineWidth(2)
+		self.strokeDwgArea.drawGuidelines = False
+
+		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
+		#self.propertyTabs.addTab(self.charSelectorList, "Characters")
+
+		self.toolPaneLayout.addWidget(self.propertyTabs)
+		self.strokeDwgArea.setOriginDelta(QtCore.QPoint())
+
+		self.mainViewTabs = QtGui.QTabWidget(self.mainWidget)
+		self.mainViewTabs.addTab(self.dwgArea, "Character")
+		self.mainViewTabs.addTab(self.strokeDwgArea, "Stroke")
+		self.mainViewTabs.currentChanged.connect(self.__parent.viewTabChanged_cb)
+
+		self.mainSplitter.addWidget(self.mainViewTabs)
 		self.mainSplitter.addWidget(self.toolPane)
 		self.mainSplitter.setMaxPaneWidth(wid20)
 		self.mainSplitter.setSizes([wid80, wid20])
@@ -78,18 +97,19 @@ class edit_interface(QtGui.QMainWindow):
 
 		self.viewLayout.addWidget(self.mainSplitter)
 		self.viewLayout.setMargin(0)
-		self.viewLayout.setSpacing(0)
+		self.viewLayout.setSpacing(5)
 		self.viewLayout.setContentsMargins(0, 0, 0, 0)
 
 		mainSizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 		self.mainSplitter.setSizePolicy(mainSizePolicy)
 	
 		self.dwgArea.setSizePolicy(mainSizePolicy)
+		self.strokeDwgArea.setSizePolicy(mainSizePolicy)
 
 		self.mainLayout.addLayout(self.charSelectorLayout)
-		self.mainLayout.addLayout(self.strokeSelectorLayout)
+		#self.mainLayout.addLayout(self.strokeSelectorLayout)
 		self.mainLayout.addLayout(self.viewLayout, 2)
-
+		
 		self.mainWidget.setLayout(self.mainLayout)
 
 		self.setCentralWidget(self.mainWidget)
@@ -345,17 +365,6 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeLoad.setEnabled(False)
 		self.strokeLoad.triggered.connect(self.__parent.pasteInstanceFromSaved_cb)
 		self.strokeMenu.addAction(self.strokeLoad)
-
-		self.strokeSavedEdit = QtGui.QAction("Edit Saved", self)
-		self.strokeSavedEdit.setEnabled(False)
-		#strokeSavedEdit.triggered.connect(self.editSaved_cb)
-		self.strokeMenu.addAction(self.strokeSavedEdit)
-
-		self.strokeSavedEditDone = QtGui.QAction("Done Editing Saved", self)
-		self.strokeSavedEditDone.setShortcut('Esc')
-		self.strokeSavedEditDone.setEnabled(False)
-		#strokeSavedEditDone.triggered.connect(self.editSavedDone_cb)
-		self.strokeMenu.addAction(self.strokeSavedEditDone)
 
 		self.helpAbout = QtGui.QAction("About", self)
 		self.helpAbout.setEnabled(False)

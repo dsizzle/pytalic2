@@ -70,7 +70,7 @@ class drawingArea(QtGui.QFrame):
 
 	def getOrigin(self):
 		return self.__origin
-		
+
 	def getDrawGuidelines(self):
 		return self.__drawGuidelines
 
@@ -108,9 +108,9 @@ class drawingArea(QtGui.QFrame):
 		
 	def getNormalizedPosition(self, rawPos):
 		normPos = rawPos
-		normPos = normPos / self.__scale
 		normPos = normPos - self.__origin - self.__originDelta
-
+		normPos = normPos / self.__scale
+		
 		return normPos
 
 	def drawIcon(self, dc, strokesToDraw):
