@@ -1206,6 +1206,7 @@ class editor_controller():
 		
 		self.__ui.strokeDwgArea.strokes = [selSavedStroke]
 		self.__ui.repaint()
+		self.setIcon()
 
 	def viewTabChanged_cb(self, event):
 		self.__currentViewPane = self.__ui.mainViewTabs.currentWidget()
@@ -1219,12 +1220,16 @@ class editor_controller():
 			self.__selection[self.__currentViewPane] = {}
 
 		self.__ui.repaint()
+		self.setIcon()
 
 	def setIcon(self):
-		iconBitmap = self.__ui.dwgArea.getBitmap()
+		iconBitmap = self.__currentViewPane.getBitmap()
 		if iconBitmap:
-			self.__curChar.bitmapPreview = iconBitmap
-			self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+			if self.__currentViewPane == self.__ui.dwgArea:
+				self.__curChar.bitmapPreview = iconBitmap
+				self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+			elif self.__currentViewPane == self.__ui.strokeDwgArea:
+				self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
