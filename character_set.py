@@ -6,6 +6,13 @@ class character_set(object):
 	def __init__(self):
 		self.__characters = {}
 		self.__currentChar = None
+
+		self.__nominalWidthNibs = 4
+		self.__baseHeightNibs = 5
+		self.__ascentHeightNibs = 3
+		self.__descentHeightNibs = 3
+		self.__capHeightNibs = 2
+
 		self.__savedStrokes = []
 
 	def newCharacter(self, charCode):
@@ -70,3 +77,43 @@ class character_set(object):
 
 	def removeSavedStroke(self, item):
 		self.__savedStrokes.remove(item)
+
+	def setNominalWidth(self, newWidth):
+		self.__nominalWidthNibs = newWidth
+
+	def getNominalWidth(self):
+		return self.__nominalWidthNibs
+
+	nominalWidthNibs = property(getNominalWidth, setNominalWidth)
+
+	def setBaseHeight(self, newBaseHeight):
+		self.__baseHeightNibs = newBaseHeight
+
+	def getBaseHeight(self):
+		return self.__baseHeightNibs
+
+	baseHeight = property(getBaseHeight, setBaseHeight)
+
+	def setAscentHeight(self, newAscentHeight):
+		self.__ascentHeightNibs = newAscentHeight
+
+	def getAscentHeight(self):
+		return self.__ascentHeightNibs
+
+	ascentHeight = property(getAscentHeight, setAscentHeight)
+
+	def setDescentHeight(self, newDescentHeight):
+		self.__descentHeightNibs = newDescentHeight
+
+	def getDescentHeight(self):
+		return self.__descentHeightNibs
+
+	descentHeight = property(getDescentHeight, setDescentHeight)
+
+	def setCapHeight(self, newCapHeight):
+		self.__capHeightNibs = newCapHeight
+
+	def getCapHeight(self):
+		return self.__capHeightNibs
+
+	capHeight = property(getCapHeight, setCapHeight)
