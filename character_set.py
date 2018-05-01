@@ -135,3 +135,11 @@ class character_set(object):
 		return self.__angle
 
 	angle = property(getAngle, setAngle)
+
+	def setNominalWidth(self, newWidth):
+		self.__nominalWidthNibs = newWidth
+
+	def getNominalWidth(self):
+		return self.__nominalWidthNibs
+
+	nominalWidth = property(getNominalWidth, setNominalWidth)

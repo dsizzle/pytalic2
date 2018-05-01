@@ -1404,6 +1404,33 @@ class editor_controller():
 		self.__cmdStack.doCommand(changeGapHeightCmd)
 		
 		self.__ui.repaint()
+
+	def guideNominalWidthChanged_cb(self, newValue):
+		prevValue = self.__charSet.nominalWidth
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'nominalWidth',
+			'ctrlName' : 'nominalWidthSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeNominalWidthCmd = commands.command("changeNominalWidthCmd")
+
+		changeNominalWidthCmd.setDoArgs(doArgs)
+		changeNominalWidthCmd.setUndoArgs(undoArgs)
+		changeNominalWidthCmd.setDoFunction(self.changePropertyControl)
+		changeNominalWidthCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeNominalWidthCmd)
+		
+		self.__ui.repaint()
 			
 	def changePropertyControl(self, args):
 		if (args.has_key('value')):

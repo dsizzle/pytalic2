@@ -84,7 +84,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.charSetPropLayout.addRow(self.mainCharSetPropLabel)
 
 		self.baseHeightLabel = QtGui.QLabel(self.charSetPropFrame)
-		self.baseHeightLabel.setText("Base height:")
+		self.baseHeightLabel.setText("X-height:")
 		
 		self.baseHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
 		self.baseHeightSpin.setMinimum(1.0)
@@ -153,12 +153,25 @@ class edit_interface(QtGui.QMainWindow):
 		self.gapHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.gapHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideGapHeightChanged_cb)
 		
+		self.nominalWidthLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.nominalWidthLabel.setText("Nominal width:")
+		
+		self.nominalWidthSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.nominalWidthSpin.setMinimum(2)
+		self.nominalWidthSpin.setMaximum(10)
+		self.nominalWidthSpin.setValue(4.0)
+		self.nominalWidthSpin.setWrapping(True)
+		self.nominalWidthSpin.setDecimals(1)
+		self.nominalWidthSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideNominalWidthChanged_cb)
+
 		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
 		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)
 		self.charSetPropLayout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
 		self.charSetPropLayout.addRow(self.descentHeightLabel, self.descentHeightSpin)
 		self.charSetPropLayout.addRow(self.angleLabel, self.angleSpin)
 		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
+		self.charSetPropLayout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
 
 		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
 		self.propertyTabs.addTab(self.charSetPropFrame, "Properties");
