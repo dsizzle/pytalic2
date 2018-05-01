@@ -114,7 +114,7 @@ class editor_controller():
 		self.__ui.capHeightSpin.setMaximum(self.__charSet.ascentHeight)
 		self.__ui.ascentHeightSpin.setValue(self.__charSet.ascentHeight)
 		self.__ui.descentHeightSpin.setValue(self.__charSet.descentHeight)
-		self.__ui.angleSpin.setValue(40)
+		self.__ui.angleSpin.setValue(5)
 
 		self.name = (self.__label + " - Untitled")
 		self.__ui.setWindowTitle(self.name)
@@ -1401,7 +1401,7 @@ class editor_controller():
 		changeAngleCmd.setDoFunction(self.changePropertyControl)
 		changeAngleCmd.setUndoFunction(self.changePropertyControl)
 
-		self.__cmdStack.doCommand(changeAngleCmd)
+		self.__cmdStack.doCommand(changeGapHeightCmd)
 		
 		self.__ui.repaint()
 			
