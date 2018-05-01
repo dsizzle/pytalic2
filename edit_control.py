@@ -109,7 +109,13 @@ class editor_controller():
 		self.__fileName = None
 	
 		self.__charSet = character_set.character_set()
-		
+		self.__ui.baseHeightSpin.setValue(self.__charSet.baseHeight)
+		self.__ui.capHeightSpin.setValue(self.__charSet.capHeight)
+		self.__ui.capHeightSpin.setMaximum(self.__charSet.ascentHeight)
+		self.__ui.ascentHeightSpin.setValue(self.__charSet.ascentHeight)
+		self.__ui.descentHeightSpin.setValue(self.__charSet.descentHeight)
+		self.__ui.angleSpin.setValue(40)
+
 		self.name = (self.__label + " - Untitled")
 		self.__ui.setWindowTitle(self.name)
 
@@ -152,6 +158,12 @@ class editor_controller():
 
 		if (fileName):
 			self.load(fileName)
+
+			self.__ui.baseHeightSpin.setValue(self.__charSet.baseHeight)
+			self.__ui.capHeightSpin.setValue(self.__charSet.capHeight)
+			self.__ui.capHeightSpin.setMaximum(self.__charSet.ascentHeight)
+			self.__ui.ascentHeightSpin.setValue(self.__charSet.ascentHeight)
+			self.__ui.descentHeightSpin.setValue(self.__charSet.descentHeight)
 
 			(self.__dirName, self.__fileName) = os.path.split(str(fileName))
 
@@ -1230,6 +1242,134 @@ class editor_controller():
 				self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 			elif self.__currentViewPane == self.__ui.strokeDwgArea:
 				self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+
+	def guideBaseHeightChanged_cb(self, newValue):
+		prevValue = self.__charSet.baseHeight
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'baseHeight',
+			'ctrlName' : 'baseHeightSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeBaseHeightCmd = commands.command("changeBaseHeightCmd")
+
+		changeBaseHeightCmd.setDoArgs(doArgs)
+		changeBaseHeightCmd.setUndoArgs(undoArgs)
+		changeBaseHeightCmd.setDoFunction(self.changePropertyControl)
+		changeBaseHeightCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeBaseHeightCmd)
+		
+		self.__ui.repaint()
+
+	def guideCapHeightChanged_cb(self, newValue):
+		prevValue = self.__charSet.capHeight
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'capHeight',
+			'ctrlName' : 'capHeightSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeCapHeightCmd = commands.command("changeCapHeightCmd")
+
+		changeCapHeightCmd.setDoArgs(doArgs)
+		changeCapHeightCmd.setUndoArgs(undoArgs)
+		changeCapHeightCmd.setDoFunction(self.changePropertyControl)
+		changeCapHeightCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeCapHeightCmd)
+		
+		self.__ui.repaint()
+
+	def guideAscentChanged_cb(self, newValue):
+		prevValue = self.__charSet.ascentHeight
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'ascentHeight',
+			'ctrlName' : 'ascentHeightSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeAscentHeightCmd = commands.command("changeAscentHeightCmd")
+
+		changeAscentHeightCmd.setDoArgs(doArgs)
+		changeAscentHeightCmd.setUndoArgs(undoArgs)
+		changeAscentHeightCmd.setDoFunction(self.changePropertyControl)
+		changeAscentHeightCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeAscentHeightCmd)
+		
+		self.__ui.repaint()
+
+	def guideDescentChanged_cb(self, newValue):
+		prevValue = self.__charSet.descentHeight
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'descentHeight',
+			'ctrlName' : 'descentHeightSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeDescentHeightCmd = commands.command("changeDescentHeightCmd")
+
+		changeDescentHeightCmd.setDoArgs(doArgs)
+		changeDescentHeightCmd.setUndoArgs(undoArgs)
+		changeDescentHeightCmd.setDoFunction(self.changePropertyControl)
+		changeDescentHeightCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeDescentHeightCmd)
+		
+		self.__ui.repaint()
+			
+	def changePropertyControl(self, args):
+		if (args.has_key('value')):
+			val = args['value']
+		else:
+			return
+
+		if (args.has_key('attrName')):
+			attrName = args['attrName']
+		else:
+			return
+
+		if (args.has_key('ctrlName')):
+			ctrlName = args['ctrlName']
+
+		setattr(self.__charSet, attrName, val)
+		setattr(self.__currentViewPane.getGuidelines(), attrName, val)
+		setattr(self.__ui, ctrlName, val)
+
+		self.__ui.repaint()
 
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

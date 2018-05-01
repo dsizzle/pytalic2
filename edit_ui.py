@@ -77,10 +77,97 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeDwgArea.setLineWidth(2)
 		self.strokeDwgArea.drawGuidelines = False
 
+		self.charSetPropFrame = QtGui.QFrame(self.toolPane);
+		self.charSetPropLayout = QtGui.QFormLayout(self.charSetPropFrame)
+		self.mainCharSetPropLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.mainCharSetPropLabel.setText("Note: All units are nib-widths.")
+		self.charSetPropLayout.addRow(self.mainCharSetPropLabel)
+
+		self.baseHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.baseHeightLabel.setText("Base height:")
+		
+		self.baseHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.baseHeightSpin.setMinimum(1.0)
+		self.baseHeightSpin.setMaximum(10.0)
+		self.baseHeightSpin.setValue(1.0)
+		self.baseHeightSpin.setWrapping(True)
+		self.baseHeightSpin.setDecimals(1)
+		self.baseHeightSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.baseHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideBaseHeightChanged_cb)
+		
+		self.capHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.capHeightLabel.setText("Capital height:")
+		
+		self.capHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.capHeightSpin.setMinimum(0.5)
+		self.capHeightSpin.setMaximum(1)
+		self.capHeightSpin.setValue(0.5)
+		self.capHeightSpin.setWrapping(True)
+		self.capHeightSpin.setDecimals(1)
+		self.capHeightSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.capHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideCapHeightChanged_cb)
+		
+		self.ascentHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.ascentHeightLabel.setText("Ascent height:")
+		
+		self.ascentHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.ascentHeightSpin.setMinimum(1)
+		self.ascentHeightSpin.setMaximum(10)
+		self.ascentHeightSpin.setValue(1)
+		self.ascentHeightSpin.setWrapping(True)
+		self.ascentHeightSpin.setDecimals(1)
+		self.ascentHeightSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.ascentHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideAscentChanged_cb)
+		
+		self.descentHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.descentHeightLabel.setText("Descent height:")
+		
+		self.descentHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.descentHeightSpin.setMinimum(1)
+		self.descentHeightSpin.setMaximum(10)
+		self.descentHeightSpin.setValue(1)
+		self.descentHeightSpin.setWrapping(True)
+		self.descentHeightSpin.setDecimals(1)
+		self.descentHeightSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.descentHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideDescentChanged_cb)
+				
+		self.angleLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.angleLabel.setText("Guide angle:")
+		
+		self.angleSpin = QtGui.QSpinBox(self.charSetPropFrame)
+		self.angleSpin.setMinimum(0)
+		self.angleSpin.setMaximum(45)
+		self.angleSpin.setValue(0)
+		self.angleSpin.setWrapping(True)
+		#QtCore.QObject.connect(self.angleSpin, QtCore.SIGNAL("valueChanged(int)"), self.guideAngleChanged)
+		
+		self.gapHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.gapHeightLabel.setText("Gap distance:")
+		
+		self.gapHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.gapHeightSpin.setMinimum(1)
+		self.gapHeightSpin.setMaximum(10)
+		self.gapHeightSpin.setValue(1)
+		self.gapHeightSpin.setWrapping(True)
+		self.gapHeightSpin.setDecimals(1)
+		self.gapHeightSpin.setSingleStep(0.5)
+		#QtCore.QObject.connect(self.gapHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.guideGapHeightChanged)
+		
+		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
+		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)
+		self.charSetPropLayout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
+		self.charSetPropLayout.addRow(self.descentHeightLabel, self.descentHeightSpin)
+		self.charSetPropLayout.addRow(self.angleLabel, self.angleSpin)
+		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
+
 		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
-		#self.propertyTabs.addTab(self.charSelectorList, "Characters")
+		self.propertyTabs.addTab(self.charSetPropFrame, "Properties");
 
 		self.toolPaneLayout.addWidget(self.propertyTabs)
+		self.toolPaneLayout.setMargin(0)
+		self.toolPaneLayout.setSpacing(5)
+		self.toolPaneLayout.setContentsMargins(0, 0, 0, 0)
+
 		self.strokeDwgArea.setOriginDelta(QtCore.QPoint())
 
 		self.mainViewTabs = QtGui.QTabWidget(self.mainWidget)
