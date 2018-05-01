@@ -75,7 +75,7 @@ class guideLines(object):
 	
 	def setAscent(self, height):
 		self.__ascentHeightNibs = height
-		self.__ascentHeightPixels = height * self.__nibWidth
+		self.__ascentHeightPixels = (height + self.__baseHeightNibs) * self.__nibWidth
 		
 	def getAscent(self):
 		return self.__ascentHeightNibs
@@ -84,7 +84,7 @@ class guideLines(object):
 
 	def setCapHeight(self, height):
 		self.__capHeightNibs = height
-		self.__capHeightPixels = height * self.__nibWidth
+		self.__capHeightPixels = (height + self.__baseHeightNibs) * self.__nibWidth
 		
 	def getCapHeight(self):
 		return self.__capHeightNibs #-self.__baseHeight
