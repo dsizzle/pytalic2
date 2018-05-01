@@ -11,9 +11,11 @@ class guideLines(object):
 		self.__widthNibs = 4
 		self.__ascentHeightNibs = 3
 		self.__descentHeightNibs = 3
-		self.__capHeightNibs = 2
+		self.__ascentHeightNibs = 3.0
+		self.__descentHeightNibs = 3.0
+		self.__capHeightNibs = 2.0
 		# nibwidths between rows
-		self.__gapHeightNibs = 2
+		self.__gapHeightNibs = 1.5
 		
 		# internal-only caching of pixel dimensions
 		self.__baseHeightPixels = 0
