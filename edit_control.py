@@ -1350,6 +1350,33 @@ class editor_controller():
 		self.__cmdStack.doCommand(changeDescentHeightCmd)
 		
 		self.__ui.repaint()
+
+	def guideGapHeightChanged_cb(self, newValue):
+		prevValue = self.__charSet.gapHeight
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'gapHeight',
+			'ctrlName' : 'gapHeightSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeGapHeightCmd = commands.command("changeGapHeightCmd")
+
+		changeGapHeightCmd.setDoArgs(doArgs)
+		changeGapHeightCmd.setUndoArgs(undoArgs)
+		changeGapHeightCmd.setDoFunction(self.changePropertyControl)
+		changeGapHeightCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeGapHeightCmd)
+		
+		self.__ui.repaint()
 			
 	def changePropertyControl(self, args):
 		if (args.has_key('value')):

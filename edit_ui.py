@@ -146,12 +146,12 @@ class edit_interface(QtGui.QMainWindow):
 		
 		self.gapHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
 		self.gapHeightSpin.setMinimum(1)
-		self.gapHeightSpin.setMaximum(10)
-		self.gapHeightSpin.setValue(1)
+		self.gapHeightSpin.setMaximum(5)
+		self.gapHeightSpin.setValue(1.5)
 		self.gapHeightSpin.setWrapping(True)
 		self.gapHeightSpin.setDecimals(1)
 		self.gapHeightSpin.setSingleStep(0.5)
-		#QtCore.QObject.connect(self.gapHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.guideGapHeightChanged)
+		QtCore.QObject.connect(self.gapHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideGapHeightChanged_cb)
 		
 		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
 		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)

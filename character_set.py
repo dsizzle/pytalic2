@@ -7,11 +7,12 @@ class character_set(object):
 		self.__characters = {}
 		self.__currentChar = None
 
-		self.__nominalWidthNibs = 4
-		self.__baseHeightNibs = 5
-		self.__ascentHeightNibs = 3
-		self.__descentHeightNibs = 3
-		self.__capHeightNibs = 2
+		self.__nominalWidthNibs = 4.0
+		self.__baseHeightNibs = 5.0
+		self.__ascentHeightNibs = 3.0
+		self.__descentHeightNibs = 3.0
+		self.__capHeightNibs = 2.0
+		self.__gapHeightNibs = 1.0
 
 		self.__savedStrokes = []
 
@@ -117,3 +118,11 @@ class character_set(object):
 		return self.__capHeightNibs
 
 	capHeight = property(getCapHeight, setCapHeight)
+
+	def setGapHeight(self, newGapHeight):
+		self.__gapHeightNibs = newGapHeight
+
+	def getGapHeight(self):
+		return self.__gapHeightNibs
+
+	gapHeight = property(getGapHeight, setGapHeight)
