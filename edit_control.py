@@ -1377,6 +1377,33 @@ class editor_controller():
 		self.__cmdStack.doCommand(changeGapHeightCmd)
 		
 		self.__ui.repaint()
+
+	def guideAngleChanged_cb(self, newValue):
+		prevValue = self.__charSet.angle
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'angle',
+			'ctrlName' : 'angleSpin'
+		}
+
+		undoArgs = {
+			'value' : prevValue
+		}
+
+		changeAngleCmd = commands.command("changeAngleCmd")
+
+		changeAngleCmd.setDoArgs(doArgs)
+		changeAngleCmd.setUndoArgs(undoArgs)
+		changeAngleCmd.setDoFunction(self.changePropertyControl)
+		changeAngleCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeAngleCmd)
+		
+		self.__ui.repaint()
 			
 	def changePropertyControl(self, args):
 		if (args.has_key('value')):

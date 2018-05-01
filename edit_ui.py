@@ -139,7 +139,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.angleSpin.setMaximum(45)
 		self.angleSpin.setValue(0)
 		self.angleSpin.setWrapping(True)
-		#QtCore.QObject.connect(self.angleSpin, QtCore.SIGNAL("valueChanged(int)"), self.guideAngleChanged)
+		QtCore.QObject.connect(self.angleSpin, QtCore.SIGNAL("valueChanged(int)"), self.__parent.guideAngleChanged_cb)
 		
 		self.gapHeightLabel = QtGui.QLabel(self.charSetPropFrame)
 		self.gapHeightLabel.setText("Gap distance:")
