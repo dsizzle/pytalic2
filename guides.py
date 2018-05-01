@@ -7,10 +7,8 @@ from PyQt4 import QtCore, QtGui
 class guideLines(object):
 	def __init__(self):
 		# units are nibwidths from baseline
-		self.__baseHeightNibs = 5
-		self.__widthNibs = 4
-		self.__ascentHeightNibs = 3
-		self.__descentHeightNibs = 3
+		self.__baseHeightNibs = 5.0
+		self.__widthNibs = 4.0
 		self.__ascentHeightNibs = 3.0
 		self.__descentHeightNibs = 3.0
 		self.__capHeightNibs = 2.0
