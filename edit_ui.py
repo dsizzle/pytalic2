@@ -173,8 +173,52 @@ class edit_interface(QtGui.QMainWindow):
 		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
 		self.charSetPropLayout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
 
+		self.charPropFrame = QtGui.QFrame(self.toolPane);
+		self.charPropLayout = QtGui.QFormLayout(self.charPropFrame)
+
+		self.charWidthLabel = QtGui.QLabel(self.charPropFrame)
+		self.charWidthLabel.setText("Character width:")
+
+		self.charWidthSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.charWidthSpin.setMinimum(2)
+		self.charWidthSpin.setMaximum(10)
+		self.charWidthSpin.setValue(4.0)
+		self.charWidthSpin.setWrapping(True)
+		self.charWidthSpin.setDecimals(1)
+		self.charWidthSpin.setSingleStep(0.5)
+		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charWidthChanged_cb)
+
+		self.leftSpaceLabel = QtGui.QLabel(self.charPropFrame)
+		self.leftSpaceLabel.setText("Left spacing:")
+
+		self.leftSpaceSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.leftSpaceSpin.setMinimum(0)
+		self.leftSpaceSpin.setMaximum(3)
+		self.leftSpaceSpin.setValue(1.0)
+		self.leftSpaceSpin.setWrapping(True)
+		self.leftSpaceSpin.setDecimals(1)
+		self.leftSpaceSpin.setSingleStep(0.1)
+		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charLeftSpaceChanged_cb)
+
+		self.rightSpaceLabel = QtGui.QLabel(self.charPropFrame)
+		self.rightSpaceLabel.setText("Right spacing:")
+
+		self.rightSpaceSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.rightSpaceSpin.setMinimum(0)
+		self.rightSpaceSpin.setMaximum(3)
+		self.rightSpaceSpin.setValue(1.0)
+		self.rightSpaceSpin.setWrapping(True)
+		self.rightSpaceSpin.setDecimals(1)
+		self.rightSpaceSpin.setSingleStep(0.1)
+		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charRightSpaceChanged_cb)
+
+		self.charPropLayout.addRow(self.charWidthLabel, self.charWidthSpin)
+		self.charPropLayout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
+		self.charPropLayout.addRow(self.rightSpaceLabel, self.rightSpaceSpin)
+
 		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
-		self.propertyTabs.addTab(self.charSetPropFrame, "Properties");
+		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
+		self.propertyTabs.addTab(self.charPropFrame, "Character");
 
 		self.toolPaneLayout.addWidget(self.propertyTabs)
 		self.toolPaneLayout.setMargin(0)
@@ -207,7 +251,6 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeDwgArea.setSizePolicy(mainSizePolicy)
 
 		self.mainLayout.addLayout(self.charSelectorLayout)
-		#self.mainLayout.addLayout(self.strokeSelectorLayout)
 		self.mainLayout.addLayout(self.viewLayout, 2)
 		
 		self.mainWidget.setLayout(self.mainLayout)

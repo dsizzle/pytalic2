@@ -109,6 +109,16 @@ class guideLines(object):
 
 	gapHeight = property(getGap, setGap)
 
+	def setNominalWidth(self, newWidth):
+		self.__widthNibs = newWidth
+		self.__baseWidthPixels = newWidth * self.__nibWidth
+		self.__halfBaseWidthPixels = self.__baseWidthPixels / 2
+
+	def getNominalWidth(self):
+		return self.__widthNibs
+
+	nominalWidth = property(getNominalWidth, setNominalWidth)
+
 	def setNibWidth(self, newNibWidth):
 		self.__nibWidth = newNibWidth
 		self.__baseWidthPixels = newNibWidth * self.__widthNibs

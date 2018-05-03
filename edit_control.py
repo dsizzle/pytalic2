@@ -1256,11 +1256,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'baseHeight',
-			'ctrlName' : 'baseHeightSpin'
+			'ctrlName' : 'baseHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'baseHeight',
+			'ctrlName' : 'baseHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeBaseHeightCmd = commands.command("changeBaseHeightCmd")
@@ -1283,11 +1287,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'capHeight',
-			'ctrlName' : 'capHeightSpin'
+			'ctrlName' : 'capHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'capHeight',
+			'ctrlName' : 'capHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeCapHeightCmd = commands.command("changeCapHeightCmd")
@@ -1310,11 +1318,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'ascentHeight',
-			'ctrlName' : 'ascentHeightSpin'
+			'ctrlName' : 'ascentHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'ascentHeight',
+			'ctrlName' : 'ascentHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeAscentHeightCmd = commands.command("changeAscentHeightCmd")
@@ -1337,11 +1349,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'descentHeight',
-			'ctrlName' : 'descentHeightSpin'
+			'ctrlName' : 'descentHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'descentHeight',
+			'ctrlName' : 'descentHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeDescentHeightCmd = commands.command("changeDescentHeightCmd")
@@ -1364,11 +1380,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'gapHeight',
-			'ctrlName' : 'gapHeightSpin'
+			'ctrlName' : 'gapHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'gapHeight',
+			'ctrlName' : 'gapHeightSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeGapHeightCmd = commands.command("changeGapHeightCmd")
@@ -1391,11 +1411,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'angle',
-			'ctrlName' : 'angleSpin'
+			'ctrlName' : 'angleSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'angle',
+			'ctrlName' : 'angleSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeAngleCmd = commands.command("changeAngleCmd")
@@ -1418,11 +1442,15 @@ class editor_controller():
 		doArgs = {
 			'value' : newValue,
 			'attrName' : 'nominalWidth',
-			'ctrlName' : 'nominalWidthSpin'
+			'ctrlName' : 'nominalWidthSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		undoArgs = {
-			'value' : prevValue
+			'value' : prevValue,
+			'attrName' : 'nominalWidth',
+			'ctrlName' : 'nominalWidthSpin',
+			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
 		}
 
 		changeNominalWidthCmd = commands.command("changeNominalWidthCmd")
@@ -1436,6 +1464,99 @@ class editor_controller():
 		
 		self.__ui.repaint()
 			
+	def charWidthChanged_cb(self, newValue):
+		prevValue = self.__curChar.width
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'width',
+			'ctrlName' : 'charWidthSpin',
+			'objects' : [self.__curChar]
+		}
+
+		undoArgs = {
+			'value' : prevValue,
+			'attrName' : 'width',
+			'ctrlName' : 'charWidthSpin',
+			'objects' : [self.__curChar]
+		}
+
+		changeWidthCmd = commands.command("changeNominalWidthCmd")
+
+		changeWidthCmd.setDoArgs(doArgs)
+		changeWidthCmd.setUndoArgs(undoArgs)
+		changeWidthCmd.setDoFunction(self.changePropertyControl)
+		changeWidthCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeWidthCmd)
+		
+		self.__ui.repaint()
+
+	def charLeftSpaceChanged_cb(self, newValue):
+		prevValue = self.__curChar.leftSpacing
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'leftSpacing',
+			'ctrlName' : 'charLeftSpaceSpin',
+			'objects' : [self.__curChar]
+		}
+
+		undoArgs = {
+			'value' : prevValue,
+			'attrName' : 'leftSpacing',
+			'ctrlName' : 'charLeftSpaceSpin',
+			'objects' : [self.__curChar]
+		}
+
+		changeLeftSpaceCmd = commands.command("changeLeftSpaceCmd")
+
+		changeLeftSpaceCmd.setDoArgs(doArgs)
+		changeLeftSpaceCmd.setUndoArgs(undoArgs)
+		changeLeftSpaceCmd.setDoFunction(self.changePropertyControl)
+		changeLeftSpaceCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeLeftSpaceCmd)
+		
+		self.__ui.repaint()
+
+	def charRightSpaceChanged_cb(self, newValue):
+		prevValue = self.__curChar.rightSpacing
+
+		if (newValue == prevValue):
+			return
+
+		doArgs = {
+			'value' : newValue,
+			'attrName' : 'rightSpacing',
+			'ctrlName' : 'charRightSpaceSpin',
+			'objects' : [self.__curChar]
+		}
+
+		undoArgs = {
+			'value' : prevValue,
+			'attrName' : 'rightSpacing',
+			'ctrlName' : 'charRightSpaceSpin',
+			'objects' : [self.__curChar]
+		}
+
+		changeRightSpaceCmd = commands.command("changeRightSpaceCmd")
+
+		changeRightSpaceCmd.setDoArgs(doArgs)
+		changeRightSpaceCmd.setUndoArgs(undoArgs)
+		changeRightSpaceCmd.setDoFunction(self.changePropertyControl)
+		changeRightSpaceCmd.setUndoFunction(self.changePropertyControl)
+
+		self.__cmdStack.doCommand(changeRightSpaceCmd)
+		
+		self.__ui.repaint()
+
 	def changePropertyControl(self, args):
 		if (args.has_key('value')):
 			val = args['value']
@@ -1449,12 +1570,20 @@ class editor_controller():
 
 		if (args.has_key('ctrlName')):
 			ctrlName = args['ctrlName']
+		else:
+			return
 
-		setattr(self.__charSet, attrName, val)
-		setattr(self.__currentViewPane.getGuidelines(), attrName, val)
+		if (args.has_key('objects')):
+			objectsToSet = args['objects']
+		else:
+			return
+
+		for objectName in objectsToSet:
+			setattr(objectName, attrName, val)
+		
 		setattr(self.__ui, ctrlName, val)
 
 		self.__ui.repaint()
-
+1
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

@@ -11,6 +11,10 @@ STROKE = 'stroke'
 
 class Character(object):
 	def __init__(self):
+		self.__width = 4
+		self.__leftSpacing = 1.0
+		self.__rightSpacing = 1.0
+		
 		self.__strokes = []
 		self.__bitmapPreview = None
 		
@@ -158,7 +162,31 @@ class Character(object):
 		del self.__bitmapPreview
 	
 	bitmapPreview = property(getBitmap, setBitmap, delBitmap, "bitmapPreview property")	
-	
+
+	def getWidth(self):
+		return self.__width
+
+	def setWidth(self, newWidth):
+		self.__width = newWidth
+
+	width = property(getWidth, setWidth)
+
+	def getLeftSpacing(self):
+		return self.__leftSpacing
+
+	def setLeftSpacing(self, newLeftSpacing):
+		self.__leftSpacing = newLeftSpacing
+
+	leftSpacing = property(getLeftSpacing, setLeftSpacing)
+
+	def getRightSpacing(self):
+		return self.__rightSpacing
+
+	def setRightSpacing(self, newRightSpacing):
+		self.__rightSpacing = newRightSpacing
+
+	rightSpacing = property(getRightSpacing, setRightSpacing)
+
 	def draw(self, showCtrlVerts=0, drawHandles=0, nib=None):
 		
 		for stroke in self.__strokes:
