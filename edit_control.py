@@ -138,7 +138,11 @@ class editor_controller():
 			
 		if (fileName):
 			(self.__dirName, self.__fileName) = os.path.split(str(fileName))
-				
+			(name, ext) = os.path.splitext(self.__fileName)	
+
+			if (ext != ".cs"):
+				self.__fileName += ".cs"
+
 			self.save(self.__fileName)
 			self.__ui.setWindowTitle(self.__label + " - " + self.__fileName)
 			self.__cmdStack.resetSaveCount()
