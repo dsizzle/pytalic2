@@ -1275,7 +1275,8 @@ class editor_controller():
 		changeBaseHeightCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeBaseHeightCmd)
-		
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def guideCapHeightChanged_cb(self, newValue):
@@ -1306,6 +1307,7 @@ class editor_controller():
 		changeCapHeightCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeCapHeightCmd)
+		self.__ui.editUndo.setEnabled(True)
 		
 		self.__ui.repaint()
 
@@ -1337,6 +1339,7 @@ class editor_controller():
 		changeAscentHeightCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeAscentHeightCmd)
+		self.__ui.editUndo.setEnabled(True)
 		
 		self.__ui.repaint()
 
@@ -1368,7 +1371,8 @@ class editor_controller():
 		changeDescentHeightCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeDescentHeightCmd)
-		
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def guideGapHeightChanged_cb(self, newValue):
@@ -1399,6 +1403,7 @@ class editor_controller():
 		changeGapHeightCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeGapHeightCmd)
+		self.__ui.editUndo.setEnabled(True)
 		
 		self.__ui.repaint()
 
@@ -1429,8 +1434,9 @@ class editor_controller():
 		changeAngleCmd.setDoFunction(self.changePropertyControl)
 		changeAngleCmd.setUndoFunction(self.changePropertyControl)
 
-		self.__cmdStack.doCommand(changeGapHeightCmd)
-		
+		self.__cmdStack.doCommand(changeAngleCmd)
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def guideNominalWidthChanged_cb(self, newValue):
@@ -1461,6 +1467,7 @@ class editor_controller():
 		changeNominalWidthCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeNominalWidthCmd)
+		self.__ui.editUndo.setEnabled(True)
 		
 		self.__ui.repaint()
 			
@@ -1492,7 +1499,8 @@ class editor_controller():
 		changeWidthCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeWidthCmd)
-		
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def charLeftSpaceChanged_cb(self, newValue):
@@ -1523,7 +1531,8 @@ class editor_controller():
 		changeLeftSpaceCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeLeftSpaceCmd)
-		
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def charRightSpaceChanged_cb(self, newValue):
@@ -1554,7 +1563,8 @@ class editor_controller():
 		changeRightSpaceCmd.setUndoFunction(self.changePropertyControl)
 
 		self.__cmdStack.doCommand(changeRightSpaceCmd)
-		
+		self.__ui.editUndo.setEnabled(True)
+
 		self.__ui.repaint()
 
 	def changePropertyControl(self, args):
