@@ -612,10 +612,13 @@ class editor_controller():
 		self.__ui.dwgArea.repaint()
 
 	def viewToggleSnapAxially_cb(self, event):
-		self.__snap |= SNAP_TO_AXES
+		self.__snap ^= SNAP_TO_AXES
 
 	def viewToggleSnapToGrid_cb(self, event):
-		self.__snap |= SNAP_TO_GRID
+		self.__snap ^= SNAP_TO_GRID
+
+	def viewToggleSnapToNibAxes_cb(self, event):
+		self.__snap ^= SNAP_TO_NIB_AXES
 
 	def viewToggleGuidelines(self, event):
 		self.__currentViewPane.drawGuidelines = not self.__currentViewPane.drawGuidelines
@@ -1594,6 +1597,6 @@ class editor_controller():
 		setattr(self.__ui, ctrlName, val)
 
 		self.__ui.repaint()
-1
+
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
