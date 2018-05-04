@@ -1043,8 +1043,9 @@ class editor_controller():
 
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
+						return snappedPoints
 
-				elif self.__snap & SNAP_TO_AXES:
+				if self.__snap & SNAP_TO_AXES:
 					ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
 
 					vertIndex = ctrlVerts.index(selPoint)
@@ -1057,13 +1058,62 @@ class editor_controller():
 					
 					vpos = ctrlVerts[vertIndex].getHandlePos(2)
 					
-					snapPoint = self.__ui.dwgArea.getGuidelines().snapToAxes(selStroke.getPos(), pos, vpos)
+					snapPoint = self.snapToAxes(selStroke.getPos(), pos, vpos, axisAngles=[0-self.__charSet.angle, -90])
+
+					if snapPoint != QtCore.QPoint(-1, -1):
+						snappedPoints.append(snapPoint)
+						snappedPoints.append(vpos + selStroke.getPos())
+						return snappedPoints
+
+				if self.__snap & SNAP_TO_NIB_AXES:
+					ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
+
+					vertIndex = ctrlVerts.index(selPoint)
+					
+					if selPoint.isKnotSelected():
+						if vertIndex == 0:
+							vertIndex += 1
+						else:
+							vertIndex -= 1
+					
+					vpos = ctrlVerts[vertIndex].getHandlePos(2)
+					
+					snapPoint = self.snapToAxes(selStroke.getPos(), pos, vpos, axisAngles=[40, -40])
 					
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
 						snappedPoints.append(vpos + selStroke.getPos())
+						return snappedPoints
 					
 		return snappedPoints
+
+	def snapToAxes(self, strokePos, pos, vertPos, tolerance=10, axisAngles=[]):
+		snapPt = QtCore.QPoint(-1, -1)
+
+		if len(axisAngles) == 0:
+			return snapPt
+		
+		delta = pos - vertPos - strokePos
+
+		vecLength = math.sqrt(float(delta.x())*float(delta.x()) + float(delta.y())*float(delta.y()))
+
+		for angle in axisAngles:
+
+			if delta.x() > 0 and delta.y() < 0:
+				angle += 180
+			elif delta.x() < 0 and delta.y() < 0:
+				angle += 270
+
+			newPt = QtCore.QPoint(vecLength * math.sin(math.radians(angle)), \
+				vecLength * math.cos(math.radians(angle)))
+			newPt = newPt + vertPos + strokePos
+
+			newDelta = pos - newPt
+
+			if abs(newDelta.x()) < tolerance:
+				snapPt = newPt
+
+		return snapPt
 
 	def straightenStroke_cb(self, event):
 		if len(self.__selection[self.__currentViewPane].keys()) == 1:
