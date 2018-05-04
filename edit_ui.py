@@ -186,7 +186,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.charWidthSpin.setWrapping(True)
 		self.charWidthSpin.setDecimals(1)
 		self.charWidthSpin.setSingleStep(0.5)
-		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charWidthChanged_cb)
+		QtCore.QObject.connect(self.charWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charWidthChanged_cb)
 
 		self.leftSpaceLabel = QtGui.QLabel(self.charPropFrame)
 		self.leftSpaceLabel.setText("Left spacing:")
@@ -198,7 +198,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.leftSpaceSpin.setWrapping(True)
 		self.leftSpaceSpin.setDecimals(1)
 		self.leftSpaceSpin.setSingleStep(0.1)
-		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charLeftSpaceChanged_cb)
+		QtCore.QObject.connect(self.leftSpaceSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charLeftSpaceChanged_cb)
 
 		self.rightSpaceLabel = QtGui.QLabel(self.charPropFrame)
 		self.rightSpaceLabel.setText("Right spacing:")
@@ -210,7 +210,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.rightSpaceSpin.setWrapping(True)
 		self.rightSpaceSpin.setDecimals(1)
 		self.rightSpaceSpin.setSingleStep(0.1)
-		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charRightSpaceChanged_cb)
+		QtCore.QObject.connect(self.rightSpaceSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charRightSpaceChanged_cb)
 
 		self.charPropLayout.addRow(self.charWidthLabel, self.charWidthSpin)
 		self.charPropLayout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
