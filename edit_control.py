@@ -1298,7 +1298,8 @@ class editor_controller():
 				self.__curChar.bitmapPreview = iconBitmap
 				self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 			elif self.__currentViewPane == self.__ui.strokeDwgArea:
-				self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+				if self.__ui.strokeSelectorList.count() > 0:
+					self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
 	def guideBaseHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.baseHeight
