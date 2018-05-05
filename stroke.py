@@ -139,8 +139,45 @@ class Stroke(object):
 		while (len(verts) > 3):
 			self.__curvePath.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
 			verts = verts[3:]
-	
-	def calcCtrlVertices(self, pts):
+
+	def splitCurve(self, testAngle):
+		l = []
+		r = []
+		newCurves = []
+		oppTestAngle = testAngle + 180
+		tolerance = 1
+
+		verts = self.getCtrlVerticesAsList()
+		curCurve = self.__curvePath
+
+		for i in range(0, 1000):
+			pct = float(i) / 1000.0
+			angle = int(curCurve.angleAtPercent(pct))
+			if (angle >= testAngle-tolerance and angle <= testAngle+tolerance) or \
+				(angle >= oppTestAngle-tolerance and angle <= oppTestAngle+tolerance):
+				(l, r) = self.divideCurveAtPoint(verts, pct, 1)
+				l.append(r[0])
+			
+				curCurve = QtGui.QPainterPath()
+				curCurve.moveTo(l[0][0], l[0][1])
+				curCurve.cubicTo(l[1][0], l[1][1], l[2][0], l[2][1], l[3][0], l[3][1])
+				newCurves.append(curCurve)
+				verts = r
+				curCurve = QtGui.QPainterPath()
+				curCurve.moveTo(verts[0][0], verts[0][1])
+				curCurve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
+				i = 0;
+
+		while (len(verts) > 3):
+			curCurve = QtGui.QPainterPath()
+			curCurve.moveTo(verts[0][0], verts[0][1])
+			curCurve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
+			newCurves.append(curCurve)
+			verts = verts[3:]
+
+		return newCurves
+
+	def calcCtrlVertices(self, pts):	
 		return shapes.splines.BezierSpline.calcCtrlVertices(self, pts)
 	
 	def getCtrlVertices(self, make_copy=True):
@@ -259,10 +296,7 @@ class Stroke(object):
 		self.updateCtrlVertices()
 		self.calcCurvePoints()
 	
-	def addCtrlVertex(self, t, index):
-	def divideCurveAtPoint(self, t, index):
-		pts = self.getCtrlVerticesAsList()
-		
+	def divideCurveAtPoint(self, pts, t, index):
 		trueIndex = index*3
 		
 		p3 = pts[trueIndex]
@@ -293,7 +327,9 @@ class Stroke(object):
 		return (pts[:trueIndex], pts[trueIndex:])
 
 	def addCtrlVertex(self, t, index):
-		(pts, remainder) = self.divideCurveAtPoint(t, index)
+		pts = self.getCtrlVerticesAsList()
+
+		(pts, remainder) = self.divideCurveAtPoint(pts, t, index)
 		
 		pts.extend(remainder)
 
@@ -301,7 +337,9 @@ class Stroke(object):
 		self.calcCurvePoints()
 
 	def splitAtPoint(self, t, index):
-		(pts, remainder) = self.divideCurveAtPoint(t, index)
+		pts = self.getCtrlVerticesAsList()
+
+		(pts, remainder) = self.divideCurveAtPoint(pts, t, index)
 		
 		pts.append(remainder[0])
 		
@@ -334,27 +372,31 @@ class Stroke(object):
 		gc.translate(self.__pos)		
 
 		gc.setPen(nib.pen)
-		gc.setBrush(nib.brush)
-
+		gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
+		
 		verts = self.getCtrlVerticesAsList()
 		if len(verts) > 0:
 			self.__strokeShape = QtGui.QPainterPath()
 			if self.__curvePath is None:
 				self.calcCurvePoints()
 
+			nib.draw(gc, self)
+		
 			path1 = QtGui.QPainterPath(self.__curvePath)
 			path2 = QtGui.QPainterPath(self.__curvePath).toReversed()
 			
-			path1.translate(5, -5)
-			path2.translate(-5, 5)
+			distX, distY = nib.getActualWidths()
+
+			path1.translate(distX, -distY)
+			path2.translate(-distX, distY)
 			
 			self.__strokeShape.addPath(path1)
 			self.__strokeShape.connectPath(path2)
 			self.__strokeShape.closeSubpath()
 
-			self.__strokeShape.setFillRule(QtCore.Qt.WindingFill)
+			#self.__strokeShape.setFillRule(QtCore.Qt.WindingFill)
 
-			gc.drawPath(self.__strokeShape)
+			#gc.drawPath(self.__strokeShape)
 			
 			self.__boundRect = self.__strokeShape.controlPointRect()
 	

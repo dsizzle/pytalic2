@@ -13,7 +13,7 @@ from PyQt4 import QtCore, QtGui
 
 # move color to stroke
 class Nib(object):
-	def __init__(self, width=20, angle=40, color=QtGui.QColor(125,25,25)): #FL_BLACK):
+	def __init__(self, width=10, angle=40, color=QtGui.QColor(125,25,25)): #FL_BLACK):
 		if (angle < 0):
 			angle = 180+angle
 				
@@ -23,10 +23,10 @@ class Nib(object):
 		self.__angleRads = (self.__angle * math.pi) / 180.0		
 
 		self.__color = color
-		self.nibwidth_x = self.width * math.cos(self.angle * 
-		                    math.pi / 180.0)
-		self.nibwidth_y = self.width * math.sin(self.angle * 
-                            math.pi / 180.0)
+		self.__nibwidth_x = self.width * math.cos(self.angle * 
+							math.pi / 180.0)
+		self.__nibwidth_y = self.width * math.sin(self.angle * 
+							math.pi / 180.0)
 
 		self.seed = time.localtime()
 		self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
@@ -37,10 +37,10 @@ class Nib(object):
 		self.__angle = nib.angle
 		self.__color = nib.getColor()
 
-		self.nibwidth_x = self.width * math.cos(self.__angle * 
-		                    math.pi / 180.0)
-		self.nibwidth_y = self.width * math.sin(self.__angle * 
-                            math.pi / 180.0)
+		self.__nibwidth_x = self.width * math.cos(self.__angle * 
+							math.pi / 180.0)
+		self.__nibwidth_y = self.width * math.sin(self.__angle * 
+							math.pi / 180.0)
 
 		self.seed = time.localtime()
 		self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
@@ -71,55 +71,49 @@ class Nib(object):
 		self.__angle = angle
 		self.__angleRads = (self.__angle * math.pi) / 180.0		
 
-		self.nibwidth_x = self.__width * math.cos(self.__angleRads)
-		self.nibwidth_y = self.__width * math.sin(self.__angleRads)
+		self.__nibwidth_x = self.__width * math.cos(self.__angleRads)
+		self.__nibwidth_y = self.__width * math.sin(self.__angleRads)
 	
 	def getAngle(self):
-	   	return self.__angle
-    	
+		return self.__angle
+		
 	angle = property(getAngle, setAngle)
 
-   	def setWidth(self, width):
-   		self.__width = width
-   		self.nibwidth_x = self.__width * math.cos(self.__angleRads)
-		self.nibwidth_y = self.__width * math.sin(self.__angleRads)
+	def setWidth(self, width):
+		self.__width = width
+		self.__nibwidth_x = self.__width * math.cos(self.__angleRads)
+		self.__nibwidth_y = self.__width * math.sin(self.__angleRads)
 			
 	def getWidth(self):
 		return self.__width
-           
+
 	width = property(getWidth, setWidth)
 
-	def draw(self, gc, x,y,x2=None,y2=None, seed=None):
-
-		pts = shapes.polygon.calcPoly(x, y, self.nibwidth_x, self.nibwidth_y, x2, y2)
-		pts = shapes.polygon.normalizePolyRotation(pts)
+	def getActualWidths(self):
+		return self.__nibwidth_x, self.__nibwidth_y
 		
-		poly = QtGui.QPolygon(4)
-		poly.setPoint(0, QtCore.QPoint(pts[0][0],pts[0][1]))
-		poly.setPoint(1, QtCore.QPoint(pts[1][0],pts[1][1]))
-		poly.setPoint(2, QtCore.QPoint(pts[2][0],pts[2][1]))
-		poly.setPoint(3, QtCore.QPoint(pts[3][0],pts[3][1]))
-		
+	def draw(self, gc, stroke):
 		pen = self.pen
 		nullpen = QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 1, QtCore.Qt.SolidLine)
 		brush = self.brush
 		
 		gc.setPen(nullpen)
 		gc.setBrush(brush)
-		
-		gc.setPen(nullpen)
-		gc.drawPolygon(poly, QtCore.Qt.WindingFill)
-		gc.setPen(pen)
-		gc.drawPolyline(poly)
-		
-		bRect = poly.boundingRect()
-		
-		newPts = [[bRect.topLeft().x(), bRect.topLeft().y()], 
-			[bRect.topRight().x(), bRect.topRight().y()],	
-			[bRect.bottomRight().x(), bRect.bottomRight().y()],
-			[bRect.bottomLeft().x(), bRect.bottomLeft().y()]]
-		
-		return newPts
+
+		newCurves = stroke.splitCurve(self.__angle)
+			
+		for curve in newCurves:
+			path1 = QtGui.QPainterPath(curve)
+			path2 = QtGui.QPainterPath(curve).toReversed()
+			
+			path1.translate(self.__nibwidth_x, -self.__nibwidth_y)
+			path2.translate(-self.__nibwidth_x, self.__nibwidth_y)
+			
+			curveSegment = QtGui.QPainterPath()
+			curveSegment.addPath(path1)
+			curveSegment.connectPath(path2)
+			curveSegment.closeSubpath()
+			gc.drawPath(curveSegment)
 
 	def vertNibWidthScale (self, dc, x, y, num=2):
 		tempAngle = self.__angle
@@ -282,10 +276,10 @@ class ScrollNib(Nib):
 # 	
 class BrushNib(Nib):
 	def __init__(self, width=5, angle=40, color=QtGui.QColor(125,25,25)):
- 		
+		
 		Nib.__init__(self, width, angle, color)
 		self.__slope = float(self.nibwidth_y / self.nibwidth_x)
- 		
+		
 	def draw(self, dc, x, y, x2=None,y2=None):
 			
 		pts = shapes.polygon.calcPoly(x, y, self.nibwidth_x, self.nibwidth_y, x2, y2)
