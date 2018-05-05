@@ -142,8 +142,8 @@ class Character(object):
 		try:
 			self.__strokes.remove(strokeToDelete)
 		except:
-			print "ERROR: stroke to delete doesn't exist!"
-	
+			print "ERROR: stroke to delete doesn't exist!", strokeToDelete
+			print self.__strokes
 	
 	def distBetweenPts (self, x,y,x1,y1):
 		return math.sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1))
