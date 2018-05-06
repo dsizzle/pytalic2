@@ -76,6 +76,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.strokeDwgArea.setLineWidth(2)
 		self.strokeDwgArea.drawGuidelines = False
+		self.strokeDwgArea.drawNibGuides = False
 
 		self.charSetPropFrame = QtGui.QFrame(self.toolPane);
 		self.charSetPropLayout = QtGui.QFormLayout(self.charSetPropFrame)
@@ -385,17 +386,16 @@ class edit_interface(QtGui.QMainWindow):
 
 		self.viewGuides = QtGui.QAction("Guidelines", self)
 		self.viewGuides.setStatusTip('Toggle guidelines on/off')
-		self.viewGuides.triggered.connect(self.__parent.viewToggleGuidelines)
+		self.viewGuides.triggered.connect(self.__parent.viewToggleGuidelines_cb)
 		self.viewGuides.setCheckable(True)
 		self.viewGuides.setChecked(True)
 		self.viewMenu.addAction(self.viewGuides)
 		
 		self.viewNibGuides = QtGui.QAction("Nib Guides", self)
 		self.viewNibGuides.setStatusTip('Toggle nib guides on/off')
-		#viewNibGuides.triggered.connect(self.viewToggleNibGuides_cb)
+		self.viewNibGuides.triggered.connect(self.__parent.viewToggleNibGuides_cb)
 		self.viewNibGuides.setCheckable(True)
 		self.viewNibGuides.setChecked(True)
-		self.viewNibGuides.setEnabled(False)
 		self.viewMenu.addAction(self.viewNibGuides)
 			
 		self.viewMenu.addSeparator()

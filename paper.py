@@ -23,6 +23,7 @@ class drawingArea(QtGui.QFrame):
 
 		self.__guideLines = guides.guideLines()
 		self.__drawGuidelines = True
+		self.__drawNibGuides = True
 		self.__pointsToDraw = []
 		self.__strokesToDraw = []
 		self.__strokesToDrawSpecial = []
@@ -78,6 +79,14 @@ class drawingArea(QtGui.QFrame):
 		self.__drawGuidelines = value
 
 	drawGuidelines = property(getDrawGuidelines, setDrawGuidelines)
+
+	def getDrawNibGuides(self):
+		return self.__drawNibGuides
+
+	def setDrawNibGuides(self, value):
+		self.__drawNibGuides = value
+
+ 	drawNibGuides = property(getDrawNibGuides, setDrawNibGuides)
 
 	def setDrawStrokesSpecial(self, strokes):
 		self.__strokesToDrawSpecial = strokes
@@ -165,18 +174,19 @@ class drawingArea(QtGui.QFrame):
 		if self.__drawGuidelines:
 			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
 
-		nibGuideBasePosX = 0-(self.__guideLines.getNominalWidth() * 3 * self.__nib.width)-self.__nib.width*2
-		nibGuideBasePosY = 0
-		nibGuideBaseHeight = self.__guideLines.getBaseHeight()
-		nibGuideAscentPosY = nibGuideBasePosY - nibGuideBaseHeight * self.__nib.width * 2
-		nibGuideAscent = self.__guideLines.getAscent()
-		nibGuideDescent = self.__guideLines.getDescent()
-		nibGuideDescentPosY = nibGuideBasePosY + nibGuideDescent * self.__nib.width * 2
-		
-		self.__nib.vertNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY, nibGuideBaseHeight)
-		self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideAscentPosY, nibGuideAscent)
-		self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideDescentPosY, nibGuideDescent)
-		self.__nib.horzNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY+self.__nib.width*2, 4)
+		if self.__drawNibGuides:
+			nibGuideBasePosX = 0-(self.__guideLines.getNominalWidth() * 3 * self.__nib.width)-self.__nib.width*2
+			nibGuideBasePosY = 0
+			nibGuideBaseHeight = self.__guideLines.getBaseHeight()
+			nibGuideAscentPosY = nibGuideBasePosY - nibGuideBaseHeight * self.__nib.width * 2
+			nibGuideAscent = self.__guideLines.getAscent()
+			nibGuideDescent = self.__guideLines.getDescent()
+			nibGuideDescentPosY = nibGuideBasePosY + nibGuideDescent * self.__nib.width * 2
+			
+			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY, nibGuideBaseHeight)
+			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideAscentPosY, nibGuideAscent)
+			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideDescentPosY, nibGuideDescent)
+			self.__nib.horzNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY+self.__nib.width*2, 4)
 
 		dc.setPen(shared_qt.PEN_LT_GRAY)
 		dc.setBrush(shared_qt.BRUSH_CLEAR)

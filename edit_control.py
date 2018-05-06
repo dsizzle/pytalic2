@@ -620,9 +620,14 @@ class editor_controller():
 	def viewToggleSnapToNibAxes_cb(self, event):
 		self.__snap ^= SNAP_TO_NIB_AXES
 
-	def viewToggleGuidelines(self, event):
+	def viewToggleGuidelines_cb(self, event):
 		self.__currentViewPane.drawGuidelines = not self.__currentViewPane.drawGuidelines
 		self.__ui.repaint()
+
+	def viewToggleNibGuides_cb(self, event):
+		self.__currentViewPane.drawNibGuides = not self.__currentViewPane.drawNibGuides
+		self.__ui.repaint()
+
 
 	def viewResetOrigin(self, event):
 		self.__currentViewPane.originDelta = QtCore.QPoint(0, 0)
@@ -1288,6 +1293,8 @@ class editor_controller():
 		if not self.__selection.has_key(self.__currentViewPane):
 			self.__selection[self.__currentViewPane] = {}
 
+		self.__ui.viewGuides.setChecked(self.__currentViewPane.drawGuidelines)
+		self.__ui.viewNibGuides.setChecked(self.__currentViewPane.drawNibGuides)
 		self.__ui.repaint()
 		self.setIcon()
 
