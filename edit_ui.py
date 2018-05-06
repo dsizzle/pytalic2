@@ -8,6 +8,7 @@ from PyQt4 import QtCore, QtGui
 import guides
 import paper
 import splitter
+import widgets_qt
 
 gICON_SIZE = 40
 gICON_TEXT_SIZE = 30
@@ -168,6 +169,12 @@ class edit_interface(QtGui.QMainWindow):
 		self.nominalWidthSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideNominalWidthChanged_cb)
 
+		self.guidesColorLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.guidesColorLabel.setText("Guideline color:")
+		self.guidesColorButton = widgets_qt.select_color_button(self.charSetPropFrame)
+		self.guidesColorButton.setColor(QtGui.QColor(200, 195, 180))
+		QtCore.QObject.connect(self.guidesColorButton, QtCore.SIGNAL("valueChanged(QColor)"), self.__parent.guideColorChanged_cb)
+
 		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
 		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)
 		self.charSetPropLayout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
@@ -175,6 +182,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.charSetPropLayout.addRow(self.angleLabel, self.angleSpin)
 		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
 		self.charSetPropLayout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
+		self.charSetPropLayout.addRow(self.guidesColorLabel, self.guidesColorButton)
 
 		self.charPropFrame = QtGui.QFrame(self.toolPane);
 		self.charPropLayout = QtGui.QFormLayout(self.charPropFrame)

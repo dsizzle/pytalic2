@@ -1546,7 +1546,11 @@ class editor_controller():
 		self.__ui.editUndo.setEnabled(True)
 		
 		self.__ui.repaint()
-			
+	
+	def guideColorChanged_cb(self, newColor):
+		self.__ui.guideLines.setLineColor(newColor)
+		self.__ui.repaint()
+
 	def charWidthChanged_cb(self, newValue):
 		prevValue = self.__curChar.width
 
