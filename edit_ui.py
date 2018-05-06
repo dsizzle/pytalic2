@@ -428,10 +428,10 @@ class edit_interface(QtGui.QMainWindow):
 		
 		self.viewSnapToCtrlPts = QtGui.QAction("To Control Points", self)
 		self.viewSnapToCtrlPts.setStatusTip('Toggle snapping to control points')
-		#viewSnapToCtrlPts.triggered.connect(self.viewToggleSnapToCtrlPts_cb)
+		self.viewSnapToCtrlPts.triggered.connect(self.__parent.viewToggleSnapToCtrlPts_cb)
 		self.viewSnapToCtrlPts.setCheckable(True)
 		self.viewSnapToCtrlPts.setChecked(False)
-		self.viewSnapToCtrlPts.setEnabled(False)
+		#self.viewSnapToCtrlPts.setEnabled(False)
 		self.viewSnapMenu.addAction(self.viewSnapToCtrlPts)
 		
 		self.viewSnapToStroke = QtGui.QAction("To Strokes", self)

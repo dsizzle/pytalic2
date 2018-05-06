@@ -620,6 +620,9 @@ class editor_controller():
 	def viewToggleSnapToNibAxes_cb(self, event):
 		self.__snap ^= SNAP_TO_NIB_AXES
 
+	def viewToggleSnapToCtrlPts_cb(self, event):
+		self.__snap ^= SNAP_TO_CTRL_PTS
+
 	def viewToggleGuidelines_cb(self, event):
 		self.__currentViewPane.drawGuidelines = not self.__currentViewPane.drawGuidelines
 		self.__ui.repaint()
@@ -1043,6 +1046,19 @@ class editor_controller():
 			if len(self.__selection[self.__currentViewPane][selStroke].keys()) == 1:
 				selPoint = self.__selection[self.__currentViewPane][selStroke].keys()[0]
 			
+				ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
+
+				vertIndex = ctrlVerts.index(selPoint)
+				
+				if selPoint.isKnotSelected():
+					if vertIndex == 0:
+						vertIndex += 1
+					else:
+						vertIndex -= 1
+				
+				vpos = ctrlVerts[vertIndex].getHandlePos(2)
+				strokePos = selStroke.getPos()
+
 				if self.__snap & SNAP_TO_GRID:
 					snapPoint = self.__ui.dwgArea.getGuidelines().closestGridPoint(pos)
 
@@ -1051,43 +1067,26 @@ class editor_controller():
 						return snappedPoints
 
 				if self.__snap & SNAP_TO_AXES:
-					ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
-
-					vertIndex = ctrlVerts.index(selPoint)
-					
-					if selPoint.isKnotSelected():
-						if vertIndex == 0:
-							vertIndex += 1
-						else:
-							vertIndex -= 1
-					
-					vpos = ctrlVerts[vertIndex].getHandlePos(2)
-					
-					snapPoint = self.snapToAxes(selStroke.getPos(), pos, vpos, axisAngles=[0-self.__charSet.angle, -90])
+					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-self.__charSet.angle, -90])
 
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
-						snappedPoints.append(vpos + selStroke.getPos())
+						snappedPoints.append(vpos + strokePos)
 						return snappedPoints
 
-				if self.__snap & SNAP_TO_NIB_AXES:
-					ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
-
-					vertIndex = ctrlVerts.index(selPoint)
-					
-					if selPoint.isKnotSelected():
-						if vertIndex == 0:
-							vertIndex += 1
-						else:
-							vertIndex -= 1
-					
-					vpos = ctrlVerts[vertIndex].getHandlePos(2)
-					
-					snapPoint = self.snapToAxes(selStroke.getPos(), pos, vpos, axisAngles=[40, -40])
+				if self.__snap & SNAP_TO_NIB_AXES:					
+					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[40, -40])
 					
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
-						snappedPoints.append(vpos + selStroke.getPos())
+						snappedPoints.append(vpos + strokePos)
+						return snappedPoints
+
+				if self.__snap & SNAP_TO_CTRL_PTS:
+					snapPoint = self.snapToCtrlPoint(strokePos, pos, vpos, selPoint)
+
+					if snapPoint != QtCore.QPoint(-1, -1):
+						snappedPoints.append(snapPoint)
 						return snappedPoints
 					
 		return snappedPoints
@@ -1117,6 +1116,22 @@ class editor_controller():
 
 			if abs(newDelta.x()) < tolerance:
 				snapPt = newPt
+
+		return snapPt
+
+	def snapToCtrlPoint(self, strokePos, pos, vertPos, selPoint, tolerance=10):
+		snapPt = QtCore.QPoint(-1, -1)
+
+		testRect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, tolerance, tolerance)
+
+		for charStroke in self.__curChar.strokes:
+			for ctrlVert in charStroke.getCtrlVertices(False):
+				if selPoint is not ctrlVert:
+					testPoint = ctrlVert.getHandlePos(2)
+
+					if testPoint in testRect:
+						snapPt = testPoint
+						break
 
 		return snapPt
 
