@@ -28,14 +28,8 @@ class guideLines(object):
 		self.__angle = 5
 		self.__angleDX = math.tan(math.radians(self.__angle))
 		
-		self.__lineColor = QtGui.QColor(200, 195, 180)
-		self.__lineColorLt = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30)
-		self.__lineColorAlpha = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30, 128)
-		self.__linePenLt = QtGui.QPen(self.__lineColorLt, 1, QtCore.Qt.SolidLine)
-		self.__linePen = QtGui.QPen(self.__lineColor, 1, QtCore.Qt.SolidLine)
-		self.__linePen2 = QtGui.QPen(self.__lineColor, 2, QtCore.Qt.SolidLine)
-		self.__linePenDotted = QtGui.QPen(self.__lineColor, 1, QtCore.Qt.DotLine)
-		self.__spacerBrush = QtGui.QBrush(self.__lineColorAlpha, QtCore.Qt.SolidPattern)
+		self.setLineColor(QtGui.QColor(200, 195, 180))
+
 		self.__nibWidth = 0
 		self.__lastNibWidth = 0
 		self.__gridPts = []
@@ -52,7 +46,7 @@ class guideLines(object):
 	def setLineColor(self, linecolor):
 		self.__lineColor = linecolor
 		self.__lineColorLt = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30)
-		self.__lineColorAlpha = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30, 192)
+		self.__lineColorAlpha = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30, 128)
 		self.__linePenLt = QtGui.QPen(self.__lineColorLt, 1, QtCore.Qt.SolidLine)
 		self.__linePen = QtGui.QPen(self.__lineColor, 1, QtCore.Qt.SolidLine)
 		self.__linePen2 = QtGui.QPen(self.__lineColor, 2, QtCore.Qt.SolidLine)
