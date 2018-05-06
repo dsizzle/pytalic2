@@ -101,8 +101,8 @@ class edit_interface(QtGui.QMainWindow):
 		
 		self.capHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
 		self.capHeightSpin.setMinimum(0.5)
-		self.capHeightSpin.setMaximum(1)
-		self.capHeightSpin.setValue(0.5)
+		self.capHeightSpin.setMaximum(10)
+		self.capHeightSpin.setValue(2.0)
 		self.capHeightSpin.setWrapping(True)
 		self.capHeightSpin.setDecimals(1)
 		self.capHeightSpin.setSingleStep(0.5)

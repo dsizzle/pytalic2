@@ -67,6 +67,8 @@ class guideLines(object):
 	def setBaseHeight(self, height):
 		self.__baseHeightNibs = height
 		self.__baseHeightPixels = height * self.__nibWidth
+		self.__ascentHeightPixels = (self.__ascentHeightNibs + self.__baseHeightNibs) * self.__nibWidth
+		self.__capHeightPixels = (self.__capHeightNibs + self.__baseHeightNibs) * self.__nibWidth
 	
 	def getBaseHeight(self):
 		return self.__baseHeightNibs
