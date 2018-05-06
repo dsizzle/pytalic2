@@ -20,13 +20,11 @@ class Nib(object):
 		angle = angle % 180
 		self.__width = width
 		self.__angle = angle
-		self.__angleRads = (self.__angle * math.pi) / 180.0		
+		self.__angleRads = math.radians(self.__angle)		
 
 		self.__color = color
-		self.__nibwidth_x = self.width * math.cos(self.angle * 
-							math.pi / 180.0)
-		self.__nibwidth_y = self.width * math.sin(self.angle * 
-							math.pi / 180.0)
+		self.__nibwidth_x = self.width * math.cos(self.__angleRads)
+		self.__nibwidth_y = self.width * math.sin(self.__angleRads)
 
 		self.seed = time.localtime()
 		self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
@@ -36,12 +34,11 @@ class Nib(object):
 	def fromNib(self, nib):
 		self.__width = nib.width
 		self.__angle = nib.angle
+		self.__angleRads = math.radians(self.__angle)
 		self.__color = nib.getColor()
 
-		self.__nibwidth_x = self.width * math.cos(self.__angle * 
-							math.pi / 180.0)
-		self.__nibwidth_y = self.width * math.sin(self.__angle * 
-							math.pi / 180.0)
+		self.__nibwidth_x = self.width * math.cos(self.__angleRads)
+		self.__nibwidth_y = self.width * math.sin(self.__angleRads)
 
 		self.seed = time.localtime()
 		self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
@@ -70,7 +67,7 @@ class Nib(object):
 		angle = angle % 180
 		
 		self.__angle = angle
-		self.__angleRads = (self.__angle * math.pi) / 180.0		
+		self.__angleRads = math.radians(self.__angle)		
 
 		self.__nibwidth_x = self.__width * math.cos(self.__angleRads)
 		self.__nibwidth_y = self.__width * math.sin(self.__angleRads)
