@@ -13,7 +13,7 @@ from PyQt4 import QtCore, QtGui
 
 # move color to stroke
 class Nib(object):
-	def __init__(self, width=10, angle=40, color=QtGui.QColor(125,25,25)): #FL_BLACK):
+	def __init__(self, width=10, angle=40, color=QtGui.QColor(125,125,125)): #FL_BLACK):
 		if (angle < 0):
 			angle = 180+angle
 				
@@ -30,6 +30,7 @@ class Nib(object):
 
 		self.seed = time.localtime()
 		self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
+		self.guideBrush = QtGui.QBrush(QtGui.QColor(125, 125, 125, 50), QtCore.Qt.SolidPattern)
 		self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), self.__color.blue(), 220), QtCore.Qt.SolidPattern)
 	
 	def fromNib(self, nib):
@@ -91,7 +92,7 @@ class Nib(object):
 
 	def getActualWidths(self):
 		return self.__nibwidth_x, self.__nibwidth_y
-		
+
 	def draw(self, gc, stroke):
 		pen = self.pen
 		nullpen = QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 1, QtCore.Qt.SolidLine)
@@ -115,38 +116,26 @@ class Nib(object):
 			curveSegment.closeSubpath()
 			gc.drawPath(curveSegment)
 
-	def vertNibWidthScale (self, dc, x, y, num=2):
-		tempAngle = self.__angle
-		
-		self.__angle = 90
-		
-		random.seed(self.seed)
+	def vertNibWidthScale (self, gc, x, y, num=2):
+		ypos = y
 		for i in range (0, int(math.ceil(num))):
-			ypos = y+self.nibwidth_y*i*2
+			ypos -= self.__width*2
 			xpos = x
 			if i % 2 == 0:
-				xpos = x+self.__width*2
+				xpos = x-self.__width*2
 			
-			self.draw(dc, xpos, ypos, xpos+self.__width*2, ypos)
-			
-		self.__angle = tempAngle
+			gc.fillRect(QtCore.QRect(xpos, ypos, self.__width*2, self.__width*2), self.guideBrush)
 	
-	def horzNibWidthScale (self, dc, x, y, num=2):
-		tempAngle = self.__angle
-			
-		self.__angle = 0
-		
-		random.seed(self.seed)	
+	def horzNibWidthScale (self, gc, x, y, num=2):
+		xpos = x
 		for i in range (0, int(math.ceil(num))):
-			xpos = x+self.nibwidth_y*i*2
+			xpos += self.__width*2
 			ypos = y
 			if i % 2 == 0:
-				ypos = y+self.width*2
+				ypos = y-self.__width*2
 			
-			self.draw(dc, xpos, ypos, xpos, ypos+self.__width*2, self.seed)
-				
-		self.__angle = tempAngle
-
+			gc.fillRect(QtCore.QRect(xpos, ypos, self.__width*2, self.__width*2), self.guideBrush)
+	
 class PenNib(Nib):
 	def draw(self, gc, x,y,x2=None,y2=None, seed=None):
 		dx = x2 - x
