@@ -197,7 +197,7 @@ class guideLines(object):
 		gc.drawLine(botX, botY, topX, topY)
 		
 		# horizontal grid	
-		dist = self.__halfBaseWidthPixels + self.__baseWidthPixels
+		dist = self.__baseWidthPixels 
 		gc.drawLine(botX-dist, botY, topX-dist, topY)
 		pos = dist
 		gc.setPen(self.__linePenLt)

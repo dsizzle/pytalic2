@@ -177,7 +177,8 @@ class drawingArea(QtGui.QFrame):
 			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
 
 		if self.__drawNibGuides:
-			nibGuideBasePosX = 0-(self.__guideLines.getNominalWidth() * 3 * self.__nib.width)-self.__nib.width*2
+			nibGuideWidth = self.__guideLines.getNominalWidth()
+			nibGuideBasePosX = 0-(nibGuideWidth * 2 * self.__nib.width) - self.__nib.width * 2
 			nibGuideBasePosY = 0
 			nibGuideBaseHeight = self.__guideLines.getBaseHeight()
 			nibGuideAscentPosY = nibGuideBasePosY - nibGuideBaseHeight * self.__nib.width * 2
@@ -185,10 +186,11 @@ class drawingArea(QtGui.QFrame):
 			nibGuideDescent = self.__guideLines.getDescent()
 			nibGuideDescentPosY = nibGuideBasePosY + nibGuideDescent * self.__nib.width * 2
 			
+
 			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY, nibGuideBaseHeight)
 			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideAscentPosY, nibGuideAscent)
 			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideDescentPosY, nibGuideDescent)
-			self.__nib.horzNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY+self.__nib.width*2, 4)
+			self.__nib.horzNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY+self.__nib.width*2, nibGuideWidth)
 
 		dc.setPen(shared_qt.PEN_LT_GRAY)
 		dc.setBrush(shared_qt.BRUSH_CLEAR)
