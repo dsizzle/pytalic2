@@ -152,7 +152,11 @@ class Stroke(object):
 
 		for i in range(0, 1000):
 			pct = float(i) / 1000.0
-			angle = int(curCurve.angleAtPercent(pct))
+			try:
+				angle = int(curCurve.angleAtPercent(pct))
+			except ValueError:
+				continue
+				
 			if (angle >= testAngle-tolerance and angle <= testAngle+tolerance) or \
 				(angle >= oppTestAngle-tolerance and angle <= oppTestAngle+tolerance):
 				(l, r) = self.divideCurveAtPoint(verts, pct, 1)
