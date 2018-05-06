@@ -2,7 +2,6 @@ from PyQt4 import QtCore, QtGui
 
 import math
 
-import guides
 import nibs
 import shared_qt
 
@@ -21,7 +20,7 @@ class drawingArea(QtGui.QFrame):
 		self.__oldViewPos = None
 		self.__moveView = False
 
-		self.__guideLines = guides.guideLines()
+		self.__guideLines = None 
 		self.__drawGuidelines = True
 		self.__drawNibGuides = True
 		self.__pointsToDraw = []
@@ -114,6 +113,9 @@ class drawingArea(QtGui.QFrame):
 
 	def getGuidelines(self):
 		return self.__guideLines
+
+	def setGuidelines(self, newGuides):
+		self.__guideLines = newGuides
 		
 	def getNormalizedPosition(self, rawPos):
 		normPos = rawPos

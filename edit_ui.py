@@ -5,6 +5,7 @@ import math
 import os
 from PyQt4 import QtCore, QtGui
 
+import guides
 import paper
 import splitter
 
@@ -26,6 +27,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.__parent = parent
 		
 		self.dwgArea = None
+		self.guideLines = None
 
 	def createUI(self):
 		self.createMenu()
@@ -257,6 +259,10 @@ class edit_interface(QtGui.QMainWindow):
 		self.mainWidget.setLayout(self.mainLayout)
 
 		self.setCentralWidget(self.mainWidget)
+
+		self.guideLines = guides.guideLines()
+		self.dwgArea.setGuidelines(self.guideLines)
+		self.strokeDwgArea.setGuidelines(self.guideLines)
 
 	def createMenu(self):
 		self.mainMenu = self.menuBar()

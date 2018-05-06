@@ -1060,7 +1060,7 @@ class editor_controller():
 				strokePos = selStroke.getPos()
 
 				if self.__snap & SNAP_TO_GRID:
-					snapPoint = self.__ui.dwgArea.getGuidelines().closestGridPoint(pos)
+					snapPoint = self.__ui.guideLines.closestGridPoint(pos)
 
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
@@ -1333,14 +1333,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'baseHeight',
 			'ctrlName' : 'baseHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'baseHeight',
 			'ctrlName' : 'baseHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeBaseHeightCmd = commands.command("changeBaseHeightCmd")
@@ -1365,14 +1365,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'capHeight',
 			'ctrlName' : 'capHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'capHeight',
 			'ctrlName' : 'capHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeCapHeightCmd = commands.command("changeCapHeightCmd")
@@ -1397,14 +1397,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'ascentHeight',
 			'ctrlName' : 'ascentHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'ascentHeight',
 			'ctrlName' : 'ascentHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeAscentHeightCmd = commands.command("changeAscentHeightCmd")
@@ -1429,14 +1429,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'descentHeight',
 			'ctrlName' : 'descentHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'descentHeight',
 			'ctrlName' : 'descentHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeDescentHeightCmd = commands.command("changeDescentHeightCmd")
@@ -1461,14 +1461,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'gapHeight',
 			'ctrlName' : 'gapHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'gapHeight',
 			'ctrlName' : 'gapHeightSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeGapHeightCmd = commands.command("changeGapHeightCmd")
@@ -1493,14 +1493,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'angle',
 			'ctrlName' : 'angleSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'angle',
 			'ctrlName' : 'angleSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeAngleCmd = commands.command("changeAngleCmd")
@@ -1525,14 +1525,14 @@ class editor_controller():
 			'value' : newValue,
 			'attrName' : 'nominalWidth',
 			'ctrlName' : 'nominalWidthSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		undoArgs = {
 			'value' : prevValue,
 			'attrName' : 'nominalWidth',
 			'ctrlName' : 'nominalWidthSpin',
-			'objects' : [self.__charSet, self.__currentViewPane.getGuidelines()]
+			'objects' : [self.__charSet, self.__ui.guideLines]
 		}
 
 		changeNominalWidthCmd = commands.command("changeNominalWidthCmd")
