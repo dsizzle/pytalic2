@@ -437,7 +437,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.viewSnapToGrid.triggered.connect(self.__parent.viewToggleSnapToGrid_cb)
 		self.viewSnapToGrid.setCheckable(True)
 		self.viewSnapToGrid.setChecked(False)
-		self.viewSnapToGrid.setEnabled(False)
+		#self.viewSnapToGrid.setEnabled(False)
 		self.viewSnapMenu.addAction(self.viewSnapToGrid)
 		
 		self.viewSnapToCtrlPts = QtGui.QAction("To Control Points", self)

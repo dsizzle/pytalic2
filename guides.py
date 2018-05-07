@@ -139,39 +139,31 @@ class guideLines(object):
 	 		else:
 	 			self.nibWidth = self.__lastNibWidth
 
-	 	yLines = [self.__baseHeightPixels]
-		widthX = self.__halfBaseWidthPixels + self.__baseWidthPixels
+	 	baseLine = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels 
+	 	yLines = [baseLine]
+	 	
+		widthX = self.__baseWidthPixels
 	 	
 	 	for yLine in yLines:
 	 		testY = pt.y() % yLine
 
-	 		print "y", pt, testY, yLine - testY, "<=", tolerance
+	 		y = -1
+	 		if abs(testY) <= tolerance:
+	 			y = pt.y() - testY
+	 		elif abs(yLine - testY) <= tolerance:
+	 			y = pt.y() - testY + yLine
+	 		
+	 		if y != -1:
+				dx =  0-int(y * self.__angleDX)
+				testX = (pt.x() - dx) % widthX
 
-	 		ysign = 1
-	 		if pt.y() < 0:
-	 			ysign = -1
+				x = -1
+ 				if abs(testX) <= tolerance:
+					x = pt.x() - testX			
+				elif abs(widthX - testX) <= tolerance:
+					x = pt.x() - testX + widthX
 
-	 		if abs(testY) <= tolerance or abs(yLine - testY) <= tolerance:
-	 			y = int(float(pt.y() + (ysign * tolerance)) / float(yLine)) * yLine
-	 			
-	 			print "YMATCH", y
-
-	 			sign = 1
-	 			if pt.x() < 0:
-	 				sign = -1
-
-	 			dx =  0 - int(y * self.__angleDX) * ysign
-	 			testX = (pt.x() - dx) % widthX
-
-	 			print "x", pt, dx, widthX, testX, widthX - testX, tolerance
-
-	 			if abs(testX) <= tolerance or abs(widthX - testX) <= tolerance:
-	 				x = int(float(pt.x() + (sign * tolerance)) / float(widthX)) * widthX + (dx * ysign) 
-
-	 				print "XMATCH", x, pt, tolerance, widthX, dx
-	 				print int(float(pt.x() + (sign * tolerance)) / float(widthX))
-	 				print int(float(pt.x() + (sign * tolerance)) / float(widthX)) * widthX
-	 				print "ENDXMATCH"
+				if x != -1:
 	 				return QtCore.QPoint(x, y)
 
 	 	return gridPt
