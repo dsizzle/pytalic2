@@ -133,13 +133,18 @@ class guideLines(object):
 	def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
 		gridPt = QtCore.QPoint(-1, -1)
 
-		if self.nibWidth == 0:
+		if self.__nibWidth == 0:
 	 		if self.__lastNibWidth == 0:
 	 			return gridPt 
 	 		else:
-	 			self.nibWidth = self.__lastNibWidth
+	 			self.__nibWidth = self.__lastNibWidth
+
+	 	ascentOnly = self.__ascentHeightNibs * self.__nibWidth
+	 	capOnly = ascentOnly - (self.__capHeightNibs * self.__nibWidth)
 
 	 	yLines = [0, 
+	 			self.__gapHeightPixels + self.__descentHeightPixels + capOnly,
+	 			self.__gapHeightPixels + self.__descentHeightPixels + ascentOnly,
 	 			self.__gapHeightPixels + self.__descentHeightPixels,
 	 			self.__descentHeightPixels,
 	 			 ]
