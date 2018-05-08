@@ -171,6 +171,9 @@ class controlVertex(object):
 	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)	
 	
 	def setBehavior(self, newBehavior):
+		if self.__selected is None:
+			return
+			
 		self.__behavior = newBehavior
 		
 		if (self.__behavior == SHARP):

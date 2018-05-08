@@ -8,6 +8,7 @@ from PyQt4 import QtGui, QtCore
 
 import character_set
 import commands
+import control_vertex
 import edit_ui
 import stroke
 
@@ -909,6 +910,9 @@ class editor_controller():
 		self.__ui.editCopy.setEnabled(state)
 		self.__ui.strokeStraighten.setEnabled(state)
 		self.__ui.strokeJoin.setEnabled(state)
+		self.__ui.strokeAlignTangents.setEnabled(state)
+		self.__ui.strokeSmoothTangents.setEnabled(state)
+		self.__ui.strokeSharpenTangents.setEnabled(state)		
 
 	def setStrokeControlVertices(self, args):
 		if args.has_key('strokes'):
@@ -1674,6 +1678,125 @@ class editor_controller():
 		setattr(self.__ui, ctrlName, val)
 
 		self.__ui.repaint()
+
+	def alignTangentsSymmetrical_cb(self, event):
+		if len(self.__selection[self.__currentViewPane].values()) > 0:
+			vertList = self.__selection[self.__currentViewPane].values()
+			
+			doArgs = {
+				'verts' : vertList,
+				'behaviors' : [control_vertex.SYMMETRIC]
+			}
+
+			behaviorList = []
+
+			for vertDict in vertList:
+				for vert in vertDict.keys():
+					behaviorList.append(vert.getBehavior())
+
+			undoArgs = {
+				'verts' : vertList,
+				'behaviors' : behaviorList 
+			}
+
+			alignTangentsSymCmd = commands.command("alignTangentsSymCmd")
+
+			alignTangentsSymCmd.setDoArgs(doArgs)
+			alignTangentsSymCmd.setUndoArgs(undoArgs)
+			alignTangentsSymCmd.setDoFunction(self.setCtrlVertexBehavior)
+			alignTangentsSymCmd.setUndoFunction(self.setCtrlVertexBehavior)
+
+			self.__cmdStack.doCommand(alignTangentsSymCmd)
+			self.__ui.editUndo.setEnabled(True)
+
+			self.__ui.repaint()
+
+	def alignTangents_cb(self, event):
+		if len(self.__selection[self.__currentViewPane].values()) > 0:
+			vertList = self.__selection[self.__currentViewPane].values()
+			
+			doArgs = {
+				'verts' : vertList,
+				'behaviors' : [control_vertex.SMOOTH]
+			}
+
+			behaviorList = []
+
+			for vertDict in vertList:
+				for vert in vertDict.keys():
+					behaviorList.append(vert.getBehavior())
+
+			undoArgs = {
+				'verts' : vertList,
+				'behaviors' : behaviorList 
+			}
+
+			alignTangentsCmd = commands.command("alignTangentsCmd")
+
+			alignTangentsCmd.setDoArgs(doArgs)
+			alignTangentsCmd.setUndoArgs(undoArgs)
+			alignTangentsCmd.setDoFunction(self.setCtrlVertexBehavior)
+			alignTangentsCmd.setUndoFunction(self.setCtrlVertexBehavior)
+
+			self.__cmdStack.doCommand(alignTangentsCmd)
+			self.__ui.editUndo.setEnabled(True)
+
+			self.__ui.repaint()
+
+	def breakTangents_cb(self, event):
+		if len(self.__selection[self.__currentViewPane].values()) > 0:
+			vertList = self.__selection[self.__currentViewPane].values()
+			
+			doArgs = {
+				'verts' : vertList,
+				'behaviors' : [control_vertex.SHARP]
+			}
+
+			behaviorList = []
+
+			for vertDict in vertList:
+				for vert in vertDict.keys():
+					behaviorList.append(vert.getBehavior())
+
+			undoArgs = {
+				'verts' : vertList,
+				'behaviors' : behaviorList 
+			}
+
+			alignTangentsSharpCmd = commands.command("alignTangentsSharpCmd")
+
+			alignTangentsSharpCmd.setDoArgs(doArgs)
+			alignTangentsSharpCmd.setUndoArgs(undoArgs)
+			alignTangentsSharpCmd.setDoFunction(self.setCtrlVertexBehavior)
+			alignTangentsSharpCmd.setUndoFunction(self.setCtrlVertexBehavior)
+
+			self.__cmdStack.doCommand(alignTangentsSharpCmd)
+			self.__ui.editUndo.setEnabled(True)
+
+			self.__ui.repaint()
+
+	def setCtrlVertexBehavior(self, args):
+		if args.has_key('verts'):
+			vertList = args['verts']
+		else:
+			return
+
+		if args.has_key('behaviors'):
+			behaviorList = args['behaviors']
+		else:
+			return
+
+		if len(behaviorList) == 1:
+			useSameBehavior = True
+		else:
+			useSameBehavior = False
+
+		for vertDict in vertList:
+			for i in range(0, len(vertDict.keys())):
+				if useSameBehavior:
+					vertDict.keys()[i].setBehavior(behaviorList[0])
+				else:
+					vertDict.keys()[i].setBehavior(behaviorList[i])
 
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

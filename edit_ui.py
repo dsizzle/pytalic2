@@ -488,17 +488,17 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeMenu.addSeparator()
 		self.strokeAlignTangents = QtGui.QAction("Set Tangent To Symmetric", self)
 		self.strokeAlignTangents.setEnabled(False)
-		#strokeAlignTangents.triggered.connect(self.alignTangentsSymmetrical_cb)
+		self.strokeAlignTangents.triggered.connect(self.__parent.alignTangentsSymmetrical_cb)
 		self.strokeMenu.addAction(self.strokeAlignTangents)
 		
 		self.strokeSmoothTangents = QtGui.QAction("Set Tangent To Smooth", self)
 		self.strokeSmoothTangents.setEnabled(False)
-		#strokeSmoothTangents.triggered.connect(self.alignTangents_cb)
+		self.strokeSmoothTangents.triggered.connect(self.__parent.alignTangents_cb)
 		self.strokeMenu.addAction(self.strokeSmoothTangents)
 		
 		self.strokeSharpenTangents = QtGui.QAction("Set Tangent To Sharp", self)
 		self.strokeSharpenTangents.setEnabled(False)
-		#strokeSharpenTangents.triggered.connect(self.breakTangents_cb)
+		self.strokeSharpenTangents.triggered.connect(self.__parent.breakTangents_cb)
 		self.strokeMenu.addAction(self.strokeSharpenTangents)
 		self.strokeMenu.addSeparator()
 		
