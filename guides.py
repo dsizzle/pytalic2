@@ -140,18 +140,22 @@ class guideLines(object):
 	 			self.nibWidth = self.__lastNibWidth
 
 	 	baseLine = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels 
-	 	yLines = [baseLine]
+	 	yLines = [baseLine, 
+	 			self.__gapHeightPixels + self.__descentHeightPixels,
+	 			self.__descentHeightPixels,
+	 			 ]
 	 	
 		widthX = self.__baseWidthPixels
-	 	
-	 	for yLine in yLines:
-	 		testY = pt.y() % yLine
+		heightY = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
 
+	 	for yLine in yLines:
+	 		testY = (pt.y() - yLine) % heightY
+	 	
 	 		y = -1
 	 		if abs(testY) <= tolerance:
 	 			y = pt.y() - testY
 	 		elif abs(yLine - testY) <= tolerance:
-	 			y = pt.y() - testY + yLine
+	 			y = pt.y() - testY + heightY
 	 		
 	 		if y != -1:
 				dx =  0-int(y * self.__angleDX)
