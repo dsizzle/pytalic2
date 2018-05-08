@@ -139,8 +139,7 @@ class guideLines(object):
 	 		else:
 	 			self.nibWidth = self.__lastNibWidth
 
-	 	baseLine = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels 
-	 	yLines = [baseLine, 
+	 	yLines = [0, 
 	 			self.__gapHeightPixels + self.__descentHeightPixels,
 	 			self.__descentHeightPixels,
 	 			 ]
@@ -167,7 +166,7 @@ class guideLines(object):
 				elif abs(widthX - testX) <= tolerance:
 					x = pt.x() - testX + widthX
 
-				if x != -1:
+				if x != -1 and (abs(pt.x() - x) <= tolerance*2 and abs(pt.y() - y) <= tolerance*2):
 	 				return QtCore.QPoint(x, y)
 
 	 	return gridPt
