@@ -641,7 +641,7 @@ class editor_controller():
 		self.__ui.repaint()
 
 	def mouseEvent(self, event):
-		if self.__currentViewPane.underMouse():
+		if self.__currentViewPane.underMouse() or self.__currentViewPane.rect().contains(event.pos()):
 			if event.type() == QtCore.QEvent.MouseButtonPress:
 				self.mousePressEventPaper(event)
 			elif event.type() == QtCore.QEvent.MouseButtonRelease:
