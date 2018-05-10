@@ -6,11 +6,8 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-import character_set
-import commands
-import control_vertex
-import edit_ui
-import stroke
+from model import character_set, commands, control_vertex, stroke
+from view import edit_ui
 
 gICON_SIZE = 40
 

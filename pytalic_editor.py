@@ -2,7 +2,7 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-import edit_control
+from control import edit_control
 
 class pytalic_editor_app(QtGui.QApplication):
 	def __init__(self, args):

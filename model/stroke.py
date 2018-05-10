@@ -14,7 +14,7 @@ from PyQt4 import QtCore, QtGui
 
 import control_vertex
 #import serif
-import shared_qt
+from view import shared_qt
 
 DEBUG_BBOXES = False
 

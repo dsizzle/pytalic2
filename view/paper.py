@@ -2,7 +2,7 @@ from PyQt4 import QtCore, QtGui
 
 import math
 
-import nibs
+from model import nibs
 import shared_qt
 
 class drawingArea(QtGui.QFrame):

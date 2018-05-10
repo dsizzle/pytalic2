@@ -5,7 +5,7 @@ import math
 import os
 from PyQt4 import QtCore, QtGui
 
-import guides
+from model import guides
 import paper
 import splitter
 import widgets_qt

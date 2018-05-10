@@ -2,7 +2,7 @@
 import math
 from PyQt4 import QtCore, QtGui
 
-import shared_qt
+from view import shared_qt
 
 SMOOTH 		= 1
 SHARP		= 2
