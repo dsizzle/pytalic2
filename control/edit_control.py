@@ -7,6 +7,8 @@ import sys
 from PyQt4 import QtGui, QtCore
 
 import guide_operations
+import snap_operations
+
 from model import character_set, commands, control_vertex, stroke
 from view import edit_ui
 
@@ -18,12 +20,6 @@ DRAWING_NEW_STROKE = 2
 DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
-
-SNAP_TO_GRID 		= 0x0001
-SNAP_TO_AXES 		= 0x0002
-SNAP_TO_NIB_AXES 	= 0x0004
-SNAP_TO_CTRL_PTS	= 0x0008
-SNAP_TO_STROKES		= 0x0010
 
 class editor_controller(): 
 	def __init__(self, w, h, label):
@@ -52,8 +48,7 @@ class editor_controller():
 		
 		self.__strokePts = []
 		self.__tmpStroke = None
-		self.__snap = SNAP_TO_AXES
-
+		
 		charList = []
 		for i in range(32, 128):
 			charList.append(str(unichr(i)))
@@ -72,6 +67,7 @@ class editor_controller():
 		self.__selection[self.__currentViewPane] = {}
 
 		self.__guideController = guide_operations.guide_controller(self)
+		self.__snapController = snap_operations.snap_controller(self)
 
 		self.mainMenu = None
 		self.toolBar = None
@@ -82,6 +78,18 @@ class editor_controller():
 
 	def getUI(self):
 		return self.__ui
+
+	def getCurrentView(self):
+		return self.__currentViewPane
+
+	def getSelection(self):
+		return self.__selection
+
+	def getCurrentChar(self):
+		return self.__curChar
+
+	def getCharacterSet(self):
+		return self.__charSet
 
 	def activate(self):
 		self.__ui.show()
@@ -619,16 +627,16 @@ class editor_controller():
 		self.__ui.dwgArea.repaint()
 
 	def viewToggleSnapAxially_cb(self, event):
-		self.__snap ^= SNAP_TO_AXES
+		self.__snapController.toggleSnapAxially()
 
 	def viewToggleSnapToGrid_cb(self, event):
-		self.__snap ^= SNAP_TO_GRID
+		self.__snapController.toggleSnapToGrid()
 
 	def viewToggleSnapToNibAxes_cb(self, event):
-		self.__snap ^= SNAP_TO_NIB_AXES
+		self.__snapController.toggleSnapToNibAxes()
 
 	def viewToggleSnapToCtrlPts_cb(self, event):
-		self.__snap ^= SNAP_TO_CTRL_PTS
+		self.__snapController.toggleSnapToCtrlPts()
 
 	def viewToggleGuidelines_cb(self, event):
 		self.__currentViewPane.drawGuidelines = not self.__currentViewPane.drawGuidelines
@@ -637,7 +645,6 @@ class editor_controller():
 	def viewToggleNibGuides_cb(self, event):
 		self.__currentViewPane.drawNibGuides = not self.__currentViewPane.drawNibGuides
 		self.__ui.repaint()
-
 
 	def viewResetOrigin(self, event):
 		self.__currentViewPane.originDelta = QtCore.QPoint(0, 0)
@@ -1002,8 +1009,8 @@ class editor_controller():
 			normPaperPos = self.__currentViewPane.getNormalizedPosition(paperPos) 
 			deltaPos = paperPos - normPaperPos
 			
-			if self.__snap > 0:
-				self.__currentViewPane.snapPoints = self.getSnappedPoints(normPaperPos)
+			if self.__snapController.getSnap() > 0:
+				self.__currentViewPane.snapPoints = self.__snapController.getSnappedPoints(normPaperPos)
 				if len(self.__currentViewPane.snapPoints) > 0 and self.__currentViewPane.snapPoints[0] is not QtCore.QPoint(-1, -1):
 					paperPos = self.__currentViewPane.snapPoints[0] + deltaPos
 					
@@ -1047,103 +1054,7 @@ class editor_controller():
 			
 			stroke.calcCurvePoints()
 
-	def getSnappedPoints(self, pos):
-		snappedPoints = []
-
-		if len(self.__selection[self.__currentViewPane].keys()) == 1:
-			selStroke = self.__selection[self.__currentViewPane].keys()[0]
-
-			if len(self.__selection[self.__currentViewPane][selStroke].keys()) == 1:
-				selPoint = self.__selection[self.__currentViewPane][selStroke].keys()[0]
-			
-				ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
-
-				vertIndex = ctrlVerts.index(selPoint)
-				
-				if selPoint.isKnotSelected():
-					if vertIndex == 0:
-						vertIndex += 1
-					else:
-						vertIndex -= 1
-				
-				vpos = ctrlVerts[vertIndex].getHandlePos(2)
-				strokePos = selStroke.getPos()
-
-				if self.__snap & SNAP_TO_GRID:
-					snapPoint = self.__ui.guideLines.closestGridPoint(pos)
-
-					if snapPoint != QtCore.QPoint(-1, -1):
-						snappedPoints.append(snapPoint)
-						return snappedPoints
-
-				if self.__snap & SNAP_TO_AXES:
-					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-self.__charSet.angle, -90])
-
-					if snapPoint != QtCore.QPoint(-1, -1):
-						snappedPoints.append(snapPoint)
-						snappedPoints.append(vpos + strokePos)
-						return snappedPoints
-
-				if self.__snap & SNAP_TO_NIB_AXES:					
-					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[40, -40])
-					
-					if snapPoint != QtCore.QPoint(-1, -1):
-						snappedPoints.append(snapPoint)
-						snappedPoints.append(vpos + strokePos)
-						return snappedPoints
-
-				if self.__snap & SNAP_TO_CTRL_PTS:
-					snapPoint = self.snapToCtrlPoint(strokePos, pos, vpos, selPoint)
-
-					if snapPoint != QtCore.QPoint(-1, -1):
-						snappedPoints.append(snapPoint)
-						return snappedPoints
-					
-		return snappedPoints
-
-	def snapToAxes(self, strokePos, pos, vertPos, tolerance=10, axisAngles=[]):
-		snapPt = QtCore.QPoint(-1, -1)
-
-		if len(axisAngles) == 0:
-			return snapPt
-		
-		delta = pos - vertPos - strokePos
-
-		vecLength = math.sqrt(float(delta.x())*float(delta.x()) + float(delta.y())*float(delta.y()))
-
-		for angle in axisAngles:
-
-			if delta.x() > 0 and delta.y() < 0:
-				angle += 180
-			elif delta.x() < 0 and delta.y() < 0:
-				angle += 270
-
-			newPt = QtCore.QPoint(vecLength * math.sin(math.radians(angle)), \
-				vecLength * math.cos(math.radians(angle)))
-			newPt = newPt + vertPos + strokePos
-
-			newDelta = pos - newPt
-
-			if abs(newDelta.x()) < tolerance:
-				snapPt = newPt
-
-		return snapPt
-
-	def snapToCtrlPoint(self, strokePos, pos, vertPos, selPoint, tolerance=10):
-		snapPt = QtCore.QPoint(-1, -1)
-
-		testRect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, tolerance, tolerance)
-
-		for charStroke in self.__curChar.strokes:
-			for ctrlVert in charStroke.getCtrlVertices(False):
-				if selPoint is not ctrlVert:
-					testPoint = ctrlVert.getHandlePos(2)
-
-					if testPoint in testRect:
-						snapPt = testPoint
-						break
-
-		return snapPt
+	
 
 	def straightenStroke_cb(self, event):
 		if len(self.__selection[self.__currentViewPane].keys()) == 1:

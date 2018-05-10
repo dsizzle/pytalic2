@@ -129,52 +129,6 @@ class guideLines(object):
 		return self.__nibWidth
 		
 	nibWidth = property(getNibWidth, setNibWidth)
-
-	def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
-		gridPt = QtCore.QPoint(-1, -1)
-
-		if self.__nibWidth == 0:
-	 		if self.__lastNibWidth == 0:
-	 			return gridPt 
-	 		else:
-	 			self.__nibWidth = self.__lastNibWidth
-
-	 	ascentOnly = self.__ascentHeightNibs * self.__nibWidth
-	 	capOnly = ascentOnly - (self.__capHeightNibs * self.__nibWidth)
-
-	 	yLines = [0, 
-	 			self.__gapHeightPixels + self.__descentHeightPixels + capOnly,
-	 			self.__gapHeightPixels + self.__descentHeightPixels + ascentOnly,
-	 			self.__gapHeightPixels + self.__descentHeightPixels,
-	 			self.__descentHeightPixels,
-	 			 ]
-	 	
-		widthX = self.__baseWidthPixels
-		heightY = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
-
-	 	for yLine in yLines:
-	 		testY = (pt.y() - yLine) % heightY
-	 	
-	 		y = -1
-	 		if abs(testY) <= tolerance:
-	 			y = pt.y() - testY
-	 		elif abs(yLine - testY) <= tolerance:
-	 			y = pt.y() - testY + heightY
-	 		
-	 		if y != -1:
-				dx =  0-int(y * self.__angleDX)
-				testX = (pt.x() - dx) % widthX
-
-				x = -1
- 				if abs(testX) <= tolerance:
-					x = pt.x() - testX			
-				elif abs(widthX - testX) <= tolerance:
-					x = pt.x() - testX + widthX
-
-				if x != -1 and (abs(pt.x() - x) <= tolerance*2 and abs(pt.y() - y) <= tolerance*2):
-	 				return QtCore.QPoint(x, y)
-
-	 	return gridPt
 	
 	def draw(self, gc, size, origin, nib=None):
 		nibWidth = 20 #nib.getWidth() << 1
