@@ -6,6 +6,7 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
+import guide_operations
 from model import character_set, commands, control_vertex, stroke
 from view import edit_ui
 
@@ -70,9 +71,17 @@ class editor_controller():
 		self.__currentViewPane = self.__ui.mainViewTabs.currentWidget()
 		self.__selection[self.__currentViewPane] = {}
 
+		self.__guideController = guide_operations.guide_controller(self)
+
 		self.mainMenu = None
 		self.toolBar = None
 		self.fileNew_cb(None)
+
+	def getCommandStack(self):
+		return self.__cmdStack
+
+	def getUI(self):
+		return self.__ui
 
 	def activate(self):
 		self.__ui.show()
@@ -1327,227 +1336,39 @@ class editor_controller():
 	def guideBaseHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.baseHeight
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'baseHeight',
-			'ctrlName' : 'baseHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'baseHeight',
-			'ctrlName' : 'baseHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeBaseHeightCmd = commands.command("changeBaseHeightCmd")
-
-		changeBaseHeightCmd.setDoArgs(doArgs)
-		changeBaseHeightCmd.setUndoArgs(undoArgs)
-		changeBaseHeightCmd.setDoFunction(self.changePropertyControl)
-		changeBaseHeightCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeBaseHeightCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
+		self.__guideController.baseHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		
 
 	def guideCapHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.capHeight
-
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'capHeight',
-			'ctrlName' : 'capHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'capHeight',
-			'ctrlName' : 'capHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeCapHeightCmd = commands.command("changeCapHeightCmd")
-
-		changeCapHeightCmd.setDoArgs(doArgs)
-		changeCapHeightCmd.setUndoArgs(undoArgs)
-		changeCapHeightCmd.setDoFunction(self.changePropertyControl)
-		changeCapHeightCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeCapHeightCmd)
-		self.__ui.editUndo.setEnabled(True)
 		
-		self.__ui.repaint()
-
+		self.__guideController.capHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		
 	def guideAscentChanged_cb(self, newValue):
 		prevValue = self.__charSet.ascentHeight
-
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'ascentHeight',
-			'ctrlName' : 'ascentHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'ascentHeight',
-			'ctrlName' : 'ascentHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeAscentHeightCmd = commands.command("changeAscentHeightCmd")
-
-		changeAscentHeightCmd.setDoArgs(doArgs)
-		changeAscentHeightCmd.setUndoArgs(undoArgs)
-		changeAscentHeightCmd.setDoFunction(self.changePropertyControl)
-		changeAscentHeightCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeAscentHeightCmd)
-		self.__ui.editUndo.setEnabled(True)
 		
-		self.__ui.repaint()
-
+		self.__guideController.ascentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		
 	def guideDescentChanged_cb(self, newValue):
 		prevValue = self.__charSet.descentHeight
-
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'descentHeight',
-			'ctrlName' : 'descentHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'descentHeight',
-			'ctrlName' : 'descentHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeDescentHeightCmd = commands.command("changeDescentHeightCmd")
-
-		changeDescentHeightCmd.setDoArgs(doArgs)
-		changeDescentHeightCmd.setUndoArgs(undoArgs)
-		changeDescentHeightCmd.setDoFunction(self.changePropertyControl)
-		changeDescentHeightCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeDescentHeightCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
-
+		
+		self.__guideController.descentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		
 	def guideGapHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.gapHeight
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'gapHeight',
-			'ctrlName' : 'gapHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'gapHeight',
-			'ctrlName' : 'gapHeightSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeGapHeightCmd = commands.command("changeGapHeightCmd")
-
-		changeGapHeightCmd.setDoArgs(doArgs)
-		changeGapHeightCmd.setUndoArgs(undoArgs)
-		changeGapHeightCmd.setDoFunction(self.changePropertyControl)
-		changeGapHeightCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeGapHeightCmd)
-		self.__ui.editUndo.setEnabled(True)
+		self.__guideController.gapHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
-		self.__ui.repaint()
-
 	def guideAngleChanged_cb(self, newValue):
 		prevValue = self.__charSet.angle
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'angle',
-			'ctrlName' : 'angleSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'angle',
-			'ctrlName' : 'angleSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeAngleCmd = commands.command("changeAngleCmd")
-
-		changeAngleCmd.setDoArgs(doArgs)
-		changeAngleCmd.setUndoArgs(undoArgs)
-		changeAngleCmd.setDoFunction(self.changePropertyControl)
-		changeAngleCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeAngleCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
-
+		self.__guideController.angleChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		
 	def guideNominalWidthChanged_cb(self, newValue):
 		prevValue = self.__charSet.nominalWidth
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'nominalWidth',
-			'ctrlName' : 'nominalWidthSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'nominalWidth',
-			'ctrlName' : 'nominalWidthSpin',
-			'objects' : [self.__charSet, self.__ui.guideLines]
-		}
-
-		changeNominalWidthCmd = commands.command("changeNominalWidthCmd")
-
-		changeNominalWidthCmd.setDoArgs(doArgs)
-		changeNominalWidthCmd.setUndoArgs(undoArgs)
-		changeNominalWidthCmd.setDoFunction(self.changePropertyControl)
-		changeNominalWidthCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeNominalWidthCmd)
-		self.__ui.editUndo.setEnabled(True)
+		self.__guideController.nominalWidthChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
-		self.__ui.repaint()
-	
 	def guideColorChanged_cb(self, newColor):
 		self.__ui.guideLines.setLineColor(newColor)
 		self.__ui.repaint()
@@ -1672,8 +1493,9 @@ class editor_controller():
 		for objectName in objectsToSet:
 			setattr(objectName, attrName, val)
 		
-		setattr(self.__ui, ctrlName, val)
-
+		uiControl = getattr(self.__ui, ctrlName)
+		uiControl.setValue(val)
+		
 		self.__ui.repaint()
 
 	def alignTangentsSymmetrical_cb(self, event):
