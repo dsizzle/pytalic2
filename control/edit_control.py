@@ -7,7 +7,9 @@ import sys
 from PyQt4 import QtGui, QtCore
 
 import guide_operations
+import mouse_operations
 import snap_operations
+import stroke_operations
 
 from model import character_set, commands, control_vertex, stroke
 from view import edit_ui
@@ -42,12 +44,7 @@ class editor_controller():
 		self.__charSet = None
 		self.__curChar = None
 
-		self.__savedMousePosPaper = {}
-		self.__moveDelta = QtCore.QPoint(0, 0)
 		self.__state = 0
-		
-		self.__strokePts = []
-		self.__tmpStroke = None
 		
 		charList = []
 		for i in range(32, 128):
@@ -67,7 +64,9 @@ class editor_controller():
 		self.__selection[self.__currentViewPane] = {}
 
 		self.__guideController = guide_operations.guide_controller(self)
+		self.__mouseController = mouse_operations.mouse_controller(self)
 		self.__snapController = snap_operations.snap_controller(self)
+		self.__strokeController = stroke_operations.stroke_controller(self)
 
 		self.mainMenu = None
 		self.toolBar = None
@@ -91,11 +90,31 @@ class editor_controller():
 	def getCharacterSet(self):
 		return self.__charSet
 
+	def getState(self):
+		return self.__state
+
+	def setState(self, newState):
+		self.__state = newState
+
+	state = property(getState, setState)
+
+	def getSnapController(self):
+		return self.__snapController
+
+	def getStrokeController(self):
+		return self.__strokeController
+
 	def activate(self):
 		self.__ui.show()
 		self.__ui.activateWindow()
 		self.__ui.raise_()
 	
+	def mouseEvent(self, event):
+		self.__mouseController.mouseEvent(event)
+
+	def wheelEvent(self, event):
+		self.__mouseController.wheelEvent(event)
+
 	def quit_cb(self, event):
 		if self.__cmdStack.saveCount == 0: 
 			self.__ui.close()
@@ -273,9 +292,9 @@ class editor_controller():
 			if idx != dwgTab:
 				self.__ui.mainViewTabs.setTabEnabled(idx, False)
 
-		self.__strokePts = []
-		self.__tmpStroke = stroke.Stroke()
-		self.__ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
+		self.__strokeController.strokePts = []
+		self.__strokeController.tmpStroke = stroke.Stroke()
+		self.__ui.dwgArea.strokesSpecial.append(self.__strokeController.tmpStroke)
 
 	def saveStroke_cb(self, event):
 		selectedStrokes = []
@@ -654,266 +673,6 @@ class editor_controller():
 		self.__currentViewPane.scale = 1
 		self.__ui.repaint()
 
-	def mouseEvent(self, event):
-		if self.__currentViewPane.underMouse() or self.__currentViewPane.rect().contains(event.pos()):
-			if event.type() == QtCore.QEvent.MouseButtonPress:
-				self.mousePressEventPaper(event)
-			elif event.type() == QtCore.QEvent.MouseButtonRelease:
-				self.mouseReleaseEventPaper(event)
-			else:
-				self.mouseMoveEventPaper(event)
-
-			event.accept()
-
-	def wheelEvent(self, event):
-		if self.__currentViewPane.underMouse():
-			scaleChange = 0
-			if event.delta() > 0:
-				scaleChange = -0.02
-			else:
-				scaleChange = 0.02
-
-			self.__currentViewPane.scale += scaleChange
-			
-			paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-			paperPos.setY(paperPos.y() - self.__ui.mainViewTabs.tabBar().height())
-			zoomPos = (paperPos - self.__currentViewPane.getOrigin()) * scaleChange
-
-			self.__currentViewPane.originDelta -= zoomPos
-			self.__savedMousePosPaper[self.__currentViewPane] = paperPos
-
-			event.accept()
-			self.__ui.repaint()
-
-	def mousePressEventPaper(self, event):
-		btn = event.buttons()
-		mod = event.modifiers()
-		
-		cmdDown = mod & QtCore.Qt.ControlModifier
-		altDown = mod & QtCore.Qt.AltModifier
-		shiftDown = mod & QtCore.Qt.ShiftModifier
-
-		leftDown = btn & QtCore.Qt.LeftButton
-		rightDown = btn & QtCore.Qt.RightButton
-
-		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-		paperPos.setY(paperPos.y() - self.__ui.mainViewTabs.tabBar().height())
-
-	def mouseReleaseEventPaper(self, event):
-		btn = event.button()
-		mod = event.modifiers()
-		
-		cmdDown = mod & QtCore.Qt.ControlModifier
-		altDown = mod & QtCore.Qt.AltModifier
-		shiftDown = mod & QtCore.Qt.ShiftModifier
-
-		leftUp = btn & QtCore.Qt.LeftButton
-		rightUp = btn & QtCore.Qt.RightButton
-
-		if self.__state == MOVING_PAPER and leftUp:
-			self.__state = IDLE
-		else:
-			if rightUp:
-				self.__onRButtonUpPaper()
-			elif leftUp:
-				self.__onLButtonUpPaper(event.pos(), shiftDown)
-				
-		self.__ui.repaint()
-		self.setIcon()
-
-	def __onRButtonUpPaper(self):
-		if self.__state == DRAWING_NEW_STROKE:
-			verts = self.__tmpStroke.getCtrlVerticesAsList()
-			if len(verts) == 0:
-				self.__state = IDLE
-				self.__tmpStroke = None
-				return
-
-			self.__state = IDLE
-			self.__strokePts = []
-			addStrokeCmd = commands.command('addStrokeCmd')
-			doArgs = {
-				'stroke' : self.__tmpStroke,
-				'copyStroke' : False,
-			}
-
-			undoArgs = {
-				'stroke' : self.__tmpStroke,
-			}
-
-			addStrokeCmd.setDoArgs(doArgs)
-			addStrokeCmd.setUndoArgs(undoArgs)
-			addStrokeCmd.setDoFunction(self.__curChar.addStroke)
-			addStrokeCmd.setUndoFunction(self.__curChar.deleteStroke)
-			
-			self.__cmdStack.doCommand(addStrokeCmd)
-			self.__ui.editUndo.setEnabled(True)
-
-			self.__selection[self.__currentViewPane][self.__tmpStroke] = {}
-			self.__tmpStroke.selected = True
-			self.__currentViewPane.strokesSpecial = []
-			self.__tmpStroke = None
-
-			self.setUIStateSelection(True)
-			
-			for idx in range(0, self.__ui.mainViewTabs.count()):
-				self.__ui.mainViewTabs.setTabEnabled(idx, True)
-			
-			self.__ui.repaint()
-
-	def __onLButtonUpPaper(self, pos, shiftDown):
-		adjustedPos = pos - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-		adjustedPos.setY(adjustedPos.y() - self.__ui.mainViewTabs.tabBar().height())
-
-		paperPos = self.__currentViewPane.getNormalizedPosition(adjustedPos)
-		
-		self.__currentViewPane.snapPoints = []
-		if self.__state == DRAWING_NEW_STROKE:
-			self.__strokePts.append([paperPos.x(), paperPos.y()])
-			self.__tmpStroke.generateCtrlVerticesFromPoints(self.__strokePts)
-			self.__tmpStroke.updateCtrlVertices()
-
-		elif self.__state == DRAGGING:
-			moveCmd = commands.command('moveStrokeCmd')
-			selectionCopy = self.__selection[self.__currentViewPane].copy()
-			doArgs = {
-				'strokes' : selectionCopy, 
-				'delta' : self.__moveDelta,
-			}
-
-			undoArgs = {
-				'strokes' : selectionCopy,
-				'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
-			}
-
-			moveCmd.setDoArgs(doArgs)
-			moveCmd.setUndoArgs(undoArgs)
-			moveCmd.setDoFunction(self.moveSelected)
-			moveCmd.setUndoFunction(self.moveSelected)
-		
-			self.__cmdStack.addToUndo(moveCmd)
-			self.__cmdStack.saveCount += 1
-			self.__ui.editUndo.setEnabled(True)
-
-			self.__state = IDLE
-			self.__moveDelta = QtCore.QPoint(0, 0)
-		elif self.__state == ADDING_CTRL_POINT:
-			if len(self.__selection[self.__currentViewPane].keys()) > 0:
-				for selStroke in self.__selection[self.__currentViewPane].keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						addVertexCmd = commands.command('addVertexCmd')
-						
-						undoArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
-						}
-
-						selStroke.addCtrlVertex(insideInfo[2], insideInfo[1])
-						
-						doArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
-						}
-
-						addVertexCmd.setDoArgs(doArgs)
-						addVertexCmd.setUndoArgs(undoArgs)
-						addVertexCmd.setDoFunction(self.setStrokeControlVertices)
-						addVertexCmd.setUndoFunction(self.setStrokeControlVertices)
-						
-						self.__cmdStack.addToUndo(addVertexCmd)
-						self.__cmdStack.saveCount += 1
-						self.__ui.editUndo.setEnabled(True)
-						break
-
-			self.__state = IDLE
-		elif self.__state == SPLIT_AT_POINT:
-			if len(self.__selection[self.__currentViewPane].keys()) > 0:
-				for selStroke in self.__selection[self.__currentViewPane].keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						splitAtCmd = commands.command('splitAtCmd')
-						vertsBefore = selStroke.getCtrlVerticesAsList()
-
-						newVerts = selStroke.splitAtPoint(insideInfo[2], insideInfo[1])
-						vertsAfter = selStroke.getCtrlVerticesAsList()
-
-						newStroke = stroke.Stroke()
-						newStroke.setCtrlVerticesFromList(newVerts)
-
-						undoArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : vertsBefore,
-							'strokeToDelete' : newStroke,
-						}
-
-						doArgs = {
-							'strokes' : selStroke,
-							'newStroke' : newStroke,
-							'ctrlVerts' : vertsAfter,
-						}
-
-						splitAtCmd.setDoArgs(doArgs)
-						splitAtCmd.setUndoArgs(undoArgs)
-						splitAtCmd.setDoFunction(self.splitStroke)
-						splitAtCmd.setUndoFunction(self.unsplitStroke)
-						
-						self.__cmdStack.doCommand(splitAtCmd)
-						self.__ui.editUndo.setEnabled(True)
-						break
-
-			self.__state = IDLE
-		else:
-			if len(self.__selection[self.__currentViewPane].keys()) > 0:
-				for selStroke in self.__selection[self.__currentViewPane].keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						ctrlVertexNum = int((insideInfo[1]+1) / 3)
-						ctrlVert = selStroke.getCtrlVertex(ctrlVertexNum)
-						
-						handleIndex = (insideInfo[1]+1) % 3 +1
-						if not shiftDown:
-							selStroke.deselectCtrlVerts()
-							self.__selection[self.__currentViewPane][selStroke] = {}
-
-						self.__selection[self.__currentViewPane][selStroke][ctrlVert] = handleIndex
-
-						for ctrlVert in self.__selection[self.__currentViewPane][selStroke].keys():
-							ctrlVert.selectHandle(self.__selection[self.__currentViewPane][selStroke][ctrlVert])
-						
-						selStroke.selected = True
-						
-					else:
-						if shiftDown:
-							if not self.__selection[self.__currentViewPane].has_key(selStroke):
-								self.__selection[self.__currentViewPane][selStroke] = {}
-								selStroke.deselectCtrlVerts()
-
-							selStroke.selected = True
-						else:
-							if self.__selection[self.__currentViewPane].has_key(selStroke):
-								del self.__selection[self.__currentViewPane][selStroke]
-
-							selStroke.selected = False
-							selStroke.deselectCtrlVerts()
-
-			if len(self.__selection[self.__currentViewPane].keys()) == 0 or shiftDown:
-				for selStroke in self.__currentViewPane.strokes:
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[0] == True and (len(self.__selection[self.__currentViewPane].keys()) == 0 or shiftDown):
-						if not self.__selection[self.__currentViewPane].has_key(selStroke):
-							self.__selection[self.__currentViewPane][selStroke] = {}	
-							selStroke.deselectCtrlVerts()
-
-						selStroke.selected = True	
-					elif not shiftDown:
-						selStroke.selected = False
-						selStroke.deselectCtrlVerts()
-
-			if len(self.__selection[self.__currentViewPane].keys()) > 0:
-				self.setUIStateSelection(True)
-			else:
-				self.setUIStateSelection(False)
 		
 	def setUIStateSelection(self, state):
 		self.__ui.strokeAddVertex.setEnabled(state)
@@ -988,50 +747,6 @@ class editor_controller():
 		selStroke.calcCurvePoints()
 		self.__curChar.deleteStroke({'stroke': delStroke})
 		self.__ui.repaint()
-
-	def mouseMoveEventPaper(self, event):
-		btn = event.buttons()
-		mod = event.modifiers()
-		
-		leftDown = btn & QtCore.Qt.LeftButton
-		rightDown = btn & QtCore.Qt.RightButton
-
-		altDown = mod & QtCore.Qt.AltModifier
-
-		paperPos = event.pos() - self.__ui.mainSplitter.pos() - self.__ui.mainWidget.pos()
-		paperPos.setY(paperPos.y() - self.__ui.mainViewTabs.tabBar().height())
-		
-		if self.__state == MOVING_PAPER:
-			delta = paperPos - self.__savedMousePosPaper[self.__currentViewPane]
-			self.__currentViewPane.originDelta += delta
-			self.__savedMousePosPaper[self.__currentViewPane] = paperPos
-		elif self.__state == DRAGGING:
-			normPaperPos = self.__currentViewPane.getNormalizedPosition(paperPos) 
-			deltaPos = paperPos - normPaperPos
-			
-			if self.__snapController.getSnap() > 0:
-				self.__currentViewPane.snapPoints = self.__snapController.getSnappedPoints(normPaperPos)
-				if len(self.__currentViewPane.snapPoints) > 0 and self.__currentViewPane.snapPoints[0] is not QtCore.QPoint(-1, -1):
-					paperPos = self.__currentViewPane.snapPoints[0] + deltaPos
-					
-			delta = (paperPos - self.__savedMousePosPaper[self.__currentViewPane]) / self.__currentViewPane.scale
-			self.__moveDelta += delta
-			self.__savedMousePosPaper[self.__currentViewPane] = paperPos
-			args = {
-				'strokes' : self.__selection[self.__currentViewPane],
-				'delta' : delta,
-			}
-			self.moveSelected(args)
-		elif leftDown and altDown and self.__state == IDLE:
-			self.__savedMousePosPaper[self.__currentViewPane] = paperPos		
-			self.__state = MOVING_PAPER
-		elif leftDown and self.__state == IDLE:
-			self.__state = DRAGGING
-			self.__savedMousePosPaper[self.__currentViewPane] = paperPos
-			self.__moveDelta = QtCore.QPoint(0, 0)
-
-		self.__ui.repaint()
-		self.setIcon()
 	
 	def moveSelected(self, args):
 		if args.has_key('strokes'):
@@ -1053,8 +768,6 @@ class editor_controller():
 				stroke.pos += delta
 			
 			stroke.calcCurvePoints()
-
-	
 
 	def straightenStroke_cb(self, event):
 		if len(self.__selection[self.__currentViewPane].keys()) == 1:
