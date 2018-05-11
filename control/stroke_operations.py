@@ -1,3 +1,5 @@
+import math
+
 import edit_control
 from model import commands, stroke
 
