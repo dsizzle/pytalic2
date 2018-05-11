@@ -281,144 +281,11 @@ class editor_controller():
 		if dataFileFd:
 			dataFileFd.close()
 
-	def createNewStroke(self, event):
-		if self.__state == DRAWING_NEW_STROKE:
-			return
-
-		self.__state = DRAWING_NEW_STROKE
-		dwgTab = self.__ui.mainViewTabs.indexOf(self.__ui.dwgArea)
-
-		for idx in range(0, self.__ui.mainViewTabs.count()):
-			if idx != dwgTab:
-				self.__ui.mainViewTabs.setTabEnabled(idx, False)
-
-		self.__strokeController.strokePts = []
-		self.__strokeController.tmpStroke = stroke.Stroke()
-		self.__ui.dwgArea.strokesSpecial.append(self.__strokeController.tmpStroke)
+	def createNewStroke_cb(self, event):
+		self.__strokeController.createNewStroke()
 
 	def saveStroke_cb(self, event):
-		selectedStrokes = []
-		instances = []
-
-		for selStroke in self.__selection[self.__currentViewPane].keys():
-			if type(selStroke).__name__ == 'Stroke':
-				selectedStrokes.append(selStroke)
-
-				newStrokeInstance = stroke.StrokeInstance()
-				instances.append(newStrokeInstance)
-
-		itemNum = self.__ui.strokeSelectorList.count()
-
-		saveStrokeCmd = commands.command('saveStrokeCmd')
-		
-		doArgs = {
-			'strokes' : selectedStrokes,
-			'instances' : instances,
-			'firstItem' : itemNum,
-		}
-
-		undoArgs = {
-			'instances' : instances,
-			'firstItem' : itemNum,
-		}
-
-		saveStrokeCmd.setDoArgs(doArgs)
-		saveStrokeCmd.setUndoArgs(undoArgs)
-		saveStrokeCmd.setDoFunction(self.saveStrokes)
-		saveStrokeCmd.setUndoFunction(self.unsaveStrokes)
-		
-		self.__cmdStack.doCommand(saveStrokeCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
-
-	def saveStrokes(self, args):
-		deletedStrokes = []
-		i = 0
-
-		if args.has_key('strokes'):
-			selection = args['strokes']
-		else:
-			return
-
-		if args.has_key('instances'):
-			instances = args['instances']
-		else:
-			return
-
-		if args.has_key('firstItem'):
-			firstItem = args['firstItem']
-		else:
-			return
-
-		for selStroke in selection:
-			self.__charSet.saveStroke(selStroke)
-			bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
-			self.__ui.strokeSelectorList.addItem(str(firstItem+i))
-			curItem = self.__ui.strokeSelectorList.item(firstItem+i)
-			self.__ui.strokeSelectorList.setCurrentRow(firstItem+i)
-			curItem.setIcon(QtGui.QIcon(bitmap))
-			curChar = self.__charSet.getCurrentChar()
-			deletedStrokes.append(selStroke)
-			curChar.deleteStroke({'stroke' : selStroke})
-			selStroke = self.__charSet.getSavedStroke(firstItem+i)
-			instances[i].setStroke(selStroke)
-			curChar.addStrokeInstance(instances[i])
-			if not self.__selection[self.__currentViewPane].has_key(selStroke):
-				self.__selection[self.__currentViewPane][selStroke] = {}
-				selStroke.deselectCtrlVerts()
-
-			selStroke.selected = True
-			i += 1
-				
-		for selStroke in deletedStrokes:
-			if self.__selection[self.__currentViewPane].has_key(selStroke):
-				del self.__selection[self.__currentViewPane][selStroke]
-
-			selStroke.selected = False	
-
-		self.__ui.strokeLoad.setEnabled(True)
-		self.__ui.strokeSavedEdit.setEnabled(True)
-		self.setUIStateSelection(True)
-
-	def unsaveStrokes(self, args):
-		addedStrokes = []
-		i = 0
-
-		if args.has_key('instances'):
-			instances = args['instances']
-			i = len(instances)-1
-		else:
-			return
-
-		if args.has_key('firstItem'):
-			firstItem = args['firstItem']
-		else:
-			return
-
-		instances.reverse()
-		for inst in instances:
-			selStroke = inst.getStroke()
-			self.__ui.strokeSelectorList.takeItem(firstItem+i)
-			self.__charSet.removeSavedStroke(selStroke)
-			curChar = self.__charSet.getCurrentChar()
-			curChar.deleteStroke({'stroke' : inst})
-			curChar.addStroke({'stroke' : selStroke, 'copyStroke' : False})
-			addedStrokes.append(selStroke)
-			i -= 1
-			
-		for selStroke in addedStrokes:
-			if not self.__selection[self.__currentViewPane].has_key(selStroke):
-				self.__selection[self.__currentViewPane][selStroke] = {}
-				selStroke.deselectCtrlVerts()
-			
-			selStroke.selected = True
-
-		if self.__ui.strokeSelectorList.count() == 0:
-			self.__ui.strokeLoad.setEnabled(False)
-			self.__ui.strokeSavedEdit.setEnabled(False)
-
-		self.setUIStateSelection(True)
+		self.__strokeController.saveStroke()
 		
 	def addControlPoint_cb(self, event):
 		self.__state = ADDING_CTRL_POINT
@@ -582,68 +449,7 @@ class editor_controller():
 		self.__ui.repaint()	
 
 	def pasteInstanceFromSaved_cb(self, event):
-		pasteInstanceSavedCmd = commands.command('pasteInstanceSavedCmd')
-		charIndex = self.__charSet.getCurrentCharIndex()
-		strokeIndex = self.__ui.strokeSelectorList.currentRow()
-		savedStroke = self.__charSet.getSavedStroke(strokeIndex)
-		newStrokeInstance = stroke.StrokeInstance()
-		newStrokeInstance.setStroke(savedStroke)
-
-		doArgs = {
-			'strokes' : newStrokeInstance,
-			'charIndex' : charIndex,
-		}
-
-		undoArgs = {
-			'strokes' : newStrokeInstance,
-			'charIndex' : charIndex,
-		}
-
-		pasteInstanceSavedCmd.setDoArgs(doArgs)
-		pasteInstanceSavedCmd.setUndoArgs(undoArgs)
-		pasteInstanceSavedCmd.setDoFunction(self.pasteInstance)
-		pasteInstanceSavedCmd.setUndoFunction(self.deleteInstance)
-		
-		self.__cmdStack.doCommand(pasteInstanceSavedCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
-
-	def pasteInstance(self, args):
-		if args.has_key('charIndex'):
-			charIndex = args['charIndex']
-		else:
-			return
-
-		if args.has_key('strokes'):
-			strokeInstance = args['strokes']
-		else:
-			return
-
-		self.__ui.charSelectorList.setCurrentRow(charIndex)
-
-		self.__curChar.addStrokeInstance(strokeInstance)
-		self.__selection[self.__currentViewPane][strokeInstance] = {}
-		
-		self.__ui.dwgArea.repaint()
-		self.setIcon()
-
-	def deleteInstance(self, args):
-		if args.has_key('charIndex'):
-			charIndex = args['charIndex']
-		else:
-			return
-
-		if args.has_key('strokes'):
-			strokeToDel = args['strokes']
-		else:
-			return
-
-		self.__curChar.deleteStroke({'stroke' : strokeToDel})
-		if self.__selection[self.__currentViewPane].has_key(strokeToDel):
-			del self.__selection[self.__currentViewPane][strokeToDel]
-
-		self.__ui.dwgArea.repaint()
+		self.__strokeController.pasteInstanceFromSaved()
 
 	def viewToggleSnapAxially_cb(self, event):
 		self.__snapController.toggleSnapAxially()
@@ -672,7 +478,6 @@ class editor_controller():
 	def viewResetZoom(self, event):
 		self.__currentViewPane.scale = 1
 		self.__ui.repaint()
-
 		
 	def setUIStateSelection(self, state):
 		self.__ui.strokeAddVertex.setEnabled(state)

@@ -460,7 +460,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeNew.setStatusTip('Create a new stroke')
 		self.strokeNew.setIcon(QtGui.QIcon("icons/draw_path.png"))
 		self.strokeNew.setIconText("Stroke")
-		self.strokeNew.triggered.connect(self.__parent.createNewStroke)
+		self.strokeNew.triggered.connect(self.__parent.createNewStroke_cb)
 		self.strokeMenu.addAction(self.strokeNew)
 		self.toolBar.addAction(self.strokeNew)
 		
