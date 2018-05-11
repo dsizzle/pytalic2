@@ -6,8 +6,8 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-import guide_operations
 import mouse_operations
+import property_operations
 import snap_operations
 import stroke_operations
 
@@ -63,7 +63,7 @@ class editor_controller():
 		self.__currentViewPane = self.__ui.mainViewTabs.currentWidget()
 		self.__selection[self.__currentViewPane] = {}
 
-		self.__guideController = guide_operations.guide_controller(self)
+		self.__propertyController = property_operations.property_controller(self)
 		self.__mouseController = mouse_operations.mouse_controller(self)
 		self.__snapController = snap_operations.snap_controller(self)
 		self.__strokeController = stroke_operations.stroke_controller(self)
@@ -765,38 +765,38 @@ class editor_controller():
 	def guideBaseHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.baseHeight
 
-		self.__guideController.baseHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.baseHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 
 	def guideCapHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.capHeight
 		
-		self.__guideController.capHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.capHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideAscentChanged_cb(self, newValue):
 		prevValue = self.__charSet.ascentHeight
 		
-		self.__guideController.ascentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.ascentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideDescentChanged_cb(self, newValue):
 		prevValue = self.__charSet.descentHeight
 		
-		self.__guideController.descentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.descentChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideGapHeightChanged_cb(self, newValue):
 		prevValue = self.__charSet.gapHeight
 
-		self.__guideController.gapHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.gapHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideAngleChanged_cb(self, newValue):
 		prevValue = self.__charSet.angle
 
-		self.__guideController.angleChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.angleChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideNominalWidthChanged_cb(self, newValue):
 		prevValue = self.__charSet.nominalWidth
 
-		self.__guideController.nominalWidthChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
+		self.__propertyController.nominalWidthChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideColorChanged_cb(self, newColor):
 		self.__ui.guideLines.setLineColor(newColor)
@@ -805,127 +805,17 @@ class editor_controller():
 	def charWidthChanged_cb(self, newValue):
 		prevValue = self.__curChar.width
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'width',
-			'ctrlName' : 'charWidthSpin',
-			'objects' : [self.__curChar]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'width',
-			'ctrlName' : 'charWidthSpin',
-			'objects' : [self.__curChar]
-		}
-
-		changeWidthCmd = commands.command("changeNominalWidthCmd")
-
-		changeWidthCmd.setDoArgs(doArgs)
-		changeWidthCmd.setUndoArgs(undoArgs)
-		changeWidthCmd.setDoFunction(self.changePropertyControl)
-		changeWidthCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeWidthCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
+		self.__propertyController.charWidthChanged(prevValue, newValue, [self.__curChar])
 
 	def charLeftSpaceChanged_cb(self, newValue):
 		prevValue = self.__curChar.leftSpacing
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'leftSpacing',
-			'ctrlName' : 'charLeftSpaceSpin',
-			'objects' : [self.__curChar]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'leftSpacing',
-			'ctrlName' : 'charLeftSpaceSpin',
-			'objects' : [self.__curChar]
-		}
-
-		changeLeftSpaceCmd = commands.command("changeLeftSpaceCmd")
-
-		changeLeftSpaceCmd.setDoArgs(doArgs)
-		changeLeftSpaceCmd.setUndoArgs(undoArgs)
-		changeLeftSpaceCmd.setDoFunction(self.changePropertyControl)
-		changeLeftSpaceCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeLeftSpaceCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
+		self.__propertyController.charLeftSpaceChanged(prevValue, newValue, [self.__curChar])
 
 	def charRightSpaceChanged_cb(self, newValue):
 		prevValue = self.__curChar.rightSpacing
 
-		if (newValue == prevValue):
-			return
-
-		doArgs = {
-			'value' : newValue,
-			'attrName' : 'rightSpacing',
-			'ctrlName' : 'charRightSpaceSpin',
-			'objects' : [self.__curChar]
-		}
-
-		undoArgs = {
-			'value' : prevValue,
-			'attrName' : 'rightSpacing',
-			'ctrlName' : 'charRightSpaceSpin',
-			'objects' : [self.__curChar]
-		}
-
-		changeRightSpaceCmd = commands.command("changeRightSpaceCmd")
-
-		changeRightSpaceCmd.setDoArgs(doArgs)
-		changeRightSpaceCmd.setUndoArgs(undoArgs)
-		changeRightSpaceCmd.setDoFunction(self.changePropertyControl)
-		changeRightSpaceCmd.setUndoFunction(self.changePropertyControl)
-
-		self.__cmdStack.doCommand(changeRightSpaceCmd)
-		self.__ui.editUndo.setEnabled(True)
-
-		self.__ui.repaint()
-
-	def changePropertyControl(self, args):
-		if (args.has_key('value')):
-			val = args['value']
-		else:
-			return
-
-		if (args.has_key('attrName')):
-			attrName = args['attrName']
-		else:
-			return
-
-		if (args.has_key('ctrlName')):
-			ctrlName = args['ctrlName']
-		else:
-			return
-
-		if (args.has_key('objects')):
-			objectsToSet = args['objects']
-		else:
-			return
-
-		for objectName in objectsToSet:
-			setattr(objectName, attrName, val)
-		
-		uiControl = getattr(self.__ui, ctrlName)
-		uiControl.setValue(val)
-		
-		self.__ui.repaint()
+		self.__propertyController.charRightSpaceChanged(prevValue, newValue, [self.__curChar])
 
 	def alignTangentsSymmetrical_cb(self, event):
 		if len(self.__selection[self.__currentViewPane].values()) > 0:
