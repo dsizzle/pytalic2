@@ -613,5 +613,26 @@ class stroke_controller():
 		
 		ui.repaint()
 
+	def moveSelected(self, args):
+		if args.has_key('strokes'):
+			selection = args['strokes']
+		else:
+			return
+
+		if args.has_key('delta'):
+			delta = args['delta']
+		else:
+			return
+
+		for stroke in selection.keys():
+			if len(selection[stroke].keys()) > 0:
+				for strokePt in selection[stroke].keys():
+					strokePt.selectHandle(selection[stroke][strokePt])
+					strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
+			else:
+				stroke.pos += delta
+			
+			stroke.calcCurvePoints()
+
 def distBetweenPts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

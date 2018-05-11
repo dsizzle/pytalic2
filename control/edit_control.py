@@ -490,27 +490,6 @@ class editor_controller():
 		self.__ui.strokeAlignTangents.setEnabled(state)
 		self.__ui.strokeSmoothTangents.setEnabled(state)
 		self.__ui.strokeSharpenTangents.setEnabled(state)		
-	
-	def moveSelected(self, args):
-		if args.has_key('strokes'):
-			selection = args['strokes']
-		else:
-			return
-
-		if args.has_key('delta'):
-			delta = args['delta']
-		else:
-			return
-
-		for stroke in selection.keys():
-			if len(selection[stroke].keys()) > 0:
-				for strokePt in selection[stroke].keys():
-					strokePt.selectHandle(selection[stroke][strokePt])
-					strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
-			else:
-				stroke.pos += delta
-			
-			stroke.calcCurvePoints()
 
 	def straightenStroke_cb(self, event):
 		self.__strokeController.straightenStroke()

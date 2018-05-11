@@ -108,6 +108,7 @@ class mouse_controller():
 			deltaPos = paperPos - normPaperPos
 			
 			snapControl = self.__mainCtrl.getSnapController()
+			strokeCtrl = self.__mainCtrl.getStrokeController()
 			if snapControl.getSnap() > 0:
 				currentView.snapPoints = snapControl.getSnappedPoints(normPaperPos)
 				if len(currentView.snapPoints) > 0 and currentView.snapPoints[0] is not QtCore.QPoint(-1, -1):
@@ -120,7 +121,7 @@ class mouse_controller():
 				'strokes' : curViewSelection,
 				'delta' : delta,
 			}
-			self.__mainCtrl.moveSelected(args)
+			strokeCtrl.moveSelected(args)
 		elif leftDown and altDown and self.__mainCtrl.state == edit_control.IDLE:
 			self.__savedMousePosPaper[currentView] = paperPos		
 			self.__mainCtrl.state = edit_control.MOVING_PAPER
@@ -178,8 +179,8 @@ class mouse_controller():
 
 			moveCmd.setDoArgs(doArgs)
 			moveCmd.setUndoArgs(undoArgs)
-			moveCmd.setDoFunction(self.__mainCtrl.moveSelected)
-			moveCmd.setUndoFunction(self.__mainCtrl.moveSelected)
+			moveCmd.setDoFunction(strokeCtrl.moveSelected)
+			moveCmd.setUndoFunction(strokeCtrl.moveSelected)
 		
 			cmdStack.addToUndo(moveCmd)
 			cmdStack.saveCount += 1
