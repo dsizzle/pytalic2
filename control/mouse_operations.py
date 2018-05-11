@@ -141,45 +141,7 @@ class mouse_controller():
 
 		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
 			strokeCtrl = self.__mainCtrl.getStrokeController()
-			curChar = self.__mainCtrl.getCurrentChar()
-
-			verts = strokeCtrl.tmpStroke.getCtrlVerticesAsList()
-			if len(verts) == 0:
-				self.__mainCtrl.state = edit_control.IDLE
-				strokeCtrl.tmpStroke = None
-				return
-
-			self.__mainCtrl.state = edit_control.IDLE
-			strokeCtrl.strokePts = []
-			addStrokeCmd = commands.command('addStrokeCmd')
-			doArgs = {
-				'stroke' : strokeCtrl.tmpStroke,
-				'copyStroke' : False,
-			}
-
-			undoArgs = {
-				'stroke' : strokeCtrl.tmpStroke,
-			}
-
-			addStrokeCmd.setDoArgs(doArgs)
-			addStrokeCmd.setUndoArgs(undoArgs)
-			addStrokeCmd.setDoFunction(curChar.addStroke)
-			addStrokeCmd.setUndoFunction(curChar.deleteStroke)
-			
-			cmdStack.doCommand(addStrokeCmd)
-			ui.editUndo.setEnabled(True)
-
-			curViewSelection[strokeCtrl.tmpStroke] = {}
-			strokeCtrl.tmpStroke.selected = True
-			currentView.strokesSpecial = []
-			strokeCtrl.tmpStroke = None
-
-			self.__mainCtrl.setUIStateSelection(True)
-			
-			for idx in range(0, ui.mainViewTabs.count()):
-				ui.mainViewTabs.setTabEnabled(idx, True)
-			
-			ui.repaint()
+			strokeCtrl.addNewStroke()
 
 	def __onLButtonUpPaper(self, pos, shiftDown):
 		currentView = self.__mainCtrl.getCurrentView()
@@ -230,28 +192,7 @@ class mouse_controller():
 				for selStroke in curViewSelection.keys():
 					insideInfo = selStroke.insideStroke(paperPos)
 					if insideInfo[1] >= 0:
-						addVertexCmd = commands.command('addVertexCmd')
-						
-						undoArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
-						}
-
-						selStroke.addCtrlVertex(insideInfo[2], insideInfo[1])
-						
-						doArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : selStroke.getCtrlVerticesAsList()
-						}
-
-						addVertexCmd.setDoArgs(doArgs)
-						addVertexCmd.setUndoArgs(undoArgs)
-						addVertexCmd.setDoFunction(self.setStrokeControlVertices)
-						addVertexCmd.setUndoFunction(self.setStrokeControlVertices)
-						
-						cmdStack.addToUndo(addVertexCmd)
-						cmdStack.saveCount += 1
-						ui.editUndo.setEnabled(True)
+						strokeCtrl.addControlPoint(selStroke, insideInfo)
 						break
 
 			self.__mainCtrl.state = edit_control.IDLE
@@ -260,34 +201,7 @@ class mouse_controller():
 				for selStroke in curViewSelection.keys():
 					insideInfo = selStroke.insideStroke(paperPos)
 					if insideInfo[1] >= 0:
-						splitAtCmd = commands.command('splitAtCmd')
-						vertsBefore = selStroke.getCtrlVerticesAsList()
-
-						newVerts = selStroke.splitAtPoint(insideInfo[2], insideInfo[1])
-						vertsAfter = selStroke.getCtrlVerticesAsList()
-
-						newStroke = stroke.Stroke()
-						newStroke.setCtrlVerticesFromList(newVerts)
-
-						undoArgs = {
-							'strokes' : selStroke,
-							'ctrlVerts' : vertsBefore,
-							'strokeToDelete' : newStroke,
-						}
-
-						doArgs = {
-							'strokes' : selStroke,
-							'newStroke' : newStroke,
-							'ctrlVerts' : vertsAfter,
-						}
-
-						splitAtCmd.setDoArgs(doArgs)
-						splitAtCmd.setUndoArgs(undoArgs)
-						splitAtCmd.setDoFunction(self.splitStroke)
-						splitAtCmd.setUndoFunction(self.unsplitStroke)
-						
-						cmdStack.doCommand(splitAtCmd)
-						ui.editUndo.setEnabled(True)
+						strokeCtrl.splitStrokeAtPoint(selStroke, insideInfo)
 						break
 
 			self.__mainCtrl.state = edit_control.IDLE

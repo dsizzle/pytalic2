@@ -261,3 +261,355 @@ class stroke_controller():
 			del curViewSelection[strokeToDel]
 
 		ui.dwgArea.repaint()
+
+	def straightenStroke(self):
+		cmdStack = self.__mainCtrl.getCommandStack()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+		ui = self.__mainCtrl.getUI()
+
+		if len(curViewSelection.keys()) == 1:
+			selStroke = curViewSelection.keys()[0]
+
+			vertsBefore = selStroke.getCtrlVerticesAsList()
+
+			strokeStraightenCmd = commands.command("strokeStraightenCmd")
+
+			undoArgs = {
+				'strokes' : selStroke,
+				'ctrlVerts' : vertsBefore
+			}
+
+			selStroke.straighten()
+
+			doArgs = {
+				'strokes' : selStroke,
+				'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+			}
+
+			strokeStraightenCmd.setDoArgs(doArgs)
+			strokeStraightenCmd.setUndoArgs(undoArgs)
+			strokeStraightenCmd.setDoFunction(self.setStrokeControlVertices)
+			strokeStraightenCmd.setUndoFunction(self.setStrokeControlVertices)
+						
+			cmdStack.addToUndo(strokeStraightenCmd)
+			cmdStack.saveCount += 1
+			ui.editUndo.setEnabled(True)
+
+	def joinSelectedStrokes(self):
+		cmdStack = self.__mainCtrl.getCommandStack()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+		ui = self.__mainCtrl.getUI()
+
+		if len(curViewSelection.keys()) > 1:
+			strokeJoinCmd = commands.command("strokeJoinCmd")
+			selectionCopy = curViewSelection.copy()
+
+			newStroke = self.joinStrokes(selectionCopy)
+
+			doArgs = {
+				'strokes' : selectionCopy,
+				'joinedStroke' : newStroke
+			}
+
+			undoArgs = {
+				'strokes' : selectionCopy.copy(),
+				'joinedStroke' : newStroke
+			}
+			
+			strokeJoinCmd.setDoArgs(doArgs)
+			strokeJoinCmd.setUndoArgs(undoArgs)
+			strokeJoinCmd.setDoFunction(self.joinAllStrokes)
+			strokeJoinCmd.setUndoFunction(self.unjoinAllStrokes)
+
+			cmdStack.addToUndo(strokeJoinCmd)
+			cmdStack.saveCount += 1
+			ui.editUndo.setEnabled(True)
+			ui.repaint()
+			
+	def joinStrokes(self, strokes):
+		curChar = self.__mainCtrl.getCurrentChar()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+		
+		strokeList = strokes.keys()
+		curStroke = strokeList.pop(0)
+		vertList = curStroke.getCtrlVerticesAsList()
+		curChar.deleteStroke({'stroke': curStroke})
+		if curViewSelection.has_key(curStroke):
+			del curViewSelection[curStroke]
+			curStroke.selected = False
+
+		while len(strokeList):
+			curStroke = strokeList.pop(0)
+			curVerts = curStroke.getCtrlVerticesAsList()
+			curChar.deleteStroke({'stroke': curStroke})
+			if curViewSelection.has_key(curStroke):
+				del curViewSelection[curStroke]
+				curStroke.selected = False
+
+			d1 = distBetweenPts(curVerts[0], vertList[0])
+			d2 = distBetweenPts(curVerts[-1], vertList[0])
+			d3 = distBetweenPts(curVerts[0], vertList[-1])
+			d4 = distBetweenPts(curVerts[-1], vertList[-1])
+
+			ptList = [d1, d2, d3, d4]
+			ptList.sort()
+
+			smallest = ptList[0]
+
+			if smallest == d1:
+				curVerts.reverse()
+
+			if smallest == d1 or smallest == d4:
+				vertList.reverse()
+
+			if smallest == d2:
+				(curVerts, vertList) = (vertList, curVerts)
+
+			vertList.extend(curVerts[1:])
+
+		newStroke = stroke.Stroke()
+		newStroke.setCtrlVerticesFromList(vertList)
+		newStroke.calcCurvePoints()
+		curChar.addStroke({'stroke': newStroke, 'copyStroke': False})
+		
+		curViewSelection[newStroke] = {}
+		newStroke.selected = True
+
+		return newStroke
+
+	def unjoinAllStrokes(self, args):
+		if args.has_key('strokes'):
+			strokes = args['strokes']
+		else:
+			return
+
+		if args.has_key('joinedStroke'):
+			joinedStroke = args['joinedStroke']
+		else:
+			return
+
+		curChar = self.__mainCtrl.getCurrentChar()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+		
+		curChar.deleteStroke({'stroke': joinedStroke})
+		joinedStroke.selected = False
+		if curViewSelection.has_key(joinedStroke):
+			del curViewSelection[joinedStroke]
+
+		for selStroke in strokes.keys():
+			curChar.addStroke({'stroke': selStroke, 'copyStroke': False})
+			curViewSelection[selStroke] = {}
+			selStroke.selected = True
+
+	def joinAllStrokes(self, args):
+		if args.has_key('strokes'):
+			strokes = args['strokes']
+		else:
+			return
+
+		if args.has_key('joinedStroke'):
+			joinedStroke = args['joinedStroke']
+		else:
+			return
+
+		curChar = self.__mainCtrl.getCurrentChar()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+
+		curChar.addStroke({'stroke': joinedStroke, 'copyStroke': False})
+		joinedStroke.selected = True
+		curViewSelection[joinedStroke] = {}
+
+		for selStroke in strokes.keys():
+			curChar.deleteStroke({'stroke': selStroke})
+			if curViewSelection.has_key(selStroke):
+				del curViewSelection[selStroke]
+			selStroke.selected = False
+
+	def setStrokeControlVertices(self, args):
+		ui = self.__mainCtrl.getUI()
+
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if len(ctrlVerts) == 0:
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		ui.repaint()
+
+	def splitStroke(self, args):
+		ui = self.__mainCtrl.getUI()
+		curChar = self.__mainCtrl.getCurrentChar()
+
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if args.has_key('newStroke'):
+			newStroke = args['newStroke']
+		else:
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		
+		curChar.addStroke({'stroke': newStroke, 'copyStroke': False})
+		ui.repaint()
+
+	def unsplitStroke(self, args):
+		ui = self.__mainCtrl.getUI()
+		curChar = self.__mainCtrl.getCurrentChar()
+
+		if args.has_key('strokes'):
+			selStroke = args['strokes']
+		else:
+			return
+
+		if args.has_key('ctrlVerts'):
+			ctrlVerts = args['ctrlVerts']
+		else:
+			return
+
+		if args.has_key('strokeToDelete'):
+			delStroke = args['strokeToDelete']
+		else:
+			return
+
+		selStroke.setCtrlVerticesFromList(ctrlVerts)
+		selStroke.calcCurvePoints()
+		curChar.deleteStroke({'stroke': delStroke})
+		ui.repaint()
+
+	def addControlPoint(self, selStroke, insideInfo):
+		ui = self.__mainCtrl.getUI()
+		cmdStack = self.__mainCtrl.getCommandStack()
+
+		addVertexCmd = commands.command('addVertexCmd')
+						
+		undoArgs = {
+			'strokes' : selStroke,
+			'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+		}
+
+		selStroke.addCtrlVertex(insideInfo[2], insideInfo[1])
+		
+		doArgs = {
+			'strokes' : selStroke,
+			'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+		}
+
+		addVertexCmd.setDoArgs(doArgs)
+		addVertexCmd.setUndoArgs(undoArgs)
+		addVertexCmd.setDoFunction(self.setStrokeControlVertices)
+		addVertexCmd.setUndoFunction(self.setStrokeControlVertices)
+		
+		cmdStack.addToUndo(addVertexCmd)
+		cmdStack.saveCount += 1
+		ui.editUndo.setEnabled(True)
+
+	def splitStrokeAtPoint(self, selStroke, insideInfo):
+		ui = self.__mainCtrl.getUI()
+		cmdStack = self.__mainCtrl.getCommandStack()
+
+		splitAtCmd = commands.command('splitAtCmd')
+		vertsBefore = selStroke.getCtrlVerticesAsList()
+
+		newVerts = selStroke.splitAtPoint(insideInfo[2], insideInfo[1])
+		vertsAfter = selStroke.getCtrlVerticesAsList()
+
+		newStroke = stroke.Stroke()
+		newStroke.setCtrlVerticesFromList(newVerts)
+
+		undoArgs = {
+			'strokes' : selStroke,
+			'ctrlVerts' : vertsBefore,
+			'strokeToDelete' : newStroke,
+		}
+
+		doArgs = {
+			'strokes' : selStroke,
+			'newStroke' : newStroke,
+			'ctrlVerts' : vertsAfter,
+		}
+
+		splitAtCmd.setDoArgs(doArgs)
+		splitAtCmd.setUndoArgs(undoArgs)
+		splitAtCmd.setDoFunction(self.splitStroke)
+		splitAtCmd.setUndoFunction(self.unsplitStroke)
+		
+		cmdStack.doCommand(splitAtCmd)
+		ui.editUndo.setEnabled(True)
+
+	def addNewStroke(self):
+		curChar = self.__mainCtrl.getCurrentChar()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+		ui = self.__mainCtrl.getUI()
+		cmdStack = self.__mainCtrl.getCommandStack()
+
+		verts = self.__tmpStroke.getCtrlVerticesAsList()
+		if len(verts) == 0:
+			self.__mainCtrl.state = edit_control.IDLE
+			self.__tmpStroke = None
+			return
+
+		self.__mainCtrl.state = edit_control.IDLE
+		self.__strokePts = []
+		
+		addStrokeCmd = commands.command('addStrokeCmd')
+		doArgs = {
+			'stroke' : self.__tmpStroke,
+			'copyStroke' : False,
+		}
+
+		undoArgs = {
+			'stroke' : self.__tmpStroke,
+		}
+
+		addStrokeCmd.setDoArgs(doArgs)
+		addStrokeCmd.setUndoArgs(undoArgs)
+		addStrokeCmd.setDoFunction(curChar.addStroke)
+		addStrokeCmd.setUndoFunction(curChar.deleteStroke)
+		
+		cmdStack.doCommand(addStrokeCmd)
+		ui.editUndo.setEnabled(True)
+
+		curViewSelection[self.__tmpStroke] = {}
+		self.__tmpStroke.selected = True
+		currentView.strokesSpecial = []
+		self.__tmpStroke = None
+
+		self.__mainCtrl.setUIStateSelection(True)
+		
+		for idx in range(0, ui.mainViewTabs.count()):
+			ui.mainViewTabs.setTabEnabled(idx, True)
+		
+		ui.repaint()
+
+def distBetweenPts (p0, p1):
+	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
