@@ -288,10 +288,10 @@ class editor_controller():
 		self.__strokeController.saveStroke()
 		
 	def addControlPoint_cb(self, event):
-		self.__state = ADDING_CTRL_POINT
+		self.state = ADDING_CTRL_POINT
 
 	def splitAtPoint_cb(self, event):
-		self.__state = SPLIT_AT_POINT
+		self.state = SPLIT_AT_POINT
 
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')
