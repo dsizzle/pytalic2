@@ -542,9 +542,13 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeMenu.addAction(self.strokeLoad)
 
 		self.helpAbout = QtGui.QAction("About", self)
-		self.helpAbout.setEnabled(False)
-		#helpAbout.triggered.connect(self.about_cb)
+		self.helpAbout.triggered.connect(self.about_cb)
 		self.helpMenu.addAction(self.helpAbout)
+
+	def about_cb(self, event):
+		reply = QtGui.QMessageBox.information(self, 'About PyTalic Editor', \
+			"PyTalic Editor\nby Dale Cieslak\n(c) 2007-2018\n\nhttps://github.com/dsizzle/pytalic2", \
+			QtGui.QMessageBox.Ok )
 
 	def mouseMoveEvent(self, event):
 		self.__parent.mouseEvent(event)
