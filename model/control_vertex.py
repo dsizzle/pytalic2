@@ -193,6 +193,8 @@ class controlVertex(object):
 	def getBehavior(self):
 		return self.__behavior
 			
+	behavior = property(getBehavior, setBehavior)
+	
 	def draw(self, gc):
 		vert = self.__handlePos[KNOT]
 		
