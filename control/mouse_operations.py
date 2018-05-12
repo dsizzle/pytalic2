@@ -223,7 +223,7 @@ class mouse_controller():
 
 						for ctrlVert in curViewSelection[selStroke].keys():
 							ctrlVert.selectHandle(curViewSelection[selStroke][ctrlVert])
-						
+
 						selStroke.selected = True
 						
 					else:
@@ -239,6 +239,19 @@ class mouse_controller():
 
 							selStroke.selected = False
 							selStroke.deselectCtrlVerts()
+
+				vertList = curViewSelection.values()
+				behaviorList = []
+				
+				for vertDict in vertList:
+					for vert in vertDict.keys():
+						behaviorList.append(vert.getBehavior())
+
+				behaviorList = list(set(behaviorList))
+				if len(behaviorList) == 1:
+					ui.behaviorCombo.setCurrentIndex(behaviorList[0])
+				else:
+					ui.behaviorCombo.setCurrentIndex(0)
 
 			if len(curViewSelection.keys()) == 0 or shiftDown:
 				for selStroke in currentView.strokes:
