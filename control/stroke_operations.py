@@ -1,3 +1,5 @@
+from PyQt4 import QtCore, QtGui
+
 import math
 
 import edit_control
@@ -108,7 +110,7 @@ class stroke_controller():
 		curViewSelection = selection[currentView]
 		ui = self.__mainCtrl.getUI()
 
-		for selStroke in selection:
+		for selStroke in curViewSelection:
 			charSet.saveStroke(selStroke)
 			bitmap = ui.dwgArea.drawIcon(None, [selStroke])
 			ui.strokeSelectorList.addItem(str(firstItem+i))
@@ -135,7 +137,6 @@ class stroke_controller():
 			selStroke.selected = False	
 
 		ui.strokeLoad.setEnabled(True)
-		ui.strokeSavedEdit.setEnabled(True)
 		self.__mainCtrl.setUIStateSelection(True)
 
 	def unsaveStrokes(self, args):
