@@ -12,7 +12,7 @@ import snap_operations
 import stroke_operations
 import vertex_operations
 
-from model import character_set, commands, control_vertex, stroke
+from model import character_set, commands
 from view import edit_ui
 
 gICON_SIZE = 40
@@ -601,7 +601,7 @@ class editor_controller():
 			return
 
 		self.__vertexController.alignTangents(newValue)
-		
+
 	def alignTangentsSymmetrical_cb(self, event):
 		self.__vertexController.alignTangentsSymmetrical()
 
