@@ -227,9 +227,27 @@ class edit_interface(QtGui.QMainWindow):
 		self.charPropLayout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
 		self.charPropLayout.addRow(self.rightSpaceLabel, self.rightSpaceSpin)
 
+		self.vertPropFrame = QtGui.QFrame(self.toolPane);
+		self.vertPropLayout = QtGui.QFormLayout(self.vertPropFrame)
+
+		self.behaviorLabel = QtGui.QLabel(self.vertPropFrame)
+		self.behaviorLabel.setText("Behavior")
+
+		self.behaviorCombo = QtGui.QComboBox(self.vertPropFrame)
+		self.behaviorCombo.addItem("--")
+		self.behaviorCombo.addItem("Smooth")
+		self.behaviorCombo.addItem("Sharp")
+		self.behaviorCombo.addItem("Symmetric")
+		self.behaviorCombo.setCurrentIndex(0)
+		QtCore.QObject.connect(self.behaviorCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.__parent.vertBehaviorComboChanged_cb)
+
+		self.vertPropLayout.addRow(self.behaviorLabel, self.behaviorCombo)
+
 		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
-		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
+		self.propertyTabs.addTab(self.vertPropFrame, "Vertex");
 		self.propertyTabs.addTab(self.charPropFrame, "Character");
+		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
+		
 
 		self.toolPaneLayout.addWidget(self.propertyTabs)
 		self.toolPaneLayout.setMargin(0)

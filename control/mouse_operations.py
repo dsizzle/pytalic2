@@ -257,3 +257,4 @@ class mouse_controller():
 				self.__mainCtrl.setUIStateSelection(True)
 			else:
 				self.__mainCtrl.setUIStateSelection(False)
+				ui.behaviorCombo.setCurrentIndex(0)
