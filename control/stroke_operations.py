@@ -625,11 +625,18 @@ class stroke_controller():
 		else:
 			return
 
+		snapPoint = None
+		if args.has_key('snapPoint'):
+			snapPoint = args['snapPoint']
+		
 		for stroke in selection.keys():
 			if len(selection[stroke].keys()) > 0:
 				for strokePt in selection[stroke].keys():
 					strokePt.selectHandle(selection[stroke][strokePt])
-					strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
+					if snapPoint:
+						strokePt.selectedHandlePos = snapPoint-stroke.pos
+					else:
+						strokePt.selectedHandlePos = strokePt.selectedHandlePos + delta
 			else:
 				stroke.pos += delta
 			

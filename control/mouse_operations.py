@@ -111,8 +111,8 @@ class mouse_controller():
 			strokeCtrl = self.__mainCtrl.getStrokeController()
 			if snapControl.getSnap() > 0:
 				currentView.snapPoints = snapControl.getSnappedPoints(normPaperPos)
-				if len(currentView.snapPoints) > 0 and currentView.snapPoints[0] is not QtCore.QPoint(-1, -1):
-					paperPos = currentView.snapPoints[0] + deltaPos
+			else:
+				currentView.snapPoints = []
 					
 			delta = (paperPos - self.__savedMousePosPaper[currentView]) / currentView.scale
 			self.__moveDelta += delta
@@ -121,6 +121,10 @@ class mouse_controller():
 				'strokes' : curViewSelection,
 				'delta' : delta,
 			}
+
+			if len(currentView.snapPoints) > 0:
+				args['snapPoint'] = currentView.snapPoints[0]
+
 			strokeCtrl.moveSelected(args)
 		elif leftDown and altDown and self.__mainCtrl.state == edit_control.IDLE:
 			self.__savedMousePosPaper[currentView] = paperPos		
