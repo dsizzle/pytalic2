@@ -34,6 +34,8 @@ class stroke_controller():
 		ui = self.__mainCtrl.getUI()
 
 		self.__mainCtrl.state = edit_control.DRAWING_NEW_STROKE
+		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
+		
 		dwgTab = ui.mainViewTabs.indexOf(ui.dwgArea)
 
 		for idx in range(0, ui.mainViewTabs.count()):

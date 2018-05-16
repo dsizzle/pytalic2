@@ -291,9 +291,11 @@ class editor_controller():
 		
 	def addControlPoint_cb(self, event):
 		self.state = ADDING_CTRL_POINT
+		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
 	def splitAtPoint_cb(self, event):
 		self.state = SPLIT_AT_POINT
+		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')

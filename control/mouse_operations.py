@@ -147,6 +147,7 @@ class mouse_controller():
 		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
 			strokeCtrl = self.__mainCtrl.getStrokeController()
 			strokeCtrl.addNewStroke()
+			QtGui.qApp.restoreOverrideCursor()
 
 	def __onLButtonUpPaper(self, pos, shiftDown):
 		currentView = self.__mainCtrl.getCurrentView()
@@ -201,6 +202,7 @@ class mouse_controller():
 						break
 
 			self.__mainCtrl.state = edit_control.IDLE
+			QtGui.qApp.restoreOverrideCursor()
 		elif self.__mainCtrl.state == edit_control.SPLIT_AT_POINT:
 			if len(curViewSelection.keys()) > 0:
 				for selStroke in curViewSelection.keys():
@@ -210,6 +212,7 @@ class mouse_controller():
 						break
 
 			self.__mainCtrl.state = edit_control.IDLE
+			QtGui.qApp.restoreOverrideCursor()
 		else:
 			if len(curViewSelection.keys()) > 0:
 				for selStroke in curViewSelection.keys():
