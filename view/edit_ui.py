@@ -40,6 +40,8 @@ class edit_interface(QtGui.QMainWindow):
 		#return
 		self.mainWidget = QtGui.QWidget()
 		self.mainSplitter = splitter.MySplitter (self.mainWidget)
+		self.sideSplitter = QtGui.QSplitter(self.mainSplitter)
+		self.sideSplitter.setOrientation(2)
 
 		self.mainLayout = QtGui.QVBoxLayout()
 		self.viewLayout = QtGui.QHBoxLayout()
@@ -71,9 +73,13 @@ class edit_interface(QtGui.QMainWindow):
 		self.dwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.dwgArea.setLineWidth(2)
 
-		self.toolPane = QtGui.QFrame(self.mainSplitter)
+		self.toolPane = QtGui.QFrame(self.sideSplitter)
 		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
 		
+		self.bottomPane = QtGui.QFrame(self.sideSplitter)
+		self.bottomPane.setFrameStyle(QtGui.QFrame.Panel)
+		self.bottomPaneLayout = QtGui.QVBoxLayout(self.bottomPane)
+
 		self.strokeDwgArea = paper.drawingArea(self)
 		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.strokeDwgArea.setLineWidth(2)
@@ -259,7 +265,6 @@ class edit_interface(QtGui.QMainWindow):
 		self.propertyTabs.addTab(self.strokePropFrame, "Stroke");
 		self.propertyTabs.addTab(self.charPropFrame, "Character");
 		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
-		
 
 		self.toolPaneLayout.addWidget(self.propertyTabs)
 		self.toolPaneLayout.setMargin(0)
@@ -274,7 +279,11 @@ class edit_interface(QtGui.QMainWindow):
 		self.mainViewTabs.currentChanged.connect(self.__parent.viewTabChanged_cb)
 
 		self.mainSplitter.addWidget(self.mainViewTabs)
-		self.mainSplitter.addWidget(self.toolPane)
+		self.mainSplitter.addWidget(self.sideSplitter)
+		self.sideSplitter.addWidget(self.toolPane)
+		self.sideSplitter.addWidget(self.bottomPane)
+		self.sideSplitter.setSizes([self.height(), 0])
+
 		self.mainSplitter.setMaxPaneWidth(wid20)
 		self.mainSplitter.setSizes([wid80, wid20])
 		mainSizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
