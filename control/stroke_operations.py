@@ -35,7 +35,7 @@ class stroke_controller():
 
 		self.__mainCtrl.state = edit_control.DRAWING_NEW_STROKE
 		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
-		
+
 		dwgTab = ui.mainViewTabs.indexOf(ui.dwgArea)
 
 		for idx in range(0, ui.mainViewTabs.count()):
@@ -578,9 +578,12 @@ class stroke_controller():
 		cmdStack = self.__mainCtrl.getCommandStack()
 
 		verts = self.__tmpStroke.getCtrlVerticesAsList()
-		if len(verts) == 0:
+		if len(verts) < 2:
 			self.__mainCtrl.state = edit_control.IDLE
 			self.__tmpStroke = None
+			self.__strokePts = []
+			currentView.strokesSpecial = []
+			ui.repaint()
 			return
 
 		self.__mainCtrl.state = edit_control.IDLE

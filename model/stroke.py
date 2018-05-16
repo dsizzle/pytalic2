@@ -210,6 +210,7 @@ class Stroke(object):
 		
 		tmpPts = pts[:]
 		left = QtCore.QPoint()
+		right = QtCore.QPoint()
 		
 		while (tmpPts):
 			pt = tmpPts.pop(0)
@@ -233,8 +234,8 @@ class Stroke(object):
 		
 		if (2 > numPts):
 			# not sure about this one
-			return
-		if (2 == numPts):
+			pass
+		elif (2 == numPts):
 			dX = (pts[1][0]-pts[0][0])/3.
 			dY = (pts[1][1]-pts[0][1])/3.
 			pts = [pts[0], [pts[0][0]+dX, pts[0][1]+dY], [pts[1][0]-dX, pts[1][1]-dY], pts[1]]
