@@ -63,7 +63,7 @@ class snap_controller():
 						return snappedPoints
 
 				if self.__snap & SNAP_TO_AXES:
-					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.angle, -90])
+					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guideAngle, -90])
 
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
@@ -137,7 +137,7 @@ class snap_controller():
 
 		guides = self.__mainCtrl.getUI().guideLines
 		nibWidth = guides.nibWidth
-		angleDX = math.tan(math.radians(guides.angle))
+		angleDX = math.tan(math.radians(guides.guideAngle))
 
 		if nibWidth == 0:
 	 		return gridPt 

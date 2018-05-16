@@ -41,7 +41,7 @@ class guideLines(object):
 	def getAngle(self):
 		return self.__angle
 		
-	angle = property(getAngle, setAngle)
+	guideAngle = property(getAngle, setAngle)
 	
 	def setLineColor(self, linecolor):
 		self.__lineColor = linecolor

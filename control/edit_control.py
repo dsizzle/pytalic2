@@ -568,7 +568,7 @@ class editor_controller():
 		self.__propertyController.gapHeightChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
 	def guideAngleChanged_cb(self, newValue):
-		prevValue = self.__charSet.angle
+		prevValue = self.__charSet.guideAngle
 
 		self.__propertyController.angleChanged(prevValue, newValue, [self.__charSet, self.__ui.guideLines])
 		
@@ -580,6 +580,11 @@ class editor_controller():
 	def guideColorChanged_cb(self, newColor):
 		self.__ui.guideLines.setLineColor(newColor)
 		self.__ui.repaint()
+
+	def charSetNibAngleChanged_cb(self, newValue):
+		prevValue = self.__charSet.nibAngle
+
+		self.__propertyController.charSetNibAngleChanged(prevValue, newValue, [self.__charSet, self.__ui.dwgArea.nib])
 
 	def charWidthChanged_cb(self, newValue):
 		prevValue = self.__curChar.width

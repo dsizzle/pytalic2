@@ -13,7 +13,8 @@ class character_set(object):
 		self.__descentHeightNibs = 3.0
 		self.__capHeightNibs = 2.0
 		self.__gapHeightNibs = 1.0
-		self.__angle = 5
+		self.__guideAngle = 5
+		self.__nibAngle = 40
 
 		self.__savedStrokes = []
 
@@ -128,13 +129,13 @@ class character_set(object):
 
 	gapHeight = property(getGapHeight, setGapHeight)
 
-	def setAngle(self, newAngle):
-		self.__angle = newAngle
+	def setGuideAngle(self, newAngle):
+		self.__guideAngle = newAngle
 
-	def getAngle(self):
-		return self.__angle
+	def getGuideAngle(self):
+		return self.__guideAngle
 
-	angle = property(getAngle, setAngle)
+	guideAngle = property(getGuideAngle, setGuideAngle)
 
 	def setNominalWidth(self, newWidth):
 		self.__nominalWidthNibs = newWidth
@@ -143,3 +144,11 @@ class character_set(object):
 		return self.__nominalWidthNibs
 
 	nominalWidth = property(getNominalWidth, setNominalWidth)
+
+	def setNibAngle(self, newAngle):
+		self.__nibAngle = newAngle
+
+	def getNibAngle(self):
+		return self.__nibAngle
+
+	nibAngle = property(getNibAngle, setNibAngle)

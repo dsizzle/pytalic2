@@ -175,6 +175,18 @@ class edit_interface(QtGui.QMainWindow):
 		self.guidesColorButton.setColor(QtGui.QColor(200, 195, 180))
 		QtCore.QObject.connect(self.guidesColorButton, QtCore.SIGNAL("valueChanged(QColor)"), self.__parent.guideColorChanged_cb)
 
+		self.charSetNibAngleLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.charSetNibAngleLabel.setText("Nib Angle:")
+
+		self.charSetNibAngleSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.charSetNibAngleSpin.setMinimum(0)
+		self.charSetNibAngleSpin.setMaximum(90)
+		self.charSetNibAngleSpin.setValue(40)
+		self.charSetNibAngleSpin.setWrapping(True)
+		self.charSetNibAngleSpin.setDecimals(0)
+		self.charSetNibAngleSpin.setSingleStep(1.0)
+		QtCore.QObject.connect(self.charSetNibAngleSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charSetNibAngleChanged_cb)
+
 		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
 		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)
 		self.charSetPropLayout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
@@ -183,7 +195,8 @@ class edit_interface(QtGui.QMainWindow):
 		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
 		self.charSetPropLayout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
 		self.charSetPropLayout.addRow(self.guidesColorLabel, self.guidesColorButton)
-
+		self.charSetPropLayout.addRow(self.charSetNibAngleLabel, self.charSetNibAngleSpin)
+		
 		self.charPropFrame = QtGui.QFrame(self.toolPane);
 		self.charPropLayout = QtGui.QFormLayout(self.charPropFrame)
 
@@ -227,13 +240,13 @@ class edit_interface(QtGui.QMainWindow):
 		self.charPropLayout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
 		self.charPropLayout.addRow(self.rightSpaceLabel, self.rightSpaceSpin)
 
-		self.vertPropFrame = QtGui.QFrame(self.toolPane);
-		self.vertPropLayout = QtGui.QFormLayout(self.vertPropFrame)
+		self.strokePropFrame = QtGui.QFrame(self.toolPane);
+		self.strokePropLayout = QtGui.QFormLayout(self.strokePropFrame)
 
-		self.behaviorLabel = QtGui.QLabel(self.vertPropFrame)
-		self.behaviorLabel.setText("Behavior")
+		self.behaviorLabel = QtGui.QLabel(self.strokePropFrame)
+		self.behaviorLabel.setText("Vertex Behavior")
 
-		self.behaviorCombo = QtGui.QComboBox(self.vertPropFrame)
+		self.behaviorCombo = QtGui.QComboBox(self.strokePropFrame)
 		self.behaviorCombo.addItem("--")
 		self.behaviorCombo.addItem("Smooth")
 		self.behaviorCombo.addItem("Sharp")
@@ -241,10 +254,10 @@ class edit_interface(QtGui.QMainWindow):
 		self.behaviorCombo.setCurrentIndex(0)
 		QtCore.QObject.connect(self.behaviorCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.__parent.vertBehaviorComboChanged_cb)
 
-		self.vertPropLayout.addRow(self.behaviorLabel, self.behaviorCombo)
+		self.strokePropLayout.addRow(self.behaviorLabel, self.behaviorCombo)
 
 		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
-		self.propertyTabs.addTab(self.vertPropFrame, "Vertex");
+		self.propertyTabs.addTab(self.strokePropFrame, "Stroke");
 		self.propertyTabs.addTab(self.charPropFrame, "Character");
 		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
 		

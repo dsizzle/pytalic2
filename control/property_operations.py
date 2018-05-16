@@ -13,19 +13,19 @@ class property_controller():
 
 		doArgs = {
 			'value' : newValue,
-			'attrName' : attrName,
-			'ctrlName' : ctrlName,
+			'attrNames' : attrName,
+			'ctrlNames' : ctrlName,
 			'objects' : objects
 		}
 
 		undoArgs = {
 			'value' : prevValue,
-			'attrName' : attrName,
-			'ctrlName' : ctrlName,
+			'attrNames' : attrName,
+			'ctrlNames' : ctrlName,
 			'objects' : objects
 		}
 
-		changeCmd = commands.command("change"+attrName+"Cmd")
+		changeCmd = commands.command("change"+attrName[0]+"Cmd")
 
 		changeCmd.setDoArgs(doArgs)
 		changeCmd.setUndoArgs(undoArgs)
@@ -43,50 +43,63 @@ class property_controller():
 		else:
 			return
 
-		if (args.has_key('attrName')):
-			attrName = args['attrName']
+		if (args.has_key('attrNames')):
+			attrNames = args['attrNames']
 		else:
 			return
 
-		if (args.has_key('ctrlName')):
-			ctrlName = args['ctrlName']
+		if (args.has_key('ctrlNames')):
+			ctrlNames = args['ctrlNames']
 		else:
 			return
 
-		if (args.has_key('objects')):
+		if (args.has_key('objects')):	
 			objectsToSet = args['objects']
 		else:
 			return
 
-		for objectName in objectsToSet:
-			setattr(objectName, attrName, val)
+		useSameAttr = False
+		if len(attrNames) == 1:
+			useSameAttr = True
+
+		for i in range(0, len(objectsToSet)):
+			if useSameAttr:
+				attrName = attrNames[0]
+			else:
+				attrName = attrNames[i]
+
+			setattr(objectsToSet[i], attrName, val)
 		
 		ui = self.__mainCtrl.getUI()
-		uiControl = getattr(ui, ctrlName)
-		uiControl.setValue(val)
+		for ctrlName in ctrlNames:
+			uiControl = getattr(ui, ctrlName)
+			uiControl.setValue(val)
 		
 		ui.repaint()
 
 	def baseHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'baseHeight', 'baseHeightSpin')
+		self.__propChange(prevValue, newValue, objects, ['baseHeight'], ['baseHeightSpin'])
 
 	def capHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'capHeight', 'capHeightSpin')
+		self.__propChange(prevValue, newValue, objects, ['capHeight'], ['capHeightSpin'])
 		
 	def ascentChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'ascentHeight', 'ascentHeightSpin')
+		self.__propChange(prevValue, newValue, objects, ['ascentHeight'], ['ascentHeightSpin'])
 		
 	def descentChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'descentHeight', 'descentHeightSpin')
+		self.__propChange(prevValue, newValue, objects, ['descentHeight'], ['descentHeightSpin'])
 		
 	def gapHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'gapHeight', 'gapHeightSpin')
+		self.__propChange(prevValue, newValue, objects, ['gapHeight'], ['gapHeightSpin'])
 		
 	def angleChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'angle', 'angleSpin')
+		self.__propChange(prevValue, newValue, objects, ['guideAngle'], ['angleSpin'])
 		
 	def nominalWidthChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'nominalWidth', 'nominalWidthSpin')
+		self.__propChange(prevValue, newValue, objects, ['nominalWidth'], ['nominalWidthSpin'])
+
+	def charSetNibAngleChanged(self, prevValue, newValue, objects):
+		self.__propChange(prevValue, newValue, objects, ['nibAngle','angle'], ['charSetNibAngleSpin'])
 		
 	def charWidthChanged(self, prevValue, newValue, objects):
 		self.__propChange(prevValue, newValue, objects, 'width', 'charWidthSpin')
