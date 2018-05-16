@@ -73,8 +73,7 @@ class edit_interface(QtGui.QMainWindow):
 
 		self.toolPane = QtGui.QFrame(self.mainSplitter)
 		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
-		self.toolPaneLayout.addWidget(self.charSelectorList)
-
+		
 		self.strokeDwgArea = paper.drawingArea(self)
 		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.strokeDwgArea.setLineWidth(2)
