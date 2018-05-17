@@ -9,6 +9,7 @@ from PyQt4 import QtGui, QtCore
 import mouse_operations
 import property_operations
 import snap_operations
+from model import stroke
 import stroke_operations
 import vertex_operations
 
