@@ -125,6 +125,14 @@ class drawingArea(QtGui.QFrame):
 
 	nib = property(getNib, setNib)
 
+	def getInstNib(self):
+		return self.__instNib
+
+	def setInstNib(self, newNib):
+		self.__instNib = newNib
+
+	instNib = property(getInstNib, setInstNib)
+
 	def getNormalizedPosition(self, rawPos):
 		normPos = rawPos
 		normPos = normPos - self.__origin - self.__originDelta

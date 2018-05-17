@@ -99,7 +99,7 @@ class property_controller():
 		self.__propChange(prevValue, newValue, objects, ['nominalWidth'], ['nominalWidthSpin'])
 
 	def charSetNibAngleChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['nibAngle','angle'], ['charSetNibAngleSpin'])
+		self.__propChange(prevValue, newValue, objects, ['nibAngle','angle','angle','angle'], ['charSetNibAngleSpin'])
 		
 	def charWidthChanged(self, prevValue, newValue, objects):
 		self.__propChange(prevValue, newValue, objects, 'width', 'charWidthSpin')

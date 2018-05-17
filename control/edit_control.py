@@ -201,10 +201,23 @@ class editor_controller():
 			self.load(fileName)
 
 			self.__ui.baseHeightSpin.setValue(self.__charSet.baseHeight)
+			self.__ui.guideLines.baseHeight = self.__charSet.baseHeight
 			self.__ui.capHeightSpin.setValue(self.__charSet.capHeight)
+			self.__ui.guideLines.capHeight = self.__charSet.capHeight
 			self.__ui.capHeightSpin.setMaximum(self.__charSet.ascentHeight)
 			self.__ui.ascentHeightSpin.setValue(self.__charSet.ascentHeight)
+			self.__ui.guideLines.ascentHeight = self.__charSet.ascentHeight
 			self.__ui.descentHeightSpin.setValue(self.__charSet.descentHeight)
+			self.__ui.guideLines.descentHeight = self.__charSet.descentHeight
+			self.__ui.angleSpin.setValue(self.__charSet.guideAngle)
+			self.__ui.guideLines.guideAngle = self.__charSet.guideAngle
+			self.__ui.charSetNibAngleSpin.setValue(self.__charSet.nibAngle)
+			self.__ui.guideLines.nibAngle = self.__charSet.nibAngle
+			self.__ui.dwgArea.nib.angle = self.__charSet.nibAngle
+			self.__ui.dwgArea.instNib.angle = self.__charSet.nibAngle
+			self.__ui.strokeDwgArea.nib.angle = self.__charSet.nibAngle
+			self.__ui.nominalWidthSpin.setValue(self.__charSet.nominalWidth)
+			self.__ui.guideLines.nominalWidth = self.__charSet.nominalWidth
 
 			(self.__dirName, self.__fileName) = os.path.split(str(fileName))
 
@@ -587,7 +600,8 @@ class editor_controller():
 	def charSetNibAngleChanged_cb(self, newValue):
 		prevValue = self.__charSet.nibAngle
 
-		self.__propertyController.charSetNibAngleChanged(prevValue, newValue, [self.__charSet, self.__ui.dwgArea.nib])
+		self.__propertyController.charSetNibAngleChanged(prevValue, newValue, 
+				[self.__charSet, self.__ui.dwgArea.nib, self.__ui.dwgArea.instNib, self.__ui.strokeDwgArea.nib])
 
 	def charWidthChanged_cb(self, newValue):
 		prevValue = self.__curChar.width
