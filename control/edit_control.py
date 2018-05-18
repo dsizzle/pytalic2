@@ -451,7 +451,7 @@ class editor_controller():
 		self.__selection[self.__currentViewPane] = {}
 
 		for selStroke in strokesToPaste:
-			if copyStrokes:
+			if copyStrokes and type(selStroke).__name__ == 'Stroke':
 				pasteStroke = stroke.Stroke(fromStroke=selStroke)
 			else:
 				pasteStroke = selStroke

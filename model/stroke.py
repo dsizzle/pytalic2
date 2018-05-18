@@ -551,6 +551,9 @@ class StrokeInstance(object):
 
 	parent = property(getParent, setParent)
 
+	def getStrokeShape(self):
+		return self.__stroke.getStrokeShape()
+
 	def getStartSerif(self):
 		return self.__stroke.getStartSerif()
 
