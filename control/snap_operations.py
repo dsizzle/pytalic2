@@ -63,7 +63,7 @@ class snap_controller():
 						return snappedPoints
 
 				if self.__snap & SNAP_TO_AXES:
-					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guideAngle, -90])
+					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guideAngle, 90])
 
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
@@ -71,7 +71,7 @@ class snap_controller():
 						return snappedPoints
 
 				if self.__snap & SNAP_TO_NIB_AXES:					
-					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[40, -40])
+					snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[charSet.nibAngle, charSet.nibAngle-90])
 					
 					if snapPoint != QtCore.QPoint(-1, -1):
 						snappedPoints.append(snapPoint)
@@ -93,16 +93,13 @@ class snap_controller():
 		if len(axisAngles) == 0:
 			return snapPt
 		
-		delta = pos - vertPos - strokePos
-
+		delta = pos - vertPos
 		vecLength = math.sqrt(float(delta.x())*float(delta.x()) + float(delta.y())*float(delta.y()))
 
 		for angle in axisAngles:
 
-			if delta.x() > 0 and delta.y() < 0:
+			if delta.y() < 0:
 				angle += 180
-			elif delta.x() < 0 and delta.y() < 0:
-				angle += 270
 
 			newPt = QtCore.QPoint(vecLength * math.sin(math.radians(angle)), \
 				vecLength * math.cos(math.radians(angle)))
