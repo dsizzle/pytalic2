@@ -167,7 +167,7 @@ class stroke_controller():
 			selStroke = inst.getStroke()
 			ui.strokeSelectorList.takeItem(firstItem+i)
 			charSet.removeSavedStroke(selStroke)
-			curChar = self.__charSet.getCurrentChar()
+			curChar = charSet.getCurrentChar()
 			curChar.deleteStroke({'stroke' : inst})
 			curChar.addStroke({'stroke' : selStroke, 'copyStroke' : False})
 			addedStrokes.append(selStroke)
@@ -182,8 +182,7 @@ class stroke_controller():
 
 		if ui.strokeSelectorList.count() == 0:
 			ui.strokeLoad.setEnabled(False)
-			ui.strokeSavedEdit.setEnabled(False)
-
+			
 		self.__mainCtrl.setUIStateSelection(True)
 		
 	def pasteInstanceFromSaved(self):
