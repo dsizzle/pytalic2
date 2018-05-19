@@ -357,6 +357,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.toolBar.addAction(self.fileSave)
 		
 		self.fileSaveAs = QtGui.QAction("&Save As...", self)
+		self.fileSaveAs.setShortcut('Ctrl+Shift+S')
 		self.fileSaveAs.setStatusTip('Save the character set with a new name')
 		self.fileSaveAs.setIcon(QtGui.QIcon("icons/save_as.png"))
 		self.fileSaveAs.setIconText("Save As...")
@@ -497,6 +498,7 @@ class edit_interface(QtGui.QMainWindow):
 		
 		self.strokeNew = QtGui.QAction("New", self)
 		self.strokeNew.setStatusTip('Create a new stroke')
+		self.strokeNew.setShortcut('Shift+N')
 		self.strokeNew.setIcon(QtGui.QIcon("icons/draw_path.png"))
 		self.strokeNew.setIconText("Stroke")
 		self.strokeNew.triggered.connect(self.__parent.createNewStroke_cb)
@@ -512,6 +514,15 @@ class edit_interface(QtGui.QMainWindow):
 		self.strokeMenu.addAction(self.strokeNewFreehand)
 		self.toolBar.addAction(self.strokeNewFreehand)
 		
+		self.strokeDelete = QtGui.QAction("Delete", self)
+		self.strokeDelete.setStatusTip('Delete selected stroke(s)')
+		self.strokeDelete.setShortcut('Backspace')
+		self.strokeDelete.setIcon(QtGui.QIcon("icons/delete.png"))
+		self.strokeDelete.setIconText("Delete")
+		self.strokeDelete.triggered.connect(self.__parent.cutStrokes_cb)
+		self.strokeMenu.addAction(self.strokeDelete)
+		self.toolBar.addAction(self.strokeDelete)
+
 		self.strokeStraighten = QtGui.QAction("Straighten", self)
 		self.strokeStraighten.setStatusTip('Make the stroke straight')
 		self.strokeStraighten.setEnabled(False)
