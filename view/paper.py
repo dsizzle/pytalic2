@@ -252,3 +252,101 @@ class drawingArea(QtGui.QFrame):
 		dc.restore()
 		dc.end()
 		QtGui.QFrame.paintEvent(self,event)
+
+
+class layoutArea(QtGui.QFrame):
+	def __init__(self, parent):
+		QtGui.QWidget.__init__(self, parent)
+		self.setFocusPolicy(QtCore.Qt.ClickFocus)
+		self.setMouseTracking(True)
+
+		self.__origin = None
+		self.__originDelta = QtCore.QPoint(0, 0)
+		self.__scale = 1.0
+		self.__bgColor = QtGui.QColor(240, 240, 230)
+		self.__bgBrush = QtGui.QBrush(self.__bgColor, QtCore.Qt.SolidPattern) 
+
+		self.__layout = []		
+		self.__strokesToDraw = []
+
+		self.__oldViewPos = None
+		self.__moveView = False
+
+		self.__nib = nibs.Nib(color=QtGui.QColor(125,25,25))
+
+	def resizeEvent(self, event):
+		self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
+		self.repaint()
+
+	def getScale(self):
+		return self.__scale
+
+	def setScale(self, newScale):
+		self.__scale = newScale
+		if self.__scale < 0.01:
+			self.__scale = 0.01
+		elif self.__scale > 10.0:
+			self.__scale = 10.0
+
+	scale = property(getScale, setScale)
+		
+	def getOriginDelta(self):
+		return self.__originDelta
+
+	def setOriginDelta(self, newOriginDelta):
+		self.__originDelta = newOriginDelta
+
+	originDelta = property(getOriginDelta, setOriginDelta)
+
+	def getOrigin(self):
+		return self.__origin
+	
+	def getNib(self):
+		return self.__nib
+
+	def setNib(self, newNib):
+		self.__nib = newNib
+
+	nib = property(getNib, setNib)
+
+	def getNormalizedPosition(self, rawPos):
+		normPos = rawPos
+		normPos = normPos - self.__origin - self.__originDelta
+		normPos = normPos / self.__scale
+		
+		return normPos
+
+	def setDrawStrokes(self, strokes):
+		self.__strokesToDraw = strokes
+
+	def getDrawStrokes(self):
+		return self.__strokesToDraw
+
+	strokes = property(getDrawStrokes, setDrawStrokes)
+
+	def setLayout(self, layout):
+		self.__layout = layoout
+
+	def getLayout(self):
+		return self.__layout
+
+	layout = property(getLayout, setLayout)
+
+	def paintEvent(self, event):
+		dc = QtGui.QPainter()
+
+		dc.begin(self)
+		dc.setRenderHint(QtGui.QPainter.Antialiasing)
+
+		dc.setBackground(self.__bgBrush)
+		dc.eraseRect(self.frameRect())
+		dc.save()
+		dc.translate(self.__origin + self.__originDelta)
+		dc.scale(self.__scale, self.__scale)
+
+		for character in self.__layout:
+			pass
+
+		dc.restore()
+		dc.end()
+		QtGui.QFrame.paintEvent(self,event)

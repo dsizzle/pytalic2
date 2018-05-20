@@ -1,6 +1,5 @@
 import character
 import random
-import pickle
 
 class character_set(object):
 	def __init__(self):

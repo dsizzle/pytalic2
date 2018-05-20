@@ -316,7 +316,7 @@ class editor_controller():
 		for selStroke in self.__selection[self.__currentViewPane].keys():
 			for vert in self.__selection[self.__currentViewPane][selStroke]:
 				selectedVerts += 1
-		
+
 		if selectedVerts > 0:
 			self.__strokeController.deleteControlVertices()
 		else:
@@ -549,14 +549,24 @@ class editor_controller():
 			self.__ui.strokeNew.setEnabled(True)
 		elif self.__currentViewPane == self.__ui.strokeDwgArea:
 			self.__ui.strokeNew.setEnabled(False)
-	
+		elif self.__currentViewPane == self.__ui.previewArea:
+			self.__ui.strokeNew.setEnabled(False)
+			self.__ui.viewGuides.setEnabled(False)
+			self.__ui.viewNibGuides.setEnabled(False)
+
 		if not self.__selection.has_key(self.__currentViewPane):
 			self.__selection[self.__currentViewPane] = {}
+		if self.__currentViewPane == self.__ui.previewArea:
+			self.__ui.viewGuides.setEnabled(False)
+			self.__ui.viewNibGuides.setEnabled(False)
+		else:
+			self.__ui.viewGuides.setEnabled(True)
+			self.__ui.viewNibGuides.setEnabled(True)
+			self.__ui.viewGuides.setChecked(self.__currentViewPane.drawGuidelines)
+			self.__ui.viewNibGuides.setChecked(self.__currentViewPane.drawNibGuides)
+			self.setIcon()
 
-		self.__ui.viewGuides.setChecked(self.__currentViewPane.drawGuidelines)
-		self.__ui.viewNibGuides.setChecked(self.__currentViewPane.drawNibGuides)
 		self.__ui.repaint()
-		self.setIcon()
 
 	def setIcon(self):
 		iconBitmap = self.__currentViewPane.getBitmap()

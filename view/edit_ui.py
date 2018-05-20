@@ -73,18 +73,22 @@ class edit_interface(QtGui.QMainWindow):
 		self.dwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.dwgArea.setLineWidth(2)
 
+		self.strokeDwgArea = paper.drawingArea(self)
+		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.strokeDwgArea.setLineWidth(2)
+		self.strokeDwgArea.drawGuidelines = False
+		self.strokeDwgArea.drawNibGuides = False
+
+		self.previewArea = paper.layoutArea(self)
+		self.previewArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.previewArea.setLineWidth(2)
+
 		self.toolPane = QtGui.QFrame(self.sideSplitter)
 		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
 		
 		self.bottomPane = QtGui.QFrame(self.sideSplitter)
 		self.bottomPane.setFrameStyle(QtGui.QFrame.Panel)
 		self.bottomPaneLayout = QtGui.QVBoxLayout(self.bottomPane)
-
-		self.strokeDwgArea = paper.drawingArea(self)
-		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-		self.strokeDwgArea.setLineWidth(2)
-		self.strokeDwgArea.drawGuidelines = False
-		self.strokeDwgArea.drawNibGuides = False
 
 		self.charSetPropFrame = QtGui.QFrame(self.toolPane);
 		self.charSetPropLayout = QtGui.QFormLayout(self.charSetPropFrame)
@@ -276,6 +280,7 @@ class edit_interface(QtGui.QMainWindow):
 		self.mainViewTabs = QtGui.QTabWidget(self.mainWidget)
 		self.mainViewTabs.addTab(self.dwgArea, "Character")
 		self.mainViewTabs.addTab(self.strokeDwgArea, "Stroke")
+		self.mainViewTabs.addTab(self.previewArea, "Preview")
 		self.mainViewTabs.currentChanged.connect(self.__parent.viewTabChanged_cb)
 
 		self.mainSplitter.addWidget(self.mainViewTabs)

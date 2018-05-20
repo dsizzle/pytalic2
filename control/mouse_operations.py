@@ -61,6 +61,8 @@ class mouse_controller():
 		paperPos.setY(paperPos.y() - ui.mainViewTabs.tabBar().height())
 
 	def mouseReleaseEventPaper(self, event):
+		currentView = self.__mainCtrl.getCurrentView()
+		
 		btn = event.button()
 		mod = event.modifiers()
 		ui = self.__mainCtrl.getUI()
@@ -81,7 +83,8 @@ class mouse_controller():
 				self.__onLButtonUpPaper(event.pos(), shiftDown)
 				
 		ui.repaint()
-		self.__mainCtrl.setIcon()
+		if currentView != ui.previewArea:
+			self.__mainCtrl.setIcon()
 
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
@@ -135,7 +138,8 @@ class mouse_controller():
 			self.__moveDelta = QtCore.QPoint(0, 0)
 
 		ui.repaint()
-		self.__mainCtrl.setIcon()
+		if currentView != ui.previewArea:
+			self.__mainCtrl.setIcon()
 
 	def __onRButtonUpPaper(self):
 		currentView = self.__mainCtrl.getCurrentView()

@@ -1,3 +1,5 @@
+from PyQt4 import QtCore, QtGui
+
 import stroke
 import thirdparty.dp
 
@@ -18,12 +20,22 @@ class Character(object):
 		self.__strokes = []
 		self.__bitmapPreview = None
 		
+		self.__pos = QtCore.QPoint(0, 0)
+
 	def __getstate__(self):
 		saveDict = self.__dict__.copy()
 
 		saveDict["_Character__bitmapPreview"] = None
 
 		return saveDict
+
+	def setPos(self, pt):
+		self.__pos = pt
+		
+	def getPos(self):
+		return self.__pos
+
+	pos = property(getPos, setPos)
 
 	def newStroke(self, pts, add=True):
 		myStroke = stroke.Stroke()
@@ -187,7 +199,11 @@ class Character(object):
 
 	rightSpacing = property(getRightSpacing, setRightSpacing)
 
-	def draw(self, showCtrlVerts=0, drawHandles=0, nib=None):
-		
+	def draw(self, gc, showCtrlVerts=0, drawHandles=0, nib=None):
+		gc.save()
+		gc.translate(self.__pos)
+
 		for stroke in self.__strokes:
-			stroke.draw(showCtrlVerts, drawHandles, nib)
+			stroke.draw(gc, showCtrlVerts, drawHandles, nib)
+
+		gc.restore()
