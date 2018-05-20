@@ -268,7 +268,7 @@ class editor_controller():
 			return 1
 		
 		try:
-			dataPickler = pickle.Pickler(dataFileFd)
+			dataPickler = pickle.Pickler(dataFileFd, pickle.HIGHEST_PROTOCOL)
 			dataPickler.dump(self.__charSet)
 		except pickle.PicklingError:
 			print "ERROR: Couldn't serialize data"
