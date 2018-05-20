@@ -311,6 +311,17 @@ class editor_controller():
 		self.state = SPLIT_AT_POINT
 		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
+	def deleteStrokes_cb(self, event):
+		selectedVerts = 0
+		for selStroke in self.__selection[self.__currentViewPane].keys():
+			for vert in self.__selection[self.__currentViewPane][selStroke]:
+				selectedVerts += 1
+		
+		if selectedVerts > 0:
+			self.__strokeController.deleteControlVertices()
+		else:
+			self.cutStrokes_cb(event)
+		
 	def cutStrokes_cb(self, event):
 		cutStrokesCmd = commands.command('cutStrokesCmd')
 		charIndex = self.__charSet.getCurrentCharIndex()

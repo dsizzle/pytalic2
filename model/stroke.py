@@ -78,9 +78,6 @@ class Stroke(object):
 
 	pos = property(getPos, setPos)
 	
-	def getHandlePos(self):
-		return (int(self.__hx), int(self.__hy))
-	
 	def straighten(self):
 		tempCv = []
 		ctrlVerts = self.getCtrlVerticesAsList()
@@ -290,7 +287,7 @@ class Stroke(object):
 		if len(pts) > 3:
 			self.calcCurvePoints()
 		
-	def deleteCtrlVertex(self, pt):
+	def deleteCtrlVertexByIndex(self, pt):
 		if (pt == 0):
 			self.__strokeCtrlVerts[pt+1].clearLeftHandlePos()
 		elif (pt == len(self.__strokeCtrlVerts)-1):
@@ -299,7 +296,12 @@ class Stroke(object):
 		self.__strokeCtrlVerts.remove(self.__strokeCtrlVerts[pt])
 		self.updateCtrlVertices()
 		self.calcCurvePoints()
-	
+
+	def deleteCtrlVertex(self, vert):
+		self.__strokeCtrlVerts.remove(vert)
+		self.updateCtrlVertices()
+		self.calcCurvePoints()
+
 	def divideCurveAtPoint(self, pts, t, index):
 		trueIndex = index*3
 		

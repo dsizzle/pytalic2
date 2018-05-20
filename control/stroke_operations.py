@@ -281,15 +281,15 @@ class stroke_controller():
 			strokeStraightenCmd = commands.command("strokeStraightenCmd")
 
 			undoArgs = {
-				'strokes' : selStroke,
-				'ctrlVerts' : vertsBefore
+				'strokes' : [selStroke],
+				'ctrlVerts' : [vertsBefore]
 			}
 
 			selStroke.straighten()
 
 			doArgs = {
-				'strokes' : selStroke,
-				'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+				'strokes' : [selStroke],
+				'ctrlVerts' : [selStroke.getCtrlVerticesAsList()]
 			}
 
 			strokeStraightenCmd.setDoArgs(doArgs)
@@ -439,24 +439,70 @@ class stroke_controller():
 				del curViewSelection[selStroke]
 			selStroke.selected = False
 
+	def deleteControlVertices(self):
+		ui = self.__mainCtrl.getUI()
+		cmdStack = self.__mainCtrl.getCommandStack()
+		curChar = self.__mainCtrl.getCurrentChar()
+		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.getSelection()
+		curViewSelection = selection[currentView]
+
+		vertsBeforeList = []
+		vertsAfterList = []
+
+		for selStroke in curViewSelection.keys():
+			vertsBefore = selStroke.getCtrlVerticesAsList()
+
+			for vertToDelete in curViewSelection[selStroke]:
+				selStroke.deleteCtrlVertex(vertToDelete)
+
+			vertsAfter = selStroke.getCtrlVerticesAsList()
+
+			vertsBeforeList.append(vertsBefore)
+			vertsAfterList.append(vertsAfter)
+
+		doArgs = {
+			'strokes' : curViewSelection.keys(),
+			'ctrlVerts' : vertsAfterList
+		}
+
+		undoArgs = {
+			'strokes' : curViewSelection.keys(),
+			'ctrlVerts' : vertsBeforeList
+		}
+
+		vertDeleteCmd = commands.command("vertDeleteCmd")
+		vertDeleteCmd.setDoArgs(doArgs)
+		vertDeleteCmd.setUndoArgs(undoArgs)
+		vertDeleteCmd.setDoFunction(self.setStrokeControlVertices)
+		vertDeleteCmd.setUndoFunction(self.setStrokeControlVertices)
+
+		cmdStack.addToUndo(vertDeleteCmd)
+		cmdStack.saveCount += 1
+		ui.editUndo.setEnabled(True)
+		ui.repaint()
+
 	def setStrokeControlVertices(self, args):
 		ui = self.__mainCtrl.getUI()
 
 		if args.has_key('strokes'):
-			selStroke = args['strokes']
+			selStrokeList = args['strokes']
 		else:
 			return
 
 		if args.has_key('ctrlVerts'):
-			ctrlVerts = args['ctrlVerts']
+			ctrlVertList = args['ctrlVerts']
 		else:
 			return
 
-		if len(ctrlVerts) == 0:
+		if len(ctrlVertList) != len(selStrokeList):
 			return
 
-		selStroke.setCtrlVerticesFromList(ctrlVerts)
-		selStroke.calcCurvePoints()
+		for i in range(0, len(selStrokeList)):	
+			selStroke = selStrokeList[i]
+			selStroke.setCtrlVerticesFromList(ctrlVertList[i])
+			selStroke.calcCurvePoints()
+
 		ui.repaint()
 
 	def splitStroke(self, args):
@@ -515,15 +561,15 @@ class stroke_controller():
 		addVertexCmd = commands.command('addVertexCmd')
 						
 		undoArgs = {
-			'strokes' : selStroke,
-			'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+			'strokes' : [selStroke],
+			'ctrlVerts' : [selStroke.getCtrlVerticesAsList()]
 		}
 
 		selStroke.addCtrlVertex(insideInfo[2], insideInfo[1])
 		
 		doArgs = {
-			'strokes' : selStroke,
-			'ctrlVerts' : selStroke.getCtrlVerticesAsList()
+			'strokes' : [selStroke],
+			'ctrlVerts' : [selStroke.getCtrlVerticesAsList()]
 		}
 
 		addVertexCmd.setDoArgs(doArgs)
