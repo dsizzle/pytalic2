@@ -1,21 +1,21 @@
 import sys
 
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 
 from control import edit_control
 
-class pytalic_editor_app(QtGui.QApplication):
-	def __init__(self, args):
-		QtGui.QApplication.__init__(self, args)
-		QtGui.qApp = self
-		
-		
-def main(args=None):
-	myQtApp = pytalic_editor_app(args)
-	myQtCtrl = edit_control.editor_controller(1024, 768, "Pytalic Character Editor")
-	
-	myQtCtrl.activate()
+class PytalicEditorApp(QtGui.QApplication):
+    def __init__(self, args):
+        QtGui.QApplication.__init__(self, args)
+        QtGui.qApp = self
 
-	return myQtApp.exec_()
-	
+
+def main(args=None):
+    my_qt_app = PytalicEditorApp(args)
+    my_qt_ctrl = edit_control.editor_controller(1024, 768, "Pytalic Character Editor")
+
+    my_qt_ctrl.activate()
+
+    return my_qt_app.exec_()
+
 main(sys.argv)
