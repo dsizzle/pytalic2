@@ -298,6 +298,7 @@ class Stroke(object):
 		self.calcCurvePoints()
 
 	def deleteCtrlVertex(self, vert):
+		vert.selectHandle(None)
 		self.__strokeCtrlVerts.remove(vert)
 		self.updateCtrlVertices()
 		self.calcCurvePoints()

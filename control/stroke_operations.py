@@ -464,6 +464,8 @@ class stroke_controller():
 			for vertToDelete in curViewSelection[selStroke]:
 				selStroke.deleteCtrlVertex(vertToDelete)
 
+			curViewSelection[selStroke] = {}
+			
 			vertsAfter = selStroke.getCtrlVerticesAsList()
 
 			vertsBeforeList.append(vertsBefore)
