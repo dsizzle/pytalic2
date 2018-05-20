@@ -273,33 +273,41 @@ class stroke_controller():
 		curViewSelection = selection[currentView]
 		ui = self.__mainCtrl.getUI()
 
-		if len(curViewSelection.keys()) == 1:
-			selStroke = curViewSelection.keys()[0]
+		vertsBeforeList = []
+		vertsAfterList = []
 
+		for selStroke in curViewSelection.keys():
 			vertsBefore = selStroke.getCtrlVerticesAsList()
-
-			strokeStraightenCmd = commands.command("strokeStraightenCmd")
-
-			undoArgs = {
-				'strokes' : [selStroke],
-				'ctrlVerts' : [vertsBefore]
-			}
 
 			selStroke.straighten()
 
-			doArgs = {
-				'strokes' : [selStroke],
-				'ctrlVerts' : [selStroke.getCtrlVerticesAsList()]
-			}
+			vertsAfter = selStroke.getCtrlVerticesAsList()
 
-			strokeStraightenCmd.setDoArgs(doArgs)
-			strokeStraightenCmd.setUndoArgs(undoArgs)
-			strokeStraightenCmd.setDoFunction(self.setStrokeControlVertices)
-			strokeStraightenCmd.setUndoFunction(self.setStrokeControlVertices)
-						
-			cmdStack.addToUndo(strokeStraightenCmd)
-			cmdStack.saveCount += 1
-			ui.editUndo.setEnabled(True)
+			vertsBeforeList.append(vertsBefore)
+			vertsAfterList.append(vertsAfter)
+
+		strokeStraightenCmd = commands.command("strokeStraightenCmd")
+
+		undoArgs = {
+			'strokes' : curViewSelection.keys(),
+			'ctrlVerts' : vertsBeforeList
+		}
+
+		selStroke.straighten()
+
+		doArgs = {
+			'strokes' : curViewSelection.keys(),
+			'ctrlVerts' : vertsAfterList
+		}
+
+		strokeStraightenCmd.setDoArgs(doArgs)
+		strokeStraightenCmd.setUndoArgs(undoArgs)
+		strokeStraightenCmd.setDoFunction(self.setStrokeControlVertices)
+		strokeStraightenCmd.setUndoFunction(self.setStrokeControlVertices)
+					
+		cmdStack.addToUndo(strokeStraightenCmd)
+		cmdStack.saveCount += 1
+		ui.editUndo.setEnabled(True)
 
 	def joinSelectedStrokes(self):
 		cmdStack = self.__mainCtrl.getCommandStack()
