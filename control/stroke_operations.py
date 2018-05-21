@@ -36,11 +36,11 @@ class StrokeController(object):
 		self.__main_ctrl.state = edit_control.DRAWING_NEW_STROKE
 		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
-		dwgTab = ui.mainViewTabs.indexOf(ui.dwg_area)
+		dwgTab = ui.main_view_tabs.indexOf(ui.dwg_area)
 
-		for idx in range(0, ui.mainViewTabs.count()):
+		for idx in range(0, ui.main_view_tabs.count()):
 			if idx != dwgTab:
-				ui.mainViewTabs.setTabEnabled(idx, False)
+				ui.main_view_tabs.setTabEnabled(idx, False)
 
 		self.__stroke_pts = []
 		self.__tmp_stroke = stroke.Stroke()
@@ -62,7 +62,7 @@ class StrokeController(object):
 				newStrokeInstance = stroke.StrokeInstance()
 				instances.append(newStrokeInstance)
 
-		itemNum = ui.strokeSelectorList.count()
+		itemNum = ui.stroke_selector_list.count()
 
 		save_stroke_cmd = commands.Command('save_stroke_cmd')
 		
@@ -115,9 +115,9 @@ class StrokeController(object):
 		for sel_stroke in cur_view_selection:
 			char_set.saveStroke(sel_stroke)
 			bitmap = ui.dwg_area.drawIcon(None, [sel_stroke])
-			ui.strokeSelectorList.addItem(str(first_item+i))
-			cur_item = ui.strokeSelectorList.item(first_item+i)
-			ui.strokeSelectorList.setCurrentRow(first_item+i)
+			ui.stroke_selector_list.addItem(str(first_item+i))
+			cur_item = ui.stroke_selector_list.item(first_item+i)
+			ui.stroke_selector_list.setCurrentRow(first_item+i)
 			cur_item.setIcon(QtGui.QIcon(bitmap))
 			cur_char = char_set.getCurrentChar()
 			deleted_strokes.append(sel_stroke)
@@ -165,7 +165,7 @@ class StrokeController(object):
 		instances.reverse()
 		for inst in instances:
 			sel_stroke = inst.getStroke()
-			ui.strokeSelectorList.takeItem(first_item+i)
+			ui.stroke_selector_list.takeItem(first_item+i)
 			char_set.removeSavedStroke(sel_stroke)
 			cur_char = char_set.getCurrentChar()
 			cur_char.deleteStroke({'stroke' : inst})
@@ -180,7 +180,7 @@ class StrokeController(object):
 			
 			sel_stroke.selected = True
 
-		if ui.strokeSelectorList.count() == 0:
+		if ui.stroke_selector_list.count() == 0:
 			ui.stroke_load.setEnabled(False)
 			
 		self.__main_ctrl.set_ui_state_selection(True)
@@ -191,7 +191,7 @@ class StrokeController(object):
 		ui = self.__main_ctrl.get_ui()
 
 		char_index = charSet.getCurrentCharIndex()
-		stroke_index = ui.strokeSelectorList.currentRow()
+		stroke_index = ui.stroke_selector_list.currentRow()
 		saved_stroke = charSet.getSavedStroke(stroke_index)
 		new_stroke_instance = stroke.StrokeInstance()
 		new_stroke_instance.setStroke(saved_stroke)
@@ -235,13 +235,13 @@ class StrokeController(object):
 		cur_view_selection = selection[current_view]
 		ui = self.__main_ctrl.get_ui()
 
-		ui.charSelectorList.setCurrentRow(char_index)
+		ui.char_selector_list.setCurrentRow(char_index)
 
 		cur_char.addStrokeInstance(stroke_instance)
 		cur_view_selection[stroke_instance] = {}
 		
 		ui.dwg_area.repaint()
-		self.__main_ctrl.setIcon()
+		self.__main_ctrl.set_icon()
 
 	def delete_instance(self, args):
 		if args.has_key('char_index'):
@@ -667,8 +667,8 @@ class StrokeController(object):
 
 		self.__main_ctrl.set_ui_state_selection(True)
 		
-		for idx in range(0, ui.mainViewTabs.count()):
-			ui.mainViewTabs.setTabEnabled(idx, True)
+		for idx in range(0, ui.main_view_tabs.count()):
+			ui.main_view_tabs.setTabEnabled(idx, True)
 		
 		ui.repaint()
 

@@ -43,16 +43,16 @@ class EditorController(object):
             char_list.append(str(unichr(i)))
 
         self.__ui.create_ui()
-        self.__ui.charSelectorList.addItems(QtCore.QStringList(char_list))
+        self.__ui.char_selector_list.addItems(QtCore.QStringList(char_list))
 
         self.blank_pixmap = QtGui.QPixmap(ICON_SIZE, ICON_SIZE)
         self.blank_pixmap.fill(QtGui.QColor(240, 240, 240))
 
-        for idx in range(0, self.__ui.charSelectorList.count()):
-            self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
+        for idx in range(0, self.__ui.char_selector_list.count()):
+            self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
         self.__ui.dwg_area.bitmapSize = ICON_SIZE
 
-        self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
+        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
 
         self.__property_controller = control.property_operations.PropertyController(self)
@@ -147,12 +147,12 @@ class EditorController(object):
         self.name = (self.__label + " - Untitled")
         self.__ui.setWindowTitle(self.name)
 
-        self.__ui.strokeSelectorList.clear()
+        self.__ui.stroke_selector_list.clear()
 
-        for idx in range(0, self.__ui.charSelectorList.count()):
-            self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
+        for idx in range(0, self.__ui.char_selector_list.count()):
+            self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
 
-        self.__ui.charSelectorList.setCurrentRow(0)
+        self.__ui.char_selector_list.setCurrentRow(0)
         self.__cur_char = self.__char_set.getCurrentChar()
 
         self.__cmd_stack = commands.CommandStack()
@@ -216,7 +216,7 @@ class EditorController(object):
 
             self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
 
-            self.__ui.strokeSelectorList.clear()
+            self.__ui.stroke_selector_list.clear()
 
             savedStrokeList = self.__char_set.getSavedStrokes()
             if len(savedStrokeList) > 0:
@@ -224,27 +224,27 @@ class EditorController(object):
                 self.__ui.stroke_load.setEnabled(True)
                 for selStroke in savedStrokeList:
                     bitmap = self.__ui.dwg_area.drawIcon(None, [selStroke])
-                    self.__ui.strokeSelectorList.addItem(str(i))
-                    curItem = self.__ui.strokeSelectorList.item(i)
-                    self.__ui.strokeSelectorList.setCurrentRow(i)
+                    self.__ui.stroke_selector_list.addItem(str(i))
+                    curItem = self.__ui.stroke_selector_list.item(i)
+                    self.__ui.stroke_selector_list.setCurrentRow(i)
                     curItem.setIcon(QtGui.QIcon(bitmap))
                     i += 1
 
-            for idx in range(0, self.__ui.charSelectorList.count()):
-                self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
+            for idx in range(0, self.__ui.char_selector_list.count()):
+                self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
 
             idx = 0
             char_list = self.__char_set.getCharList()
 
             for character in char_list.keys():
                 if len(char_list[character].strokes) > 0:
-                    self.__ui.charSelectorList.setCurrentRow(idx)
+                    self.__ui.char_selector_list.setCurrentRow(idx)
                     self.__ui.repaint()
 
                 idx += 1
 
-            self.__ui.charSelectorList.setCurrentRow(1)
-            self.__ui.charSelectorList.setCurrentRow(0)
+            self.__ui.char_selector_list.setCurrentRow(1)
+            self.__ui.char_selector_list.setCurrentRow(0)
 
             self.__selection[self.__current_view_pane] = {}
             self.__ui.repaint()
@@ -351,7 +351,7 @@ class EditorController(object):
         else:
             return
 
-        self.__ui.charSelectorList.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
         for selStroke in strokesToCut:
             self.__cur_char.deleteStroke({'stroke' : selStroke})
@@ -398,7 +398,7 @@ class EditorController(object):
         else:
             return
 
-        self.__ui.charSelectorList.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
         for selStroke in strokesToCopy.keys():
             self.__clipboard.append(selStroke)
@@ -447,7 +447,7 @@ class EditorController(object):
         else:
             copyStrokes = True
 
-        self.__ui.charSelectorList.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_index)
 
         for selStroke in self.__selection[self.__current_view_pane].keys():
             selStroke.selected = False
@@ -519,24 +519,24 @@ class EditorController(object):
     def join_strokes_cb(self, event):
         self.__stroke_controller.join_selected_strokes()
 
-    def charSelected(self, event):
-        curCharIdx = self.__ui.charSelectorList.currentRow()
-        self.__char_set.setCurrentChar(curCharIdx)
+    def char_selected_cb(self, event):
+        cur_char_idx = self.__ui.char_selector_list.currentRow()
+        self.__char_set.setCurrentChar(cur_char_idx)
         self.__cur_char = self.__char_set.getCurrentChar()
         self.__ui.dwg_area.strokesSpecial = []
         self.__ui.dwg_area.strokes = self.__cur_char.strokes
         self.__ui.repaint()
-        self.setIcon()
+        self.set_icon()
 
-    def strokeSelected(self, event):
-        selSavedStroke = self.__char_set.getSavedStroke(self.__ui.strokeSelectorList.currentRow())
+    def stroke_selected_cb(self, event):
+        sel_saved_stroke = self.__char_set.getSavedStroke(self.__ui.stroke_selector_list.currentRow())
  
-        self.__ui.stroke_dwg_area.strokes = [selSavedStroke]
+        self.__ui.stroke_dwg_area.strokes = [sel_saved_stroke]
         self.__ui.repaint()
-        self.setIcon()
+        self.set_icon()
 
-    def viewTabChanged_cb(self, event):
-        self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
+    def view_tab_changed_cb(self, event):
+        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
 
         if self.__current_view_pane == self.__ui.dwg_area:
             self.__ui.stroke_new.setEnabled(True)
@@ -557,19 +557,19 @@ class EditorController(object):
             self.__ui.view_nib_guides.setEnabled(True)
             self.__ui.view_guides.setChecked(self.__current_view_pane.drawGuidelines)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.drawNibGuides)
-            self.setIcon()
+            self.set_icon()
 
         self.__ui.repaint()
 
-    def setIcon(self):
+    def set_icon(self):
         iconBitmap = self.__current_view_pane.getBitmap()
         if iconBitmap:
             if self.__current_view_pane == self.__ui.dwg_area:
                 self.__cur_char.bitmapPreview = iconBitmap
-                self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+                self.__ui.char_selector_list.currentItem().setIcon(QtGui.QIcon(iconBitmap))
             elif self.__current_view_pane == self.__ui.stroke_dwg_area:
-                if self.__ui.strokeSelectorList.count() > 0:
-                    self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+                if self.__ui.stroke_selector_list.count() > 0:
+                    self.__ui.stroke_selector_list.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
     def guideBaseHeightChanged_cb(self, new_value):
         prev_value = self.__char_set.baseHeight

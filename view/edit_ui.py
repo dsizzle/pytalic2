@@ -38,38 +38,38 @@ class EditInterface(QtGui.QMainWindow):
 		hgt = self.height() 
 
 		#return
-		self.mainWidget = QtGui.QWidget()
-		self.mainSplitter = splitter.MySplitter (self.mainWidget)
-		self.sideSplitter = QtGui.QSplitter(self.mainSplitter)
-		self.sideSplitter.setOrientation(2)
+		self.main_widget = QtGui.QWidget()
+		self.main_splitter = splitter.MySplitter (self.main_widget)
+		self.side_splitter = QtGui.QSplitter(self.main_splitter)
+		self.side_splitter.setOrientation(2)
 
-		self.mainLayout = QtGui.QVBoxLayout()
-		self.viewLayout = QtGui.QHBoxLayout()
+		self.main_layout = QtGui.QVBoxLayout()
+		self.view_layout = QtGui.QHBoxLayout()
 
-		self.charSelectorLayout = QtGui.QHBoxLayout()
-		self.charSelectorLayout.setMargin(0)
-		self.charSelectorLayout.setSpacing(0)
-		self.charSelectorLayout.setContentsMargins(0, 0, 0, 0)
+		self.char_selector_layout = QtGui.QHBoxLayout()
+		self.char_selector_layout.setMargin(0)
+		self.char_selector_layout.setSpacing(0)
+		self.char_selector_layout.setContentsMargins(0, 0, 0, 0)
 
-		self.charSelectorList = QtGui.QListWidget(self.mainWidget)
-		self.charSelectorList.setFlow(QtGui.QListView.LeftToRight)
-		self.charSelectorList.resize(self.width(), gICON_SIZE*1.75)
-		self.charSelectorList.setMaximumHeight(gICON_SIZE*1.75)
-		self.charSelectorList.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
-		self.charSelectorList.currentItemChanged.connect(self.__parent.charSelected)
-		self.charSelectorLayout.addWidget(self.charSelectorList, 0, QtCore.Qt.AlignTop)
+		self.char_selector_list = QtGui.QListWidget(self.main_widget)
+		self.char_selector_list.setFlow(QtGui.QListView.LeftToRight)
+		self.char_selector_list.resize(self.width(), gICON_SIZE*1.75)
+		self.char_selector_list.setMaximumHeight(gICON_SIZE*1.75)
+		self.char_selector_list.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
+		self.char_selector_list.currentItemChanged.connect(self.__parent.char_selected_cb)
+		self.char_selector_layout.addWidget(self.char_selector_list, 0, QtCore.Qt.AlignTop)
 
 		#self.strokeSelectorLayout = QtGui.QVBoxLayout()
-		self.strokeSelectorList = QtGui.QListWidget(self)
-		#self.strokeSelectorList.setFlow(QtGui.QListView.LeftToRight)
-		self.strokeSelectorList.resize(gICON_SIZE*1.5, self.height())
-		self.strokeSelectorList.setMaximumWidth(gICON_SIZE*1.5)
-		self.strokeSelectorList.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
-		self.strokeSelectorList.currentItemChanged.connect(self.__parent.strokeSelected)
-		self.viewLayout.addWidget(self.strokeSelectorList)
-		#self.strokeSelectorLayout.addWidget(self.strokeSelectorList)
+		self.stroke_selector_list = QtGui.QListWidget(self)
+		#self.stroke_selector_list.setFlow(QtGui.QListView.LeftToRight)
+		self.stroke_selector_list.resize(gICON_SIZE*1.5, self.height())
+		self.stroke_selector_list.setMaximumWidth(gICON_SIZE*1.5)
+		self.stroke_selector_list.setIconSize(QtCore.QSize(gICON_SIZE, gICON_SIZE))
+		self.stroke_selector_list.currentItemChanged.connect(self.__parent.stroke_selected_cb)
+		self.view_layout.addWidget(self.stroke_selector_list)
+		#self.strokeSelectorLayout.addWidget(self.stroke_selector_list)
 		
-		self.dwg_area = paper.drawingArea(self.mainSplitter)
+		self.dwg_area = paper.drawingArea(self.main_splitter)
 		self.dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.dwg_area.setLineWidth(2)
 
@@ -83,23 +83,23 @@ class EditInterface(QtGui.QMainWindow):
 		self.preview_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 		self.preview_area.setLineWidth(2)
 
-		self.toolPane = QtGui.QFrame(self.sideSplitter)
-		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
+		self.tool_pane = QtGui.QFrame(self.side_splitter)
+		self.tool_pane_layout = QtGui.QVBoxLayout(self.tool_pane)
 		
-		self.bottomPane = QtGui.QFrame(self.sideSplitter)
-		self.bottomPane.setFrameStyle(QtGui.QFrame.Panel)
-		self.bottomPaneLayout = QtGui.QVBoxLayout(self.bottomPane)
+		self.bottom_pane = QtGui.QFrame(self.side_splitter)
+		self.bottom_pane.setFrameStyle(QtGui.QFrame.Panel)
+		self.bottom_pane_layout = QtGui.QVBoxLayout(self.bottom_pane)
 
-		self.charSetPropFrame = QtGui.QFrame(self.toolPane);
-		self.charSetPropLayout = QtGui.QFormLayout(self.charSetPropFrame)
-		self.mainCharSetPropLabel = QtGui.QLabel(self.charSetPropFrame)
-		self.mainCharSetPropLabel.setText("Note: All units are nib-widths.")
-		self.charSetPropLayout.addRow(self.mainCharSetPropLabel)
+		self.char_set_prop_frame = QtGui.QFrame(self.tool_pane);
+		self.char_set_prop_layout = QtGui.QFormLayout(self.char_set_prop_frame)
+		self.main_char_set_prop_label = QtGui.QLabel(self.char_set_prop_frame)
+		self.main_char_set_prop_label.setText("Note: All units are nib-widths.")
+		self.char_set_prop_layout.addRow(self.main_char_set_prop_label)
 
-		self.baseHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.baseHeightLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.baseHeightLabel.setText("X-height:")
 		
-		self.baseHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.baseHeightSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.baseHeightSpin.setMinimum(1.0)
 		self.baseHeightSpin.setMaximum(10.0)
 		self.baseHeightSpin.setValue(1.0)
@@ -108,10 +108,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.baseHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.baseHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideBaseHeightChanged_cb)
 		
-		self.capHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.capHeightLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.capHeightLabel.setText("Capital height:")
 		
-		self.capHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.capHeightSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.capHeightSpin.setMinimum(0.5)
 		self.capHeightSpin.setMaximum(10)
 		self.capHeightSpin.setValue(2.0)
@@ -120,10 +120,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.capHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.capHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideCapHeightChanged_cb)
 		
-		self.ascentHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.ascentHeightLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.ascentHeightLabel.setText("Ascent height:")
 		
-		self.ascentHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.ascentHeightSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.ascentHeightSpin.setMinimum(1)
 		self.ascentHeightSpin.setMaximum(10)
 		self.ascentHeightSpin.setValue(1)
@@ -132,10 +132,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.ascentHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.ascentHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideAscentChanged_cb)
 		
-		self.descentHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.descentHeightLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.descentHeightLabel.setText("Descent height:")
 		
-		self.descentHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.descentHeightSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.descentHeightSpin.setMinimum(1)
 		self.descentHeightSpin.setMaximum(10)
 		self.descentHeightSpin.setValue(1)
@@ -144,20 +144,20 @@ class EditInterface(QtGui.QMainWindow):
 		self.descentHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.descentHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideDescentChanged_cb)
 				
-		self.angleLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.angleLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.angleLabel.setText("Guide angle:")
 		
-		self.angleSpin = QtGui.QSpinBox(self.charSetPropFrame)
+		self.angleSpin = QtGui.QSpinBox(self.char_set_prop_frame)
 		self.angleSpin.setMinimum(0)
 		self.angleSpin.setMaximum(45)
 		self.angleSpin.setValue(0)
 		self.angleSpin.setWrapping(True)
 		QtCore.QObject.connect(self.angleSpin, QtCore.SIGNAL("valueChanged(int)"), self.__parent.guideAngleChanged_cb)
 		
-		self.gapHeightLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.gapHeightLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.gapHeightLabel.setText("Gap distance:")
 		
-		self.gapHeightSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.gapHeightSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.gapHeightSpin.setMinimum(1)
 		self.gapHeightSpin.setMaximum(5)
 		self.gapHeightSpin.setValue(1.5)
@@ -166,10 +166,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.gapHeightSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.gapHeightSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideGapHeightChanged_cb)
 		
-		self.nominalWidthLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.nominalWidthLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.nominalWidthLabel.setText("Nominal width:")
 		
-		self.nominalWidthSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.nominalWidthSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.nominalWidthSpin.setMinimum(2)
 		self.nominalWidthSpin.setMaximum(10)
 		self.nominalWidthSpin.setValue(4.0)
@@ -178,16 +178,16 @@ class EditInterface(QtGui.QMainWindow):
 		self.nominalWidthSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.nominalWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.guideNominalWidthChanged_cb)
 
-		self.guidesColorLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.guidesColorLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.guidesColorLabel.setText("Guideline color:")
-		self.guidesColorButton = widgets_qt.select_color_button(self.charSetPropFrame)
+		self.guidesColorButton = widgets_qt.select_color_button(self.char_set_prop_frame)
 		self.guidesColorButton.setColor(QtGui.QColor(200, 195, 180))
 		QtCore.QObject.connect(self.guidesColorButton, QtCore.SIGNAL("valueChanged(QColor)"), self.__parent.guideColorChanged_cb)
 
-		self.charSetNibAngleLabel = QtGui.QLabel(self.charSetPropFrame)
+		self.charSetNibAngleLabel = QtGui.QLabel(self.char_set_prop_frame)
 		self.charSetNibAngleLabel.setText("Nib Angle:")
 
-		self.charSetNibAngleSpin = QtGui.QDoubleSpinBox(self.charSetPropFrame)
+		self.charSetNibAngleSpin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
 		self.charSetNibAngleSpin.setMinimum(0)
 		self.charSetNibAngleSpin.setMaximum(90)
 		self.charSetNibAngleSpin.setValue(40)
@@ -196,23 +196,23 @@ class EditInterface(QtGui.QMainWindow):
 		self.charSetNibAngleSpin.setSingleStep(1.0)
 		QtCore.QObject.connect(self.charSetNibAngleSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charSetNibAngleChanged_cb)
 
-		self.charSetPropLayout.addRow(self.baseHeightLabel, self.baseHeightSpin)
-		self.charSetPropLayout.addRow(self.capHeightLabel, self.capHeightSpin)
-		self.charSetPropLayout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
-		self.charSetPropLayout.addRow(self.descentHeightLabel, self.descentHeightSpin)
-		self.charSetPropLayout.addRow(self.angleLabel, self.angleSpin)
-		self.charSetPropLayout.addRow(self.gapHeightLabel, self.gapHeightSpin)
-		self.charSetPropLayout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
-		self.charSetPropLayout.addRow(self.guidesColorLabel, self.guidesColorButton)
-		self.charSetPropLayout.addRow(self.charSetNibAngleLabel, self.charSetNibAngleSpin)
+		self.char_set_prop_layout.addRow(self.baseHeightLabel, self.baseHeightSpin)
+		self.char_set_prop_layout.addRow(self.capHeightLabel, self.capHeightSpin)
+		self.char_set_prop_layout.addRow(self.ascentHeightLabel, self.ascentHeightSpin)
+		self.char_set_prop_layout.addRow(self.descentHeightLabel, self.descentHeightSpin)
+		self.char_set_prop_layout.addRow(self.angleLabel, self.angleSpin)
+		self.char_set_prop_layout.addRow(self.gapHeightLabel, self.gapHeightSpin)
+		self.char_set_prop_layout.addRow(self.nominalWidthLabel, self.nominalWidthSpin)
+		self.char_set_prop_layout.addRow(self.guidesColorLabel, self.guidesColorButton)
+		self.char_set_prop_layout.addRow(self.charSetNibAngleLabel, self.charSetNibAngleSpin)
 		
-		self.charPropFrame = QtGui.QFrame(self.toolPane);
-		self.charPropLayout = QtGui.QFormLayout(self.charPropFrame)
+		self.char_prop_frame = QtGui.QFrame(self.tool_pane);
+		self.char_prop_layout = QtGui.QFormLayout(self.char_prop_frame)
 
-		self.charWidthLabel = QtGui.QLabel(self.charPropFrame)
+		self.charWidthLabel = QtGui.QLabel(self.char_prop_frame)
 		self.charWidthLabel.setText("Character width:")
 
-		self.charWidthSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.charWidthSpin = QtGui.QDoubleSpinBox(self.char_prop_frame)
 		self.charWidthSpin.setMinimum(2)
 		self.charWidthSpin.setMaximum(10)
 		self.charWidthSpin.setValue(4.0)
@@ -221,10 +221,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.charWidthSpin.setSingleStep(0.5)
 		QtCore.QObject.connect(self.charWidthSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charWidthChanged_cb)
 
-		self.leftSpaceLabel = QtGui.QLabel(self.charPropFrame)
+		self.leftSpaceLabel = QtGui.QLabel(self.char_prop_frame)
 		self.leftSpaceLabel.setText("Left spacing:")
 
-		self.leftSpaceSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.leftSpaceSpin = QtGui.QDoubleSpinBox(self.char_prop_frame)
 		self.leftSpaceSpin.setMinimum(0)
 		self.leftSpaceSpin.setMaximum(3)
 		self.leftSpaceSpin.setValue(1.0)
@@ -233,10 +233,10 @@ class EditInterface(QtGui.QMainWindow):
 		self.leftSpaceSpin.setSingleStep(0.1)
 		QtCore.QObject.connect(self.leftSpaceSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charLeftSpaceChanged_cb)
 
-		self.rightSpaceLabel = QtGui.QLabel(self.charPropFrame)
+		self.rightSpaceLabel = QtGui.QLabel(self.char_prop_frame)
 		self.rightSpaceLabel.setText("Right spacing:")
 
-		self.rightSpaceSpin = QtGui.QDoubleSpinBox(self.charPropFrame)
+		self.rightSpaceSpin = QtGui.QDoubleSpinBox(self.char_prop_frame)
 		self.rightSpaceSpin.setMinimum(0)
 		self.rightSpaceSpin.setMaximum(3)
 		self.rightSpaceSpin.setValue(1.0)
@@ -245,17 +245,17 @@ class EditInterface(QtGui.QMainWindow):
 		self.rightSpaceSpin.setSingleStep(0.1)
 		QtCore.QObject.connect(self.rightSpaceSpin, QtCore.SIGNAL("valueChanged(double)"), self.__parent.charRightSpaceChanged_cb)
 
-		self.charPropLayout.addRow(self.charWidthLabel, self.charWidthSpin)
-		self.charPropLayout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
-		self.charPropLayout.addRow(self.rightSpaceLabel, self.rightSpaceSpin)
+		self.char_prop_layout.addRow(self.charWidthLabel, self.charWidthSpin)
+		self.char_prop_layout.addRow(self.leftSpaceLabel, self.leftSpaceSpin)
+		self.char_prop_layout.addRow(self.rightSpaceLabel, self.rightSpaceSpin)
 
-		self.strokePropFrame = QtGui.QFrame(self.toolPane);
-		self.strokePropLayout = QtGui.QFormLayout(self.strokePropFrame)
+		self.stroke_prop_frame = QtGui.QFrame(self.tool_pane);
+		self.stroke_prop_layout = QtGui.QFormLayout(self.stroke_prop_frame)
 
-		self.behaviorLabel = QtGui.QLabel(self.strokePropFrame)
+		self.behaviorLabel = QtGui.QLabel(self.stroke_prop_frame)
 		self.behaviorLabel.setText("Vertex Behavior")
 
-		self.behaviorCombo = QtGui.QComboBox(self.strokePropFrame)
+		self.behaviorCombo = QtGui.QComboBox(self.stroke_prop_frame)
 		self.behaviorCombo.addItem("--")
 		self.behaviorCombo.addItem("Smooth")
 		self.behaviorCombo.addItem("Sharp")
@@ -263,54 +263,52 @@ class EditInterface(QtGui.QMainWindow):
 		self.behaviorCombo.setCurrentIndex(0)
 		QtCore.QObject.connect(self.behaviorCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.__parent.vertBehaviorComboChanged_cb)
 
-		self.strokePropLayout.addRow(self.behaviorLabel, self.behaviorCombo)
+		self.stroke_prop_layout.addRow(self.behaviorLabel, self.behaviorCombo)
 
-		self.propertyTabs = QtGui.QTabWidget(self.toolPane)
-		self.propertyTabs.addTab(self.strokePropFrame, "Stroke");
-		self.propertyTabs.addTab(self.charPropFrame, "Character");
-		self.propertyTabs.addTab(self.charSetPropFrame, "Character Set");
+		self.property_tabs = QtGui.QTabWidget(self.tool_pane)
+		self.property_tabs.addTab(self.stroke_prop_frame, "Stroke");
+		self.property_tabs.addTab(self.char_prop_frame, "Character");
+		self.property_tabs.addTab(self.char_set_prop_frame, "Character Set");
 
-		self.toolPaneLayout.addWidget(self.propertyTabs)
-		self.toolPaneLayout.setMargin(0)
-		self.toolPaneLayout.setSpacing(5)
-		self.toolPaneLayout.setContentsMargins(0, 0, 0, 0)
+		self.tool_pane_layout.addWidget(self.property_tabs)
+		self.tool_pane_layout.setMargin(0)
+		self.tool_pane_layout.setSpacing(5)
+		self.tool_pane_layout.setContentsMargins(0, 0, 0, 0)
 
 		self.stroke_dwg_area.setOriginDelta(QtCore.QPoint())
 
-		self.mainViewTabs = QtGui.QTabWidget(self.mainWidget)
-		self.mainViewTabs.addTab(self.dwg_area, "Character")
-		self.mainViewTabs.addTab(self.stroke_dwg_area, "Stroke")
-		self.mainViewTabs.addTab(self.preview_area, "Preview")
-		self.mainViewTabs.currentChanged.connect(self.__parent.viewTabChanged_cb)
+		self.main_view_tabs = QtGui.QTabWidget(self.main_widget)
+		self.main_view_tabs.addTab(self.dwg_area, "Character")
+		self.main_view_tabs.addTab(self.stroke_dwg_area, "Stroke")
+		self.main_view_tabs.addTab(self.preview_area, "Preview")
+		self.main_view_tabs.currentChanged.connect(self.__parent.view_tab_changed_cb)
 
-		self.mainSplitter.addWidget(self.mainViewTabs)
-		self.mainSplitter.addWidget(self.sideSplitter)
-		self.sideSplitter.addWidget(self.toolPane)
-		self.sideSplitter.addWidget(self.bottomPane)
-		self.sideSplitter.setSizes([self.height(), 0])
+		self.main_splitter.addWidget(self.main_view_tabs)
+		self.main_splitter.addWidget(self.side_splitter)
+		self.side_splitter.addWidget(self.tool_pane)
+		self.side_splitter.addWidget(self.bottom_pane)
+		self.side_splitter.setSizes([self.height(), 0])
 
-		self.mainSplitter.setMaxPaneWidth(wid20)
-		self.mainSplitter.setSizes([wid80, wid20])
-		mainSizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-		self.mainSplitter.setSizePolicy(mainSizePolicy)
-
-		self.viewLayout.addWidget(self.mainSplitter)
-		self.viewLayout.setMargin(0)
-		self.viewLayout.setSpacing(5)
-		self.viewLayout.setContentsMargins(0, 0, 0, 0)
-
-		mainSizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-		self.mainSplitter.setSizePolicy(mainSizePolicy)
-	
-		self.dwg_area.setSizePolicy(mainSizePolicy)
-		self.stroke_dwg_area.setSizePolicy(mainSizePolicy)
-
-		self.mainLayout.addLayout(self.charSelectorLayout)
-		self.mainLayout.addLayout(self.viewLayout, 2)
+		self.main_splitter.setMaxPaneWidth(wid20)
+		self.main_splitter.setSizes([wid80, wid20])
 		
-		self.mainWidget.setLayout(self.mainLayout)
+		self.view_layout.addWidget(self.main_splitter)
+		self.view_layout.setMargin(0)
+		self.view_layout.setSpacing(5)
+		self.view_layout.setContentsMargins(0, 0, 0, 0)
 
-		self.setCentralWidget(self.mainWidget)
+		main_size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+		self.main_splitter.setSizePolicy(main_size_policy)
+	
+		self.dwg_area.setSizePolicy(main_size_policy)
+		self.stroke_dwg_area.setSizePolicy(main_size_policy)
+
+		self.main_layout.addLayout(self.char_selector_layout)
+		self.main_layout.addLayout(self.view_layout, 2)
+		
+		self.main_widget.setLayout(self.main_layout)
+
+		self.setCentralWidget(self.main_widget)
 
 		self.guide_lines = guides.guideLines()
 		self.dwg_area.setGuidelines(self.guide_lines)

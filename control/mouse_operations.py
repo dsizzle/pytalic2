@@ -35,8 +35,8 @@ class MouseController(object):
 
 			current_view.scale += scaleChange
 			
-			paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-			paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
+			paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
+			paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
 			zoomPos = (paper_pos - current_view.getOrigin()) * scaleChange
 
 			current_view.originDelta -= zoomPos
@@ -57,8 +57,8 @@ class MouseController(object):
 		left_down = btn & QtCore.Qt.LeftButton
 		right_down = btn & QtCore.Qt.RightButton
 
-		paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-		paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
+		paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
+		paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
 
 	def mouse_release_event_paper(self, event):
 		current_view = self.__main_ctrl.get_current_view()
@@ -84,7 +84,7 @@ class MouseController(object):
 				
 		ui.repaint()
 		if current_view != ui.preview_area:
-			self.__main_ctrl.setIcon()
+			self.__main_ctrl.set_icon()
 
 	def mouse_move_event_paper(self, event):
 		btn = event.buttons()
@@ -99,8 +99,8 @@ class MouseController(object):
 
 		alt_down = mod & QtCore.Qt.AltModifier
 
-		paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-		paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
+		paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
+		paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
 		
 		if self.__main_ctrl.state == edit_control.MOVING_PAPER:
 			delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
@@ -139,7 +139,7 @@ class MouseController(object):
 
 		ui.repaint()
 		if current_view != ui.preview_area:
-			self.__main_ctrl.setIcon()
+			self.__main_ctrl.set_icon()
 
 	def __on_r_button_up_paper(self):
 		current_view = self.__main_ctrl.get_current_view()
@@ -162,8 +162,8 @@ class MouseController(object):
 		stroke_ctrl = self.__main_ctrl.get_stroke_controller()
 		cmdStack = self.__main_ctrl.get_command_stack()
 
-		adjustedPos = pos - ui.mainSplitter.pos() - ui.mainWidget.pos()
-		adjustedPos.setY(adjustedPos.y() - ui.mainViewTabs.tabBar().height())
+		adjustedPos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
+		adjustedPos.setY(adjustedPos.y() - ui.main_view_tabs.tabBar().height())
 
 		paper_pos = current_view.getNormalizedPosition(adjustedPos)
 		
