@@ -24,7 +24,7 @@ SPLIT_AT_POINT = 5
 class EditorController(object):
     def __init__(self, w, h, label):
         self.__label = label
-        self.__ui = edit_ui.edit_interface(self, w, h, label)
+        self.__ui = edit_ui.EditInterface(self, w, h, label)
 
         self.__color = QtGui.QColor(125, 25, 25)
 
@@ -50,7 +50,7 @@ class EditorController(object):
 
         for idx in range(0, self.__ui.charSelectorList.count()):
             self.__ui.charSelectorList.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
-        self.__ui.dwgArea.bitmapSize = ICON_SIZE
+        self.__ui.dwg_area.bitmapSize = ICON_SIZE
 
         self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
@@ -110,7 +110,7 @@ class EditorController(object):
         if self.__cmd_stack.save_count == 0:
             self.__ui.close()
         else:
-            reply = self.__ui.messageDialog.question(self.__ui, \
+            reply = self.__ui.message_dialog.question(self.__ui, \
                 'Quit Program', \
                 "You have unsaved changes. Are you sure you want to quit?", \
                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
@@ -161,7 +161,7 @@ class EditorController(object):
         self.__ui.fileSave.setEnabled(False)
 
     def fileSaveAs_cb(self, event):
-        file_name = self.__ui.fileSaveDialog.getSaveFileName(self.__ui,
+        file_name = self.__ui.file_save_dialog.getSaveFileName(self.__ui,
              "Save Character Set", self.__dir_name,
              "Character Set Files (*.cs)")
             
@@ -186,7 +186,7 @@ class EditorController(object):
 
     def fileOpen_cb(self):
         file_name = None
-        file_name = self.__ui.fileOpenDialog.getOpenFileName(self.__ui,
+        file_name = self.__ui.file_open_dialog.getOpenFileName(self.__ui,
              "Open Character Set", self.__dir_name,
              "Character Set Files (*.cs)")
 
@@ -194,23 +194,23 @@ class EditorController(object):
             self.load(file_name)
 
             self.__ui.baseHeightSpin.setValue(self.__char_set.baseHeight)
-            self.__ui.guideLines.baseHeight = self.__char_set.baseHeight
+            self.__ui.guide_lines.baseHeight = self.__char_set.baseHeight
             self.__ui.capHeightSpin.setValue(self.__char_set.capHeight)
-            self.__ui.guideLines.capHeight = self.__char_set.capHeight
+            self.__ui.guide_lines.capHeight = self.__char_set.capHeight
             self.__ui.capHeightSpin.setMaximum(self.__char_set.ascentHeight)
             self.__ui.ascentHeightSpin.setValue(self.__char_set.ascentHeight)
-            self.__ui.guideLines.ascentHeight = self.__char_set.ascentHeight
+            self.__ui.guide_lines.ascentHeight = self.__char_set.ascentHeight
             self.__ui.descentHeightSpin.setValue(self.__char_set.descentHeight)
-            self.__ui.guideLines.descentHeight = self.__char_set.descentHeight
+            self.__ui.guide_lines.descentHeight = self.__char_set.descentHeight
             self.__ui.angleSpin.setValue(self.__char_set.guideAngle)
-            self.__ui.guideLines.guideAngle = self.__char_set.guideAngle
+            self.__ui.guide_lines.guideAngle = self.__char_set.guideAngle
             self.__ui.charSetNibAngleSpin.setValue(self.__char_set.nibAngle)
-            self.__ui.guideLines.nibAngle = self.__char_set.nibAngle
-            self.__ui.dwgArea.nib.angle = self.__char_set.nibAngle
-            self.__ui.dwgArea.instNib.angle = self.__char_set.nibAngle
-            self.__ui.strokeDwgArea.nib.angle = self.__char_set.nibAngle
+            self.__ui.guide_lines.nibAngle = self.__char_set.nibAngle
+            self.__ui.dwg_area.nib.angle = self.__char_set.nibAngle
+            self.__ui.dwg_area.instNib.angle = self.__char_set.nibAngle
+            self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nibAngle
             self.__ui.nominalWidthSpin.setValue(self.__char_set.nominalWidth)
-            self.__ui.guideLines.nominalWidth = self.__char_set.nominalWidth
+            self.__ui.guide_lines.nominalWidth = self.__char_set.nominalWidth
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
 
@@ -223,7 +223,7 @@ class EditorController(object):
                 i = 0
                 self.__ui.strokeLoad.setEnabled(True)
                 for selStroke in savedStrokeList:
-                    bitmap = self.__ui.dwgArea.drawIcon(None, [selStroke])
+                    bitmap = self.__ui.dwg_area.drawIcon(None, [selStroke])
                     self.__ui.strokeSelectorList.addItem(str(i))
                     curItem = self.__ui.strokeSelectorList.item(i)
                     self.__ui.strokeSelectorList.setCurrentRow(i)
@@ -523,33 +523,33 @@ class EditorController(object):
         curCharIdx = self.__ui.charSelectorList.currentRow()
         self.__char_set.setCurrentChar(curCharIdx)
         self.__cur_char = self.__char_set.getCurrentChar()
-        self.__ui.dwgArea.strokesSpecial = []
-        self.__ui.dwgArea.strokes = self.__cur_char.strokes
+        self.__ui.dwg_area.strokesSpecial = []
+        self.__ui.dwg_area.strokes = self.__cur_char.strokes
         self.__ui.repaint()
         self.setIcon()
 
     def strokeSelected(self, event):
         selSavedStroke = self.__char_set.getSavedStroke(self.__ui.strokeSelectorList.currentRow())
  
-        self.__ui.strokeDwgArea.strokes = [selSavedStroke]
+        self.__ui.stroke_dwg_area.strokes = [selSavedStroke]
         self.__ui.repaint()
         self.setIcon()
 
     def viewTabChanged_cb(self, event):
         self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
 
-        if self.__current_view_pane == self.__ui.dwgArea:
+        if self.__current_view_pane == self.__ui.dwg_area:
             self.__ui.strokeNew.setEnabled(True)
-        elif self.__current_view_pane == self.__ui.strokeDwgArea:
+        elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.strokeNew.setEnabled(False)
-        elif self.__current_view_pane == self.__ui.previewArea:
+        elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.strokeNew.setEnabled(False)
             self.__ui.viewGuides.setEnabled(False)
             self.__ui.viewNibGuides.setEnabled(False)
 
         if not self.__selection.has_key(self.__current_view_pane):
             self.__selection[self.__current_view_pane] = {}
-        if self.__current_view_pane == self.__ui.previewArea:
+        if self.__current_view_pane == self.__ui.preview_area:
             self.__ui.viewGuides.setEnabled(False)
             self.__ui.viewNibGuides.setEnabled(False)
         else:
@@ -564,59 +564,59 @@ class EditorController(object):
     def setIcon(self):
         iconBitmap = self.__current_view_pane.getBitmap()
         if iconBitmap:
-            if self.__current_view_pane == self.__ui.dwgArea:
+            if self.__current_view_pane == self.__ui.dwg_area:
                 self.__cur_char.bitmapPreview = iconBitmap
                 self.__ui.charSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
-            elif self.__current_view_pane == self.__ui.strokeDwgArea:
+            elif self.__current_view_pane == self.__ui.stroke_dwg_area:
                 if self.__ui.strokeSelectorList.count() > 0:
                     self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
     def guideBaseHeightChanged_cb(self, new_value):
         prev_value = self.__char_set.baseHeight
 
-        self.__property_controller.base_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.base_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
 
     def guideCapHeightChanged_cb(self, new_value):
         prev_value = self.__char_set.capHeight
 
-        self.__property_controller.cap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.cap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideAscentChanged_cb(self, new_value):
         prev_value = self.__char_set.ascentHeight
 
-        self.__property_controller.ascent_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.ascent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideDescentChanged_cb(self, new_value):
         prev_value = self.__char_set.descentHeight
 
-        self.__property_controller.descent_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.descent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideGapHeightChanged_cb(self, new_value):
         prev_value = self.__char_set.gapHeight
 
-        self.__property_controller.gap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.gap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideAngleChanged_cb(self, new_value):
         prev_value = self.__char_set.guideAngle
 
-        self.__property_controller.angle_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.angle_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideNominalWidthChanged_cb(self, new_value):
         prev_value = self.__char_set.nominalWidth
 
-        self.__property_controller.nominal_width_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.nominal_width_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guideColorChanged_cb(self, new_color):
-        self.__ui.guideLines.setLineColor(new_color)
+        self.__ui.guide_lines.setLineColor(new_color)
         self.__ui.repaint()
 
     def charSetNibAngleChanged_cb(self, new_value):
         prev_value = self.__char_set.nibAngle
 
         self.__property_controller.char_set_nib_angle_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.dwgArea.nib, \
-            self.__ui.dwgArea.instNib, self.__ui.strokeDwgArea.nib])
+            new_value, [self.__char_set, self.__ui.dwg_area.nib, \
+            self.__ui.dwg_area.instNib, self.__ui.stroke_dwg_area.nib])
 
     def charWidthChanged_cb(self, new_value):
         prev_value = self.__cur_char.width

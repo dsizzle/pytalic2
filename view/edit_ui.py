@@ -13,7 +13,7 @@ import widgets_qt
 gICON_SIZE = 40
 gICON_TEXT_SIZE = 30
 
-class edit_interface(QtGui.QMainWindow):
+class EditInterface(QtGui.QMainWindow):
 	def __init__(self, parent, w, h, label):
 		QtGui.QMainWindow.__init__(self)
 		self.setMouseTracking(True)
@@ -22,13 +22,13 @@ class edit_interface(QtGui.QMainWindow):
 		self.resize(w, h)
 		self.setWindowTitle(label)
 	 	
-	 	self.messageDialog = QtGui.QMessageBox()
-		self.fileOpenDialog = QtGui.QFileDialog() 
-		self.fileSaveDialog = QtGui.QFileDialog() 
+	 	self.message_dialog = QtGui.QMessageBox()
+		self.file_open_dialog = QtGui.QFileDialog() 
+		self.file_save_dialog = QtGui.QFileDialog() 
 		self.__parent = parent
 		
-		self.dwgArea = None
-		self.guideLines = None
+		self.dwg_area = None
+		self.guide_lines = None
 
 	def createUI(self):
 		self.createMenu()
@@ -69,19 +69,19 @@ class edit_interface(QtGui.QMainWindow):
 		self.viewLayout.addWidget(self.strokeSelectorList)
 		#self.strokeSelectorLayout.addWidget(self.strokeSelectorList)
 		
-		self.dwgArea = paper.drawingArea(self.mainSplitter)
-		self.dwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-		self.dwgArea.setLineWidth(2)
+		self.dwg_area = paper.drawingArea(self.mainSplitter)
+		self.dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.dwg_area.setLineWidth(2)
 
-		self.strokeDwgArea = paper.drawingArea(self)
-		self.strokeDwgArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-		self.strokeDwgArea.setLineWidth(2)
-		self.strokeDwgArea.drawGuidelines = False
-		self.strokeDwgArea.drawNibGuides = False
+		self.stroke_dwg_area = paper.drawingArea(self)
+		self.stroke_dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.stroke_dwg_area.setLineWidth(2)
+		self.stroke_dwg_area.drawGuidelines = False
+		self.stroke_dwg_area.drawNibGuides = False
 
-		self.previewArea = paper.layoutArea(self)
-		self.previewArea.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-		self.previewArea.setLineWidth(2)
+		self.preview_area = paper.layoutArea(self)
+		self.preview_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+		self.preview_area.setLineWidth(2)
 
 		self.toolPane = QtGui.QFrame(self.sideSplitter)
 		self.toolPaneLayout = QtGui.QVBoxLayout(self.toolPane)
@@ -275,12 +275,12 @@ class edit_interface(QtGui.QMainWindow):
 		self.toolPaneLayout.setSpacing(5)
 		self.toolPaneLayout.setContentsMargins(0, 0, 0, 0)
 
-		self.strokeDwgArea.setOriginDelta(QtCore.QPoint())
+		self.stroke_dwg_area.setOriginDelta(QtCore.QPoint())
 
 		self.mainViewTabs = QtGui.QTabWidget(self.mainWidget)
-		self.mainViewTabs.addTab(self.dwgArea, "Character")
-		self.mainViewTabs.addTab(self.strokeDwgArea, "Stroke")
-		self.mainViewTabs.addTab(self.previewArea, "Preview")
+		self.mainViewTabs.addTab(self.dwg_area, "Character")
+		self.mainViewTabs.addTab(self.stroke_dwg_area, "Stroke")
+		self.mainViewTabs.addTab(self.preview_area, "Preview")
 		self.mainViewTabs.currentChanged.connect(self.__parent.viewTabChanged_cb)
 
 		self.mainSplitter.addWidget(self.mainViewTabs)
@@ -302,8 +302,8 @@ class edit_interface(QtGui.QMainWindow):
 		mainSizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 		self.mainSplitter.setSizePolicy(mainSizePolicy)
 	
-		self.dwgArea.setSizePolicy(mainSizePolicy)
-		self.strokeDwgArea.setSizePolicy(mainSizePolicy)
+		self.dwg_area.setSizePolicy(mainSizePolicy)
+		self.stroke_dwg_area.setSizePolicy(mainSizePolicy)
 
 		self.mainLayout.addLayout(self.charSelectorLayout)
 		self.mainLayout.addLayout(self.viewLayout, 2)
@@ -313,8 +313,8 @@ class edit_interface(QtGui.QMainWindow):
 		self.setCentralWidget(self.mainWidget)
 
 		self.guideLines = guides.guideLines()
-		self.dwgArea.setGuidelines(self.guideLines)
-		self.strokeDwgArea.setGuidelines(self.guideLines)
+		self.dwg_area.setGuidelines(self.guideLines)
+		self.stroke_dwg_area.setGuidelines(self.guideLines)
 
 	def createMenu(self):
 		self.mainMenu = self.menuBar()

@@ -36,7 +36,7 @@ class StrokeController(object):
 		self.__main_ctrl.state = edit_control.DRAWING_NEW_STROKE
 		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
-		dwgTab = ui.mainViewTabs.indexOf(ui.dwgArea)
+		dwgTab = ui.mainViewTabs.indexOf(ui.dwg_area)
 
 		for idx in range(0, ui.mainViewTabs.count()):
 			if idx != dwgTab:
@@ -44,7 +44,7 @@ class StrokeController(object):
 
 		self.__strokePts = []
 		self.__tmpStroke = stroke.Stroke()
-		ui.dwgArea.strokesSpecial.append(self.__tmpStroke)
+		ui.dwg_area.strokesSpecial.append(self.__tmpStroke)
 
 	def saveStroke(self):
 		selectedStrokes = []
@@ -106,7 +106,7 @@ class StrokeController(object):
 		else:
 			return
 
-		char_set = self.__main_ctrl.getCharacterSet()
+		char_set = self.__main_ctrl.get_character_set()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
 		cur_view_selection = selection[current_view]
@@ -114,12 +114,12 @@ class StrokeController(object):
 
 		for sel_stroke in cur_view_selection:
 			char_set.saveStroke(sel_stroke)
-			bitmap = ui.dwgArea.drawIcon(None, [sel_stroke])
+			bitmap = ui.dwg_area.drawIcon(None, [sel_stroke])
 			ui.strokeSelectorList.addItem(str(first_item+i))
 			cur_item = ui.strokeSelectorList.item(first_item+i)
 			ui.strokeSelectorList.setCurrentRow(first_item+i)
 			cur_item.setIcon(QtGui.QIcon(bitmap))
-			cur_char = char_set.get_current_char()
+			cur_char = char_set.getCurrentChar()
 			deleted_strokes.append(sel_stroke)
 			cur_char.deleteStroke({'stroke' : sel_stroke})
 			sel_stroke = char_set.getSavedStroke(first_item+i)
@@ -156,7 +156,7 @@ class StrokeController(object):
 		else:
 			return
 
-		char_set = self.__main_ctrl.getCharacterSet()
+		char_set = self.__main_ctrl.get_character_set()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
 		cur_view_selection = selection[current_view]
@@ -167,7 +167,7 @@ class StrokeController(object):
 			sel_stroke = inst.getStroke()
 			ui.strokeSelectorList.takeItem(first_item+i)
 			char_set.removeSavedStroke(sel_stroke)
-			cur_char = char_set.get_current_char()
+			cur_char = char_set.getCurrentChar()
 			cur_char.deleteStroke({'stroke' : inst})
 			cur_char.addStroke({'stroke' : sel_stroke, 'copyStroke' : False})
 			added_strokes.append(sel_stroke)
@@ -187,10 +187,10 @@ class StrokeController(object):
 		
 	def pasteInstanceFromSaved(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
-		charSet = self.__main_ctrl.getCharacterSet()
+		charSet = self.__main_ctrl.get_character_set()
 		ui = self.__main_ctrl.get_ui()
 
-		charIndex = charSet.get_current_charIndex()
+		charIndex = charSet.getCurrentCharIndex()
 		strokeIndex = ui.strokeSelectorList.currentRow()
 		savedStroke = charSet.getSavedStroke(strokeIndex)
 		newStrokeInstance = stroke.StrokeInstance()
@@ -240,7 +240,7 @@ class StrokeController(object):
 		cur_char.addStrokeInstance(stroke_instance)
 		cur_view_selection[stroke_instance] = {}
 		
-		ui.dwgArea.repaint()
+		ui.dwg_area.repaint()
 		self.__main_ctrl.setIcon()
 
 	def delete_instance(self, args):
@@ -264,7 +264,7 @@ class StrokeController(object):
 		if cur_view_selection.has_key(stroke_to_del):
 			del cur_view_selection[stroke_to_del]
 
-		ui.dwgArea.repaint()
+		ui.dwg_area.repaint()
 
 	def straightenStroke(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()

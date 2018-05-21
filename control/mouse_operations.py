@@ -83,7 +83,7 @@ class MouseController(object):
 				self.__on_l_button_up_paper(event.pos(), shift_down)
 				
 		ui.repaint()
-		if current_view != ui.previewArea:
+		if current_view != ui.preview_area:
 			self.__main_ctrl.setIcon()
 
 	def mouse_move_event_paper(self, event):
@@ -138,7 +138,7 @@ class MouseController(object):
 			self.__move_delta = QtCore.QPoint(0, 0)
 
 		ui.repaint()
-		if current_view != ui.previewArea:
+		if current_view != ui.preview_area:
 			self.__main_ctrl.setIcon()
 
 	def __on_r_button_up_paper(self):
