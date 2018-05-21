@@ -278,7 +278,7 @@ class MouseController(object):
 						sel_stroke.deselectCtrlVerts()
 
 			if len(cur_view_selection.keys()) > 0:
-				self.__main_ctrl.setUIStateSelection(True)
+				self.__main_ctrl.set_ui_state_selection(True)
 			else:
-				self.__main_ctrl.setUIStateSelection(False)
+				self.__main_ctrl.set_ui_state_selection(False)
 				ui.behaviorCombo.setCurrentIndex(0)

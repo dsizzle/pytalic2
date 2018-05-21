@@ -221,7 +221,7 @@ class EditorController(object):
             savedStrokeList = self.__char_set.getSavedStrokes()
             if len(savedStrokeList) > 0:
                 i = 0
-                self.__ui.strokeLoad.setEnabled(True)
+                self.__ui.stroke_load.setEnabled(True)
                 for selStroke in savedStrokeList:
                     bitmap = self.__ui.dwg_area.drawIcon(None, [selStroke])
                     self.__ui.strokeSelectorList.addItem(str(i))
@@ -290,17 +290,17 @@ class EditorController(object):
         if dataFileFd:
             dataFileFd.close()
 
-    def createNewStroke_cb(self, event):
+    def create_new_stroke_cb(self, event):
         self.__stroke_controller.createNewStroke()
 
-    def saveStroke_cb(self, event):
+    def save_stroke_cb(self, event):
         self.__stroke_controller.saveStroke()
 
-    def addControlPoint_cb(self, event):
+    def add_control_point_cb(self, event):
         self.state = ADDING_CTRL_POINT
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
-    def splitAtPoint_cb(self, event):
+    def split_at_point_cb(self, event):
         self.state = SPLIT_AT_POINT
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
@@ -467,10 +467,10 @@ class EditorController(object):
             else:
                 self.__cur_char.newStrokeInstance({'stroke' : pasteStroke})
 
-        self.setUIStateSelection(True)
+        self.set_ui_state_selection(True)
         self.__ui.repaint() 
 
-    def pasteInstanceFromSaved_cb(self, event):
+    def paste_instance_from_saved_cb(self, event):
         self.__stroke_controller.pasteInstanceFromSaved()
 
     def view_toggle_snap_axially_cb(self, event):
@@ -501,22 +501,22 @@ class EditorController(object):
         self.__current_view_pane.scale = 1
         self.__ui.repaint()
 
-    def setUIStateSelection(self, state):
-        self.__ui.strokeAddVertex.setEnabled(state)
-        self.__ui.strokeSplitAtPoint.setEnabled(state)
-        self.__ui.strokeSave.setEnabled(state)
+    def set_ui_state_selection(self, state):
+        self.__ui.stroke_add_vertex.setEnabled(state)
+        self.__ui.stroke_split_at_point.setEnabled(state)
+        self.__ui.stroke_save.setEnabled(state)
         self.__ui.edit_cut.setEnabled(state)
         self.__ui.edit_copy.setEnabled(state)
-        self.__ui.strokeStraighten.setEnabled(state)
-        self.__ui.strokeJoin.setEnabled(state)
-        self.__ui.strokeAlignTangents.setEnabled(state)
-        self.__ui.strokeSmoothTangents.setEnabled(state)
-        self.__ui.strokeSharpenTangents.setEnabled(state)       
+        self.__ui.stroke_straighten.setEnabled(state)
+        self.__ui.stroke_join.setEnabled(state)
+        self.__ui.stroke_align_tangents.setEnabled(state)
+        self.__ui.stroke_smooth_tangents.setEnabled(state)
+        self.__ui.stroke_sharpen_tangents.setEnabled(state)       
 
-    def straightenStroke_cb(self, event):
+    def straighten_stroke_cb(self, event):
         self.__stroke_controller.straightenStroke()
 
-    def joinStrokes_cb(self, event):
+    def join_strokes_cb(self, event):
         self.__stroke_controller.joinSelectedStrokes()
 
     def charSelected(self, event):
@@ -539,24 +539,24 @@ class EditorController(object):
         self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
 
         if self.__current_view_pane == self.__ui.dwg_area:
-            self.__ui.strokeNew.setEnabled(True)
+            self.__ui.stroke_new.setEnabled(True)
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
-            self.__ui.strokeNew.setEnabled(False)
+            self.__ui.stroke_new.setEnabled(False)
         elif self.__current_view_pane == self.__ui.preview_area:
-            self.__ui.strokeNew.setEnabled(False)
-            self.__ui.viewGuides.setEnabled(False)
-            self.__ui.viewNibGuides.setEnabled(False)
+            self.__ui.stroke_new.setEnabled(False)
+            self.__ui.view_guides.setEnabled(False)
+            self.__ui.view_nib_guides.setEnabled(False)
 
         if not self.__selection.has_key(self.__current_view_pane):
             self.__selection[self.__current_view_pane] = {}
         if self.__current_view_pane == self.__ui.preview_area:
-            self.__ui.viewGuides.setEnabled(False)
-            self.__ui.viewNibGuides.setEnabled(False)
+            self.__ui.view_guides.setEnabled(False)
+            self.__ui.view_nib_guides.setEnabled(False)
         else:
-            self.__ui.viewGuides.setEnabled(True)
-            self.__ui.viewNibGuides.setEnabled(True)
-            self.__ui.viewGuides.setChecked(self.__current_view_pane.drawGuidelines)
-            self.__ui.viewNibGuides.setChecked(self.__current_view_pane.drawNibGuides)
+            self.__ui.view_guides.setEnabled(True)
+            self.__ui.view_nib_guides.setEnabled(True)
+            self.__ui.view_guides.setChecked(self.__current_view_pane.drawGuidelines)
+            self.__ui.view_nib_guides.setChecked(self.__current_view_pane.drawNibGuides)
             self.setIcon()
 
         self.__ui.repaint()
@@ -642,11 +642,11 @@ class EditorController(object):
 
         self.__vertex_controller.align_tangents(new_value)
 
-    def alignTangentsSymmetrical_cb(self, event):
-        self.__vertex_controller.alignTangentsSymmetrical()
+    def align_tangents_symmetrical_cb(self, event):
+        self.__vertex_controller.align_tangents_symmetrical()
 
-    def alignTangents_cb(self, event):
-        self.__vertex_controller.alignTangents()
+    def align_tangents_cb(self, event):
+        self.__vertex_controller.align_tangents()
 
-    def breakTangents_cb(self, event):
-        self.__vertex_controller.breakTangents()
+    def break_tangents_cb(self, event):
+        self.__vertex_controller.break_tangents()

@@ -42,13 +42,13 @@ class VertexController(object):
 
             ui.repaint()
 
-    def alignTangentsSymmetrical(self):
+    def align_tangents_symmetrical(self):
         self.align_tangents(control_vertex.SYMMETRIC)
 
-    def alignTangentsSmooth(self):
+    def align_tangents_smooth(self):
         self.align_tangents(control_vertex.SMOOTH)
 
-    def breakTangents(self):
+    def break_tangents(self):
         self.align_tangents(control_vertex.SHARP)
 
     def set_ctrl_vertex_behavior(self, args):

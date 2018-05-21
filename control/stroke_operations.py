@@ -139,7 +139,7 @@ class StrokeController(object):
 			sel_stroke.selected = False	
 
 		ui.strokeLoad.setEnabled(True)
-		self.__main_ctrl.setUIStateSelection(True)
+		self.__main_ctrl.set_ui_state_selection(True)
 
 	def unsave_strokes(self, args):
 		added_strokes = []
@@ -183,7 +183,7 @@ class StrokeController(object):
 		if ui.strokeSelectorList.count() == 0:
 			ui.strokeLoad.setEnabled(False)
 			
-		self.__main_ctrl.setUIStateSelection(True)
+		self.__main_ctrl.set_ui_state_selection(True)
 		
 	def pasteInstanceFromSaved(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
@@ -665,7 +665,7 @@ class StrokeController(object):
 		current_view.strokesSpecial = []
 		self.__tmpStroke = None
 
-		self.__main_ctrl.setUIStateSelection(True)
+		self.__main_ctrl.set_ui_state_selection(True)
 		
 		for idx in range(0, ui.mainViewTabs.count()):
 			ui.mainViewTabs.setTabEnabled(idx, True)
