@@ -174,25 +174,25 @@ class mouse_controller():
 			strokeCtrl.tmpStroke.updateCtrlVertices()
 
 		elif self.__mainCtrl.state == edit_control.DRAGGING:
-			moveCmd = commands.command('moveStrokeCmd')
-			selectionCopy = curViewSelection.copy()
-			doArgs = {
-				'strokes' : selectionCopy, 
+			move_cmd = commands.Command('move_stroke_cmd')
+			selection_copy = curViewSelection.copy()
+			do_args = {
+				'strokes' : selection_copy, 
 				'delta' : self.__moveDelta,
 			}
 
-			undoArgs = {
-				'strokes' : selectionCopy,
+			undo_args = {
+				'strokes' : selection_copy,
 				'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
 			}
 
-			moveCmd.setDoArgs(doArgs)
-			moveCmd.setUndoArgs(undoArgs)
-			moveCmd.setDoFunction(strokeCtrl.moveSelected)
-			moveCmd.setUndoFunction(strokeCtrl.moveSelected)
+			move_cmd.set_do_args(do_args)
+			move_cmd.set_undo_args(undo_args)
+			move_cmd.set_do_function(strokeCtrl.moveSelected)
+			move_cmd.set_undo_function(strokeCtrl.moveSelected)
 		
-			cmdStack.addToUndo(moveCmd)
-			cmdStack.saveCount += 1
+			cmdStack.add_to_undo(move_cmd)
+			cmdStack.save_count += 1
 			ui.editUndo.setEnabled(True)
 
 			self.__mainCtrl.state = edit_control.IDLE

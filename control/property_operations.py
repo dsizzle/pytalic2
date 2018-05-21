@@ -25,14 +25,14 @@ class PropertyController(object):
             'objects' : objects
         }
 
-        change_cmd = commands.command("change_"+attr_name[0]+"_cmd")
+        change_cmd = commands.Command("change_"+attr_name[0]+"_cmd")
 
-        change_cmd.setDoArgs(do_args)
-        change_cmd.setUndoArgs(undo_args)
-        change_cmd.setDoFunction(self.change_property_control)
-        change_cmd.setUndoFunction(self.change_property_control)
+        change_cmd.set_do_args(do_args)
+        change_cmd.set_undo_args(undo_args)
+        change_cmd.set_do_function(self.change_property_control)
+        change_cmd.set_undo_function(self.change_property_control)
 
-        cmd_stack.doCommand(change_cmd)
+        cmd_stack.do_command(change_cmd)
         ui.editUndo.setEnabled(True)
 
         ui.repaint()

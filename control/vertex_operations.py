@@ -1,79 +1,79 @@
 from model import commands, control_vertex
 
-class vertex_controller():
-	def __init__(self, parent):
-		self.__mainCtrl = parent
+class VertexController(object):
+    def __init__(self, parent):
+        self.__main_ctrl = parent
 
-	def alignTangents(self, newBehavior):
-		currentView = self.__mainCtrl.get_current_view()
-		selection = self.__mainCtrl.get_selection()
-		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.get_ui()
-		cmdStack = self.__mainCtrl.get_command_stack()
+    def align_tangents(self, new_behavior):
+        current_view = self.__main_ctrl.get_current_view()
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        ui = self.__main_ctrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
 
-		if len(curViewSelection.values()) > 0:
-			vertList = curViewSelection.values()
-			
-			doArgs = {
-				'verts' : vertList,
-				'behaviors' : [newBehavior]
-			}
+        if len(cur_view_selection.values()) > 0:
+            vert_list = cur_view_selection.values()
 
-			behaviorList = []
+            do_args = {
+                'verts' : vert_list,
+                'behaviors' : [new_behavior]
+            }
 
-			for vertDict in vertList:
-				for vert in vertDict.keys():
-					behaviorList.append(vert.getBehavior())
+            behavior_list = []
 
-			undoArgs = {
-				'verts' : vertList,
-				'behaviors' : behaviorList 
-			}
+            for vert_dict in vert_list:
+                for vert in vert_dict.keys():
+                    behavior_list.append(vert.getBehavior())
 
-			alignTangentsSymCmd = commands.command("alignTangentsSymCmd")
+            undo_args = {
+                'verts' : vert_list,
+                'behaviors' : behavior_list
+            }
 
-			alignTangentsSymCmd.setDoArgs(doArgs)
-			alignTangentsSymCmd.setUndoArgs(undoArgs)
-			alignTangentsSymCmd.setDoFunction(self.setCtrlVertexBehavior)
-			alignTangentsSymCmd.setUndoFunction(self.setCtrlVertexBehavior)
+            align_tangents_cmd = commands.Command("align_tangents_cmd")
 
-			cmdStack.doCommand(alignTangentsSymCmd)
-			ui.editUndo.setEnabled(True)
+            align_tangents_cmd.set_do_args(do_args)
+            align_tangents_cmd.set_undo_args(undo_args)
+            align_tangents_cmd.set_do_function(self.set_ctrl_vertex_behavior)
+            align_tangents_cmd.set_undo_function(self.set_ctrl_vertex_behavior)
 
-			ui.repaint()
+            cmd_stack.do_command(align_tangents_cmd)
+            ui.editUndo.setEnabled(True)
 
-	def alignTangentsSymmetrical(self):
-		self.alignTangents(control_vertex.SYMMETRIC)
+            ui.repaint()
 
-	def alignTangentsSmooth(self):
-		self.alignTangents(control_vertex.SMOOTH)
+    def alignTangentsSymmetrical(self):
+        self.align_tangents(control_vertex.SYMMETRIC)
 
-	def breakTangents(self):
-		self.alignTangents(control_vertex.SHARP)
+    def alignTangentsSmooth(self):
+        self.align_tangents(control_vertex.SMOOTH)
 
-	def setCtrlVertexBehavior(self, args):
-		ui = self.__mainCtrl.get_ui()
-		
-		if args.has_key('verts'):
-			vertList = args['verts']
-		else:
-			return
+    def breakTangents(self):
+        self.align_tangents(control_vertex.SHARP)
 
-		if args.has_key('behaviors'):
-			behaviorList = args['behaviors']
-		else:
-			return
+    def set_ctrl_vertex_behavior(self, args):
+        ui = self.__main_ctrl.get_ui()
 
-		if len(behaviorList) == 1:
-			useSameBehavior = True
-		else:
-			useSameBehavior = False
+        if args.has_key('verts'):
+            vert_list = args['verts']
+        else:
+            return
 
-		for vertDict in vertList:
-			for i in range(0, len(vertDict.keys())):
-				if useSameBehavior:
-					vertDict.keys()[i].setBehavior(behaviorList[0])
-					ui.behaviorCombo.setCurrentIndex(behaviorList[0])
-				else:
-					vertDict.keys()[i].setBehavior(behaviorList[i])
-					ui.behaviorCombo.setCurrentIndex(0)
+        if args.has_key('behaviors'):
+            behavior_list = args['behaviors']
+        else:
+            return
+
+        if len(behavior_list) == 1:
+            use_same_behavior = True
+        else:
+            use_same_behavior = False
+
+        for vert_dict in vert_list:
+            for i in range(0, len(vert_dict.keys())):
+                if use_same_behavior:
+                    vert_dict.keys()[i].setBehavior(behavior_list[0])
+                    ui.behaviorCombo.setCurrentIndex(behavior_list[0])
+                else:
+                    vert_dict.keys()[i].setBehavior(behavior_list[i])
+                    ui.behaviorCombo.setCurrentIndex(0)
