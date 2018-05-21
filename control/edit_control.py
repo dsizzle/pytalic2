@@ -137,12 +137,12 @@ class EditorController(object):
         self.__file_name = None
 
         self.__char_set = character_set.character_set()
-        self.__ui.baseHeightSpin.setValue(self.__char_set.baseHeight)
-        self.__ui.capHeightSpin.setValue(self.__char_set.capHeight)
-        self.__ui.capHeightSpin.setMaximum(self.__char_set.ascentHeight)
-        self.__ui.ascentHeightSpin.setValue(self.__char_set.ascentHeight)
-        self.__ui.descentHeightSpin.setValue(self.__char_set.descentHeight)
-        self.__ui.angleSpin.setValue(5)
+        self.__ui.base_height_spin.setValue(self.__char_set.baseHeight)
+        self.__ui.cap_height_spin.setValue(self.__char_set.capHeight)
+        self.__ui.cap_height_spin.setMaximum(self.__char_set.ascentHeight)
+        self.__ui.ascent_height_spin.setValue(self.__char_set.ascentHeight)
+        self.__ui.descent_height_spin.setValue(self.__char_set.descentHeight)
+        self.__ui.angle_spin.setValue(5)
 
         self.name = (self.__label + " - Untitled")
         self.__ui.setWindowTitle(self.name)
@@ -193,23 +193,23 @@ class EditorController(object):
         if file_name:
             self.load(file_name)
 
-            self.__ui.baseHeightSpin.setValue(self.__char_set.baseHeight)
+            self.__ui.base_height_spin.setValue(self.__char_set.baseHeight)
             self.__ui.guide_lines.baseHeight = self.__char_set.baseHeight
-            self.__ui.capHeightSpin.setValue(self.__char_set.capHeight)
+            self.__ui.cap_height_spin.setValue(self.__char_set.capHeight)
             self.__ui.guide_lines.capHeight = self.__char_set.capHeight
-            self.__ui.capHeightSpin.setMaximum(self.__char_set.ascentHeight)
-            self.__ui.ascentHeightSpin.setValue(self.__char_set.ascentHeight)
+            self.__ui.cap_height_spin.setMaximum(self.__char_set.ascentHeight)
+            self.__ui.ascent_height_spin.setValue(self.__char_set.ascentHeight)
             self.__ui.guide_lines.ascentHeight = self.__char_set.ascentHeight
-            self.__ui.descentHeightSpin.setValue(self.__char_set.descentHeight)
+            self.__ui.descent_height_spin.setValue(self.__char_set.descentHeight)
             self.__ui.guide_lines.descentHeight = self.__char_set.descentHeight
-            self.__ui.angleSpin.setValue(self.__char_set.guideAngle)
+            self.__ui.angle_spin.setValue(self.__char_set.guideAngle)
             self.__ui.guide_lines.guideAngle = self.__char_set.guideAngle
             self.__ui.charSetNibAngleSpin.setValue(self.__char_set.nibAngle)
             self.__ui.guide_lines.nibAngle = self.__char_set.nibAngle
             self.__ui.dwg_area.nib.angle = self.__char_set.nibAngle
             self.__ui.dwg_area.instNib.angle = self.__char_set.nibAngle
             self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nibAngle
-            self.__ui.nominalWidthSpin.setValue(self.__char_set.nominalWidth)
+            self.__ui.nominal_width_spin.setValue(self.__char_set.nominalWidth)
             self.__ui.guide_lines.nominalWidth = self.__char_set.nominalWidth
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
@@ -571,43 +571,43 @@ class EditorController(object):
                 if self.__ui.stroke_selector_list.count() > 0:
                     self.__ui.stroke_selector_list.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
-    def guideBaseHeightChanged_cb(self, new_value):
+    def guide_base_height_changed_cb(self, new_value):
         prev_value = self.__char_set.baseHeight
 
         self.__property_controller.base_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
 
-    def guideCapHeightChanged_cb(self, new_value):
+    def guide_cap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.capHeight
 
         self.__property_controller.cap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideAscentChanged_cb(self, new_value):
+    def guide_ascent_changed_cb(self, new_value):
         prev_value = self.__char_set.ascentHeight
 
         self.__property_controller.ascent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideDescentChanged_cb(self, new_value):
+    def guide_descent_changed_cb(self, new_value):
         prev_value = self.__char_set.descentHeight
 
         self.__property_controller.descent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideGapHeightChanged_cb(self, new_value):
+    def guide_gap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.gapHeight
 
         self.__property_controller.gap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideAngleChanged_cb(self, new_value):
+    def guide_angle_changed_cb(self, new_value):
         prev_value = self.__char_set.guideAngle
 
         self.__property_controller.angle_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideNominalWidthChanged_cb(self, new_value):
+    def guide_nominal_width_changed_cb(self, new_value):
         prev_value = self.__char_set.nominalWidth
 
         self.__property_controller.nominal_width_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
 
-    def guideColorChanged_cb(self, new_color):
+    def guide_color_changed_cb(self, new_color):
         self.__ui.guide_lines.setLineColor(new_color)
         self.__ui.repaint()
 

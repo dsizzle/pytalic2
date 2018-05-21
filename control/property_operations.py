@@ -33,7 +33,7 @@ class PropertyController(object):
         change_cmd.set_undo_function(self.change_property_control)
 
         cmd_stack.do_command(change_cmd)
-        ui.editUndo.setEnabled(True)
+        ui.edit_undo.setEnabled(True)
 
         ui.repaint()
 
@@ -78,25 +78,25 @@ class PropertyController(object):
         ui.repaint()
 
     def base_height_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['baseHeight'], ['baseHeightSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['baseHeight'], ['base_height_spin'])
 
     def cap_height_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['capHeight'], ['capHeightSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['capHeight'], ['cap_height_spin'])
 
     def ascent_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['ascentHeight'], ['ascentHeightSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['ascentHeight'], ['ascent_height_spin'])
 
     def descent_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['descentHeight'], ['descentHeightSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['descentHeight'], ['descent_height_spin'])
 
     def gap_height_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['gapHeight'], ['gapHeightSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['gapHeight'], ['gap_height_spin'])
 
     def angle_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['guideAngle'], ['angleSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['guideAngle'], ['angle_spin'])
 
     def nominal_width_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['nominalWidth'], ['nominalWidthSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['nominalWidth'], ['nominal_width_spin'])
 
     def char_set_nib_angle_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['nibAngle', 'angle', 'angle', 'angle'], \
