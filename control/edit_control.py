@@ -473,31 +473,31 @@ class EditorController(object):
     def pasteInstanceFromSaved_cb(self, event):
         self.__stroke_controller.pasteInstanceFromSaved()
 
-    def viewToggleSnapAxially_cb(self, event):
+    def view_toggle_snap_axially_cb(self, event):
         self.__snap_controller.toggleSnapAxially()
 
-    def viewToggleSnapToGrid_cb(self, event):
+    def view_toggle_snap_to_grid_cb(self, event):
         self.__snap_controller.toggleSnapToGrid()
 
-    def viewToggleSnapToNibAxes_cb(self, event):
+    def view_toggle_snap_to_nib_axes_cb(self, event):
         self.__snap_controller.toggleSnapToNibAxes()
 
-    def viewToggleSnapToCtrlPts_cb(self, event):
+    def view_toggle_snap_to_ctrl_pts_cb(self, event):
         self.__snap_controller.toggleSnapToCtrlPts()
 
-    def viewToggleGuidelines_cb(self, event):
+    def view_toggle_guidelines_cb(self, event):
         self.__current_view_pane.drawGuidelines = not self.__current_view_pane.drawGuidelines
         self.__ui.repaint()
 
-    def viewToggleNibGuides_cb(self, event):
+    def view_toggle_nib_guides_cb(self, event):
         self.__current_view_pane.drawNibGuides = not self.__current_view_pane.drawNibGuides
         self.__ui.repaint()
 
-    def viewResetOrigin(self, event):
+    def view_reset_origin_cb(self, event):
         self.__current_view_pane.originDelta = QtCore.QPoint(0, 0)
         self.__ui.repaint()
 
-    def viewResetZoom(self, event):
+    def view_reset_zoom_cb(self, event):
         self.__current_view_pane.scale = 1
         self.__ui.repaint()
 

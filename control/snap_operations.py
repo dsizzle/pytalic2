@@ -132,7 +132,7 @@ class SnapController(object):
     def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
         gridPt = QtCore.QPoint(-1, -1)
 
-        guides = self.__mainCtrl.get_ui().guideLines
+        guides = self.__mainCtrl.get_ui().guide_lines
         nibWidth = guides.nibWidth
         angleDX = math.tan(math.radians(guides.guideAngle))
 

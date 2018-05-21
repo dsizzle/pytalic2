@@ -38,7 +38,7 @@ class VertexController(object):
             align_tangents_cmd.set_undo_function(self.set_ctrl_vertex_behavior)
 
             cmd_stack.do_command(align_tangents_cmd)
-            ui.editUndo.setEnabled(True)
+            ui.edit_undo.setEnabled(True)
 
             ui.repaint()
 
