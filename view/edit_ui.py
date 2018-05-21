@@ -588,16 +588,16 @@ class edit_interface(QtGui.QMainWindow):
 			QtGui.QMessageBox.Ok )
 
 	def mouseMoveEvent(self, event):
-		self.__parent.mouseEvent(event)
+		self.__parent.mouse_event(event)
 
 	def mousePressEvent(self, event):
-		self.__parent.mouseEvent(event)
+		self.__parent.mouse_event(event)
 
 	def mouseReleaseEvent(self, event):
-		self.__parent.mouseEvent(event)
+		self.__parent.mouse_event(event)
 
 	def wheelEvent(self, event):
-		self.__parent.wheelEvent(event)
+		self.__parent.wheel_event(event)
 
 	def paintEvent(self, event):
 		QtGui.QMainWindow.paintEvent(self,event)

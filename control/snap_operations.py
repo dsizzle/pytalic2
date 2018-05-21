@@ -8,7 +8,7 @@ SNAP_TO_NIB_AXES 	= 0x0004
 SNAP_TO_CTRL_PTS	= 0x0008
 SNAP_TO_STROKES		= 0x0010
 
-class snap_controller():
+class SnapController(object):
 	def __init__(self, parent):
 		self.__mainCtrl = parent
 		self.__snap = SNAP_TO_AXES

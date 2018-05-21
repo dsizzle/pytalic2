@@ -3,187 +3,187 @@ from PyQt4 import QtCore, QtGui
 import edit_control
 from model import commands
 
-class mouse_controller():
+class MouseController(object):
 	def __init__(self, parent):
-		self.__mainCtrl = parent
-		self.__savedMousePosPaper = {}
-		self.__moveDelta = QtCore.QPoint(0, 0)
+		self.__main_ctrl = parent
+		self.__saved_mouse_pos_paper = {}
+		self.__move_delta = QtCore.QPoint(0, 0)
 
-	def mouseEvent(self, event):
-		currentView = self.__mainCtrl.get_current_view()
+	def mouse_event(self, event):
+		current_view = self.__main_ctrl.get_current_view()
 
-		if currentView.underMouse() or currentView.rect().contains(event.pos()):
+		if current_view.underMouse() or current_view.rect().contains(event.pos()):
 			if event.type() == QtCore.QEvent.MouseButtonPress:
-				self.mousePressEventPaper(event)
+				self.mouse_press_event_paper(event)
 			elif event.type() == QtCore.QEvent.MouseButtonRelease:
-				self.mouseReleaseEventPaper(event)
+				self.mouse_release_event_paper(event)
 			else:
-				self.mouseMoveEventPaper(event)
+				self.mouse_move_event_paper(event)
 
 			event.accept()
 
-	def wheelEvent(self, event):
-		currentView = self.__mainCtrl.get_current_view()
-		ui = self.__mainCtrl.get_ui()
+	def wheel_event(self, event):
+		current_view = self.__main_ctrl.get_current_view()
+		ui = self.__main_ctrl.get_ui()
 
-		if currentView.underMouse() or currentView.rect().contains(event.pos()):
+		if current_view.underMouse() or current_view.rect().contains(event.pos()):
 			scaleChange = 0
 			if event.delta() > 0:
 				scaleChange = -0.02
 			else:
 				scaleChange = 0.02
 
-			currentView.scale += scaleChange
+			current_view.scale += scaleChange
 			
-			paperPos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-			paperPos.setY(paperPos.y() - ui.mainViewTabs.tabBar().height())
-			zoomPos = (paperPos - currentView.getOrigin()) * scaleChange
+			paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
+			paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
+			zoomPos = (paper_pos - current_view.getOrigin()) * scaleChange
 
-			currentView.originDelta -= zoomPos
-			self.__savedMousePosPaper[currentView] = paperPos
+			current_view.originDelta -= zoomPos
+			self.__saved_mouse_pos_paper[current_view] = paper_pos
 
 			event.accept()
 			ui.repaint()
 
-	def mousePressEventPaper(self, event):
+	def mouse_press_event_paper(self, event):
 		btn = event.buttons()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.get_ui()
+		ui = self.__main_ctrl.get_ui()
 		
-		cmdDown = mod & QtCore.Qt.ControlModifier
-		altDown = mod & QtCore.Qt.AltModifier
-		shiftDown = mod & QtCore.Qt.ShiftModifier
+		cmd_down = mod & QtCore.Qt.ControlModifier
+		alt_down = mod & QtCore.Qt.AltModifier
+		shift_down = mod & QtCore.Qt.ShiftModifier
 
-		leftDown = btn & QtCore.Qt.LeftButton
-		rightDown = btn & QtCore.Qt.RightButton
+		left_down = btn & QtCore.Qt.LeftButton
+		right_down = btn & QtCore.Qt.RightButton
 
-		paperPos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-		paperPos.setY(paperPos.y() - ui.mainViewTabs.tabBar().height())
+		paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
+		paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
 
-	def mouseReleaseEventPaper(self, event):
-		currentView = self.__mainCtrl.get_current_view()
+	def mouse_release_event_paper(self, event):
+		current_view = self.__main_ctrl.get_current_view()
 		
 		btn = event.button()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.get_ui()
+		ui = self.__main_ctrl.get_ui()
 
-		cmdDown = mod & QtCore.Qt.ControlModifier
-		altDown = mod & QtCore.Qt.AltModifier
-		shiftDown = mod & QtCore.Qt.ShiftModifier
+		cmd_down = mod & QtCore.Qt.ControlModifier
+		alt_down = mod & QtCore.Qt.AltModifier
+		shift_down = mod & QtCore.Qt.ShiftModifier
 
 		leftUp = btn & QtCore.Qt.LeftButton
 		rightUp = btn & QtCore.Qt.RightButton
 
-		if self.__mainCtrl.state == edit_control.MOVING_PAPER and leftUp:
-			self.__mainCtrl.state = edit_control.IDLE
+		if self.__main_ctrl.state == edit_control.MOVING_PAPER and leftUp:
+			self.__main_ctrl.state = edit_control.IDLE
 		else:
 			if rightUp:
-				self.__onRButtonUpPaper()
+				self.__on_r_button_up_paper()
 			elif leftUp:
-				self.__onLButtonUpPaper(event.pos(), shiftDown)
+				self.__on_l_button_up_paper(event.pos(), shift_down)
 				
 		ui.repaint()
-		if currentView != ui.previewArea:
-			self.__mainCtrl.setIcon()
+		if current_view != ui.previewArea:
+			self.__main_ctrl.setIcon()
 
-	def mouseMoveEventPaper(self, event):
+	def mouse_move_event_paper(self, event):
 		btn = event.buttons()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.get_ui()
-		currentView = self.__mainCtrl.get_current_view()
-		selection = self.__mainCtrl.get_selection()
-		curViewSelection = selection[currentView]
+		ui = self.__main_ctrl.get_ui()
+		current_view = self.__main_ctrl.get_current_view()
+		selection = self.__main_ctrl.get_selection()
+		cur_view_selection = selection[current_view]
 
-		leftDown = btn & QtCore.Qt.LeftButton
-		rightDown = btn & QtCore.Qt.RightButton
+		left_down = btn & QtCore.Qt.LeftButton
+		right_down = btn & QtCore.Qt.RightButton
 
-		altDown = mod & QtCore.Qt.AltModifier
+		alt_down = mod & QtCore.Qt.AltModifier
 
-		paperPos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
-		paperPos.setY(paperPos.y() - ui.mainViewTabs.tabBar().height())
+		paper_pos = event.pos() - ui.mainSplitter.pos() - ui.mainWidget.pos()
+		paper_pos.setY(paper_pos.y() - ui.mainViewTabs.tabBar().height())
 		
-		if self.__mainCtrl.state == edit_control.MOVING_PAPER:
-			delta = paperPos - self.__savedMousePosPaper[currentView]
-			currentView.originDelta += delta
-			self.__savedMousePosPaper[currentView] = paperPos
-		elif self.__mainCtrl.state == edit_control.DRAGGING:
-			normPaperPos = currentView.getNormalizedPosition(paperPos) 
-			deltaPos = paperPos - normPaperPos
+		if self.__main_ctrl.state == edit_control.MOVING_PAPER:
+			delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
+			current_view.originDelta += delta
+			self.__saved_mouse_pos_paper[current_view] = paper_pos
+		elif self.__main_ctrl.state == edit_control.DRAGGING:
+			normpaper_pos = current_view.getNormalizedPosition(paper_pos) 
+			deltaPos = paper_pos - normpaper_pos
 			
-			snapControl = self.__mainCtrl.get_snap_controller()
-			strokeCtrl = self.__mainCtrl.get_stroke_controller()
+			snapControl = self.__main_ctrl.get_snap_controller()
+			strokeCtrl = self.__main_ctrl.get_stroke_controller()
 			if snapControl.getSnap() > 0:
-				currentView.snapPoints = snapControl.getSnappedPoints(normPaperPos)
+				current_view.snapPoints = snapControl.getSnappedPoints(normpaper_pos)
 			else:
-				currentView.snapPoints = []
+				current_view.snapPoints = []
 					
-			delta = (paperPos - self.__savedMousePosPaper[currentView]) / currentView.scale
-			self.__moveDelta += delta
-			self.__savedMousePosPaper[currentView] = paperPos
+			delta = (paper_pos - self.__saved_mouse_pos_paper[current_view]) / current_view.scale
+			self.__move_delta += delta
+			self.__saved_mouse_pos_paper[current_view] = paper_pos
 			args = {
-				'strokes' : curViewSelection,
+				'strokes' : cur_view_selection,
 				'delta' : delta,
 			}
 
-			if len(currentView.snapPoints) > 0:
-				args['snapPoint'] = currentView.snapPoints[0]
+			if len(current_view.snapPoints) > 0:
+				args['snapPoint'] = current_view.snapPoints[0]
 
 			strokeCtrl.moveSelected(args)
-		elif leftDown and altDown and self.__mainCtrl.state == edit_control.IDLE:
-			self.__savedMousePosPaper[currentView] = paperPos		
-			self.__mainCtrl.state = edit_control.MOVING_PAPER
-		elif leftDown and self.__mainCtrl.state == edit_control.IDLE:
-			self.__mainCtrl.state = edit_control.DRAGGING
-			self.__savedMousePosPaper[currentView] = paperPos
-			self.__moveDelta = QtCore.QPoint(0, 0)
+		elif left_down and alt_down and self.__main_ctrl.state == edit_control.IDLE:
+			self.__saved_mouse_pos_paper[current_view] = paper_pos		
+			self.__main_ctrl.state = edit_control.MOVING_PAPER
+		elif left_down and self.__main_ctrl.state == edit_control.IDLE:
+			self.__main_ctrl.state = edit_control.DRAGGING
+			self.__saved_mouse_pos_paper[current_view] = paper_pos
+			self.__move_delta = QtCore.QPoint(0, 0)
 
 		ui.repaint()
-		if currentView != ui.previewArea:
-			self.__mainCtrl.setIcon()
+		if current_view != ui.previewArea:
+			self.__main_ctrl.setIcon()
 
-	def __onRButtonUpPaper(self):
-		currentView = self.__mainCtrl.get_current_view()
-		selection = self.__mainCtrl.get_selection()
-		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.get_ui()
-		cmdStack = self.__mainCtrl.get_command_stack()
+	def __on_r_button_up_paper(self):
+		current_view = self.__main_ctrl.get_current_view()
+		selection = self.__main_ctrl.get_selection()
+		cur_view_selection = selection[current_view]
+		ui = self.__main_ctrl.get_ui()
+		cmdStack = self.__main_ctrl.get_command_stack()
 
-		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
-			strokeCtrl = self.__mainCtrl.get_stroke_controller()
+		if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
+			strokeCtrl = self.__main_ctrl.get_stroke_controller()
 			strokeCtrl.addNewStroke()
 			QtGui.qApp.restoreOverrideCursor()
 
-	def __onLButtonUpPaper(self, pos, shiftDown):
-		currentView = self.__mainCtrl.get_current_view()
-		selection = self.__mainCtrl.get_selection()
-		curViewSelection = selection[currentView]
+	def __on_l_button_up_paper(self, pos, shift_down):
+		current_view = self.__main_ctrl.get_current_view()
+		selection = self.__main_ctrl.get_selection()
+		cur_view_selection = selection[current_view]
 
-		ui = self.__mainCtrl.get_ui()
-		strokeCtrl = self.__mainCtrl.get_stroke_controller()
-		cmdStack = self.__mainCtrl.get_command_stack()
+		ui = self.__main_ctrl.get_ui()
+		strokeCtrl = self.__main_ctrl.get_stroke_controller()
+		cmdStack = self.__main_ctrl.get_command_stack()
 
 		adjustedPos = pos - ui.mainSplitter.pos() - ui.mainWidget.pos()
 		adjustedPos.setY(adjustedPos.y() - ui.mainViewTabs.tabBar().height())
 
-		paperPos = currentView.getNormalizedPosition(adjustedPos)
+		paper_pos = current_view.getNormalizedPosition(adjustedPos)
 		
-		currentView.snapPoints = []
-		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
-			strokeCtrl.strokePts.append([paperPos.x(), paperPos.y()])
+		current_view.snapPoints = []
+		if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
+			strokeCtrl.strokePts.append([paper_pos.x(), paper_pos.y()])
 			strokeCtrl.tmpStroke.generateCtrlVerticesFromPoints(strokeCtrl.strokePts)
 			strokeCtrl.tmpStroke.updateCtrlVertices()
 
-		elif self.__mainCtrl.state == edit_control.DRAGGING:
+		elif self.__main_ctrl.state == edit_control.DRAGGING:
 			move_cmd = commands.Command('move_stroke_cmd')
-			selection_copy = curViewSelection.copy()
+			selection_copy = cur_view_selection.copy()
 			do_args = {
 				'strokes' : selection_copy, 
-				'delta' : self.__moveDelta,
+				'delta' : self.__move_delta,
 			}
 
 			undo_args = {
 				'strokes' : selection_copy,
-				'delta' : QtCore.QPoint(0, 0) - self.__moveDelta,
+				'delta' : QtCore.QPoint(0, 0) - self.__move_delta,
 			}
 
 			move_cmd.set_do_args(do_args)
@@ -195,90 +195,90 @@ class mouse_controller():
 			cmdStack.save_count += 1
 			ui.editUndo.setEnabled(True)
 
-			self.__mainCtrl.state = edit_control.IDLE
-			self.__moveDelta = QtCore.QPoint(0, 0)
-		elif self.__mainCtrl.state == edit_control.ADDING_CTRL_POINT:
-			if len(curViewSelection.keys()) > 0:
-				for selStroke in curViewSelection.keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						strokeCtrl.addControlPoint(selStroke, insideInfo)
+			self.__main_ctrl.state = edit_control.IDLE
+			self.__move_delta = QtCore.QPoint(0, 0)
+		elif self.__main_ctrl.state == edit_control.ADDING_CTRL_POINT:
+			if len(cur_view_selection.keys()) > 0:
+				for sel_stroke in cur_view_selection.keys():
+					inside_info = sel_stroke.insideStroke(paper_pos)
+					if inside_info[1] >= 0:
+						strokeCtrl.addControlPoint(sel_stroke, inside_info)
 						break
 
-			self.__mainCtrl.state = edit_control.IDLE
+			self.__main_ctrl.state = edit_control.IDLE
 			QtGui.qApp.restoreOverrideCursor()
-		elif self.__mainCtrl.state == edit_control.SPLIT_AT_POINT:
-			if len(curViewSelection.keys()) > 0:
-				for selStroke in curViewSelection.keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						strokeCtrl.splitStrokeAtPoint(selStroke, insideInfo)
+		elif self.__main_ctrl.state == edit_control.SPLIT_AT_POINT:
+			if len(cur_view_selection.keys()) > 0:
+				for sel_stroke in cur_view_selection.keys():
+					inside_info = sel_stroke.insideStroke(paper_pos)
+					if inside_info[1] >= 0:
+						strokeCtrl.splitStrokeAtPoint(sel_stroke, inside_info)
 						break
 
-			self.__mainCtrl.state = edit_control.IDLE
+			self.__main_ctrl.state = edit_control.IDLE
 			QtGui.qApp.restoreOverrideCursor()
 		else:
-			if len(curViewSelection.keys()) > 0:
-				for selStroke in curViewSelection.keys():
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[1] >= 0:
-						ctrlVertexNum = int((insideInfo[1]+1) / 3)
-						ctrlVert = selStroke.getCtrlVertex(ctrlVertexNum)
+			if len(cur_view_selection.keys()) > 0:
+				for sel_stroke in cur_view_selection.keys():
+					inside_info = sel_stroke.insideStroke(paper_pos)
+					if inside_info[1] >= 0:
+						ctrl_vertex_num = int((inside_info[1]+1) / 3)
+						ctrl_vert = sel_stroke.getCtrlVertex(ctrl_vertex_num)
 						
-						handleIndex = (insideInfo[1]+1) % 3 +1
-						if not shiftDown:
-							selStroke.deselectCtrlVerts()
-							curViewSelection[selStroke] = {}
+						handle_index = (inside_info[1]+1) % 3 +1
+						if not shift_down:
+							sel_stroke.deselectCtrlVerts()
+							cur_view_selection[sel_stroke] = {}
 
-						curViewSelection[selStroke][ctrlVert] = handleIndex
+						cur_view_selection[sel_stroke][ctrl_vert] = handle_index
 
-						for ctrlVert in curViewSelection[selStroke].keys():
-							ctrlVert.selectHandle(curViewSelection[selStroke][ctrlVert])
+						for ctrl_vert in cur_view_selection[sel_stroke].keys():
+							ctrl_vert.selectHandle(cur_view_selection[sel_stroke][ctrl_vert])
 
-						selStroke.selected = True
+						sel_stroke.selected = True
 						
 					else:
-						if shiftDown:
-							if not curViewSelection.has_key(selStroke):
-								curViewSelection[selStroke] = {}
-								selStroke.deselectCtrlVerts()
+						if shift_down:
+							if not cur_view_selection.has_key(sel_stroke):
+								cur_view_selection[sel_stroke] = {}
+								sel_stroke.deselectCtrlVerts()
 
-							selStroke.selected = True
+							sel_stroke.selected = True
 						else:
-							if curViewSelection.has_key(selStroke):
-								del curViewSelection[selStroke]
+							if cur_view_selection.has_key(sel_stroke):
+								del cur_view_selection[sel_stroke]
 
-							selStroke.selected = False
-							selStroke.deselectCtrlVerts()
+							sel_stroke.selected = False
+							sel_stroke.deselectCtrlVerts()
 
-				vertList = curViewSelection.values()
-				behaviorList = []
+				vert_list = cur_view_selection.values()
+				behavior_list = []
 				
-				for vertDict in vertList:
-					for vert in vertDict.keys():
-						behaviorList.append(vert.getBehavior())
+				for vert_dict in vert_list:
+					for vert in vert_dict.keys():
+						behavior_list.append(vert.getBehavior())
 
-				behaviorList = list(set(behaviorList))
-				if len(behaviorList) == 1:
-					ui.behaviorCombo.setCurrentIndex(behaviorList[0])
+				behavior_list = list(set(behavior_list))
+				if len(behavior_list) == 1:
+					ui.behaviorCombo.setCurrentIndex(behavior_list[0])
 				else:
 					ui.behaviorCombo.setCurrentIndex(0)
 
-			if len(curViewSelection.keys()) == 0 or shiftDown:
-				for selStroke in currentView.strokes:
-					insideInfo = selStroke.insideStroke(paperPos)
-					if insideInfo[0] == True and (len(curViewSelection.keys()) == 0 or shiftDown):
-						if not curViewSelection.has_key(selStroke):
-							curViewSelection[selStroke] = {}	
-							selStroke.deselectCtrlVerts()
+			if len(cur_view_selection.keys()) == 0 or shift_down:
+				for sel_stroke in current_view.strokes:
+					inside_info = sel_stroke.insideStroke(paper_pos)
+					if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+						if not cur_view_selection.has_key(sel_stroke):
+							cur_view_selection[sel_stroke] = {}	
+							sel_stroke.deselectCtrlVerts()
 
-						selStroke.selected = True	
-					elif not shiftDown:
-						selStroke.selected = False
-						selStroke.deselectCtrlVerts()
+						sel_stroke.selected = True	
+					elif not shift_down:
+						sel_stroke.selected = False
+						sel_stroke.deselectCtrlVerts()
 
-			if len(curViewSelection.keys()) > 0:
-				self.__mainCtrl.setUIStateSelection(True)
+			if len(cur_view_selection.keys()) > 0:
+				self.__main_ctrl.setUIStateSelection(True)
 			else:
-				self.__mainCtrl.setUIStateSelection(False)
+				self.__main_ctrl.setUIStateSelection(False)
 				ui.behaviorCombo.setCurrentIndex(0)

@@ -56,9 +56,9 @@ class EditorController(object):
         self.__selection[self.__current_view_pane] = {}
 
         self.__property_controller = control.property_operations.PropertyController(self)
-        self.__mouse_controller = control.mouse_operations.mouse_controller(self)
-        self.__snap_controller = control.snap_operations.snap_controller(self)
-        self.__stroke_controller = control.stroke_operations.stroke_controller(self)
+        self.__mouse_controller = control.mouse_operations.MouseController(self)
+        self.__snap_controller = control.snap_operations.SnapController(self)
+        self.__stroke_controller = control.stroke_operations.StrokeController(self)
         self.__vertex_controller = control.vertex_operations.VertexController(self)
 
         self.fileNew_cb(None)
@@ -100,11 +100,11 @@ class EditorController(object):
         self.__ui.activateWindow()
         self.__ui.raise_()
 
-    def mouseEvent(self, event):
-        self.__mouse_controller.mouseEvent(event)
+    def mouse_event(self, event):
+        self.__mouse_controller.mouse_event(event)
 
-    def wheelEvent(self, event):
-        self.__mouse_controller.wheelEvent(event)
+    def wheel_event(self, event):
+        self.__mouse_controller.wheel_event(event)
 
     def quit_cb(self, event):
         if self.__cmd_stack.save_count == 0:

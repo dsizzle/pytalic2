@@ -5,7 +5,7 @@ import math
 import edit_control
 from model import commands, stroke
 
-class stroke_controller():
+class StrokeController(object):
 	def __init__(self, parent):
 		self.__main_ctrl = parent
 		self.__tmpStroke = None
@@ -482,15 +482,15 @@ class stroke_controller():
 		vertDeleteCmd = commands.Command("vertDeleteCmd")
 		vertDeleteCmd.set_do_args(do_args)
 		vertDeleteCmd.set_undo_args(undo_args)
-		vertDeleteCmd.set_do_function(self.setStrokeControlVertices)
-		vertDeleteCmd.set_undo_function(self.setStrokeControlVertices)
+		vertDeleteCmd.set_do_function(self.set_stroke_control_vertices)
+		vertDeleteCmd.set_undo_function(self.set_stroke_control_vertices)
 
 		cmd_stack.add_to_undo(vertDeleteCmd)
 		cmd_stack.save_count += 1
 		ui.editUndo.setEnabled(True)
 		ui.repaint()
 
-	def setStrokeControlVertices(self, args):
+	def set_stroke_control_vertices(self, args):
 		ui = self.__main_ctrl.get_ui()
 
 		if args.has_key('strokes'):
@@ -582,8 +582,8 @@ class stroke_controller():
 
 		addVertexCmd.set_do_args(do_args)
 		addVertexCmd.set_undo_args(undo_args)
-		addVertexCmd.set_do_function(self.setStrokeControlVertices)
-		addVertexCmd.set_undo_function(self.setStrokeControlVertices)
+		addVertexCmd.set_do_function(self.set_stroke_control_vertices)
+		addVertexCmd.set_undo_function(self.set_stroke_control_vertices)
 		
 		cmd_stack.add_to_undo(addVertexCmd)
 		cmd_stack.save_count += 1
