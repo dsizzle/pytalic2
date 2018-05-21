@@ -55,7 +55,7 @@ class EditorController(object):
         self.__current_view_pane = self.__ui.mainViewTabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
 
-        self.__property_controller = control.property_operations.property_controller(self)
+        self.__property_controller = control.property_operations.PropertyController(self)
         self.__mouse_controller = control.mouse_operations.mouse_controller(self)
         self.__snap_controller = control.snap_operations.snap_controller(self)
         self.__stroke_controller = control.stroke_operations.stroke_controller(self)
@@ -571,67 +571,70 @@ class EditorController(object):
                 if self.__ui.strokeSelectorList.count() > 0:
                     self.__ui.strokeSelectorList.currentItem().setIcon(QtGui.QIcon(iconBitmap))
 
-    def guideBaseHeightChanged_cb(self, newValue):
-        prevValue = self.__char_set.baseHeight
+    def guideBaseHeightChanged_cb(self, new_value):
+        prev_value = self.__char_set.baseHeight
 
-        self.__property_controller.baseHeightChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.base_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
 
-    def guideCapHeightChanged_cb(self, newValue):
-        prevValue = self.__char_set.capHeight
+    def guideCapHeightChanged_cb(self, new_value):
+        prev_value = self.__char_set.capHeight
 
-        self.__property_controller.capHeightChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.cap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideAscentChanged_cb(self, newValue):
-        prevValue = self.__char_set.ascentHeight
+    def guideAscentChanged_cb(self, new_value):
+        prev_value = self.__char_set.ascentHeight
 
-        self.__property_controller.ascentChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.ascent_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideDescentChanged_cb(self, newValue):
-        prevValue = self.__char_set.descentHeight
+    def guideDescentChanged_cb(self, new_value):
+        prev_value = self.__char_set.descentHeight
 
-        self.__property_controller.descentChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.descent_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideGapHeightChanged_cb(self, newValue):
-        prevValue = self.__char_set.gapHeight
+    def guideGapHeightChanged_cb(self, new_value):
+        prev_value = self.__char_set.gapHeight
 
-        self.__property_controller.gapHeightChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.gap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideAngleChanged_cb(self, newValue):
-        prevValue = self.__char_set.guideAngle
+    def guideAngleChanged_cb(self, new_value):
+        prev_value = self.__char_set.guideAngle
 
-        self.__property_controller.angleChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.angle_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideNominalWidthChanged_cb(self, newValue):
-        prevValue = self.__char_set.nominalWidth
+    def guideNominalWidthChanged_cb(self, new_value):
+        prev_value = self.__char_set.nominalWidth
 
-        self.__property_controller.nominalWidthChanged(prevValue, newValue, [self.__char_set, self.__ui.guideLines])
+        self.__property_controller.nominal_width_changed(prev_value, new_value, [self.__char_set, self.__ui.guideLines])
 
-    def guideColorChanged_cb(self, newColor):
-        self.__ui.guideLines.setLineColor(newColor)
+    def guideColorChanged_cb(self, new_color):
+        self.__ui.guideLines.setLineColor(new_color)
         self.__ui.repaint()
 
-    def charSetNibAngleChanged_cb(self, newValue):
-        prevValue = self.__char_set.nibAngle
+    def charSetNibAngleChanged_cb(self, new_value):
+        prev_value = self.__char_set.nibAngle
 
-        self.__property_controller.charSetNibAngleChanged(prevValue, newValue, 
-                [self.__char_set, self.__ui.dwgArea.nib, 
-                self.__ui.dwgArea.instNib, self.__ui.strokeDwgArea.nib])
+        self.__property_controller.char_set_nib_angle_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.dwgArea.nib, \
+            self.__ui.dwgArea.instNib, self.__ui.strokeDwgArea.nib])
 
-    def charWidthChanged_cb(self, newValue):
-        prevValue = self.__cur_char.width
+    def charWidthChanged_cb(self, new_value):
+        prev_value = self.__cur_char.width
 
-        self.__property_controller.charWidthChanged(prevValue, newValue, [self.__cur_char])
+        self.__property_controller.char_width_changed(prev_value, \
+            new_value, [self.__cur_char])
 
-    def charLeftSpaceChanged_cb(self, newValue):
-        prevValue = self.__cur_char.leftSpacing
+    def charLeftSpaceChanged_cb(self, new_value):
+        prev_value = self.__cur_char.leftSpacing
 
-        self.__property_controller.charLeftSpaceChanged(prevValue, newValue, [self.__cur_char])
+        self.__property_controller.char_left_space_changed(prev_value, \
+            new_value, [self.__cur_char])
 
-    def charRightSpaceChanged_cb(self, newValue):
-        prevValue = self.__cur_char.rightSpacing
+    def charRightSpaceChanged_cb(self, new_value):
+        prev_value = self.__cur_char.rightSpacing
 
-        self.__property_controller.charRightSpaceChanged(prevValue, newValue, [self.__cur_char])
+        self.__property_controller.char_right_space_changed(prev_value, \
+            new_value, [self.__cur_char])
 
     def vertBehaviorComboChanged_cb(self, newValue):
         if newValue == 0:

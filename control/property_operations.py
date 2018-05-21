@@ -1,112 +1,113 @@
 from model import commands
 
-class property_controller():
-	def __init__(self, parent):
-		self.__mainCtrl = parent
+class PropertyController(object):
+    def __init__(self, parent):
+        self.__main_ctrl = parent
 
-	def __propChange(self, prevValue, newValue, objects, attrName, ctrlName):
-		if newValue == prevValue:
-			return
+    def __prop_change(self, prev_value, new_value, objects, attr_name, ctrl_name):
+        if new_value == prev_value:
+            return
 
-		cmdStack = self.__mainCtrl.get_command_stack()
-		ui = self.__mainCtrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
+        ui = self.__main_ctrl.get_ui()
 
-		doArgs = {
-			'value' : newValue,
-			'attrNames' : attrName,
-			'ctrlNames' : ctrlName,
-			'objects' : objects
-		}
+        do_args = {
+            'value' : new_value,
+            'attr_names' : attr_name,
+            'ctrl_names' : ctrl_name,
+            'objects' : objects
+        }
 
-		undoArgs = {
-			'value' : prevValue,
-			'attrNames' : attrName,
-			'ctrlNames' : ctrlName,
-			'objects' : objects
-		}
+        undo_args = {
+            'value' : prev_value,
+            'attr_names' : attr_name,
+            'ctrl_names' : ctrl_name,
+            'objects' : objects
+        }
 
-		changeCmd = commands.command("change"+attrName[0]+"Cmd")
+        change_cmd = commands.command("change_"+attr_name[0]+"_cmd")
 
-		changeCmd.setDoArgs(doArgs)
-		changeCmd.setUndoArgs(undoArgs)
-		changeCmd.setDoFunction(self.changePropertyControl)
-		changeCmd.setUndoFunction(self.changePropertyControl)
+        change_cmd.setDoArgs(do_args)
+        change_cmd.setUndoArgs(undo_args)
+        change_cmd.setDoFunction(self.change_property_control)
+        change_cmd.setUndoFunction(self.change_property_control)
 
-		cmdStack.doCommand(changeCmd)
-		ui.editUndo.setEnabled(True)
+        cmd_stack.doCommand(change_cmd)
+        ui.editUndo.setEnabled(True)
 
-		ui.repaint()
-	
-	def changePropertyControl(self, args):
-		if (args.has_key('value')):
-			val = args['value']
-		else:
-			return
+        ui.repaint()
 
-		if (args.has_key('attrNames')):
-			attrNames = args['attrNames']
-		else:
-			return
+    def change_property_control(self, args):
+        if args.has_key('value'):
+            val = args['value']
+        else:
+            return
 
-		if (args.has_key('ctrlNames')):
-			ctrlNames = args['ctrlNames']
-		else:
-			return
+        if args.has_key('attr_names'):
+            attr_names = args['attr_names']
+        else:
+            return
 
-		if (args.has_key('objects')):	
-			objectsToSet = args['objects']
-		else:
-			return
+        if args.has_key('ctrl_names'):
+            ctrl_names = args['ctrl_names']
+        else:
+            return
 
-		useSameAttr = False
-		if len(attrNames) == 1:
-			useSameAttr = True
+        if args.has_key('objects'):
+            objects_to_set = args['objects']
+        else:
+            return
 
-		for i in range(0, len(objectsToSet)):
-			if useSameAttr:
-				attrName = attrNames[0]
-			else:
-				attrName = attrNames[i]
+        use_same_attr = False
+        if len(attr_names) == 1:
+            use_same_attr = True
 
-			setattr(objectsToSet[i], attrName, val)
-		
-		ui = self.__mainCtrl.get_ui()
-		for ctrlName in ctrlNames:
-			uiControl = getattr(ui, ctrlName)
-			uiControl.setValue(val)
-		
-		ui.repaint()
+        for i in range(0, len(objects_to_set)):
+            if use_same_attr:
+                attr_name = attr_names[0]
+            else:
+                attr_name = attr_names[i]
 
-	def baseHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['baseHeight'], ['baseHeightSpin'])
+            setattr(objects_to_set[i], attr_name, val)
 
-	def capHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['capHeight'], ['capHeightSpin'])
-		
-	def ascentChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['ascentHeight'], ['ascentHeightSpin'])
-		
-	def descentChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['descentHeight'], ['descentHeightSpin'])
-		
-	def gapHeightChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['gapHeight'], ['gapHeightSpin'])
-		
-	def angleChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['guideAngle'], ['angleSpin'])
-		
-	def nominalWidthChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['nominalWidth'], ['nominalWidthSpin'])
+        ui = self.__main_ctrl.get_ui()
+        for ctrl_name in ctrl_names:
+            ui_control = getattr(ui, ctrl_name)
+            ui_control.setValue(val)
 
-	def charSetNibAngleChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['nibAngle','angle','angle','angle'], ['charSetNibAngleSpin'])
-		
-	def charWidthChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['width'], ['charWidthSpin'])
+        ui.repaint()
 
-	def charLeftSpaceChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['leftSpacing'], ['leftSpaceSpin'])
+    def base_height_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['baseHeight'], ['baseHeightSpin'])
 
-	def charRightSpaceChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, ['rightSpacing'], ['rightSpaceSpin'])
+    def cap_height_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['capHeight'], ['capHeightSpin'])
+
+    def ascent_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['ascentHeight'], ['ascentHeightSpin'])
+
+    def descent_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['descentHeight'], ['descentHeightSpin'])
+
+    def gap_height_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['gapHeight'], ['gapHeightSpin'])
+
+    def angle_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['guideAngle'], ['angleSpin'])
+
+    def nominal_width_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['nominalWidth'], ['nominalWidthSpin'])
+
+    def char_set_nib_angle_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['nibAngle', 'angle', 'angle', 'angle'], \
+            ['charSetNibAngleSpin'])
+
+    def char_width_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['width'], ['charWidthSpin'])
+
+    def char_left_space_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['leftSpacing'], ['leftSpaceSpin'])
+
+    def char_right_space_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['rightSpacing'], ['rightSpaceSpin'])
 
