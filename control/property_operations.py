@@ -8,8 +8,8 @@ class property_controller():
 		if newValue == prevValue:
 			return
 
-		cmdStack = self.__mainCtrl.getCommandStack()
-		ui = self.__mainCtrl.getUI()
+		cmdStack = self.__mainCtrl.get_command_stack()
+		ui = self.__mainCtrl.get_ui()
 
 		doArgs = {
 			'value' : newValue,
@@ -70,7 +70,7 @@ class property_controller():
 
 			setattr(objectsToSet[i], attrName, val)
 		
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 		for ctrlName in ctrlNames:
 			uiControl = getattr(ui, ctrlName)
 			uiControl.setValue(val)
@@ -102,11 +102,11 @@ class property_controller():
 		self.__propChange(prevValue, newValue, objects, ['nibAngle','angle','angle','angle'], ['charSetNibAngleSpin'])
 		
 	def charWidthChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'width', 'charWidthSpin')
+		self.__propChange(prevValue, newValue, objects, ['width'], ['charWidthSpin'])
 
 	def charLeftSpaceChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'leftSpacing', 'charLeftSpaceSpin')
+		self.__propChange(prevValue, newValue, objects, ['leftSpacing'], ['leftSpaceSpin'])
 
 	def charRightSpaceChanged(self, prevValue, newValue, objects):
-		self.__propChange(prevValue, newValue, objects, 'rightSpacing', 'charRightSpaceSpin')
+		self.__propChange(prevValue, newValue, objects, ['rightSpacing'], ['rightSpaceSpin'])
 

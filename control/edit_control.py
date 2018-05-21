@@ -21,7 +21,7 @@ DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
 
-class editor_controller(object):
+class EditorController(object):
     def __init__(self, w, h, label):
         self.__label = label
         self.__ui = edit_ui.edit_interface(self, w, h, label)
@@ -63,36 +63,36 @@ class editor_controller(object):
 
         self.fileNew_cb(None)
 
-    def getCommandStack(self):
+    def get_command_stack(self):
         return self.__cmd_stack
 
-    def getUI(self):
+    def get_ui(self):
         return self.__ui
 
-    def getCurrentView(self):
+    def get_current_view(self):
         return self.__current_view_pane
 
-    def getSelection(self):
+    def get_selection(self):
         return self.__selection
 
-    def getCurrentChar(self):
+    def get_current_char(self):
         return self.__cur_char
 
-    def getCharacterSet(self):
+    def get_character_set(self):
         return self.__char_set
 
-    def getState(self):
+    def get_state(self):
         return self.__state
 
-    def setState(self, newState):
-        self.__state = newState
+    def set_state(self, new_state):
+        self.__state = new_state
 
-    state = property(getState, setState)
+    state = property(get_state, set_state)
 
-    def getSnapController(self):
+    def get_snap_controller(self):
         return self.__snap_controller
 
-    def getStrokeController(self):
+    def get_stroke_controller(self):
         return self.__stroke_controller
 
     def activate(self):

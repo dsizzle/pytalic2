@@ -10,7 +10,7 @@ class mouse_controller():
 		self.__moveDelta = QtCore.QPoint(0, 0)
 
 	def mouseEvent(self, event):
-		currentView = self.__mainCtrl.getCurrentView()
+		currentView = self.__mainCtrl.get_current_view()
 
 		if currentView.underMouse() or currentView.rect().contains(event.pos()):
 			if event.type() == QtCore.QEvent.MouseButtonPress:
@@ -23,8 +23,8 @@ class mouse_controller():
 			event.accept()
 
 	def wheelEvent(self, event):
-		currentView = self.__mainCtrl.getCurrentView()
-		ui = self.__mainCtrl.getUI()
+		currentView = self.__mainCtrl.get_current_view()
+		ui = self.__mainCtrl.get_ui()
 
 		if currentView.underMouse() or currentView.rect().contains(event.pos()):
 			scaleChange = 0
@@ -48,7 +48,7 @@ class mouse_controller():
 	def mousePressEventPaper(self, event):
 		btn = event.buttons()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 		
 		cmdDown = mod & QtCore.Qt.ControlModifier
 		altDown = mod & QtCore.Qt.AltModifier
@@ -61,11 +61,11 @@ class mouse_controller():
 		paperPos.setY(paperPos.y() - ui.mainViewTabs.tabBar().height())
 
 	def mouseReleaseEventPaper(self, event):
-		currentView = self.__mainCtrl.getCurrentView()
+		currentView = self.__mainCtrl.get_current_view()
 		
 		btn = event.button()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		cmdDown = mod & QtCore.Qt.ControlModifier
 		altDown = mod & QtCore.Qt.AltModifier
@@ -89,9 +89,9 @@ class mouse_controller():
 	def mouseMoveEventPaper(self, event):
 		btn = event.buttons()
 		mod = event.modifiers()
-		ui = self.__mainCtrl.getUI()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		ui = self.__mainCtrl.get_ui()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 
 		leftDown = btn & QtCore.Qt.LeftButton
@@ -110,8 +110,8 @@ class mouse_controller():
 			normPaperPos = currentView.getNormalizedPosition(paperPos) 
 			deltaPos = paperPos - normPaperPos
 			
-			snapControl = self.__mainCtrl.getSnapController()
-			strokeCtrl = self.__mainCtrl.getStrokeController()
+			snapControl = self.__mainCtrl.get_snap_controller()
+			strokeCtrl = self.__mainCtrl.get_stroke_controller()
 			if snapControl.getSnap() > 0:
 				currentView.snapPoints = snapControl.getSnappedPoints(normPaperPos)
 			else:
@@ -142,25 +142,25 @@ class mouse_controller():
 			self.__mainCtrl.setIcon()
 
 	def __onRButtonUpPaper(self):
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
-			strokeCtrl = self.__mainCtrl.getStrokeController()
+			strokeCtrl = self.__mainCtrl.get_stroke_controller()
 			strokeCtrl.addNewStroke()
 			QtGui.qApp.restoreOverrideCursor()
 
 	def __onLButtonUpPaper(self, pos, shiftDown):
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 
-		ui = self.__mainCtrl.getUI()
-		strokeCtrl = self.__mainCtrl.getStrokeController()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		strokeCtrl = self.__mainCtrl.get_stroke_controller()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		adjustedPos = pos - ui.mainSplitter.pos() - ui.mainWidget.pos()
 		adjustedPos.setY(adjustedPos.y() - ui.mainViewTabs.tabBar().height())

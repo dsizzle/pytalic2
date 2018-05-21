@@ -31,7 +31,7 @@ class stroke_controller():
 		if self.__mainCtrl.state == edit_control.DRAWING_NEW_STROKE:
 			return
 		
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		self.__mainCtrl.state = edit_control.DRAWING_NEW_STROKE
 		QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
@@ -49,11 +49,11 @@ class stroke_controller():
 	def saveStroke(self):
 		selectedStrokes = []
 		instances = []
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		for selStroke in curViewSelection.keys():
 			if type(selStroke).__name__ == 'Stroke':
@@ -107,10 +107,10 @@ class stroke_controller():
 			return
 
 		charSet = self.__mainCtrl.getCharacterSet()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		for selStroke in curViewSelection:
 			charSet.saveStroke(selStroke)
@@ -119,7 +119,7 @@ class stroke_controller():
 			curItem = ui.strokeSelectorList.item(firstItem+i)
 			ui.strokeSelectorList.setCurrentRow(firstItem+i)
 			curItem.setIcon(QtGui.QIcon(bitmap))
-			curChar = charSet.getCurrentChar()
+			curChar = charSet.get_current_char()
 			deletedStrokes.append(selStroke)
 			curChar.deleteStroke({'stroke' : selStroke})
 			selStroke = charSet.getSavedStroke(firstItem+i)
@@ -157,17 +157,17 @@ class stroke_controller():
 			return
 
 		charSet = self.__mainCtrl.getCharacterSet()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		instances.reverse()
 		for inst in instances:
 			selStroke = inst.getStroke()
 			ui.strokeSelectorList.takeItem(firstItem+i)
 			charSet.removeSavedStroke(selStroke)
-			curChar = charSet.getCurrentChar()
+			curChar = charSet.get_current_char()
 			curChar.deleteStroke({'stroke' : inst})
 			curChar.addStroke({'stroke' : selStroke, 'copyStroke' : False})
 			addedStrokes.append(selStroke)
@@ -186,11 +186,11 @@ class stroke_controller():
 		self.__mainCtrl.setUIStateSelection(True)
 		
 	def pasteInstanceFromSaved(self):
-		cmdStack = self.__mainCtrl.getCommandStack()
+		cmdStack = self.__mainCtrl.get_command_stack()
 		charSet = self.__mainCtrl.getCharacterSet()
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
-		charIndex = charSet.getCurrentCharIndex()
+		charIndex = charSet.get_current_charIndex()
 		strokeIndex = ui.strokeSelectorList.currentRow()
 		savedStroke = charSet.getSavedStroke(strokeIndex)
 		newStrokeInstance = stroke.StrokeInstance()
@@ -229,11 +229,11 @@ class stroke_controller():
 		else:
 			return
 
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		ui.charSelectorList.setCurrentRow(charIndex)
 
@@ -254,11 +254,11 @@ class stroke_controller():
 		else:
 			return
 
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		curChar.deleteStroke({'stroke' : strokeToDel})
 		if curViewSelection.has_key(strokeToDel):
@@ -267,11 +267,11 @@ class stroke_controller():
 		ui.dwgArea.repaint()
 
 	def straightenStroke(self):
-		cmdStack = self.__mainCtrl.getCommandStack()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		cmdStack = self.__mainCtrl.get_command_stack()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		vertsBeforeList = []
 		vertsAfterList = []
@@ -310,11 +310,11 @@ class stroke_controller():
 		ui.editUndo.setEnabled(True)
 
 	def joinSelectedStrokes(self):
-		cmdStack = self.__mainCtrl.getCommandStack()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		cmdStack = self.__mainCtrl.get_command_stack()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		if len(curViewSelection.keys()) > 1:
 			strokeJoinCmd = commands.command("strokeJoinCmd")
@@ -343,9 +343,9 @@ class stroke_controller():
 			ui.repaint()
 			
 	def joinStrokes(self, strokes):
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 		
 		strokeList = strokes.keys()
@@ -406,9 +406,9 @@ class stroke_controller():
 		else:
 			return
 
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 		
 		curChar.deleteStroke({'stroke': joinedStroke})
@@ -432,9 +432,9 @@ class stroke_controller():
 		else:
 			return
 
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 
 		curChar.addStroke({'stroke': joinedStroke, 'copyStroke': False})
@@ -448,11 +448,11 @@ class stroke_controller():
 			selStroke.selected = False
 
 	def deleteControlVertices(self):
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
 
 		vertsBeforeList = []
@@ -493,7 +493,7 @@ class stroke_controller():
 		ui.repaint()
 
 	def setStrokeControlVertices(self, args):
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 
 		if args.has_key('strokes'):
 			selStrokeList = args['strokes']
@@ -516,8 +516,8 @@ class stroke_controller():
 		ui.repaint()
 
 	def splitStroke(self, args):
-		ui = self.__mainCtrl.getUI()
-		curChar = self.__mainCtrl.getCurrentChar()
+		ui = self.__mainCtrl.get_ui()
+		curChar = self.__mainCtrl.get_current_char()
 
 		if args.has_key('strokes'):
 			selStroke = args['strokes']
@@ -541,8 +541,8 @@ class stroke_controller():
 		ui.repaint()
 
 	def unsplitStroke(self, args):
-		ui = self.__mainCtrl.getUI()
-		curChar = self.__mainCtrl.getCurrentChar()
+		ui = self.__mainCtrl.get_ui()
+		curChar = self.__mainCtrl.get_current_char()
 
 		if args.has_key('strokes'):
 			selStroke = args['strokes']
@@ -565,8 +565,8 @@ class stroke_controller():
 		ui.repaint()
 
 	def addControlPoint(self, selStroke, insideInfo):
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		addVertexCmd = commands.command('addVertexCmd')
 						
@@ -592,8 +592,8 @@ class stroke_controller():
 		ui.editUndo.setEnabled(True)
 
 	def splitStrokeAtPoint(self, selStroke, insideInfo):
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		splitAtCmd = commands.command('splitAtCmd')
 		vertsBefore = selStroke.getCtrlVerticesAsList()
@@ -625,12 +625,12 @@ class stroke_controller():
 		ui.editUndo.setEnabled(True)
 
 	def addNewStroke(self):
-		curChar = self.__mainCtrl.getCurrentChar()
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		curChar = self.__mainCtrl.get_current_char()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		verts = self.__tmpStroke.getCtrlVerticesAsList()
 		if len(verts) < 2:

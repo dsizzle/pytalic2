@@ -5,11 +5,11 @@ class vertex_controller():
 		self.__mainCtrl = parent
 
 	def alignTangents(self, newBehavior):
-		currentView = self.__mainCtrl.getCurrentView()
-		selection = self.__mainCtrl.getSelection()
+		currentView = self.__mainCtrl.get_current_view()
+		selection = self.__mainCtrl.get_selection()
 		curViewSelection = selection[currentView]
-		ui = self.__mainCtrl.getUI()
-		cmdStack = self.__mainCtrl.getCommandStack()
+		ui = self.__mainCtrl.get_ui()
+		cmdStack = self.__mainCtrl.get_command_stack()
 
 		if len(curViewSelection.values()) > 0:
 			vertList = curViewSelection.values()
@@ -52,7 +52,7 @@ class vertex_controller():
 		self.alignTangents(control_vertex.SHARP)
 
 	def setCtrlVertexBehavior(self, args):
-		ui = self.__mainCtrl.getUI()
+		ui = self.__mainCtrl.get_ui()
 		
 		if args.has_key('verts'):
 			vertList = args['verts']

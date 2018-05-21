@@ -29,10 +29,10 @@ class snap_controller():
 		return self.__snap
 
 	def getSnappedPoints(self, pos):
-		selection = self.__mainCtrl.getSelection()
-		currentView = self.__mainCtrl.getCurrentView()
+		selection = self.__mainCtrl.get_selection()
+		currentView = self.__mainCtrl.get_current_view()
 		curViewSelection = selection[currentView]
-		charSet = self.__mainCtrl.getCharacterSet()
+		charSet = self.__mainCtrl.get_character_set()
 
 		snappedPoints = []
 
@@ -116,7 +116,7 @@ class snap_controller():
 		snapPt = QtCore.QPoint(-1, -1)
 
 		testRect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, tolerance, tolerance)
-		curChar = self.__mainCtrl.getCurrentChar()
+		curChar = self.__mainCtrl.get_current_char()
 
 		for charStroke in curChar.strokes:
 			for ctrlVert in charStroke.getCtrlVertices(False):
@@ -132,7 +132,7 @@ class snap_controller():
 	def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
 		gridPt = QtCore.QPoint(-1, -1)
 
-		guides = self.__mainCtrl.getUI().guideLines
+		guides = self.__mainCtrl.get_ui().guideLines
 		nibWidth = guides.nibWidth
 		angleDX = math.tan(math.radians(guides.guideAngle))
 
