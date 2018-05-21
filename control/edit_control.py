@@ -122,15 +122,15 @@ class EditorController(object):
     def undo_cb(self, event):
         self.__cmd_stack.undo()
         if self.__cmd_stack.undo_is_empty():
-            self.__ui.editUndo.setEnabled(False)
-        self.__ui.editRedo.setEnabled(True)
+            self.__ui.edit_undo.setEnabled(False)
+        self.__ui.edit_redo.setEnabled(True)
         self.__ui.repaint()
 
     def redo_cb(self, event):
         self.__cmd_stack.redo()
         if self.__cmd_stack.redo_is_empty():
-            self.__ui.editRedo.setEnabled(False)
-        self.__ui.editUndo.setEnabled(True)
+            self.__ui.edit_redo.setEnabled(False)
+        self.__ui.edit_undo.setEnabled(True)
         self.__ui.repaint()
 
     def file_new_cb(self, event):
@@ -156,8 +156,8 @@ class EditorController(object):
         self.__cur_char = self.__char_set.getCurrentChar()
 
         self.__cmd_stack = commands.CommandStack()
-        self.__ui.editUndo.setEnabled(False)
-        self.__ui.editRedo.setEnabled(False)
+        self.__ui.edit_undo.setEnabled(False)
+        self.__ui.edit_redo.setEnabled(False)
         self.__ui.file_save.setEnabled(False)
 
     def file_save_as_cb(self, event):
@@ -304,7 +304,7 @@ class EditorController(object):
         self.state = SPLIT_AT_POINT
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
-    def deleteStrokes_cb(self, event):
+    def delete_strokes_cb(self, event):
         selectedVerts = 0
         for selStroke in self.__selection[self.__current_view_pane].keys():
             for vert in self.__selection[self.__current_view_pane][selStroke]:
@@ -313,9 +313,9 @@ class EditorController(object):
         if selectedVerts > 0:
             self.__stroke_controller.deleteControlVertices()
         else:
-            self.cutStrokes_cb(event)
+            self.cut_strokes_cb(event)
 
-    def cutStrokes_cb(self, event):
+    def cut_strokes_cb(self, event):
         cut_strokes_cmd = commands.Command('cut_strokes_cmd')
         char_index = self.__char_set.getCurrentCharIndex()
 
@@ -336,7 +336,7 @@ class EditorController(object):
         cut_strokes_cmd.set_undo_function(self.paste_clipboard)
 
         self.__cmd_stack.do_command(cut_strokes_cmd)
-        self.__ui.editUndo.setEnabled(True)
+        self.__ui.edit_undo.setEnabled(True)
 
         self.__ui.repaint()
 
@@ -360,10 +360,10 @@ class EditorController(object):
                 del self.__selection[self.__current_view_pane][selStroke]
             selStroke.selected = False
 
-        self.__ui.editPaste.setEnabled(True)
+        self.__ui.edit_paste.setEnabled(True)
         self.__ui.repaint() 
 
-    def copyStrokes_cb(self, event):
+    def copy_strokes_cb(self, event):
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
         char_index = self.__char_set.getCurrentCharIndex()
 
@@ -383,7 +383,7 @@ class EditorController(object):
         copy_strokes_cmd.set_undo_function(self.paste_clipboard)
 
         self.__cmd_stack.do_command(copy_strokes_cmd)
-        self.__ui.editUndo.setEnabled(True)
+        self.__ui.edit_undo.setEnabled(True)
 
         self.__ui.repaint()
 
@@ -403,10 +403,10 @@ class EditorController(object):
         for selStroke in strokesToCopy.keys():
             self.__clipboard.append(selStroke)
  
-        self.__ui.editPaste.setEnabled(True)
+        self.__ui.edit_paste.setEnabled(True)
         self.__ui.repaint() 
 
-    def pasteStrokes_cb(self, event):
+    def paste_strokes_cb(self, event):
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
         char_index = self.__char_set.getCurrentCharIndex()
 
@@ -427,7 +427,7 @@ class EditorController(object):
         paste_strokes_cmd.set_undo_function(self.cut_clipboard)
 
         self.__cmd_stack.do_command(paste_strokes_cmd)
-        self.__ui.editUndo.setEnabled(True)
+        self.__ui.edit_undo.setEnabled(True)
 
         self.__ui.repaint()
 
