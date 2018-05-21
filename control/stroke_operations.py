@@ -83,7 +83,7 @@ class StrokeController(object):
 		save_stroke_cmd.set_undo_function(self.unsave_strokes)
 		
 		cmd_stack.do_command(save_stroke_cmd)
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 		ui.repaint()
 
@@ -214,7 +214,7 @@ class StrokeController(object):
 		paste_instance_saved_cmd.set_undo_function(self.delete_instance)
 		
 		cmd_stack.do_command(paste_instance_saved_cmd)
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 		ui.repaint()
 
@@ -305,7 +305,7 @@ class StrokeController(object):
 					
 		cmd_stack.add_to_undo(stroke_straighten_cmd)
 		cmd_stack.save_count += 1
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 	def joinSelectedStrokes(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
@@ -337,7 +337,7 @@ class StrokeController(object):
 
 			cmd_stack.add_to_undo(strokeJoinCmd)
 			cmd_stack.save_count += 1
-			ui.editUndo.setEnabled(True)
+			ui.edit_undo.setEnabled(True)
 			ui.repaint()
 			
 	def joinStrokes(self, strokes):
@@ -487,7 +487,7 @@ class StrokeController(object):
 
 		cmd_stack.add_to_undo(vertDeleteCmd)
 		cmd_stack.save_count += 1
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 		ui.repaint()
 
 	def set_stroke_control_vertices(self, args):
@@ -587,7 +587,7 @@ class StrokeController(object):
 		
 		cmd_stack.add_to_undo(addVertexCmd)
 		cmd_stack.save_count += 1
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 	def splitStrokeAtPoint(self, sel_stroke, insideInfo):
 		ui = self.__main_ctrl.get_ui()
@@ -620,7 +620,7 @@ class StrokeController(object):
 		splitAtCmd.set_undo_function(self.unsplitStroke)
 		
 		cmd_stack.do_command(splitAtCmd)
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 	def addNewStroke(self):
 		cur_char = self.__main_ctrl.get_current_char()
@@ -658,7 +658,7 @@ class StrokeController(object):
 		add_stroke_cmd.set_undo_function(cur_char.deleteStroke)
 		
 		cmd_stack.do_command(add_stroke_cmd)
-		ui.editUndo.setEnabled(True)
+		ui.edit_undo.setEnabled(True)
 
 		cur_view_selection[self.__tmpStroke] = {}
 		self.__tmpStroke.selected = True

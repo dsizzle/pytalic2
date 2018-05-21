@@ -193,7 +193,7 @@ class MouseController(object):
 		
 			cmdStack.add_to_undo(move_cmd)
 			cmdStack.save_count += 1
-			ui.editUndo.setEnabled(True)
+			ui.edit_undo.setEnabled(True)
 
 			self.__main_ctrl.state = edit_control.IDLE
 			self.__move_delta = QtCore.QPoint(0, 0)
