@@ -110,10 +110,10 @@ class MouseController(object):
 			normpaper_pos = current_view.getNormalizedPosition(paper_pos) 
 			deltaPos = paper_pos - normpaper_pos
 			
-			snapControl = self.__main_ctrl.get_snap_controller()
-			strokeCtrl = self.__main_ctrl.get_stroke_controller()
-			if snapControl.getSnap() > 0:
-				current_view.snapPoints = snapControl.getSnappedPoints(normpaper_pos)
+			snap_ctrl = self.__main_ctrl.get_snap_controller()
+			stroke_ctrl = self.__main_ctrl.get_stroke_controller()
+			if snap_ctrl.getSnap() > 0:
+				current_view.snapPoints = snap_ctrl.getSnappedPoints(normpaper_pos)
 			else:
 				current_view.snapPoints = []
 					
@@ -128,7 +128,7 @@ class MouseController(object):
 			if len(current_view.snapPoints) > 0:
 				args['snapPoint'] = current_view.snapPoints[0]
 
-			strokeCtrl.moveSelected(args)
+			stroke_ctrl.move_selected(args)
 		elif left_down and alt_down and self.__main_ctrl.state == edit_control.IDLE:
 			self.__saved_mouse_pos_paper[current_view] = paper_pos		
 			self.__main_ctrl.state = edit_control.MOVING_PAPER
@@ -149,8 +149,8 @@ class MouseController(object):
 		cmdStack = self.__main_ctrl.get_command_stack()
 
 		if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
-			strokeCtrl = self.__main_ctrl.get_stroke_controller()
-			strokeCtrl.addNewStroke()
+			stroke_ctrl = self.__main_ctrl.get_stroke_controller()
+			stroke_ctrl.add_new_stroke()
 			QtGui.qApp.restoreOverrideCursor()
 
 	def __on_l_button_up_paper(self, pos, shift_down):
@@ -159,7 +159,7 @@ class MouseController(object):
 		cur_view_selection = selection[current_view]
 
 		ui = self.__main_ctrl.get_ui()
-		strokeCtrl = self.__main_ctrl.get_stroke_controller()
+		stroke_ctrl = self.__main_ctrl.get_stroke_controller()
 		cmdStack = self.__main_ctrl.get_command_stack()
 
 		adjustedPos = pos - ui.mainSplitter.pos() - ui.mainWidget.pos()
@@ -169,9 +169,9 @@ class MouseController(object):
 		
 		current_view.snapPoints = []
 		if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
-			strokeCtrl.strokePts.append([paper_pos.x(), paper_pos.y()])
-			strokeCtrl.tmpStroke.generateCtrlVerticesFromPoints(strokeCtrl.strokePts)
-			strokeCtrl.tmpStroke.updateCtrlVertices()
+			stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
+			stroke_ctrl.tmp_stroke.generateCtrlVerticesFromPoints(stroke_ctrl.stroke_pts)
+			stroke_ctrl.tmp_stroke.updateCtrlVertices()
 
 		elif self.__main_ctrl.state == edit_control.DRAGGING:
 			move_cmd = commands.Command('move_stroke_cmd')
@@ -188,8 +188,8 @@ class MouseController(object):
 
 			move_cmd.set_do_args(do_args)
 			move_cmd.set_undo_args(undo_args)
-			move_cmd.set_do_function(strokeCtrl.moveSelected)
-			move_cmd.set_undo_function(strokeCtrl.moveSelected)
+			move_cmd.set_do_function(stroke_ctrl.move_selected)
+			move_cmd.set_undo_function(stroke_ctrl.move_selected)
 		
 			cmdStack.add_to_undo(move_cmd)
 			cmdStack.save_count += 1
@@ -202,7 +202,7 @@ class MouseController(object):
 				for sel_stroke in cur_view_selection.keys():
 					inside_info = sel_stroke.insideStroke(paper_pos)
 					if inside_info[1] >= 0:
-						strokeCtrl.addControlPoint(sel_stroke, inside_info)
+						stroke_ctrl.add_control_point(sel_stroke, inside_info)
 						break
 
 			self.__main_ctrl.state = edit_control.IDLE
@@ -212,7 +212,7 @@ class MouseController(object):
 				for sel_stroke in cur_view_selection.keys():
 					inside_info = sel_stroke.insideStroke(paper_pos)
 					if inside_info[1] >= 0:
-						strokeCtrl.splitStrokeAtPoint(sel_stroke, inside_info)
+						stroke_ctrl.split_stroke_at_point(sel_stroke, inside_info)
 						break
 
 			self.__main_ctrl.state = edit_control.IDLE

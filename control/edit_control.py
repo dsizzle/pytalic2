@@ -291,10 +291,10 @@ class EditorController(object):
             dataFileFd.close()
 
     def create_new_stroke_cb(self, event):
-        self.__stroke_controller.createNewStroke()
+        self.__stroke_controller.create_new_stroke()
 
     def save_stroke_cb(self, event):
-        self.__stroke_controller.saveStroke()
+        self.__stroke_controller.save_stroke()
 
     def add_control_point_cb(self, event):
         self.state = ADDING_CTRL_POINT
@@ -311,7 +311,7 @@ class EditorController(object):
                 selectedVerts += 1
 
         if selectedVerts > 0:
-            self.__stroke_controller.deleteControlVertices()
+            self.__stroke_controller.delete_control_vertices()
         else:
             self.cut_strokes_cb(event)
 
@@ -471,7 +471,7 @@ class EditorController(object):
         self.__ui.repaint() 
 
     def paste_instance_from_saved_cb(self, event):
-        self.__stroke_controller.pasteInstanceFromSaved()
+        self.__stroke_controller.paste_instance_from_saved()
 
     def view_toggle_snap_axially_cb(self, event):
         self.__snap_controller.toggleSnapAxially()
@@ -514,10 +514,10 @@ class EditorController(object):
         self.__ui.stroke_sharpen_tangents.setEnabled(state)       
 
     def straighten_stroke_cb(self, event):
-        self.__stroke_controller.straightenStroke()
+        self.__stroke_controller.straighten_stroke()
 
     def join_strokes_cb(self, event):
-        self.__stroke_controller.joinSelectedStrokes()
+        self.__stroke_controller.join_selected_strokes()
 
     def charSelected(self, event):
         curCharIdx = self.__ui.charSelectorList.currentRow()

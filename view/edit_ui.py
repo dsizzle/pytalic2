@@ -538,7 +538,7 @@ class EditInterface(QtGui.QMainWindow):
 		self.stroke_join.setStatusTip('Join multiple strokes into one')
 		self.stroke_join.setEnabled(False)
 		self.stroke_join.triggered.connect(self.__parent.join_strokes_cb)
-		self.stroke_menu.addAction(self.strokeJoin)
+		self.stroke_menu.addAction(self.stroke_join)
 		
 		self.stroke_menu.addSeparator()
 		self.stroke_align_tangents = QtGui.QAction("Set Tangent To Symmetric", self)

@@ -8,26 +8,26 @@ from model import commands, stroke
 class StrokeController(object):
 	def __init__(self, parent):
 		self.__main_ctrl = parent
-		self.__tmpStroke = None
-		self.__strokePts = []
+		self.__tmp_stroke = None
+		self.__stroke_pts = []
 
-	def getTmpStroke(self):
-		return self.__tmpStroke
+	def get_tmp_stroke(self):
+		return self.__tmp_stroke
 
-	def setTmpStroke(self, newTmpStroke):
-		self.__tmpStroke = newTmpStroke
+	def set_tmp_stroke(self, new_tmp_stroke):
+		self.__tmp_stroke = new_tmp_stroke
 
-	tmpStroke = property(getTmpStroke, setTmpStroke)
+	tmp_stroke = property(get_tmp_stroke, set_tmp_stroke)
 
-	def getStrokePts(self):
-		return self.__strokePts
+	def get_stroke_pts(self):
+		return self.__stroke_pts
 
-	def setStrokePts(self, newStrokePts):
-		self.__strokePts = newStrokePts
+	def set_stroke_pts(self, new_stroke_pts):
+		self.__stroke_pts = new_stroke_pts
 
-	strokePts = property(getStrokePts, setStrokePts)
+	stroke_pts = property(get_stroke_pts, set_stroke_pts)
 
-	def createNewStroke(self):
+	def create_new_stroke(self):
 		if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
 			return
 		
@@ -42,11 +42,11 @@ class StrokeController(object):
 			if idx != dwgTab:
 				ui.mainViewTabs.setTabEnabled(idx, False)
 
-		self.__strokePts = []
-		self.__tmpStroke = stroke.Stroke()
-		ui.dwg_area.strokesSpecial.append(self.__tmpStroke)
+		self.__stroke_pts = []
+		self.__tmp_stroke = stroke.Stroke()
+		ui.dwg_area.strokesSpecial.append(self.__tmp_stroke)
 
-	def saveStroke(self):
+	def save_stroke(self):
 		selectedStrokes = []
 		instances = []
 		current_view = self.__main_ctrl.get_current_view()
@@ -138,7 +138,7 @@ class StrokeController(object):
 
 			sel_stroke.selected = False	
 
-		ui.strokeLoad.setEnabled(True)
+		ui.stroke_load.setEnabled(True)
 		self.__main_ctrl.set_ui_state_selection(True)
 
 	def unsave_strokes(self, args):
@@ -181,30 +181,30 @@ class StrokeController(object):
 			sel_stroke.selected = True
 
 		if ui.strokeSelectorList.count() == 0:
-			ui.strokeLoad.setEnabled(False)
+			ui.stroke_load.setEnabled(False)
 			
 		self.__main_ctrl.set_ui_state_selection(True)
 		
-	def pasteInstanceFromSaved(self):
+	def paste_instance_from_saved(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
 		charSet = self.__main_ctrl.get_character_set()
 		ui = self.__main_ctrl.get_ui()
 
-		charIndex = charSet.getCurrentCharIndex()
-		strokeIndex = ui.strokeSelectorList.currentRow()
-		savedStroke = charSet.getSavedStroke(strokeIndex)
-		newStrokeInstance = stroke.StrokeInstance()
-		newStrokeInstance.setStroke(savedStroke)
+		char_index = charSet.getCurrentCharIndex()
+		stroke_index = ui.strokeSelectorList.currentRow()
+		saved_stroke = charSet.getSavedStroke(stroke_index)
+		new_stroke_instance = stroke.StrokeInstance()
+		new_stroke_instance.setStroke(saved_stroke)
 
 		paste_instance_saved_cmd = commands.Command('paste_instance_saved_cmd')
 		
 		do_args = {
-			'strokes' : newStrokeInstance,
+			'strokes' : new_stroke_instance,
 			'char_index' : char_index,
 		}
 
 		undo_args = {
-			'strokes' : newStrokeInstance,
+			'strokes' : new_stroke_instance,
 			'char_index' : char_index,
 		}
 
@@ -266,7 +266,7 @@ class StrokeController(object):
 
 		ui.dwg_area.repaint()
 
-	def straightenStroke(self):
+	def straighten_stroke(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
@@ -307,7 +307,7 @@ class StrokeController(object):
 		cmd_stack.save_count += 1
 		ui.edit_undo.setEnabled(True)
 
-	def joinSelectedStrokes(self):
+	def join_selected_strokes(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
@@ -332,15 +332,15 @@ class StrokeController(object):
 			
 			strokeJoinCmd.set_do_args(do_args)
 			strokeJoinCmd.set_undo_args(undo_args)
-			strokeJoinCmd.set_do_function(self.joinAllStrokes)
-			strokeJoinCmd.set_undo_function(self.unjoinAllStrokes)
+			strokeJoinCmd.set_do_function(self.join_all_strokes)
+			strokeJoinCmd.set_undo_function(self.unjoin_all_strokes)
 
 			cmd_stack.add_to_undo(strokeJoinCmd)
 			cmd_stack.save_count += 1
 			ui.edit_undo.setEnabled(True)
 			ui.repaint()
 			
-	def joinStrokes(self, strokes):
+	def join_strokes(self, strokes):
 		cur_char = self.__main_ctrl.get_current_char()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
@@ -362,10 +362,10 @@ class StrokeController(object):
 				del cur_view_selection[curStroke]
 				curStroke.selected = False
 
-			d1 = distBetweenPts(curVerts[0], vertList[0])
-			d2 = distBetweenPts(curVerts[-1], vertList[0])
-			d3 = distBetweenPts(curVerts[0], vertList[-1])
-			d4 = distBetweenPts(curVerts[-1], vertList[-1])
+			d1 = dist_between_pts(curVerts[0], vertList[0])
+			d2 = dist_between_pts(curVerts[-1], vertList[0])
+			d3 = dist_between_pts(curVerts[0], vertList[-1])
+			d4 = dist_between_pts(curVerts[-1], vertList[-1])
 
 			ptList = [d1, d2, d3, d4]
 			ptList.sort()
@@ -393,7 +393,7 @@ class StrokeController(object):
 
 		return newStroke
 
-	def unjoinAllStrokes(self, args):
+	def unjoin_all_strokes(self, args):
 		if args.has_key('strokes'):
 			strokes = args['strokes']
 		else:
@@ -419,7 +419,7 @@ class StrokeController(object):
 			cur_view_selection[sel_stroke] = {}
 			sel_stroke.selected = True
 
-	def joinAllStrokes(self, args):
+	def join_all_strokes(self, args):
 		if args.has_key('strokes'):
 			strokes = args['strokes']
 		else:
@@ -445,7 +445,7 @@ class StrokeController(object):
 				del cur_view_selection[sel_stroke]
 			sel_stroke.selected = False
 
-	def deleteControlVertices(self):
+	def delete_control_vertices(self):
 		ui = self.__main_ctrl.get_ui()
 		cmd_stack = self.__main_ctrl.get_command_stack()
 		cur_char = self.__main_ctrl.get_current_char()
@@ -513,7 +513,7 @@ class StrokeController(object):
 
 		ui.repaint()
 
-	def splitStroke(self, args):
+	def split_stroke(self, args):
 		ui = self.__main_ctrl.get_ui()
 		cur_char = self.__main_ctrl.get_current_char()
 
@@ -538,7 +538,7 @@ class StrokeController(object):
 		cur_char.addStroke({'stroke': newStroke, 'copyStroke': False})
 		ui.repaint()
 
-	def unsplitStroke(self, args):
+	def unsplit_stroke(self, args):
 		ui = self.__main_ctrl.get_ui()
 		cur_char = self.__main_ctrl.get_current_char()
 
@@ -562,7 +562,7 @@ class StrokeController(object):
 		cur_char.deleteStroke({'stroke': delStroke})
 		ui.repaint()
 
-	def addControlPoint(self, sel_stroke, insideInfo):
+	def add_control_point(self, sel_stroke, insideInfo):
 		ui = self.__main_ctrl.get_ui()
 		cmd_stack = self.__main_ctrl.get_command_stack()
 
@@ -589,7 +589,7 @@ class StrokeController(object):
 		cmd_stack.save_count += 1
 		ui.edit_undo.setEnabled(True)
 
-	def splitStrokeAtPoint(self, sel_stroke, insideInfo):
+	def split_stroke_at_point(self, sel_stroke, insideInfo):
 		ui = self.__main_ctrl.get_ui()
 		cmd_stack = self.__main_ctrl.get_command_stack()
 
@@ -616,13 +616,13 @@ class StrokeController(object):
 
 		splitAtCmd.set_do_args(do_args)
 		splitAtCmd.set_undo_args(undo_args)
-		splitAtCmd.set_do_function(self.splitStroke)
-		splitAtCmd.set_undo_function(self.unsplitStroke)
+		splitAtCmd.set_do_function(self.split_stroke)
+		splitAtCmd.set_undo_function(self.unsplit_stroke)
 		
 		cmd_stack.do_command(splitAtCmd)
 		ui.edit_undo.setEnabled(True)
 
-	def addNewStroke(self):
+	def add_new_stroke(self):
 		cur_char = self.__main_ctrl.get_current_char()
 		current_view = self.__main_ctrl.get_current_view()
 		selection = self.__main_ctrl.get_selection()
@@ -630,26 +630,26 @@ class StrokeController(object):
 		ui = self.__main_ctrl.get_ui()
 		cmd_stack = self.__main_ctrl.get_command_stack()
 
-		verts = self.__tmpStroke.getCtrlVerticesAsList()
+		verts = self.__tmp_stroke.getCtrlVerticesAsList()
 		if len(verts) < 2:
 			self.__main_ctrl.state = edit_control.IDLE
-			self.__tmpStroke = None
-			self.__strokePts = []
+			self.__tmp_stroke = None
+			self.__stroke_pts = []
 			current_view.strokesSpecial = []
 			ui.repaint()
 			return
 
 		self.__main_ctrl.state = edit_control.IDLE
-		self.__strokePts = []
+		self.__stroke_pts = []
 		
 		add_stroke_cmd = commands.Command('add_stroke_cmd')
 		do_args = {
-			'stroke' : self.__tmpStroke,
+			'stroke' : self.__tmp_stroke,
 			'copyStroke' : False,
 		}
 
 		undo_args = {
-			'stroke' : self.__tmpStroke,
+			'stroke' : self.__tmp_stroke,
 		}
 
 		add_stroke_cmd.set_do_args(do_args)
@@ -660,10 +660,10 @@ class StrokeController(object):
 		cmd_stack.do_command(add_stroke_cmd)
 		ui.edit_undo.setEnabled(True)
 
-		cur_view_selection[self.__tmpStroke] = {}
-		self.__tmpStroke.selected = True
+		cur_view_selection[self.__tmp_stroke] = {}
+		self.__tmp_stroke.selected = True
 		current_view.strokesSpecial = []
-		self.__tmpStroke = None
+		self.__tmp_stroke = None
 
 		self.__main_ctrl.set_ui_state_selection(True)
 		
@@ -672,7 +672,7 @@ class StrokeController(object):
 		
 		ui.repaint()
 
-	def moveSelected(self, args):
+	def move_selected(self, args):
 		if args.has_key('strokes'):
 			selection = args['strokes']
 		else:
@@ -700,5 +700,5 @@ class StrokeController(object):
 			
 			stroke.calcCurvePoints()
 
-def distBetweenPts (p0, p1):
+def dist_between_pts (p0, p1):
 	return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
