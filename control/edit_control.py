@@ -42,7 +42,7 @@ class EditorController(object):
         for i in range(32, 128):
             char_list.append(str(unichr(i)))
 
-        self.__ui.createUI()
+        self.__ui.create_ui()
         self.__ui.charSelectorList.addItems(QtCore.QStringList(char_list))
 
         self.blank_pixmap = QtGui.QPixmap(ICON_SIZE, ICON_SIZE)
@@ -61,7 +61,7 @@ class EditorController(object):
         self.__stroke_controller = control.stroke_operations.StrokeController(self)
         self.__vertex_controller = control.vertex_operations.VertexController(self)
 
-        self.fileNew_cb(None)
+        self.file_new_cb(None)
 
     def get_command_stack(self):
         return self.__cmd_stack
@@ -133,7 +133,7 @@ class EditorController(object):
         self.__ui.editUndo.setEnabled(True)
         self.__ui.repaint()
 
-    def fileNew_cb(self, event):
+    def file_new_cb(self, event):
         self.__file_name = None
 
         self.__char_set = character_set.character_set()
@@ -158,9 +158,9 @@ class EditorController(object):
         self.__cmd_stack = commands.CommandStack()
         self.__ui.editUndo.setEnabled(False)
         self.__ui.editRedo.setEnabled(False)
-        self.__ui.fileSave.setEnabled(False)
+        self.__ui.file_save.setEnabled(False)
 
-    def fileSaveAs_cb(self, event):
+    def file_save_as_cb(self, event):
         file_name = self.__ui.file_save_dialog.getSaveFileName(self.__ui,
              "Save Character Set", self.__dir_name,
              "Character Set Files (*.cs)")
@@ -175,16 +175,16 @@ class EditorController(object):
             self.save(self.__file_name)
             self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
             self.__cmd_stack.reset_save_count()
-            self.__ui.fileSave.setEnabled(True)
+            self.__ui.file_save.setEnabled(True)
 
-    def fileSave_cb(self, event):
+    def file_save_cb(self, event):
         if self.__file_name and os.path.isfile(self.__file_name):
             self.save(self.__file_name)
             self.__cmd_stack.reset_save_count()
         else:
-            self.fileSaveAs_cb(event)
+            self.file_save_as_cb(event)
 
-    def fileOpen_cb(self):
+    def file_open_cb(self):
         file_name = None
         file_name = self.__ui.file_open_dialog.getOpenFileName(self.__ui,
              "Open Character Set", self.__dir_name,
@@ -251,7 +251,7 @@ class EditorController(object):
 
             self.__cmd_stack.clear()
             self.__cmd_stack.reset_save_count()
-            self.__ui.fileSave.setEnabled(True)
+            self.__ui.file_save.setEnabled(True)
 
     def save(self, file_name):
         try:
