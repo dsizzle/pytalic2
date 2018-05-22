@@ -27,27 +27,42 @@ class EditInterface(QtGui.QMainWindow):
 
         self.dwg_area = None
         self.guide_lines = None
+        self.preview_area = None
+        self.main_widget = QtGui.QWidget()
+        self.main_splitter = None
+        self.side_splitter = None
+        self.main_layout = QtGui.QVBoxLayout()
+        self.view_layout = QtGui.QHBoxLayout()
+        self.char_selector_layout = QtGui.QHBoxLayout()
+        self.char_selector_list = QtGui.QListWidget(self.main_widget)
+        self.stroke_selector_list = QtGui.QListWidget(self)
+        self.tool_pane = None
+        self.bottom_pane = None
+        self.char_set_prop_frame = None
+        self.char_set_prop_layout = None
+
+        self.main_menu = self.menuBar()
+        self.tool_bar = None
+        self.file_menu = None
+        self.edit_menu = None
+        self.view_menu = None
+        self.stroke_menu = None
+        self.help_menu = None
 
     def create_ui(self):
         self.create_menu()
 
         wid80 = int(self.width()*.75)
         wid20 = self.width() - wid80
-        
-        self.main_widget = QtGui.QWidget()
+
         self.main_splitter = view.splitter.MySplitter(self.main_widget)
         self.side_splitter = QtGui.QSplitter(self.main_splitter)
         self.side_splitter.setOrientation(2)
 
-        self.main_layout = QtGui.QVBoxLayout()
-        self.view_layout = QtGui.QHBoxLayout()
-
-        self.char_selector_layout = QtGui.QHBoxLayout()
         self.char_selector_layout.setMargin(0)
         self.char_selector_layout.setSpacing(0)
         self.char_selector_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.char_selector_list = QtGui.QListWidget(self.main_widget)
         self.char_selector_list.setFlow(QtGui.QListView.LeftToRight)
         self.char_selector_list.resize(self.width(), ICON_SIZE*1.75)
         self.char_selector_list.setMaximumHeight(ICON_SIZE*1.75)
@@ -55,15 +70,11 @@ class EditInterface(QtGui.QMainWindow):
         self.char_selector_list.currentItemChanged.connect(self.__parent.char_selected_cb)
         self.char_selector_layout.addWidget(self.char_selector_list, 0, QtCore.Qt.AlignTop)
 
-        #self.strokeSelectorLayout = QtGui.QVBoxLayout()
-        self.stroke_selector_list = QtGui.QListWidget(self)
-        #self.stroke_selector_list.setFlow(QtGui.QListView.LeftToRight)
         self.stroke_selector_list.resize(ICON_SIZE*1.5, self.height())
         self.stroke_selector_list.setMaximumWidth(ICON_SIZE*1.5)
         self.stroke_selector_list.setIconSize(QtCore.QSize(ICON_SIZE, ICON_SIZE))
         self.stroke_selector_list.currentItemChanged.connect(self.__parent.stroke_selected_cb)
         self.view_layout.addWidget(self.stroke_selector_list)
-        #self.strokeSelectorLayout.addWidget(self.stroke_selector_list)
 
         self.dwg_area = view.paper.drawingArea(self.main_splitter)
         self.dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
@@ -81,7 +92,7 @@ class EditInterface(QtGui.QMainWindow):
 
         self.tool_pane = QtGui.QFrame(self.side_splitter)
         self.tool_pane_layout = QtGui.QVBoxLayout(self.tool_pane)
-        
+
         self.bottom_pane = QtGui.QFrame(self.side_splitter)
         self.bottom_pane.setFrameStyle(QtGui.QFrame.Panel)
         self.bottom_pane_layout = QtGui.QVBoxLayout(self.bottom_pane)
@@ -210,15 +221,24 @@ class EditInterface(QtGui.QMainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.char_set_nib_angle_changed_cb)
 
-        self.char_set_prop_layout.addRow(self.base_height_label, self.base_height_spin)
-        self.char_set_prop_layout.addRow(self.cap_height_label, self.cap_height_spin)
-        self.char_set_prop_layout.addRow(self.ascent_height_label, self.ascent_height_spin)
-        self.char_set_prop_layout.addRow(self.descent_height_label, self.descent_height_spin)
-        self.char_set_prop_layout.addRow(self.angle_label, self.angle_spin)
-        self.char_set_prop_layout.addRow(self.gap_height_label, self.gap_height_spin)
-        self.char_set_prop_layout.addRow(self.nominal_width_label, self.nominal_width_spin)
-        self.char_set_prop_layout.addRow(self.guides_color_label, self.guides_color_button)
-        self.char_set_prop_layout.addRow(self.char_set_nib_angle_label, self.char_set_nib_angle_spin)
+        self.char_set_prop_layout.addRow(self.base_height_label, \
+            self.base_height_spin)
+        self.char_set_prop_layout.addRow(self.cap_height_label, \
+            self.cap_height_spin)
+        self.char_set_prop_layout.addRow(self.ascent_height_label, \
+            self.ascent_height_spin)
+        self.char_set_prop_layout.addRow(self.descent_height_label, \
+            self.descent_height_spin)
+        self.char_set_prop_layout.addRow(self.angle_label, \
+            self.angle_spin)
+        self.char_set_prop_layout.addRow(self.gap_height_label, \
+            self.gap_height_spin)
+        self.char_set_prop_layout.addRow(self.nominal_width_label, \
+            self.nominal_width_spin)
+        self.char_set_prop_layout.addRow(self.guides_color_label, \
+            self.guides_color_button)
+        self.char_set_prop_layout.addRow(self.char_set_nib_angle_label, \
+            self.char_set_nib_angle_spin)
 
         self.char_prop_frame = QtGui.QFrame(self.tool_pane)
         self.char_prop_layout = QtGui.QFormLayout(self.char_prop_frame)
@@ -313,7 +333,7 @@ class EditInterface(QtGui.QMainWindow):
 
         self.main_splitter.setMaxPaneWidth(wid20)
         self.main_splitter.setSizes([wid80, wid20])
-        
+
         self.view_layout.addWidget(self.main_splitter)
         self.view_layout.setMargin(0)
         self.view_layout.setSpacing(5)
@@ -338,8 +358,7 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_dwg_area.setGuidelines(self.guide_lines)
 
     def create_menu(self):
-        self.main_menu = self.menuBar()
-        self.tool_bar = self.addToolBar("main") 
+        self.tool_bar = self.addToolBar("main")
         self.tool_bar.resize(self.width(), ICON_SIZE+ICON_TEXT_SIZE)
         self.tool_bar.setFloatable(False)
         self.tool_bar.setMovable(False)
@@ -605,7 +624,8 @@ class EditInterface(QtGui.QMainWindow):
 
     def about_cb(self, event):
         reply = QtGui.QMessageBox.information(self, 'About PyTalic Editor', \
-            "PyTalic Editor\nby Dale Cieslak\n(c) 2007-2018\n\nhttps://github.com/dsizzle/pytalic2", \
+            "PyTalic Editor\nby Dale Cieslak\n(c) 2007-2018" + \
+            "\n\nhttps://github.com/dsizzle/pytalic2", \
             QtGui.QMessageBox.Ok)
 
     def mouseMoveEvent(self, event):
