@@ -283,7 +283,7 @@ class EditorController(object):
         except pickle.UnpicklingError:
             print "ERROR: Couldn't unserialize data"
             return 1
-        except:
+        except Exception:
             print "ERROR: OTHER"
             return 1
 

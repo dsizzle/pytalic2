@@ -25,7 +25,7 @@ class character_set(object):
 	def deleteChar(self, charToDelete):
 		try:
 			self.__characters[charToDelete] = None
-		except:
+		except IndexError:
 			print "ERROR: character to delete doesn't exist!"
 	
 	def getCurrentChar(self):
