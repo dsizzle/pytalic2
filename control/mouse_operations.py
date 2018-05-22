@@ -260,9 +260,9 @@ class MouseController(object):
 
 				behavior_list = list(set(behavior_list))
 				if len(behavior_list) == 1:
-					ui.behaviorCombo.setCurrentIndex(behavior_list[0])
+					ui.behavior_combo.setCurrentIndex(behavior_list[0])
 				else:
-					ui.behaviorCombo.setCurrentIndex(0)
+					ui.behavior_combo.setCurrentIndex(0)
 
 			if len(cur_view_selection.keys()) == 0 or shift_down:
 				for sel_stroke in current_view.strokes:
@@ -281,4 +281,4 @@ class MouseController(object):
 				self.__main_ctrl.set_ui_state_selection(True)
 			else:
 				self.__main_ctrl.set_ui_state_selection(False)
-				ui.behaviorCombo.setCurrentIndex(0)
+				ui.behavior_combo.setCurrentIndex(0)

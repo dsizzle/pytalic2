@@ -161,13 +161,13 @@ class EditorController(object):
         self.__ui.file_save.setEnabled(False)
 
     def file_save_as_cb(self, event):
-        file_name = self.__ui.file_save_dialog.getSaveFileName(self.__ui,
-             "Save Character Set", self.__dir_name,
+        file_name = self.__ui.file_save_dialog.getSaveFileName(self.__ui, \
+             "Save Character Set", self.__dir_name, \
              "Character Set Files (*.cs)")
-            
+
         if file_name:
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
-            (name, ext) = os.path.splitext(self.__file_name) 
+            (name, ext) = os.path.splitext(self.__file_name)
 
             if ext != ".cs":
                 self.__file_name += ".cs"
@@ -186,8 +186,8 @@ class EditorController(object):
 
     def file_open_cb(self):
         file_name = None
-        file_name = self.__ui.file_open_dialog.getOpenFileName(self.__ui,
-             "Open Character Set", self.__dir_name,
+        file_name = self.__ui.file_open_dialog.getOpenFileName(self.__ui, \
+             "Open Character Set", self.__dir_name, \
              "Character Set Files (*.cs)")
 
         if file_name:
@@ -222,8 +222,8 @@ class EditorController(object):
             if len(savedStrokeList) > 0:
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
-                for selStroke in savedStrokeList:
-                    bitmap = self.__ui.dwg_area.drawIcon(None, [selStroke])
+                for sel_stroke in savedStrokeList:
+                    bitmap = self.__ui.dwg_area.drawIcon(None, [sel_stroke])
                     self.__ui.stroke_selector_list.addItem(str(i))
                     curItem = self.__ui.stroke_selector_list.item(i)
                     self.__ui.stroke_selector_list.setCurrentRow(i)
@@ -255,31 +255,31 @@ class EditorController(object):
 
     def save(self, file_name):
         try:
-            dataFileFd = open(file_name, 'wb')
+            data_file_fd = open(file_name, 'wb')
         except IOError:
             print "ERROR: Couldn't open %s for writing." % (file_name)
             return 1
 
         try:
-            dataPickler = pickle.Pickler(dataFileFd, pickle.HIGHEST_PROTOCOL)
-            dataPickler.dump(self.__char_set)
+            data_pickler = pickle.Pickler(data_file_fd, pickle.HIGHEST_PROTOCOL)
+            data_pickler.dump(self.__char_set)
         except pickle.PicklingError:
             print "ERROR: Couldn't serialize data"
             return 1
 
-        if dataFileFd:
-            dataFileFd.close()
+        if data_file_fd:
+            data_file_fd.close()
 
     def load(self, file_name):
         try:
-            dataFileFd = open(file_name, 'rb')
+            data_file_fd = open(file_name, 'rb')
         except IOError:
             print "ERROR: Couldn't open %s for reading." % (file_name)
             return 1
 
         try:
-            dataPickler = pickle.Unpickler(dataFileFd)      
-            self.__char_set = dataPickler.load()
+            data_pickler = pickle.Unpickler(data_file_fd)
+            self.__char_set = data_pickler.load()
         except pickle.UnpicklingError:
             print "ERROR: Couldn't unserialize data"
             return 1
@@ -287,8 +287,8 @@ class EditorController(object):
             print "ERROR: OTHER"
             return 1
 
-        if dataFileFd:
-            dataFileFd.close()
+        if data_file_fd:
+            data_file_fd.close()
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
@@ -305,12 +305,11 @@ class EditorController(object):
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
     def delete_strokes_cb(self, event):
-        selectedVerts = 0
-        for selStroke in self.__selection[self.__current_view_pane].keys():
-            for vert in self.__selection[self.__current_view_pane][selStroke]:
-                selectedVerts += 1
+        selected_verts = 0
+        for sel_stroke in self.__selection[self.__current_view_pane].keys():
+            selected_verts += len(self.__selection[self.__current_view_pane][sel_stroke])
 
-        if selectedVerts > 0:
+        if selected_verts > 0:
             self.__stroke_controller.delete_control_vertices()
         else:
             self.cut_strokes_cb(event)
@@ -347,21 +346,21 @@ class EditorController(object):
             return
 
         if args.has_key('strokes'):
-            strokesToCut = args['strokes']
+            strokes_to_cut = args['strokes']
         else:
             return
 
         self.__ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
-        for selStroke in strokesToCut:
-            self.__cur_char.deleteStroke({'stroke' : selStroke})
-            self.__clipboard.append(selStroke)
-            if self.__selection[self.__current_view_pane].has_key(selStroke):
-                del self.__selection[self.__current_view_pane][selStroke]
-            selStroke.selected = False
+        for sel_stroke in strokes_to_cut:
+            self.__cur_char.deleteStroke({'stroke' : sel_stroke})
+            self.__clipboard.append(sel_stroke)
+            if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                del self.__selection[self.__current_view_pane][sel_stroke]
+            sel_stroke.selected = False
 
         self.__ui.edit_paste.setEnabled(True)
-        self.__ui.repaint() 
+        self.__ui.repaint()
 
     def copy_strokes_cb(self, event):
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
@@ -394,17 +393,17 @@ class EditorController(object):
             return
 
         if args.has_key('strokes'):
-            strokesToCopy = args['strokes']
+            strokes_to_copy = args['strokes']
         else:
             return
 
         self.__ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
-        for selStroke in strokesToCopy.keys():
-            self.__clipboard.append(selStroke)
- 
+        for sel_stroke in strokes_to_copy.keys():
+            self.__clipboard.append(sel_stroke)
+
         self.__ui.edit_paste.setEnabled(True)
-        self.__ui.repaint() 
+        self.__ui.repaint()
 
     def paste_strokes_cb(self, event):
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
@@ -438,37 +437,37 @@ class EditorController(object):
             return
 
         if args.has_key('strokes'):
-            strokesToPaste = args['strokes']
+            strokes_to_paste = args['strokes']
         else:
             return
 
         if args.has_key('copy'):
-            copyStrokes = args['copy']
+            copy_strokes = args['copy']
         else:
-            copyStrokes = True
+            copy_strokes = True
 
         self.__ui.char_selector_list.setCurrentRow(char_index)
 
-        for selStroke in self.__selection[self.__current_view_pane].keys():
-            selStroke.selected = False
+        for sel_stroke in self.__selection[self.__current_view_pane].keys():
+            sel_stroke.selected = False
 
         self.__selection[self.__current_view_pane] = {}
 
-        for selStroke in strokesToPaste:
-            if copyStrokes and type(selStroke).__name__ == 'Stroke':
-                pasteStroke = stroke.Stroke(fromStroke=selStroke)
+        for sel_stroke in strokes_to_paste:
+            if copy_strokes and type(sel_stroke).__name__ == 'Stroke':
+                paste_stroke = stroke.Stroke(fromStroke=sel_stroke)
             else:
-                pasteStroke = selStroke
+                paste_stroke = sel_stroke
 
-            self.__selection[self.__current_view_pane][pasteStroke] = {}
-            pasteStroke.selected = True
-            if type(pasteStroke).__name__ == 'Stroke':
-                self.__cur_char.addStroke({'stroke' : pasteStroke, 'copyStroke' : False})
+            self.__selection[self.__current_view_pane][paste_stroke] = {}
+            paste_stroke.selected = True
+            if type(paste_stroke).__name__ == 'Stroke':
+                self.__cur_char.addStroke({'stroke' : paste_stroke, 'copyStroke' : False})
             else:
-                self.__cur_char.newStrokeInstance({'stroke' : pasteStroke})
+                self.__cur_char.newStrokeInstance({'stroke' : paste_stroke})
 
         self.set_ui_state_selection(True)
-        self.__ui.repaint() 
+        self.__ui.repaint()
 
     def paste_instance_from_saved_cb(self, event):
         self.__stroke_controller.paste_instance_from_saved()
@@ -511,7 +510,7 @@ class EditorController(object):
         self.__ui.stroke_join.setEnabled(state)
         self.__ui.stroke_align_tangents.setEnabled(state)
         self.__ui.stroke_smooth_tangents.setEnabled(state)
-        self.__ui.stroke_sharpen_tangents.setEnabled(state)       
+        self.__ui.stroke_sharpen_tangents.setEnabled(state)   
 
     def straighten_stroke_cb(self, event):
         self.__stroke_controller.straighten_stroke()
@@ -530,7 +529,7 @@ class EditorController(object):
 
     def stroke_selected_cb(self, event):
         sel_saved_stroke = self.__char_set.getSavedStroke(self.__ui.stroke_selector_list.currentRow())
- 
+
         self.__ui.stroke_dwg_area.strokes = [sel_saved_stroke]
         self.__ui.repaint()
         self.set_icon()
@@ -562,81 +561,87 @@ class EditorController(object):
         self.__ui.repaint()
 
     def set_icon(self):
-        iconBitmap = self.__current_view_pane.getBitmap()
-        if iconBitmap:
+        icon_bitmap = self.__current_view_pane.getBitmap()
+        if icon_bitmap:
             if self.__current_view_pane == self.__ui.dwg_area:
-                self.__cur_char.bitmapPreview = iconBitmap
-                self.__ui.char_selector_list.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+                self.__cur_char.bitmapPreview = icon_bitmap
+                self.__ui.char_selector_list.currentItem().setIcon(QtGui.QIcon(icon_bitmap))
             elif self.__current_view_pane == self.__ui.stroke_dwg_area:
                 if self.__ui.stroke_selector_list.count() > 0:
-                    self.__ui.stroke_selector_list.currentItem().setIcon(QtGui.QIcon(iconBitmap))
+                    self.__ui.stroke_selector_list.currentItem().setIcon(QtGui.QIcon(icon_bitmap))
 
     def guide_base_height_changed_cb(self, new_value):
         prev_value = self.__char_set.baseHeight
 
-        self.__property_controller.base_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
-
+        self.__property_controller.base_height_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_cap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.capHeight
 
-        self.__property_controller.cap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.cap_height_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_ascent_changed_cb(self, new_value):
         prev_value = self.__char_set.ascentHeight
 
-        self.__property_controller.ascent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.ascent_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_descent_changed_cb(self, new_value):
         prev_value = self.__char_set.descentHeight
 
-        self.__property_controller.descent_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.descent_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_gap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.gapHeight
 
-        self.__property_controller.gap_height_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.gap_height_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_angle_changed_cb(self, new_value):
         prev_value = self.__char_set.guideAngle
 
-        self.__property_controller.angle_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.angle_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_nominal_width_changed_cb(self, new_value):
         prev_value = self.__char_set.nominalWidth
 
-        self.__property_controller.nominal_width_changed(prev_value, new_value, [self.__char_set, self.__ui.guide_lines])
+        self.__property_controller.nominal_width_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_color_changed_cb(self, new_color):
         self.__ui.guide_lines.setLineColor(new_color)
         self.__ui.repaint()
 
-    def charSetNibAngleChanged_cb(self, new_value):
+    def char_set_nib_angle_changed_cb(self, new_value):
         prev_value = self.__char_set.nibAngle
 
         self.__property_controller.char_set_nib_angle_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.dwg_area.nib, \
             self.__ui.dwg_area.instNib, self.__ui.stroke_dwg_area.nib])
 
-    def charWidthChanged_cb(self, new_value):
+    def char_width_changed_cb(self, new_value):
         prev_value = self.__cur_char.width
 
         self.__property_controller.char_width_changed(prev_value, \
             new_value, [self.__cur_char])
 
-    def charLeftSpaceChanged_cb(self, new_value):
+    def char_left_space_changed_cb(self, new_value):
         prev_value = self.__cur_char.leftSpacing
 
         self.__property_controller.char_left_space_changed(prev_value, \
             new_value, [self.__cur_char])
 
-    def charRightSpaceChanged_cb(self, new_value):
+    def char_right_space_changed_cb(self, new_value):
         prev_value = self.__cur_char.rightSpacing
 
         self.__property_controller.char_right_space_changed(prev_value, \
             new_value, [self.__cur_char])
 
-    def vertBehaviorComboChanged_cb(self, new_value):
+    def vert_behavior_combo_changed_cb(self, new_value):
         if new_value == 0:
             return
 
@@ -646,7 +651,7 @@ class EditorController(object):
         self.__vertex_controller.align_tangents_symmetrical()
 
     def align_tangents_cb(self, event):
-        self.__vertex_controller.align_tangents()
+        self.__vertex_controller.align_tangents_smooth()
 
     def break_tangents_cb(self, event):
         self.__vertex_controller.break_tangents()

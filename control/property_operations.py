@@ -100,14 +100,14 @@ class PropertyController(object):
 
     def char_set_nib_angle_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['nibAngle', 'angle', 'angle', 'angle'], \
-            ['charSetNibAngleSpin'])
+            ['char_set_nib_angle_spin'])
 
     def char_width_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['width'], ['charWidthSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['width'], ['char_width_spin'])
 
     def char_left_space_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['leftSpacing'], ['leftSpaceSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['leftSpacing'], ['left_space_spin'])
 
     def char_right_space_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['rightSpacing'], ['rightSpaceSpin'])
+        self.__prop_change(prev_value, new_value, objects, ['rightSpacing'], ['right_space_spin'])
 

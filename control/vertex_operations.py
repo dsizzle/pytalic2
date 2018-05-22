@@ -73,7 +73,7 @@ class VertexController(object):
             for i in range(0, len(vert_dict.keys())):
                 if use_same_behavior:
                     vert_dict.keys()[i].setBehavior(behavior_list[0])
-                    ui.behaviorCombo.setCurrentIndex(behavior_list[0])
+                    ui.behavior_combo.setCurrentIndex(behavior_list[0])
                 else:
                     vert_dict.keys()[i].setBehavior(behavior_list[i])
-                    ui.behaviorCombo.setCurrentIndex(0)
+                    ui.behavior_combo.setCurrentIndex(0)
