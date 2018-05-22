@@ -1,3 +1,10 @@
+"""
+edit_control.py
+
+The main controller module for pyTalic Editor.
+
+Contains EditorController class.
+"""
 import os
 import os.path
 import pickle
@@ -22,6 +29,9 @@ ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
 
 class EditorController(object):
+    """
+    EditorController is the main Controller for pyTalic Editor
+    """
     def __init__(self, w, h, label):
         self.__label = label
         self.__ui = edit_ui.EditInterface(self, w, h, label)
@@ -510,7 +520,7 @@ class EditorController(object):
         self.__ui.stroke_join.setEnabled(state)
         self.__ui.stroke_align_tangents.setEnabled(state)
         self.__ui.stroke_smooth_tangents.setEnabled(state)
-        self.__ui.stroke_sharpen_tangents.setEnabled(state)   
+        self.__ui.stroke_sharpen_tangents.setEnabled(state)
 
     def straighten_stroke_cb(self, event):
         self.__stroke_controller.straighten_stroke()
