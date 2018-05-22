@@ -1,3 +1,8 @@
+"""
+shared_qt.py
+
+a place to store some Qt objects that are shared amongst modules
+"""
 from PyQt4 import QtCore, QtGui
 
 COLOR_LT_GRAY = QtGui.QColor(200, 200, 200)
@@ -10,10 +15,12 @@ COLOR_BLUE = QtGui.QColor(0, 0, 255)
 COLOR_BLACK = QtGui.QColor(0, 0, 0)
 
 def PEN(color, width=1, pattern=QtCore.Qt.SolidLine):
-	return QtGui.QPen(color, width, pattern) 
+    """a wrapper function to generate a QPen"""
+    return QtGui.QPen(color, width, pattern)
 
 def BRUSH(color, pattern=QtCore.Qt.SolidPattern):
-	return QtGui.QBrush(color, pattern)
+    """a wrapper function to generate a QBrush"""
+    return QtGui.QBrush(color, pattern)
 
 BRUSH_CLEAR = BRUSH(COLOR_BLACK, QtCore.Qt.NoBrush)
 BRUSH_MD_GRAY_SOLID = BRUSH(COLOR_MD_GRAY)
