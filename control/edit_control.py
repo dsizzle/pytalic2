@@ -218,16 +218,16 @@ class EditorController(object):
 
             self.__ui.stroke_selector_list.clear()
 
-            savedStrokeList = self.__char_set.getSavedStrokes()
-            if len(savedStrokeList) > 0:
+            saved_stroke_list = self.__char_set.getSavedStrokes()
+            if len(saved_stroke_list) > 0:
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
-                for sel_stroke in savedStrokeList:
+                for sel_stroke in saved_stroke_list:
                     bitmap = self.__ui.dwg_area.drawIcon(None, [sel_stroke])
                     self.__ui.stroke_selector_list.addItem(str(i))
-                    curItem = self.__ui.stroke_selector_list.item(i)
+                    cur_item = self.__ui.stroke_selector_list.item(i)
                     self.__ui.stroke_selector_list.setCurrentRow(i)
-                    curItem.setIcon(QtGui.QIcon(bitmap))
+                    cur_item.setIcon(QtGui.QIcon(bitmap))
                     i += 1
 
             for idx in range(0, self.__ui.char_selector_list.count()):
