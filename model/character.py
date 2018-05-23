@@ -1,209 +1,197 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore
 
-import stroke
+import model.stroke
 import thirdparty.dp
-
-import random
-import math
-import copy
-
-CURVE_RESOLUTION = 10
 
 STROKE = 'stroke'
 
 class Character(object):
-	def __init__(self):
-		self.__width = 4
-		self.__leftSpacing = 1.0
-		self.__rightSpacing = 1.0
-		
-		self.__strokes = []
-		self.__bitmapPreview = None
-		
-		self.__pos = QtCore.QPoint(0, 0)
+    def __init__(self):
+        self.__width = 4
+        self.__left_spacing = 1.0
+        self.__right_spacing = 1.0
 
-	def __getstate__(self):
-		saveDict = self.__dict__.copy()
+        self.__strokes = []
+        self.__bitmap_preview = None
 
-		saveDict["_Character__bitmapPreview"] = None
+        self.__pos = QtCore.QPoint(0, 0)
 
-		return saveDict
+    def __getstate__(self):
+        save_dict = self.__dict__.copy()
 
-	def setPos(self, pt):
-		self.__pos = pt
-		
-	def getPos(self):
-		return self.__pos
+        save_dict["_Character__bitmap_preview"] = None
 
-	pos = property(getPos, setPos)
+        return save_dict
 
-	def newStroke(self, pts, add=True):
-		myStroke = stroke.Stroke()
-		
-		tempCv = []
-		
-		startX, startY = pts[0]
-		
-		myStroke.setCtrlVerticesFromList(pts)
-		myStroke.setNumCurvePoints(len(tempCv * CURVE_RESOLUTION))
-		myStroke.setPos(startX, startY)
-		
-		myStroke.calcCurvePoints()
-		if (2 == numPts):
-			myStroke.straighten()
-	
-		if add:
-			self.__strokes.append(myStroke)
+    def set_pos(self, point):
+        self.__pos = point
 
-		myStroke.setParent(self)
+    def get_pos(self):
+        return self.__pos
 
-		return myStroke
-		
-	def newFreehandStroke(self, pts):
-		myStroke = stroke.Stroke()
-		rawCv = []
-		tempCv = []
-		
-		newPts = thirdparty.dp.simplify_points(pts, 10)
-		startX, startY = newPts[0]
-		numPts = len(newPts)
-		while ((numPts % 4) != 0):
-			newPts.append(newPts[-1])
-			numPts = numPts + 1
-			
-		rawCv = myStroke.calcCtrlVertices(newPts)
-		for pt in rawCv:
-			tempCv.append([pt[0]-startX+1, pt[1]-startY+1])
-		
-		myStroke.setCtrlVerticesFromList(tempCv)
-		myStroke.setNumCurvePoints(len(tempCv * CURVE_RESOLUTION))
-		myStroke.setPos(startX, startY)
+    pos = property(get_pos, set_pos)
 
-		myStroke.calcCurvePoints()
-		if (2 == numPts):
-			myStroke.straighten()
+    def new_stroke(self, points, add=True):
+        my_stroke = model.stroke.Stroke()
 
-		self.__strokes.append(myStroke)
+        start_x, start_y = points[0]
 
-		myStroke.setParent(self)
-		return myStroke
-		
-	def addStroke (self, args):
-		copyStroke = True
+        my_stroke.setCtrlVerticesFromList(points)
+        my_stroke.setPos(QtCore.QPoint(start_x, start_y))
 
-		if args.has_key(STROKE):
-			strokeToAdd = args[STROKE]
-		else:
-			return
+        my_stroke.calcCurvePoints()
+        num_points = len(points)
+        if num_points == 2:
+            my_stroke.straighten()
 
-		if args.has_key('copyStroke'):
-			copyStroke=args['copyStroke']
+        if add:
+            self.__strokes.append(my_stroke)
 
-		if copyStroke:
-			newStroke = self.copyStroke({STROKE: strokeToAdd})
-			newStroke.setParent(self)
-		else:
-			newStroke = strokeToAdd
+        my_stroke.setParent(self)
 
-		self.__strokes.append(newStroke)
-		
-		return newStroke
+        return my_stroke
 
-	def newStrokeInstance (self, args):
-		if args.has_key(STROKE):
-			strokeToAdd = args[STROKE]
-		else:
-			return
+    def new_freehand_stroke(self, points):
+        my_stroke = model.stroke.Stroke()
+        raw_cv = []
+        temp_cv = []
 
-		newStrokeInstance = stroke.StrokeInstance()
-		if not isinstance(strokeToAdd, stroke.Stroke):
-			strokeToAdd = strokeToAdd.getStroke()
+        new_points = thirdparty.dp.simplify_points(points, 10)
+        start_x, start_y = new_points[0]
+        num_points = len(new_points)
+        while (num_points % 4) != 0:
+            new_points.append(new_points[-1])
+            num_points = num_points + 1
 
-		newStrokeInstance.setStroke(strokeToAdd)
-		self.__strokes.append(newStrokeInstance)
-		newStrokeInstance.setParent(self)
+        raw_cv = my_stroke.calcCtrlVertices(new_points)
+        for point in raw_cv:
+            temp_cv.append([point[0]-start_x+1, point[1]-start_y+1])
 
-		return newStrokeInstance
+        my_stroke.setCtrlVerticesFromList(temp_cv)
+        my_stroke.setPos(QtCore.QPoint(start_x, start_y))
 
-	def addStrokeInstance (self, inst):
-		if not isinstance(inst, stroke.Stroke):
-			self.__strokes.append(inst)
-			inst.setParent(self)
+        my_stroke.calcCurvePoints()
+        if num_points == 2:
+            my_stroke.straighten()
 
-	def copyStroke(self, args):
-		if args.has_key(STROKE):
-			strokeToCopy = args[STROKE]
-		else:
-			return
+        self.__strokes.append(my_stroke)
 
-		if isinstance(strokeToCopy, stroke.Stroke):
-			copiedStroke = stroke.Stroke(fromStroke=strokeToCopy)
-		else:
-			copiedStroke = stroke.StrokeInstance()
-			realStrokeToCopy = strokeToCopy.getStroke()
-			copiedStroke.setStroke(realStrokeToCopy)
+        my_stroke.setParent(self)
+        return my_stroke
 
-		return copiedStroke
-		
-	def deleteStroke(self, args):
-		if args.has_key(STROKE):
-			strokeToDelete = args[STROKE]
-		else:
-			return
+    def add_stroke(self, args):
+        copy_stroke = True
 
-		try:
-			self.__strokes.remove(strokeToDelete)
-		except IndexError:
-			print "ERROR: stroke to delete doesn't exist!", strokeToDelete
-			print self.__strokes
-	
-	def distBetweenPts (self, x,y,x1,y1):
-		return math.sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1))
-	
-	@property
-	def strokes(self):
-		return self.__strokes
-			
-	def getBitmap(self):
-		return self.__bitmapPreview
-	
-	def setBitmap(self, bmap):
-		self.__bitmapPreview = bmap
-		
-	def delBitmap(self):
-		del self.__bitmapPreview
-	
-	bitmapPreview = property(getBitmap, setBitmap, delBitmap, "bitmapPreview property")	
+        if args.has_key(STROKE):
+            stroke_to_add = args[STROKE]
+        else:
+            return
 
-	def getWidth(self):
-		return self.__width
+        if args.has_key('copy_stroke'):
+            copy_stroke = args['copy_stroke']
 
-	def setWidth(self, newWidth):
-		self.__width = newWidth
+        if copy_stroke:
+            new_stroke = self.copy_stroke({STROKE: stroke_to_add})
+            new_stroke.setParent(self)
+        else:
+            new_stroke = stroke_to_add
 
-	width = property(getWidth, setWidth)
+        self.__strokes.append(new_stroke)
 
-	def getLeftSpacing(self):
-		return self.__leftSpacing
+        return new_stroke
 
-	def setLeftSpacing(self, newLeftSpacing):
-		self.__leftSpacing = newLeftSpacing
+    def new_stroke_instance(self, args):
+        if args.has_key(STROKE):
+            stroke_to_add = args[STROKE]
+        else:
+            return
 
-	leftSpacing = property(getLeftSpacing, setLeftSpacing)
+        new_stroke_inst = model.stroke.StrokeInstance()
+        if not isinstance(stroke_to_add, model.stroke.Stroke):
+            stroke_to_add = stroke_to_add.getStroke()
 
-	def getRightSpacing(self):
-		return self.__rightSpacing
+        new_stroke_inst.setStroke(stroke_to_add)
+        self.__strokes.append(new_stroke_inst)
+        new_stroke_inst.setParent(self)
 
-	def setRightSpacing(self, newRightSpacing):
-		self.__rightSpacing = newRightSpacing
+        return new_stroke_inst
 
-	rightSpacing = property(getRightSpacing, setRightSpacing)
+    def add_stroke_instance(self, inst):
+        if not isinstance(inst, model.stroke.Stroke):
+            self.__strokes.append(inst)
+            inst.setParent(self)
 
-	def draw(self, gc, showCtrlVerts=0, drawHandles=0, nib=None):
-		gc.save()
-		gc.translate(self.__pos)
+    def copy_stroke(self, args):
+        if args.has_key(STROKE):
+            stroke_to_copy = args[STROKE]
+        else:
+            return
 
-		for stroke in self.__strokes:
-			stroke.draw(gc, showCtrlVerts, drawHandles, nib)
+        if isinstance(stroke_to_copy, model.stroke.Stroke):
+            copied_stroke = model.stroke.Stroke(fromStroke=stroke_to_copy)
+        else:
+            copied_stroke = model.stroke.StrokeInstance()
+            real_stroke_to_copy = stroke_to_copy.getStroke()
+            copied_stroke.setStroke(real_stroke_to_copy)
 
-		gc.restore()
+        return copied_stroke
+
+    def delete_stroke(self, args):
+        if args.has_key(STROKE):
+            stroke_to_delete = args[STROKE]
+        else:
+            return
+
+        try:
+            self.__strokes.remove(stroke_to_delete)
+        except IndexError:
+            print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
+            print self.__strokes
+
+    @property
+    def strokes(self):
+        return self.__strokes
+
+    def get_bitmap(self):
+        return self.__bitmap_preview
+
+    def set_bitmap(self, bmap):
+        self.__bitmap_preview = bmap
+
+    def del_bitmap(self):
+        del self.__bitmap_preview
+
+    bitmap_preview = property(get_bitmap, set_bitmap, del_bitmap, "bitmap_preview property")
+
+    def get_width(self):
+        return self.__width
+
+    def set_width(self, new_width):
+        self.__width = new_width
+
+    width = property(get_width, set_width)
+
+    def get_left_spacing(self):
+        return self.__left_spacing
+
+    def set_left_spacing(self, new_left_spacing):
+        self.__left_spacing = new_left_spacing
+
+    left_spacing = property(get_left_spacing, set_left_spacing)
+
+    def get_right_spacing(self):
+        return self.__right_spacing
+
+    def set_right_spacing(self, new_right_spacing):
+        self.__right_spacing = new_right_spacing
+
+    right_spacing = property(get_right_spacing, set_right_spacing)
+
+    def draw(self, gc, show_ctrl_verts=0, draw_handles=0, nib=None):
+        gc.save()
+        gc.translate(self.__pos)
+
+        for stroke in self.__strokes:
+            stroke.draw(gc, show_ctrl_verts, draw_handles, nib)
+
+        gc.restore()

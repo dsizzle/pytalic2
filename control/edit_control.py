@@ -363,7 +363,7 @@ class EditorController(object):
         self.__ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
-            self.__cur_char.deleteStroke({'stroke' : sel_stroke})
+            self.__cur_char.delete_stroke({'stroke' : sel_stroke})
             self.__clipboard.append(sel_stroke)
             if self.__selection[self.__current_view_pane].has_key(sel_stroke):
                 del self.__selection[self.__current_view_pane][sel_stroke]
@@ -472,9 +472,9 @@ class EditorController(object):
             self.__selection[self.__current_view_pane][paste_stroke] = {}
             paste_stroke.selected = True
             if type(paste_stroke).__name__ == 'Stroke':
-                self.__cur_char.addStroke({'stroke' : paste_stroke, 'copyStroke' : False})
+                self.__cur_char.add_stroke({'stroke' : paste_stroke, 'copyStroke' : False})
             else:
-                self.__cur_char.newStrokeInstance({'stroke' : paste_stroke})
+                self.__cur_char.new_stroke_instance({'stroke' : paste_stroke})
 
         self.set_ui_state_selection(True)
         self.__ui.repaint()
@@ -574,7 +574,7 @@ class EditorController(object):
         icon_bitmap = self.__current_view_pane.getBitmap()
         if icon_bitmap:
             if self.__current_view_pane == self.__ui.dwg_area:
-                self.__cur_char.bitmapPreview = icon_bitmap
+                self.__cur_char.bitmap_preview = icon_bitmap
                 self.__ui.char_selector_list.currentItem().setIcon(QtGui.QIcon(icon_bitmap))
             elif self.__current_view_pane == self.__ui.stroke_dwg_area:
                 if self.__ui.stroke_selector_list.count() > 0:
@@ -640,13 +640,13 @@ class EditorController(object):
             new_value, [self.__cur_char])
 
     def char_left_space_changed_cb(self, new_value):
-        prev_value = self.__cur_char.leftSpacing
+        prev_value = self.__cur_char.left_spacing
 
         self.__property_controller.char_left_space_changed(prev_value, \
             new_value, [self.__cur_char])
 
     def char_right_space_changed_cb(self, new_value):
-        prev_value = self.__cur_char.rightSpacing
+        prev_value = self.__cur_char.right_spacing
 
         self.__property_controller.char_right_space_changed(prev_value, \
             new_value, [self.__cur_char])

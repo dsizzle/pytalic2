@@ -106,8 +106,8 @@ class PropertyController(object):
         self.__prop_change(prev_value, new_value, objects, ['width'], ['char_width_spin'])
 
     def char_left_space_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['leftSpacing'], ['left_space_spin'])
+        self.__prop_change(prev_value, new_value, objects, ['left_spacing'], ['left_space_spin'])
 
     def char_right_space_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['rightSpacing'], ['right_space_spin'])
+        self.__prop_change(prev_value, new_value, objects, ['right_spacing'], ['right_space_spin'])
 

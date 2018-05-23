@@ -121,10 +121,10 @@ class StrokeController(object):
 			cur_item.setIcon(QtGui.QIcon(bitmap))
 			cur_char = char_set.getCurrentChar()
 			deleted_strokes.append(sel_stroke)
-			cur_char.deleteStroke({'stroke' : sel_stroke})
+			cur_char.delete_stroke({'stroke' : sel_stroke})
 			sel_stroke = char_set.getSavedStroke(first_item+i)
 			instances[i].setStroke(sel_stroke)
-			cur_char.addStrokeInstance(instances[i])
+			cur_char.add_stroke_instance(instances[i])
 			if not cur_view_selection.has_key(sel_stroke):
 				cur_view_selection = {}
 				sel_stroke.deselectCtrlVerts()
@@ -168,8 +168,8 @@ class StrokeController(object):
 			ui.stroke_selector_list.takeItem(first_item+i)
 			char_set.removeSavedStroke(sel_stroke)
 			cur_char = char_set.getCurrentChar()
-			cur_char.deleteStroke({'stroke' : inst})
-			cur_char.addStroke({'stroke' : sel_stroke, 'copyStroke' : False})
+			cur_char.delete_stroke({'stroke' : inst})
+			cur_char.add_stroke({'stroke' : sel_stroke, 'copyStroke' : False})
 			added_strokes.append(sel_stroke)
 			i -= 1
 			
@@ -237,7 +237,7 @@ class StrokeController(object):
 
 		ui.char_selector_list.setCurrentRow(char_index)
 
-		cur_char.addStrokeInstance(stroke_instance)
+		cur_char.add_stroke_instance(stroke_instance)
 		cur_view_selection[stroke_instance] = {}
 		
 		ui.dwg_area.repaint()
@@ -260,7 +260,7 @@ class StrokeController(object):
 		cur_view_selection = selection[current_view]
 		ui = self.__main_ctrl.get_ui()
 
-		cur_char.deleteStroke({'stroke' : stroke_to_del})
+		cur_char.delete_stroke({'stroke' : stroke_to_del})
 		if cur_view_selection.has_key(stroke_to_del):
 			del cur_view_selection[stroke_to_del]
 
@@ -349,7 +349,7 @@ class StrokeController(object):
 		strokeList = strokes.keys()
 		curStroke = strokeList.pop(0)
 		vertList = curStroke.getCtrlVerticesAsList()
-		cur_char.deleteStroke({'stroke': curStroke})
+		cur_char.delete_stroke({'stroke': curStroke})
 		if cur_view_selection.has_key(curStroke):
 			del cur_view_selection[curStroke]
 			curStroke.selected = False
@@ -357,7 +357,7 @@ class StrokeController(object):
 		while len(strokeList):
 			curStroke = strokeList.pop(0)
 			curVerts = curStroke.getCtrlVerticesAsList()
-			cur_char.deleteStroke({'stroke': curStroke})
+			cur_char.delete_stroke({'stroke': curStroke})
 			if cur_view_selection.has_key(curStroke):
 				del cur_view_selection[curStroke]
 				curStroke.selected = False
@@ -386,7 +386,7 @@ class StrokeController(object):
 		newStroke = stroke.Stroke()
 		newStroke.setCtrlVerticesFromList(vertList)
 		newStroke.calcCurvePoints()
-		cur_char.addStroke({'stroke': newStroke, 'copyStroke': False})
+		cur_char.add_stroke({'stroke': newStroke, 'copyStroke': False})
 		
 		cur_view_selection[newStroke] = {}
 		newStroke.selected = True
@@ -409,13 +409,13 @@ class StrokeController(object):
 		selection = self.__main_ctrl.get_selection()
 		cur_view_selection = selection[current_view]
 		
-		cur_char.deleteStroke({'stroke': joinedStroke})
+		cur_char.delete_stroke({'stroke': joinedStroke})
 		joinedStroke.selected = False
 		if cur_view_selection.has_key(joinedStroke):
 			del cur_view_selection[joinedStroke]
 
 		for sel_stroke in strokes.keys():
-			cur_char.addStroke({'stroke': sel_stroke, 'copyStroke': False})
+			cur_char.add_stroke({'stroke': sel_stroke, 'copyStroke': False})
 			cur_view_selection[sel_stroke] = {}
 			sel_stroke.selected = True
 
@@ -435,12 +435,12 @@ class StrokeController(object):
 		selection = self.__main_ctrl.get_selection()
 		cur_view_selection = selection[current_view]
 
-		cur_char.addStroke({'stroke': joinedStroke, 'copyStroke': False})
+		cur_char.add_stroke({'stroke': joinedStroke, 'copyStroke': False})
 		joinedStroke.selected = True
 		cur_view_selection[joinedStroke] = {}
 
 		for sel_stroke in strokes.keys():
-			cur_char.deleteStroke({'stroke': sel_stroke})
+			cur_char.delete_stroke({'stroke': sel_stroke})
 			if cur_view_selection.has_key(sel_stroke):
 				del cur_view_selection[sel_stroke]
 			sel_stroke.selected = False
@@ -535,7 +535,7 @@ class StrokeController(object):
 		sel_stroke.setCtrlVerticesFromList(ctrlVerts)
 		sel_stroke.calcCurvePoints()
 		
-		cur_char.addStroke({'stroke': newStroke, 'copyStroke': False})
+		cur_char.add_stroke({'stroke': newStroke, 'copyStroke': False})
 		ui.repaint()
 
 	def unsplit_stroke(self, args):
@@ -559,7 +559,7 @@ class StrokeController(object):
 
 		sel_stroke.setCtrlVerticesFromList(ctrlVerts)
 		sel_stroke.calcCurvePoints()
-		cur_char.deleteStroke({'stroke': delStroke})
+		cur_char.delete_stroke({'stroke': delStroke})
 		ui.repaint()
 
 	def add_control_point(self, sel_stroke, insideInfo):
@@ -654,8 +654,8 @@ class StrokeController(object):
 
 		add_stroke_cmd.set_do_args(do_args)
 		add_stroke_cmd.set_undo_args(undo_args)
-		add_stroke_cmd.set_do_function(cur_char.addStroke)
-		add_stroke_cmd.set_undo_function(cur_char.deleteStroke)
+		add_stroke_cmd.set_do_function(cur_char.add_stroke)
+		add_stroke_cmd.set_undo_function(cur_char.delete_stroke)
 		
 		cmd_stack.do_command(add_stroke_cmd)
 		ui.edit_undo.setEnabled(True)
