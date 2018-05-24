@@ -23,7 +23,7 @@ class VertexController(object):
 
             for vert_dict in vert_list:
                 for vert in vert_dict.keys():
-                    behavior_list.append(vert.getBehavior())
+                    behavior_list.append(vert.behavior)
 
             undo_args = {
                 'verts' : vert_list,
@@ -72,8 +72,8 @@ class VertexController(object):
         for vert_dict in vert_list:
             for i in range(0, len(vert_dict.keys())):
                 if use_same_behavior:
-                    vert_dict.keys()[i].setBehavior(behavior_list[0])
+                    vert_dict.keys()[i].behavior = behavior_list[0]
                     ui.behavior_combo.setCurrentIndex(behavior_list[0])
                 else:
-                    vert_dict.keys()[i].setBehavior(behavior_list[i])
+                    vert_dict.keys()[i].behavior = behavior_list[i]
                     ui.behavior_combo.setCurrentIndex(0)

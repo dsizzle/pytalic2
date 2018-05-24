@@ -126,7 +126,7 @@ class MouseController(object):
             }
 
             if len(current_view.snapPoints) > 0:
-                args['snapPoint'] = current_view.snapPoints[0]
+                args['snap_point'] = current_view.snapPoints[0]
 
             stroke_ctrl.move_selected(args)
         elif left_down and alt_down and self.__main_ctrl.state == edit_control.IDLE:
@@ -233,7 +233,7 @@ class MouseController(object):
                         cur_view_selection[sel_stroke][ctrl_vert] = handle_index
 
                         for ctrl_vert in cur_view_selection[sel_stroke].keys():
-                            ctrl_vert.selectHandle(cur_view_selection[sel_stroke][ctrl_vert])
+                            ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
 
                         sel_stroke.selected = True
                         
@@ -256,7 +256,7 @@ class MouseController(object):
                 
                 for vert_dict in vert_list:
                     for vert in vert_dict.keys():
-                        behavior_list.append(vert.getBehavior())
+                        behavior_list.append(vert.behavior)
 
                 behavior_list = list(set(behavior_list))
                 if len(behavior_list) == 1:

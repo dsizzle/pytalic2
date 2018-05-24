@@ -198,7 +198,7 @@ class Stroke(object):
 	def getCtrlVerticesAsList(self):
 		pts = []
 		for vert in self.__strokeCtrlVerts:
-			pts.extend(vert.getHandlePosAsList())
+			pts.extend(vert.get_handle_pos_as_list())
 			
 		return pts
 		
@@ -216,7 +216,7 @@ class Stroke(object):
 				pt = tmpPts.pop(0)
 				right = QtCore.QPoint(pt[0], pt[1])
 			
-			self.__strokeCtrlVerts.append(control_vertex.controlVertex(left, center, right))
+			self.__strokeCtrlVerts.append(control_vertex.ControlVertex(left, center, right))
 
 			right = None
 			if len(tmpPts):
@@ -298,7 +298,7 @@ class Stroke(object):
 		self.calcCurvePoints()
 
 	def deleteCtrlVertex(self, vert):
-		vert.selectHandle(None)
+		vert.select_handle(None)
 		self.__strokeCtrlVerts.remove(vert)
 		self.updateCtrlVertices()
 		self.calcCurvePoints()
@@ -490,7 +490,7 @@ class Stroke(object):
 
 	def deselectCtrlVerts(self):
 		for vert in self.__strokeCtrlVerts:
-			vert.selectHandle(None)
+			vert.select_handle(None)
 
 	def getStrokeShape(self):
 		return self.__strokeShape

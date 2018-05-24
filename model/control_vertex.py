@@ -1,18 +1,19 @@
 
 import math
+
 from PyQt4 import QtCore, QtGui
 
 from view import shared_qt
 
-SMOOTH 		= 1
-SHARP		= 2
-SYMMETRIC 	= 3
+SMOOTH      = 1
+SHARP       = 2
+SYMMETRIC   = 3
 
-LEFT_HANDLE 	= 1
-RIGHT_HANDLE 	= 3
-KNOT 			= 2
+LEFT_HANDLE     = 1
+RIGHT_HANDLE    = 3
+KNOT            = 2
 
-HANDLE_SIZE		= 10
+HANDLE_SIZE     = 10
 
 SMOOTH_HANDLE_PATH = QtGui.QPainterPath()
 SHARP_HANDLE_PATH = QtGui.QPainterPath()
@@ -28,230 +29,225 @@ SHARP_HANDLE_PATH.lineTo(HANDLE_SIZE/2, HANDLE_SIZE/2)
 SHARP_HANDLE_PATH.lineTo(0, HANDLE_SIZE/2)
 
 SYMMETRIC_HANDLE_PATH.moveTo(0, 0)
-SYMMETRIC_HANDLE_PATH.arcTo(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE, 270, 180) 
+SYMMETRIC_HANDLE_PATH.arcTo(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE, 270, 180)
 SYMMETRIC_HANDLE_PATH.lineTo(0, 0)
 
 KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 
-class controlVertex(object):
-	def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint()):
-		self.__pressure = 1.0
-		self.__behavior = SMOOTH
-		self.__handlePos = [0, left, knot, right]
-		self.__handleScale = 1
-		self.__selected = None
+class ControlVertex(object):
+    def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint()):
+        self.__pressure = 1.0
+        self.__behavior = SMOOTH
+        self.__handle_pos = [0, left, knot, right]
+        self.__handle_scale = 1
+        self.__selected = None
 
-	def setPos(self, pt):
-		self.setHandlePos(pt, KNOT)
-		
-	def getPos(self):
-		return self.__handlePos[KNOT]
+    def set_pos(self, point):
+        self.set_handle_pos(point, KNOT)
 
-	pos = property(getPos, setPos)
+    def get_pos(self):
+        return self.__handle_pos[KNOT]
 
-	def getSelectedHandle(self):
-		return self.__selected
-		
-	def getHandlePos(self, handle):
-		return self.__handlePos[handle]
-	
-	def clearHandlePos(self, handle):
-		self.__handlePos[handle] = QtCore.QPoint(0, 0)
+    pos = property(get_pos, set_pos)
 
-	def setHandlePos(self, pt, handle):
-		oldLDel = self.__handlePos[LEFT_HANDLE] - self.__handlePos[KNOT]
-		oldKnotDel = self.__handlePos[KNOT] - pt
-		
-		if self.__handlePos[RIGHT_HANDLE]:
-			oldRDel = self.__handlePos[KNOT] - self.__handlePos[RIGHT_HANDLE] 
-		else:
-			oldRDel = QtCore.QPoint(0, 0)
+    def get_selected_handle(self):
+        return self.__selected
 
-		llen = math.sqrt(float(oldLDel.x() * oldLDel.x()) + float(oldLDel.y() * oldLDel.y()))
-		rlen = math.sqrt(float(oldRDel.x() * oldRDel.x()) + float(oldRDel.y() * oldRDel.y()))
-			
-		if handle == KNOT:
-			if self.__handlePos[LEFT_HANDLE]:
-				self.__handlePos[LEFT_HANDLE] -= oldKnotDel
-			if self.__handlePos[RIGHT_HANDLE]:
-				self.__handlePos[RIGHT_HANDLE] -= oldKnotDel
+    def get_handle_pos(self, handle):
+        return self.__handle_pos[handle]
 
-		elif (self.__behavior == SMOOTH):
-			if handle == RIGHT_HANDLE and self.__handlePos[LEFT_HANDLE]:
-				if (rlen == 0):
-					rlen = 0.00001
-		
-				lDel = -oldRDel * llen / rlen 
-				self.__handlePos[LEFT_HANDLE] = self.__handlePos[KNOT] - lDel
-			elif self.__handlePos[RIGHT_HANDLE]:
-				if (llen == 0):
-					llen = 0.00001
+    def clear_handle_pos(self, handle):
+        self.__handle_pos[handle] = QtCore.QPoint(0, 0)
 
-				rDel = -oldLDel * rlen / llen
-				self.__handlePos[RIGHT_HANDLE] = self.__handlePos[KNOT] + rDel
+    def set_handle_pos(self, point, handle):
+        old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
+        old_knot_delta = self.__handle_pos[KNOT] - point
 
-		elif (self.__behavior == SYMMETRIC):
-			if handle == RIGHT_HANDLE and self.__handlePos[LEFT_HANDLE]:
-				self.__handlePos[LEFT_HANDLE] = self.__handlePos[KNOT] + oldRDel
-			elif self.__handlePos[RIGHT_HANDLE]:
-				self.__handlePos[RIGHT_HANDLE] = self.__handlePos[KNOT] - oldLDel
+        if self.__handle_pos[RIGHT_HANDLE]:
+            old_r_delta = self.__handle_pos[KNOT] - self.__handle_pos[RIGHT_HANDLE]
+        else:
+            old_r_delta = QtCore.QPoint(0, 0)
 
-		self.__handlePos[handle] = pt
-	
-	def getHandlePosAsList(self):
-		knot = (self.__handlePos[KNOT].x(), self.__handlePos[KNOT].y())
-		handleList = []
+        left_len = math.sqrt(float(old_l_delta.x() * old_l_delta.x()) + \
+            float(old_l_delta.y() * old_l_delta.y()))
+        right_len = math.sqrt(float(old_r_delta.x() * old_r_delta.x()) + \
+            float(old_r_delta.y() * old_r_delta.y()))
 
-		if self.__handlePos[LEFT_HANDLE]:
-			handleList.append((self.__handlePos[LEFT_HANDLE].x(), self.__handlePos[LEFT_HANDLE].y()))
+        if handle == KNOT:
+            if self.__handle_pos[LEFT_HANDLE]:
+                self.__handle_pos[LEFT_HANDLE] -= old_knot_delta
+            if self.__handle_pos[RIGHT_HANDLE]:
+                self.__handle_pos[RIGHT_HANDLE] -= old_knot_delta
 
-		handleList.append(knot)
+        elif self.__behavior == SMOOTH:
+            if handle == RIGHT_HANDLE and self.__handle_pos[LEFT_HANDLE]:
+                if right_len == 0:
+                    right_len = 0.00001
 
-		if self.__handlePos[RIGHT_HANDLE]:
-			handleList.append((self.__handlePos[RIGHT_HANDLE].x(), self.__handlePos[RIGHT_HANDLE].y()))
+                l_delta = -old_r_delta * left_len / right_len
+                self.__handle_pos[LEFT_HANDLE] = self.__handle_pos[KNOT] - l_delta
+            elif self.__handle_pos[RIGHT_HANDLE]:
+                if left_len == 0:
+                    left_len = 0.00001
 
-		return handleList
+                r_delta = -old_l_delta * right_len / left_len
+                self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] + r_delta
 
-	def selectHandle(self, select):
-		if (select) and ((select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT)):
-			self.__selected = select
-		else:
-			self.__selected = None
-		
-	def selectLeftHandle(self, select=False):
-		if (select):
-			self.__selected = LEFT_HANDLE
-		elif (self.__selected == LEFT_HANDLE):
-			self.__selected = None
-	
-	def selectRightHandle(self, select=False):
-		if (select):
-			self.__selected = RIGHT_HANDLE
-		elif (self.__selected == RIGHT_HANDLE):
-			self.__selected = None
-	
-	def selectKnot(self, select=False):
-		if (select):
-			self.__selected = KNOT
-		elif (self.__selected == KNOT):
-			self.__selected = None
+        elif self.__behavior == SYMMETRIC:
+            if handle == RIGHT_HANDLE and self.__handle_pos[LEFT_HANDLE]:
+                self.__handle_pos[LEFT_HANDLE] = self.__handle_pos[KNOT] + old_r_delta
+            elif self.__handle_pos[RIGHT_HANDLE]:
+                self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] - old_l_delta
 
-	def isRightHandleSelected(self):
-		if (self.__selected is not None) and (self.__selected == RIGHT_HANDLE):
-			return True
-		else:
-			return False
-	
-	def isLeftHandleSelected(self):
-		if (self.__selected is not None) and (self.__selected == LEFT_HANDLE):
-			return True
-		else:
-			return False
-		
-	def isKnotSelected(self):
-		if (self.__selected is not None) and (self.__selected == KNOT):
-			return True
-		else:
-			return False
+        self.__handle_pos[handle] = point
 
-	def setPosOfSelected(self, pt):
-		if (self.__selected is None):
-			pass
-		elif (self.__selected == KNOT):
-			self.setPos(pt)
-		else:
-			self.setHandlePos(pt, self.__selected)
-	
-	def getPosOfSelected(self):
-		if (self.__selected is None):
-			return None
-		else:
-			return self.__handlePos[self.__selected]
-		
-	selectedHandlePos = property(getPosOfSelected, setPosOfSelected)	
-	
-	def setBehavior(self, newBehavior):
-		if self.__selected is None:
-			return
-			
-		self.__behavior = newBehavior
-		
-		if (self.__behavior == SHARP):
-			return
-		
-		self.setHandlePos(self.__handlePos[self.__selected], self.__selected)
-			
-	def setBehaviorToSmooth(self):
-		self.setBehavior(SMOOTH)
-		
-	def setBehaviorToSharp(self):
-		self.setBehavior(SHARP)
-			
-	def setBehaviorToSymmetric(self):
-		self.setBehavior(SYMMETRIC)
-		
-	def getBehavior(self):
-		return self.__behavior
-			
-	behavior = property(getBehavior, setBehavior)
-	
-	def draw(self, gc):
-		vert = self.__handlePos[KNOT]
-		
-		gc.setPen(shared_qt.PEN_MD_GRAY)
-		
-		if (self.__selected is not None):
-			if (self.__selected == KNOT):
-				gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-			else:
-				gc.setBrush(shared_qt.BRUSH_YELLOW_SOLID)
-		else:
-			gc.setBrush(shared_qt.BRUSH_MD_GRAY_SOLID)
-			
-		gc.save()
-		gc.translate(vert)
-		gc.scale(self.__handleScale, self.__handleScale)
-		gc.drawPath(KNOT_PATH)
-		gc.restore()
-			
-		if (self.__behavior == SMOOTH):
-			path = QtGui.QPainterPath(SMOOTH_HANDLE_PATH)
-		elif (self.__behavior == SHARP):
-			path = QtGui.QPainterPath(SHARP_HANDLE_PATH)
-		else:	
-			path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
-		
-		if ((self.__selected is not None) and (self.__selected == LEFT_HANDLE)):
-			gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-		else:
-			gc.setBrush(shared_qt.BRUSH_CLEAR)
+    def get_handle_pos_as_list(self):
+        knot = (self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y())
+        handle_list = []
 
-		vert = self.__handlePos[LEFT_HANDLE]	
-		if (vert):
-			gc.setPen(shared_qt.PEN_LT_GRAY)
-			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(shared_qt.PEN_LT_GRAY_2)
+        if self.__handle_pos[LEFT_HANDLE]:
+            handle_list.append((self.__handle_pos[LEFT_HANDLE].x(), \
+                self.__handle_pos[LEFT_HANDLE].y()))
 
-			gc.save()
-			gc.translate(vert)
-			gc.scale(self.__handleScale, self.__handleScale)
-			gc.drawPath(path)	
-			gc.restore()
+        handle_list.append(knot)
 
-		if ((self.__selected is not None) and (self.__selected == RIGHT_HANDLE)):
-			gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-		else:
-			gc.setBrush(shared_qt.BRUSH_CLEAR)
+        if self.__handle_pos[RIGHT_HANDLE]:
+            handle_list.append((self.__handle_pos[RIGHT_HANDLE].x(), \
+                self.__handle_pos[RIGHT_HANDLE].y()))
 
-		vert = self.__handlePos[RIGHT_HANDLE]	
-		if (vert):
-			gc.setPen(shared_qt.PEN_LT_GRAY)
-			gc.drawLine(self.__handlePos[KNOT], vert)
-			gc.setPen(shared_qt.PEN_LT_GRAY_2)
+        return handle_list
 
-			gc.save()
-			gc.translate(vert)
-			
-			gc.scale(-self.__handleScale, self.__handleScale)
-			gc.drawPath(path)
-			gc.restore()
+    def select_handle(self, select):
+        if select and ((select == LEFT_HANDLE) or (select == RIGHT_HANDLE) or (select == KNOT)):
+            self.__selected = select
+        else:
+            self.__selected = None
+
+    def select_left_handle(self, select=False):
+        if select:
+            self.__selected = LEFT_HANDLE
+        elif self.__selected == LEFT_HANDLE:
+            self.__selected = None
+
+    def select_right_handle(self, select=False):
+        if select:
+            self.__selected = RIGHT_HANDLE
+        elif self.__selected == RIGHT_HANDLE:
+            self.__selected = None
+
+    def select_knot(self, select=False):
+        if select:
+            self.__selected = KNOT
+        elif self.__selected == KNOT:
+            self.__selected = None
+
+    def is_right_handle_selected(self):
+        return (self.__selected is not None) and (self.__selected == RIGHT_HANDLE)
+
+    def is_left_handle_selected(self):
+        return (self.__selected is not None) and (self.__selected == LEFT_HANDLE)
+
+    def is_knot_selected(self):
+        return (self.__selected is not None) and (self.__selected == KNOT)
+
+    def set_pos_of_selected(self, point):
+        if self.__selected is None:
+            pass
+        elif self.__selected == KNOT:
+            self.set_pos(point)
+        else:
+            self.set_handle_pos(point, self.__selected)
+
+    def get_pos_of_selected(self):
+        if self.__selected is None:
+            return None
+        else:
+            return self.__handle_pos[self.__selected]
+
+    selected_handle_pos = property(get_pos_of_selected, set_pos_of_selected)
+
+    def set_behavior(self, new_behavior):
+        if self.__selected is None:
+            return
+
+        self.__behavior = new_behavior
+
+        if self.__behavior == SHARP:
+            return
+
+        self.set_handle_pos(self.__handle_pos[self.__selected], self.__selected)
+
+    def set_behavior_to_smooth(self):
+        self.set_behavior(SMOOTH)
+
+    def set_behavior_to_sharp(self):
+        self.set_behavior(SHARP)
+
+    def set_behavior_to_symmetric(self):
+        self.set_behavior(SYMMETRIC)
+
+    def get_behavior(self):
+        return self.__behavior
+
+    behavior = property(get_behavior, set_behavior)
+
+    def draw(self, gc):
+        vert = self.__handle_pos[KNOT]
+
+        gc.setPen(shared_qt.PEN_MD_GRAY)
+
+        if self.__selected is not None:
+            if self.__selected == KNOT:
+                gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
+            else:
+                gc.setBrush(shared_qt.BRUSH_YELLOW_SOLID)
+        else:
+            gc.setBrush(shared_qt.BRUSH_MD_GRAY_SOLID)
+
+        gc.save()
+        gc.translate(vert)
+        gc.scale(self.__handle_scale, self.__handle_scale)
+        gc.drawPath(KNOT_PATH)
+        gc.restore()
+
+        if self.__behavior == SMOOTH:
+            path = QtGui.QPainterPath(SMOOTH_HANDLE_PATH)
+        elif self.__behavior == SHARP:
+            path = QtGui.QPainterPath(SHARP_HANDLE_PATH)
+        else:
+            path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
+
+        if (self.__selected is not None) and (self.__selected == LEFT_HANDLE):
+            gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
+        else:
+            gc.setBrush(shared_qt.BRUSH_CLEAR)
+
+        vert = self.__handle_pos[LEFT_HANDLE]
+        if vert:
+            gc.setPen(shared_qt.PEN_LT_GRAY)
+            gc.drawLine(self.__handle_pos[KNOT], vert)
+            gc.setPen(shared_qt.PEN_LT_GRAY_2)
+
+            gc.save()
+            gc.translate(vert)
+            gc.scale(self.__handle_scale, self.__handle_scale)
+            gc.drawPath(path)
+            gc.restore()
+
+        if (self.__selected is not None) and (self.__selected == RIGHT_HANDLE):
+            gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
+        else:
+            gc.setBrush(shared_qt.BRUSH_CLEAR)
+
+        vert = self.__handle_pos[RIGHT_HANDLE]
+        if vert:
+            gc.setPen(shared_qt.PEN_LT_GRAY)
+            gc.drawLine(self.__handle_pos[KNOT], vert)
+            gc.setPen(shared_qt.PEN_LT_GRAY_2)
+
+            gc.save()
+            gc.translate(vert)
+
+            gc.scale(-self.__handle_scale, self.__handle_scale)
+            gc.drawPath(path)
+            gc.restore()

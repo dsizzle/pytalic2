@@ -46,13 +46,13 @@ class SnapController(object):
 
                 vert_index = ctrl_verts.index(sel_point)
 
-                if sel_point.isKnotSelected():
+                if sel_point.is_knot_selected():
                     if vert_index == 0:
                         vert_index += 1
                     else:
                         vert_index -= 1
 
-                vpos = ctrl_verts[vert_index].getHandlePos(2)
+                vpos = ctrl_verts[vert_index].get_handle_pos(2)
                 stroke_pos = sel_stroke.getPos()
 
                 if self.__snap & SNAP_TO_GRID:
@@ -125,7 +125,7 @@ class SnapController(object):
         for char_stroke in cur_char.strokes:
             for ctrl_vert in char_stroke.getCtrlVertices(False):
                 if sel_point is not ctrl_vert:
-                    test_point = ctrl_vert.getHandlePos(2)
+                    test_point = ctrl_vert.get_handle_pos(2)
 
                     if test_point in test_rect:
                         snap_point = test_point

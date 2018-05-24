@@ -689,11 +689,11 @@ class StrokeController(object):
         for sel_stroke in selection.keys():
             if len(selection[sel_stroke].keys()) > 0:
                 for stroke_pt in selection[sel_stroke].keys():
-                    stroke_pt.selectHandle(selection[sel_stroke][stroke_pt])
+                    stroke_pt.select_handle(selection[sel_stroke][stroke_pt])
                     if snap_point:
-                        stroke_pt.selectedHandlePos = snap_point-sel_stroke.pos
+                        stroke_pt.selected_handle_pos = snap_point - sel_stroke.pos
                     else:
-                        stroke_pt.selectedHandlePos = stroke_pt.selectedHandlePos + delta
+                        stroke_pt.selected_handle_pos = stroke_pt.selected_handle_pos + delta
             else:
                 sel_stroke.pos += delta
 
