@@ -144,7 +144,7 @@ class Character(object):
 
         try:
             self.__strokes.remove(stroke_to_delete)
-        except IndexError:
+        except ValueError:
             print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
             print self.__strokes
 

@@ -193,13 +193,13 @@ class drawingArea(QtGui.QFrame):
 			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
 
 		if self.__drawNibGuides:
-			nibGuideWidth = self.__guideLines.getNominalWidth()
+			nibGuideWidth = self.__guideLines.nominal_width
 			nibGuideBasePosX = 0-(nibGuideWidth * 2 * self.__nib.width) - self.__nib.width * 2
 			nibGuideBasePosY = 0
-			nibGuideBaseHeight = self.__guideLines.getBaseHeight()
+			nibGuideBaseHeight = self.__guideLines.base_height
 			nibGuideAscentPosY = nibGuideBasePosY - nibGuideBaseHeight * self.__nib.width * 2
-			nibGuideAscent = self.__guideLines.getAscent()
-			nibGuideDescent = self.__guideLines.getDescent()
+			nibGuideAscent = self.__guideLines.ascent_height
+			nibGuideDescent = self.__guideLines.descent_height
 			nibGuideDescentPosY = nibGuideBasePosY + nibGuideDescent * self.__nib.width * 2
 			
 

@@ -4,217 +4,249 @@
 import math
 from PyQt4 import QtCore, QtGui
 
-class guideLines(object):
-	def __init__(self):
-		# units are nibwidths from baseline
-		self.__baseHeightNibs = 5.0
-		self.__widthNibs = 4.0
-		self.__ascentHeightNibs = 3.0
-		self.__descentHeightNibs = 3.0
-		self.__capHeightNibs = 2.0
-		# nibwidths between rows
-		self.__gapHeightNibs = 1.5
-		
-		# internal-only caching of pixel dimensions
-		self.__baseHeightPixels = 0
-		self.__baseWidthPixels = 0
-		self.__halfBaseWidthPixels= 0
-		self.__ascentHeightPixels = 0
-		self.__descentHeightPixels = 0
-		self.__capHeightPixels = 0
-		self.__gapHeightPixels = 0
+class GuideLines(object):
+    def __init__(self):
+        # units are nibwidths from baseline
+        self.__base_height_nibs = 5.0
+        self.__width_nibs = 4.0
+        self.__ascent_height_nibs = 3.0
+        self.__descent_height_nibs = 3.0
+        self.__cap_height_nibs = 2.0
+        # nibwidths between rows
+        self.__gap_height_nibs = 1.5
 
-		# degrees
-		self.__angle = 5
-		self.__angleDX = math.tan(math.radians(self.__angle))
-		
-		self.setLineColor(QtGui.QColor(200, 195, 180))
+        # internal-only caching of pixel dimensions
+        self.__base_height_pixels = 0
+        self.__base_width_pixels = 0
+        self.__half_base_width_pixels = 0
+        self.__ascent_height_pixels = 0
+        self.__descent_height_pixels = 0
+        self.__cap_height_pixels = 0
+        self.__gap_height_pixels = 0
 
-		self.__nibWidth = 0
-		self.__lastNibWidth = 0
-		self.__gridPts = []
-	
-	def setAngle(self, angle):
-		self.__angle = angle
-		self.__angleDX = math.tan(math.radians(angle))
-		
-	def getAngle(self):
-		return self.__angle
-		
-	guideAngle = property(getAngle, setAngle)
-	
-	def setLineColor(self, linecolor):
-		self.__lineColor = linecolor
-		self.__lineColorLt = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30)
-		self.__lineColorAlpha = QtGui.QColor(self.__lineColor.red()+30, self.__lineColor.green()+30, self.__lineColor.blue()+30, 128)
-		self.__linePenLt = QtGui.QPen(self.__lineColorLt, 1, QtCore.Qt.SolidLine)
-		self.__linePen = QtGui.QPen(self.__lineColor, 1, QtCore.Qt.SolidLine)
-		self.__linePen2 = QtGui.QPen(self.__lineColor, 2, QtCore.Qt.SolidLine)
-		self.__linePenDotted = QtGui.QPen(self.__lineColor, 1, QtCore.Qt.DotLine)
-		self.__spacerBrush = QtGui.QBrush(self.__lineColorAlpha, QtCore.Qt.SolidPattern)
-		
-	def getLineColor(self):
-		return self.__lineColor
+        # degrees
+        self.__angle = 5
+        self.__angle_dx = math.tan(math.radians(self.__angle))
 
-	lineColor = property(getLineColor, setLineColor)
-	
-	def setBaseHeight(self, height):
-		self.__baseHeightNibs = height
-		self.__baseHeightPixels = height * self.__nibWidth
-		self.__ascentHeightPixels = (self.__ascentHeightNibs + self.__baseHeightNibs) * self.__nibWidth
-		self.__capHeightPixels = (self.__capHeightNibs + self.__baseHeightNibs) * self.__nibWidth
-	
-	def getBaseHeight(self):
-		return self.__baseHeightNibs
-		
-	baseHeight = property(getBaseHeight, setBaseHeight)
-	
-	def setAscent(self, height):
-		self.__ascentHeightNibs = height
-		self.__ascentHeightPixels = (height + self.__baseHeightNibs) * self.__nibWidth
-		
-	def getAscent(self):
-		return self.__ascentHeightNibs
+        self.__nib_width = 0
+        self.__last_nib_width = 0
+        self.__line_color = None
+        self.__line_color_lt = None
+        self.__line_color_alpha = None
+        self.__line_pen_lt = None
+        self.__line_pen = None
+        self.__line_pen_2 = None
+        self.__line_pen_dotted = None
+        self.__spacer_brush = None
 
-	ascentHeight = property(getAscent, setAscent)
+        self.line_color = QtGui.QColor(200, 195, 180)
 
-	def setCapHeight(self, height):
-		self.__capHeightNibs = height
-		self.__capHeightPixels = (height + self.__baseHeightNibs) * self.__nibWidth
-		
-	def getCapHeight(self):
-		return self.__capHeightNibs #-self.__baseHeight
+    def set_angle(self, angle):
+        self.__angle = angle
+        self.__angle_dx = math.tan(math.radians(angle))
 
-	capHeight = property(getCapHeight, setCapHeight)
-	
-	def setDescent(self, height):
-		self.__descentHeightNibs = height
-		self.__descentHeightPixels = height * self.__nibWidth
+    def get_angle(self):
+        return self.__angle
 
-	def getDescent(self):
-		return self.__descentHeightNibs
+    guide_angle = property(get_angle, set_angle)
 
-	descentHeight = property(getDescent, setDescent)
-	
-	def setGap(self, height):
-		self.__gapHeightNibs = height
-		self.__gapHeightPixels = height * self.__nibWidth
+    def set_line_color(self, linecolor):
+        self.__line_color = linecolor
+        self.__line_color_lt = QtGui.QColor(self.__line_color.red()+30, \
+            self.__line_color.green()+30, self.__line_color.blue()+30)
+        self.__line_color_alpha = QtGui.QColor(self.__line_color.red()+30, \
+            self.__line_color.green()+30, self.__line_color.blue()+30, 128)
+        self.__line_pen_lt = QtGui.QPen(self.__line_color_lt, 1, QtCore.Qt.SolidLine)
+        self.__line_pen = QtGui.QPen(self.__line_color, 1, QtCore.Qt.SolidLine)
+        self.__line_pen_2 = QtGui.QPen(self.__line_color, 2, QtCore.Qt.SolidLine)
+        self.__line_pen_dotted = QtGui.QPen(self.__line_color, 1, QtCore.Qt.DotLine)
+        self.__spacer_brush = QtGui.QBrush(self.__line_color_alpha, QtCore.Qt.SolidPattern)
 
-	def getGap(self):
-		return self.__gapHeightNibs
+    def get_line_color(self):
+        return self.__line_color
 
-	gapHeight = property(getGap, setGap)
+    line_color = property(get_line_color, set_line_color)
 
-	def setNominalWidth(self, newWidth):
-		self.__widthNibs = newWidth
-		self.__baseWidthPixels = newWidth * self.__nibWidth
-		self.__halfBaseWidthPixels = self.__baseWidthPixels / 2
+    def set_base_height(self, height):
+        self.__base_height_nibs = height
+        self.__base_height_pixels = height * self.__nib_width
+        self.__ascent_height_pixels = (self.__ascent_height_nibs + \
+            self.__base_height_nibs) * self.__nib_width
+        self.__cap_height_pixels = (self.__cap_height_nibs + \
+            self.__base_height_nibs) * self.__nib_width
 
-	def getNominalWidth(self):
-		return self.__widthNibs
+    def get_base_height(self):
+        return self.__base_height_nibs
 
-	nominalWidth = property(getNominalWidth, setNominalWidth)
+    base_height = property(get_base_height, set_base_height)
 
-	def setNibWidth(self, newNibWidth):
-		self.__nibWidth = newNibWidth
-		self.__baseWidthPixels = newNibWidth * self.__widthNibs
-		self.__halfBaseWidthPixels = newNibWidth * self.__widthNibs / 2
-		self.__baseHeightPixels = newNibWidth * self.__baseHeightNibs
-		self.__ascentHeightPixels = newNibWidth * (self.__ascentHeightNibs + self.__baseHeightNibs)
-		self.__descentHeightPixels = newNibWidth * self.__descentHeightNibs
-		self.__capHeightPixels = newNibWidth * (self.__capHeightNibs + self.__baseHeightNibs)
-		self.__gapHeightPixels = newNibWidth * self.__gapHeightNibs
-	
-	def getNibWidth(self):
-		return self.__nibWidth
-		
-	nibWidth = property(getNibWidth, setNibWidth)
-	
-	def draw(self, gc, size, origin, nib=None):
-		nibWidth = 20 #nib.getWidth() << 1
+    def set_ascent(self, height):
+        self.__ascent_height_nibs = height
+        self.__ascent_height_pixels = (height + self.__base_height_nibs) * self.__nib_width
 
-		if not self.__lastNibWidth == nibWidth:
-			self.__lastNibWidth = nibWidth
-			self.nibWidth = nibWidth
+    def get_ascent(self):
+        return self.__ascent_height_nibs
 
-		scale = gc.worldTransform().m11()
+    ascent_height = property(get_ascent, set_ascent)
 
-		csize = QtCore.QSize(size.width() / scale, size.height() / scale)
-		
-		coordsRect = QtCore.QRect(-origin.x() / scale, -origin.y() / scale, csize.width(), csize.height())
-		
-		topX = self.__angleDX * origin.y() / scale
-		topY = coordsRect.topLeft().y()
-		botX = -(self.__angleDX * (csize.height() - origin.y() / scale))
-		botY = coordsRect.bottomRight().y()
-		gc.setPen(self.__linePen)
-		gc.drawLine(botX, botY, topX, topY)
-		
-		# horizontal grid	
-		dist = self.__baseWidthPixels 
-		gc.drawLine(botX-dist, botY, topX-dist, topY)
-		pos = dist
-		gc.setPen(self.__linePenLt)
-		while (pos < csize.width()):
-		 	gc.drawLine(botX+pos, botY, topX+pos, topY)
-		 	pos = pos + dist
-		 	gc.drawLine(botX-pos, botY, topX-pos, topY)
-			
-		# baseline
-		gc.setPen(self.__linePen2)
-		gc.drawLine(coordsRect.topLeft().x(), 0, coordsRect.bottomRight().x(), 0)
-			
-		# base height line
-		gc.setPen(self.__linePen)
-		gc.drawLine(coordsRect.topLeft().x(), -self.__baseHeightPixels, coordsRect.bottomRight().x(), -self.__baseHeightPixels)
-		
-		gc.drawLine(coordsRect.topLeft().x(), -self.__ascentHeightPixels, coordsRect.bottomRight().x(), -self.__ascentHeightPixels)
-		gc.drawLine(coordsRect.topLeft().x(), self.__descentHeightPixels, coordsRect.bottomRight().x(), self.__descentHeightPixels)
-		
-		gc.setPen(self.__linePenDotted)
-		gc.drawLine(coordsRect.topLeft().x(), -self.__capHeightPixels, coordsRect.bottomRight().x(), -self.__capHeightPixels)
-		
-		gc.setBrush(self.__spacerBrush)
-		gc.drawRect(coordsRect.topLeft().x(), self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
+    def set_cap_height(self, height):
+        self.__cap_height_nibs = height
+        self.__cap_height_pixels = (height + self.__base_height_nibs) * self.__nib_width
 
-		vpos = -self.__ascentHeightPixels - self.__gapHeightPixels - self.__descentHeightPixels
-		while (vpos+self.__descentHeightPixels > coordsRect.topLeft().y()):
-			gc.setPen(self.__linePen2)
-			gc.drawLine(coordsRect.topLeft().x(), vpos, coordsRect.bottomRight().x(), vpos)
+    def get_cap_height(self):
+        return self.__cap_height_nibs
 
-			gc.setPen(self.__linePen)
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
-		
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
-			gc.drawLine(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
-		
-			gc.setPen(self.__linePenDotted)
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
-		
-			gc.setBrush(self.__spacerBrush)
-			gc.drawRect(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
-			vpos = vpos -self.__ascentHeightPixels - self.__gapHeightPixels - self.__descentHeightPixels
+    cap_height = property(get_cap_height, set_cap_height)
 
-		vpos = self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
-		while (vpos-self.__ascentHeightPixels < coordsRect.bottomRight().y()):
-			gc.setPen(self.__linePen2)
-			gc.drawLine(coordsRect.topLeft().x(), vpos, coordsRect.bottomRight().x(), vpos)
+    def set_descent(self, height):
+        self.__descent_height_nibs = height
+        self.__descent_height_pixels = height * self.__nib_width
 
-			gc.setPen(self.__linePen)
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__baseHeightPixels, coordsRect.bottomRight().x(), vpos-self.__baseHeightPixels)
-		
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__ascentHeightPixels, coordsRect.bottomRight().x(), vpos-self.__ascentHeightPixels)
-			gc.drawLine(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, coordsRect.bottomRight().x(), vpos+self.__descentHeightPixels)
-		
-			gc.setPen(self.__linePenDotted)
-			gc.drawLine(coordsRect.topLeft().x(), vpos-self.__capHeightPixels, coordsRect.bottomRight().x(), vpos-self.__capHeightPixels)
-		
-			gc.setBrush(self.__spacerBrush)
-			gc.drawRect(coordsRect.topLeft().x(), vpos+self.__descentHeightPixels, csize.width(), self.__gapHeightPixels)
-			vpos = vpos + self.__ascentHeightPixels + self.__gapHeightPixels + self.__descentHeightPixels
+    def get_descent(self):
+        return self.__descent_height_nibs
 
+    descent_height = property(get_descent, set_descent)
 
-		gc.setPen(self.__linePen)
+    def set_gap(self, height):
+        self.__gap_height_nibs = height
+        self.__gap_height_pixels = height * self.__nib_width
 
-		
-		
+    def get_gap(self):
+        return self.__gap_height_nibs
+
+    gap_height = property(get_gap, set_gap)
+
+    def set_nominal_width(self, new_width):
+        self.__width_nibs = new_width
+        self.__base_width_pixels = new_width * self.__nib_width
+        self.__half_base_width_pixels = self.__base_width_pixels / 2
+
+    def get_nominal_width(self):
+        return self.__width_nibs
+
+    nominal_width = property(get_nominal_width, set_nominal_width)
+
+    def set_nib_width(self, new_nib_width):
+        self.__nib_width = new_nib_width
+        self.__base_width_pixels = new_nib_width * self.__width_nibs
+        self.__half_base_width_pixels = new_nib_width * self.__width_nibs / 2
+        self.__base_height_pixels = new_nib_width * self.__base_height_nibs
+        self.__ascent_height_pixels = new_nib_width * \
+            (self.__ascent_height_nibs + self.__base_height_nibs)
+        self.__descent_height_pixels = new_nib_width * self.__descent_height_nibs
+        self.__cap_height_pixels = new_nib_width * \
+            (self.__cap_height_nibs + self.__base_height_nibs)
+        self.__gap_height_pixels = new_nib_width * self.__gap_height_nibs
+
+    def get_nib_width(self):
+        return self.__nib_width
+
+    nib_width = property(get_nib_width, set_nib_width)
+
+    def draw(self, gc, size, origin, nib=None):
+
+        nib_width = 20 #nib.getWidth() << 1
+
+        if self.__last_nib_width != nib_width:
+            self.__last_nib_width = nib_width
+            self.nib_width = nib_width
+
+        scale = gc.worldTransform().m11()
+
+        csize = QtCore.QSize(size.width() / scale, size.height() / scale)
+
+        coords_rect = QtCore.QRect(-origin.x() / scale, -origin.y() / scale, \
+            csize.width(), csize.height())
+
+        top_x = self.__angle_dx * origin.y() / scale
+        top_y = coords_rect.topLeft().y()
+        bot_x = -(self.__angle_dx * (csize.height() - origin.y() / scale))
+        bot_y = coords_rect.bottomRight().y()
+        gc.setPen(self.__line_pen)
+        gc.drawLine(bot_x, bot_y, top_x, top_y)
+
+        # horizontal grid
+        dist = self.__base_width_pixels
+        gc.drawLine(bot_x-dist, bot_y, top_x-dist, top_y)
+        pos = dist
+        gc.setPen(self.__line_pen_lt)
+
+        while pos < csize.width():
+            gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
+            pos = pos + dist
+            gc.drawLine(bot_x-pos, bot_y, top_x-pos, top_y)
+
+        # baseline
+        gc.setPen(self.__line_pen_2)
+        gc.drawLine(coords_rect.topLeft().x(), 0, coords_rect.bottomRight().x(), 0)
+
+        # base height line
+        gc.setPen(self.__line_pen)
+        gc.drawLine(coords_rect.topLeft().x(), -self.__base_height_pixels, \
+            coords_rect.bottomRight().x(), -self.__base_height_pixels)
+
+        gc.drawLine(coords_rect.topLeft().x(), -self.__ascent_height_pixels, \
+            coords_rect.bottomRight().x(), -self.__ascent_height_pixels)
+        gc.drawLine(coords_rect.topLeft().x(), self.__descent_height_pixels, \
+            coords_rect.bottomRight().x(), self.__descent_height_pixels)
+
+        gc.setPen(self.__line_pen_dotted)
+        gc.drawLine(coords_rect.topLeft().x(), -self.__cap_height_pixels, \
+            coords_rect.bottomRight().x(), -self.__cap_height_pixels)
+
+        gc.setBrush(self.__spacer_brush)
+        gc.drawRect(coords_rect.topLeft().x(), self.__descent_height_pixels, \
+            csize.width(), self.__gap_height_pixels)
+
+        vpos = -self.__ascent_height_pixels - self.__gap_height_pixels - \
+            self.__descent_height_pixels
+
+        while vpos+self.__descent_height_pixels > coords_rect.topLeft().y():
+            gc.setPen(self.__line_pen_2)
+            gc.drawLine(coords_rect.topLeft().x(), vpos, coords_rect.bottomRight().x(), vpos)
+
+            gc.setPen(self.__line_pen)
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__base_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__base_height_pixels)
+
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__ascent_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__ascent_height_pixels)
+            gc.drawLine(coords_rect.topLeft().x(), vpos+self.__descent_height_pixels, \
+                coords_rect.bottomRight().x(), vpos+self.__descent_height_pixels)
+
+            gc.setPen(self.__line_pen_dotted)
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__cap_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__cap_height_pixels)
+
+            gc.setBrush(self.__spacer_brush)
+            gc.drawRect(coords_rect.topLeft().x(), vpos+self.__descent_height_pixels, \
+                csize.width(), self.__gap_height_pixels)
+            vpos = vpos -self.__ascent_height_pixels - self.__gap_height_pixels - \
+            self.__descent_height_pixels
+
+        vpos = self.__ascent_height_pixels + self.__gap_height_pixels + \
+            self.__descent_height_pixels
+        while vpos-self.__ascent_height_pixels < coords_rect.bottomRight().y():
+            gc.setPen(self.__line_pen_2)
+            gc.drawLine(coords_rect.topLeft().x(), vpos, coords_rect.bottomRight().x(), vpos)
+
+            gc.setPen(self.__line_pen)
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__base_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__base_height_pixels)
+
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__ascent_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__ascent_height_pixels)
+            gc.drawLine(coords_rect.topLeft().x(), vpos+self.__descent_height_pixels, \
+                coords_rect.bottomRight().x(), vpos+self.__descent_height_pixels)
+
+            gc.setPen(self.__line_pen_dotted)
+            gc.drawLine(coords_rect.topLeft().x(), vpos-self.__cap_height_pixels, \
+                coords_rect.bottomRight().x(), vpos-self.__cap_height_pixels)
+
+            gc.setBrush(self.__spacer_brush)
+            gc.drawRect(coords_rect.topLeft().x(), vpos+self.__descent_height_pixels, \
+                csize.width(), self.__gap_height_pixels)
+            vpos = vpos + self.__ascent_height_pixels + self.__gap_height_pixels + \
+                self.__descent_height_pixels
+
+        gc.setPen(self.__line_pen)

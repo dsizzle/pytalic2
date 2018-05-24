@@ -353,7 +353,7 @@ class EditInterface(QtGui.QMainWindow):
 
         self.setCentralWidget(self.main_widget)
 
-        self.guide_lines = guides.guideLines()
+        self.guide_lines = guides.GuideLines()
         self.dwg_area.setGuidelines(self.guide_lines)
         self.stroke_dwg_area.setGuidelines(self.guide_lines)
 

@@ -63,7 +63,7 @@ class SnapController(object):
                         return snappedPoints
 
                 if self.__snap & SNAP_TO_AXES:
-                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guideAngle, 90])
+                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guide_angle, 90])
 
                     if snapPoint != QtCore.QPoint(-1, -1):
                         snappedPoints.append(snapPoint)
@@ -71,7 +71,7 @@ class SnapController(object):
                         return snappedPoints
 
                 if self.__snap & SNAP_TO_NIB_AXES:                  
-                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[charSet.nibAngle, charSet.nibAngle-90])
+                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[charSet.nib_angle, charSet.nib_angle-90])
                     
                     if snapPoint != QtCore.QPoint(-1, -1):
                         snappedPoints.append(snapPoint)

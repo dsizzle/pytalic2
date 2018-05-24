@@ -146,12 +146,12 @@ class EditorController(object):
     def file_new_cb(self, event):
         self.__file_name = None
 
-        self.__char_set = character_set.character_set()
-        self.__ui.base_height_spin.setValue(self.__char_set.baseHeight)
-        self.__ui.cap_height_spin.setValue(self.__char_set.capHeight)
-        self.__ui.cap_height_spin.setMaximum(self.__char_set.ascentHeight)
-        self.__ui.ascent_height_spin.setValue(self.__char_set.ascentHeight)
-        self.__ui.descent_height_spin.setValue(self.__char_set.descentHeight)
+        self.__char_set = character_set.CharacterSet()
+        self.__ui.base_height_spin.setValue(self.__char_set.base_height)
+        self.__ui.cap_height_spin.setValue(self.__char_set.cap_height)
+        self.__ui.cap_height_spin.setMaximum(self.__char_set.ascent_height)
+        self.__ui.ascent_height_spin.setValue(self.__char_set.ascent_height)
+        self.__ui.descent_height_spin.setValue(self.__char_set.descent_height)
         self.__ui.angle_spin.setValue(5)
 
         self.name = (self.__label + " - Untitled")
@@ -163,7 +163,7 @@ class EditorController(object):
             self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
 
         self.__ui.char_selector_list.setCurrentRow(0)
-        self.__cur_char = self.__char_set.getCurrentChar()
+        self.__cur_char = self.__char_set.current_char
 
         self.__cmd_stack = commands.CommandStack()
         self.__ui.edit_undo.setEnabled(False)
@@ -203,24 +203,24 @@ class EditorController(object):
         if file_name:
             self.load(file_name)
 
-            self.__ui.base_height_spin.setValue(self.__char_set.baseHeight)
-            self.__ui.guide_lines.baseHeight = self.__char_set.baseHeight
-            self.__ui.cap_height_spin.setValue(self.__char_set.capHeight)
-            self.__ui.guide_lines.capHeight = self.__char_set.capHeight
-            self.__ui.cap_height_spin.setMaximum(self.__char_set.ascentHeight)
-            self.__ui.ascent_height_spin.setValue(self.__char_set.ascentHeight)
-            self.__ui.guide_lines.ascentHeight = self.__char_set.ascentHeight
-            self.__ui.descent_height_spin.setValue(self.__char_set.descentHeight)
-            self.__ui.guide_lines.descentHeight = self.__char_set.descentHeight
-            self.__ui.angle_spin.setValue(self.__char_set.guideAngle)
-            self.__ui.guide_lines.guideAngle = self.__char_set.guideAngle
-            self.__ui.charSetNibAngleSpin.setValue(self.__char_set.nibAngle)
-            self.__ui.guide_lines.nibAngle = self.__char_set.nibAngle
-            self.__ui.dwg_area.nib.angle = self.__char_set.nibAngle
-            self.__ui.dwg_area.instNib.angle = self.__char_set.nibAngle
-            self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nibAngle
-            self.__ui.nominal_width_spin.setValue(self.__char_set.nominalWidth)
-            self.__ui.guide_lines.nominalWidth = self.__char_set.nominalWidth
+            self.__ui.base_height_spin.setValue(self.__char_set.base_height)
+            self.__ui.guide_lines.baseHeight = self.__char_set.base_height
+            self.__ui.cap_height_spin.setValue(self.__char_set.cap_height)
+            self.__ui.guide_lines.capHeight = self.__char_set.cap_height
+            self.__ui.cap_height_spin.setMaximum(self.__char_set.ascent_height)
+            self.__ui.ascent_height_spin.setValue(self.__char_set.ascent_height)
+            self.__ui.guide_lines.ascentHeight = self.__char_set.ascent_height
+            self.__ui.descent_height_spin.setValue(self.__char_set.descent_height)
+            self.__ui.guide_lines.descentHeight = self.__char_set.descent_height
+            self.__ui.angle_spin.setValue(self.__char_set.guide_angle)
+            self.__ui.guide_lines.guideAngle = self.__char_set.guide_angle
+            self.__ui.charSetNibAngleSpin.setValue(self.__char_set.nib_angle)
+            self.__ui.guide_lines.nibAngle = self.__char_set.nib_angle
+            self.__ui.dwg_area.nib.angle = self.__char_set.nib_angle
+            self.__ui.dwg_area.instNib.angle = self.__char_set.nib_angle
+            self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nib_angle
+            self.__ui.nominal_width_spin.setValue(self.__char_set.nominal_width)
+            self.__ui.guide_lines.nominalWidth = self.__char_set.nominal_width
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
 
@@ -228,7 +228,7 @@ class EditorController(object):
 
             self.__ui.stroke_selector_list.clear()
 
-            saved_stroke_list = self.__char_set.getSavedStrokes()
+            saved_stroke_list = self.__char_set.get_saved_strokes()
             if len(saved_stroke_list) > 0:
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
@@ -244,7 +244,7 @@ class EditorController(object):
                 self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
 
             idx = 0
-            char_list = self.__char_set.getCharList()
+            char_list = self.__char_set.get_char_list()
 
             for character in char_list.keys():
                 if len(char_list[character].strokes) > 0:
@@ -326,7 +326,7 @@ class EditorController(object):
 
     def cut_strokes_cb(self, event):
         cut_strokes_cmd = commands.Command('cut_strokes_cmd')
-        char_index = self.__char_set.getCurrentCharIndex()
+        char_index = self.__char_set.get_current_char_index()
 
         do_args = {
             'strokes' : self.__selection[self.__current_view_pane].copy(),
@@ -374,7 +374,7 @@ class EditorController(object):
 
     def copy_strokes_cb(self, event):
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = self.__char_set.getCurrentCharIndex()
+        char_index = self.__char_set.get_current_char_index()
 
         do_args = {
             'strokes' : self.__selection[self.__current_view_pane].copy(),
@@ -417,7 +417,7 @@ class EditorController(object):
 
     def paste_strokes_cb(self, event):
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
-        char_index = self.__char_set.getCurrentCharIndex()
+        char_index = self.__char_set.get_current_char_index()
 
         do_args = {
             'strokes' : self.__clipboard[:],
@@ -530,15 +530,15 @@ class EditorController(object):
 
     def char_selected_cb(self, event):
         cur_char_idx = self.__ui.char_selector_list.currentRow()
-        self.__char_set.setCurrentChar(cur_char_idx)
-        self.__cur_char = self.__char_set.getCurrentChar()
+        self.__char_set.current_char = cur_char_idx
+        self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokesSpecial = []
         self.__ui.dwg_area.strokes = self.__cur_char.strokes
         self.__ui.repaint()
         self.set_icon()
 
     def stroke_selected_cb(self, event):
-        sel_saved_stroke = self.__char_set.getSavedStroke(self.__ui.stroke_selector_list.currentRow())
+        sel_saved_stroke = self.__char_set.get_saved_stroke(self.__ui.stroke_selector_list.currentRow())
 
         self.__ui.stroke_dwg_area.strokes = [sel_saved_stroke]
         self.__ui.repaint()
@@ -581,53 +581,53 @@ class EditorController(object):
                     self.__ui.stroke_selector_list.currentItem().setIcon(QtGui.QIcon(icon_bitmap))
 
     def guide_base_height_changed_cb(self, new_value):
-        prev_value = self.__char_set.baseHeight
+        prev_value = self.__char_set.base_height
 
         self.__property_controller.base_height_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_cap_height_changed_cb(self, new_value):
-        prev_value = self.__char_set.capHeight
+        prev_value = self.__char_set.cap_height
 
         self.__property_controller.cap_height_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_ascent_changed_cb(self, new_value):
-        prev_value = self.__char_set.ascentHeight
+        prev_value = self.__char_set.ascent_height
 
         self.__property_controller.ascent_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_descent_changed_cb(self, new_value):
-        prev_value = self.__char_set.descentHeight
+        prev_value = self.__char_set.descent_height
 
         self.__property_controller.descent_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_gap_height_changed_cb(self, new_value):
-        prev_value = self.__char_set.gapHeight
+        prev_value = self.__char_set.gap_height
 
         self.__property_controller.gap_height_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_angle_changed_cb(self, new_value):
-        prev_value = self.__char_set.guideAngle
+        prev_value = self.__char_set.guide_angle
 
         self.__property_controller.angle_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_nominal_width_changed_cb(self, new_value):
-        prev_value = self.__char_set.nominalWidth
+        prev_value = self.__char_set.nominal_width
 
         self.__property_controller.nominal_width_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_color_changed_cb(self, new_color):
-        self.__ui.guide_lines.setLineColor(new_color)
+        self.__ui.guide_lines.line_color = new_color
         self.__ui.repaint()
 
     def char_set_nib_angle_changed_cb(self, new_value):
-        prev_value = self.__char_set.nibAngle
+        prev_value = self.__char_set.nib_angle
 
         self.__property_controller.char_set_nib_angle_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.dwg_area.nib, \

@@ -113,16 +113,16 @@ class StrokeController(object):
 		ui = self.__main_ctrl.get_ui()
 
 		for sel_stroke in cur_view_selection:
-			char_set.saveStroke(sel_stroke)
+			char_set.save_stroke(sel_stroke)
 			bitmap = ui.dwg_area.drawIcon(None, [sel_stroke])
 			ui.stroke_selector_list.addItem(str(first_item+i))
 			cur_item = ui.stroke_selector_list.item(first_item+i)
 			ui.stroke_selector_list.setCurrentRow(first_item+i)
 			cur_item.setIcon(QtGui.QIcon(bitmap))
-			cur_char = char_set.getCurrentChar()
+			cur_char = char_set.current_char
 			deleted_strokes.append(sel_stroke)
 			cur_char.delete_stroke({'stroke' : sel_stroke})
-			sel_stroke = char_set.getSavedStroke(first_item+i)
+			sel_stroke = char_set.get_saved_stroke(first_item+i)
 			instances[i].setStroke(sel_stroke)
 			cur_char.add_stroke_instance(instances[i])
 			if not cur_view_selection.has_key(sel_stroke):
@@ -166,8 +166,8 @@ class StrokeController(object):
 		for inst in instances:
 			sel_stroke = inst.getStroke()
 			ui.stroke_selector_list.takeItem(first_item+i)
-			char_set.removeSavedStroke(sel_stroke)
-			cur_char = char_set.getCurrentChar()
+			char_set.remove_saved_stroke(sel_stroke)
+			cur_char = char_set.current_char
 			cur_char.delete_stroke({'stroke' : inst})
 			cur_char.add_stroke({'stroke' : sel_stroke, 'copyStroke' : False})
 			added_strokes.append(sel_stroke)
@@ -187,12 +187,12 @@ class StrokeController(object):
 		
 	def paste_instance_from_saved(self):
 		cmd_stack = self.__main_ctrl.get_command_stack()
-		charSet = self.__main_ctrl.get_character_set()
+		char_set = self.__main_ctrl.get_character_set()
 		ui = self.__main_ctrl.get_ui()
 
-		char_index = charSet.getCurrentCharIndex()
+		char_index = char_set.get_current_char_index()
 		stroke_index = ui.stroke_selector_list.currentRow()
-		saved_stroke = charSet.getSavedStroke(stroke_index)
+		saved_stroke = char_set.get_saved_stroke(stroke_index)
 		new_stroke_instance = stroke.StrokeInstance()
 		new_stroke_instance.setStroke(saved_stroke)
 
