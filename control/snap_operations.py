@@ -42,7 +42,7 @@ class SnapController(object):
             if len(cur_view_selection[sel_stroke].keys()) == 1:
                 sel_point = cur_view_selection[sel_stroke].keys()[0]
 
-                ctrl_verts = sel_stroke.getCtrlVertices(make_copy=False)
+                ctrl_verts = sel_stroke.get_ctrl_vertices(make_copy=False)
 
                 vert_index = ctrl_verts.index(sel_point)
 
@@ -123,7 +123,7 @@ class SnapController(object):
         cur_char = self.__main_ctrl.get_current_char()
 
         for char_stroke in cur_char.strokes:
-            for ctrl_vert in char_stroke.getCtrlVertices(False):
+            for ctrl_vert in char_stroke.get_ctrl_vertices(False):
                 if sel_point is not ctrl_vert:
                     test_point = ctrl_vert.get_handle_pos(2)
 

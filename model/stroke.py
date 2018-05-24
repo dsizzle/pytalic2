@@ -12,621 +12,619 @@ import random
 
 from PyQt4 import QtCore, QtGui
 
-import control_vertex
+import model.control_vertex
 #import serif
 from view import shared_qt
 
 DEBUG_BBOXES = False
 
 class Stroke(object):
-	def __init__(self, dimension=2, fromStroke=None, parent=None):
-		if fromStroke is not None:
-			self.__startSerif = fromStroke.getStartSerif()
-			self.__endSerif = fromStroke.getEndSerif()
-			self.__strokeCtrlVerts = fromStroke.getCtrlVertices()
-			self.updateCtrlVertices()
-			self.__pos = QtCore.QPoint(fromStroke.getPos())
-			self.__strokeShape = fromStroke.getStrokeShape()
-			self.__curvePath = self.calcCurvePoints()
-			self.__boundRect = fromStroke.getBoundRect()
-		else:	
-			self.__startSerif = None
-			self.__endSerif = None
-			self.__strokeCtrlVerts = []
-			self.__pos = QtCore.QPoint(0, 0)
-			self.__strokeShape = None
-			self.__curvePath = None
-			self.__boundRect = None
+    def __init__(self, dimension=2, from_stroke=None, parent=None):
+        if from_stroke is not None:
+            self.__start_serif = from_stroke.get_start_serif()
+            self.__end_serif = from_stroke.get_end_serif()
+            self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
+            self.update_ctrl_vertices()
+            self.__pos = QtCore.QPoint(from_stroke.get_pos())
+            self.__stroke_shape = from_stroke.get_stroke_shape()
+            self.__curve_path = self.calc_curve_points()
+            self.__bound_rect = from_stroke.get_bound_rect()
+        else:   
+            self.__start_serif = None
+            self.__end_serif = None
+            self.__stroke_ctrl_verts = []
+            self.__pos = QtCore.QPoint(0, 0)
+            self.__stroke_shape = None
+            self.__curve_path = None
+            self.__bound_rect = None
 
-		self.__startFlourish = None
-		self.__endFlourish = None
-		self.__handleSize = 10
-		self.__instances = {}
-		self.__parent = parent
-		
-		self.__isSelected = False
+        self.__handle_size = 10
+        self.__instances = {}
+        self.__parent = parent
+        
+        self.__is_selected = False
 
-		self.seed = time.localtime()
+        self.seed = time.localtime()
 
-	def __getstate__(self):
-		saveDict = self.__dict__.copy()
+    def __getstate__(self):
+        saveDict = self.__dict__.copy()
 
-		saveDict["_Stroke__strokeShape"] = None
-		saveDict["_Stroke__curvePath"] = None
+        saveDict["_Stroke__stroke_shape"] = None
+        saveDict["_Stroke__curve_path"] = None
 
-		return saveDict
+        return saveDict
 
-	def __setstate__(self, stateDict):
-		self.__dict__ = stateDict
+    def __setstate__(self, stateDict):
+        self.__dict__ = stateDict
 
-		self.calcCurvePoints()
+        self.calc_curve_points()
 
-	def addInstance(self, inst):
-		self.__instances[inst] = 1
-		
-	def removeInstance(self, inst):
-		self.__instances.pop(inst, None)
+    def add_instance(self, inst):
+        self.__instances[inst] = 1
+        
+    def remove_instance(self, inst):
+        self.__instances.pop(inst, None)
 
-	def getInstances(self):
-		return self.__instances.keys()
+    def get_instance(self):
+        return self.__instances.keys()
 
-	def setPos(self, pt):
-		self.__pos = pt
-		
-	def getPos(self):
-		return self.__pos
+    def set_pos(self, point):
+        self.__pos = point
+        
+    def get_pos(self):
+        return self.__pos
 
-	pos = property(getPos, setPos)
-	
-	def straighten(self):
-		tempCv = []
-		ctrlVerts = self.getCtrlVerticesAsList()
-		numVerts = len(ctrlVerts)
+    pos = property(get_pos, set_pos)
+    
+    def straighten(self):
+        temp_ctrl_verts = []
+        ctrl_verts = self.get_ctrl_vertices_as_list()
+        num_verts = len(ctrl_verts)
 
-		start = ctrlVerts[0]
-		end = ctrlVerts[-1]
-		
-		dX = (end[0]-start[0])/(numVerts-1)
-		dY = (end[1]-start[1])/(numVerts-1)
-		
-		xpos = start[0]
-		ypos = start[1]
+        start = ctrl_verts[0]
+        end = ctrl_verts[-1]
+        
+        dX = (end[0]-start[0])/(num_verts-1)
+        dY = (end[1]-start[1])/(num_verts-1)
+        
+        xpos = start[0]
+        ypos = start[1]
 
-		for i in range (0, numVerts):
-			tempCv.append([xpos, ypos])
-			xpos += dX
-			ypos += dY
-		
-		self.setCtrlVerticesFromList(tempCv)
-		self.calcCurvePoints()
-		
-	def addEndSerif(self, distance):
-		self.__endSerif = serif.Flick(serif.END)
-		verts = self.getCtrlVerticesAsList()
-		self.__endSerif.setCtrlVertices(verts)
-		self.__endSerif.setLength(distance)
-		# if (self.nib):
-		# 	self.__endSerif.setAngle(self.nib.getAngle())
-		
-	def removeEndSerif(self):
-		self.__endSerif = None
-	
-	def getEndSerif(self):
-		return self.__endSerif
+        for i in range (0, num_verts):
+            temp_ctrl_verts.append([xpos, ypos])
+            xpos += dX
+            ypos += dY
+        
+        self.set_ctrl_vertices_from_list(temp_ctrl_verts)
+        self.calc_curve_points()
+        
+    def add_end_serif(self, distance):
+        self.__end_serif = serif.Flick(serif.END)
+        verts = self.get_ctrl_vertices_as_list()
+        self.__end_serif.set_ctrl_vertices(verts)
+        self.__end_serif.setLength(distance)
+        # if (self.nib):
+        #   self.__end_serif.setAngle(self.nib.getAngle())
+        
+    def remove_end_serif(self):
+        self.__end_serif = None
+    
+    def get_end_serif(self):
+        return self.__end_serif
 
-	def addStartSerif(self, distance):
-		self.__startSerif = serif.Flick(serif.START)
-		verts = self.getCtrlVerticesAsList()
-		self.__startSerif.setCtrlVertices(verts)
-		self.__startSerif.setLength(distance)
-		# if (self.nib):
-		# 	self.__startSerif.setAngle(self.nib.getAngle())
+    def add_start_serif(self, distance):
+        self.__start_serif = serif.Flick(serif.START)
+        verts = self.get_ctrl_vertices_as_list()
+        self.__start_serif.set_ctrl_vertices(verts)
+        self.__start_serif.setLength(distance)
+        # if (self.nib):
+        #   self.__start_serif.setAngle(self.nib.getAngle())
 
-	def removeStartSerif(self):
-		self.__startSerif = None
+    def remove_start_serif(self):
+        self.__start_serif = None
 
-	def getStartSerif(self):
-		return self.__startSerif
+    def get_start_serif(self):
+        return self.__start_serif
 
-	def calcCurvePoints(self):
-		verts = self.getCtrlVerticesAsList()
-		self.__curvePath = QtGui.QPainterPath()
-		self.__curvePath.moveTo(verts[0][0], verts[0][1])
-			
-		while (len(verts) > 3):
-			self.__curvePath.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
-			verts = verts[3:]
+    def calc_curve_points(self):
+        verts = self.get_ctrl_vertices_as_list()
+        self.__curve_path = QtGui.QPainterPath()
+        self.__curve_path.moveTo(verts[0][0], verts[0][1])
+            
+        while (len(verts) > 3):
+            self.__curve_path.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
+            verts = verts[3:]
 
-	def splitCurve(self, testAngle):
-		l = []
-		r = []
-		newCurves = []
-		oppTestAngle = testAngle + 180
-		tolerance = 1
+    def split_curve(self, test_angle):
+        l = []
+        r = []
+        new_curves = []
+        opp_test_angle = test_angle + 180
+        tolerance = 1
 
-		verts = self.getCtrlVerticesAsList()
-		curCurve = self.__curvePath
+        verts = self.get_ctrl_vertices_as_list()
+        cur_curve = self.__curve_path
 
-		for i in range(0, 1000):
-			pct = float(i) / 1000.0
-			try:
-				angle = int(curCurve.angleAtPercent(pct))
-			except ValueError:
-				continue
+        for i in range(0, 1000):
+            pct = float(i) / 1000.0
+            try:
+                angle = int(cur_curve.angleAtPercent(pct))
+            except ValueError:
+                continue
 
-			if (angle >= testAngle-tolerance and angle <= testAngle+tolerance) or \
-				(angle >= oppTestAngle-tolerance and angle <= oppTestAngle+tolerance):
-				(l, r) = self.divideCurveAtPoint(verts, pct, 1)
-				l.append(r[0])
-			
-				curCurve = QtGui.QPainterPath()
-				curCurve.moveTo(l[0][0], l[0][1])
-				curCurve.cubicTo(l[1][0], l[1][1], l[2][0], l[2][1], l[3][0], l[3][1])
-				newCurves.append(curCurve)
-				verts = r
-				curCurve = QtGui.QPainterPath()
-				curCurve.moveTo(verts[0][0], verts[0][1])
-				curCurve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
-				i = 0;
+            if (angle >= test_angle - tolerance and angle <= test_angle + tolerance) or \
+                (angle >= opp_test_angle - tolerance and angle <= opp_test_angle + tolerance):
+                (l, r) = self.divide_curve_at_point(verts, pct, 1)
+                l.append(r[0])
+            
+                cur_curve = QtGui.QPainterPath()
+                cur_curve.moveTo(l[0][0], l[0][1])
+                cur_curve.cubicTo(l[1][0], l[1][1], l[2][0], l[2][1], l[3][0], l[3][1])
+                new_curves.append(cur_curve)
+                verts = r
+                cur_curve = QtGui.QPainterPath()
+                cur_curve.moveTo(verts[0][0], verts[0][1])
+                cur_curve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
+                i = 0;
 
-		while (len(verts) > 3):
-			curCurve = QtGui.QPainterPath()
-			curCurve.moveTo(verts[0][0], verts[0][1])
-			curCurve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
-			newCurves.append(curCurve)
-			verts = verts[3:]
+        while (len(verts) > 3):
+            cur_curve = QtGui.QPainterPath()
+            cur_curve.moveTo(verts[0][0], verts[0][1])
+            cur_curve.cubicTo(verts[1][0], verts[1][1], verts[2][0], verts[2][1], verts[3][0], verts[3][1])
+            new_curves.append(cur_curve)
+            verts = verts[3:]
 
-		return newCurves
+        return new_curves
 
-	def calcCtrlVertices(self, pts):	
-		return shapes.splines.BezierSpline.calcCtrlVertices(self, pts)
-	
-	def getCtrlVertices(self, make_copy=True):
-		if make_copy:
-			verts = copy.deepcopy(self.__strokeCtrlVerts)
-		else:
-			verts = self.__strokeCtrlVerts
+    def calc_ctrl_vertices(self, pts):    
+        return shapes.splines.BezierSpline.calcCtrlVertices(self, pts)
+    
+    def get_ctrl_vertices(self, make_copy=True):
+        if make_copy:
+            verts = copy.deepcopy(self.__stroke_ctrl_verts)
+        else:
+            verts = self.__stroke_ctrl_verts
 
-		return verts
+        return verts
 
-	def getCtrlVertex(self, idx):
-		if len(self.__strokeCtrlVerts) > idx:
-			return self.__strokeCtrlVerts[idx]
+    def get_ctrl_vertex(self, idx):
+        if len(self.__stroke_ctrl_verts) > idx:
+            return self.__stroke_ctrl_verts[idx]
 
-		return None
+        return None
 
-	def getCtrlVerticesAsList(self):
-		pts = []
-		for vert in self.__strokeCtrlVerts:
-			pts.extend(vert.get_handle_pos_as_list())
-			
-		return pts
-		
-	def setCtrlVerticesFromList(self, pts):
-		self.__strokeCtrlVerts = []
-		
-		tmpPts = pts[:]
-		left = QtCore.QPoint()
-		right = QtCore.QPoint()
-		
-		while (tmpPts):
-			pt = tmpPts.pop(0)
-			center = QtCore.QPoint(pt[0], pt[1])
-			if len(tmpPts):
-				pt = tmpPts.pop(0)
-				right = QtCore.QPoint(pt[0], pt[1])
-			
-			self.__strokeCtrlVerts.append(control_vertex.ControlVertex(left, center, right))
+    def get_ctrl_vertices_as_list(self):
+        pts = []
+        for vert in self.__stroke_ctrl_verts:
+            pts.extend(vert.get_handle_pos_as_list())
+            
+        return pts
+        
+    def set_ctrl_vertices_from_list(self, pts):
+        self.__stroke_ctrl_verts = []
+        
+        tmp_pts = pts[:]
+        left = QtCore.QPoint()
+        right = QtCore.QPoint()
+        
+        while (tmp_pts):
+            pt = tmp_pts.pop(0)
+            center = QtCore.QPoint(pt[0], pt[1])
+            if len(tmp_pts):
+                pt = tmp_pts.pop(0)
+                right = QtCore.QPoint(pt[0], pt[1])
+            
+            self.__stroke_ctrl_verts.append(model.control_vertex.ControlVertex(left, center, right))
 
-			right = None
-			if len(tmpPts):
-				pt = tmpPts.pop(0)
-				left = QtCore.QPoint(pt[0], pt[1])
+            right = None
+            if len(tmp_pts):
+                pt = tmp_pts.pop(0)
+                left = QtCore.QPoint(pt[0], pt[1])
 
-	def generateCtrlVerticesFromPoints(self, pts):	
-		tempCv = []
+    def generate_ctrl_vertices_from_points(self, pts):  
+        temp_ctrl_vert = []
 
-		numPts = len(pts)
-		startX, startY = pts[0]
-		
-		if (2 > numPts):
-			# not sure about this one
-			pass
-		elif (2 == numPts):
-			dX = (pts[1][0]-pts[0][0])/3.
-			dY = (pts[1][1]-pts[0][1])/3.
-			pts = [pts[0], [pts[0][0]+dX, pts[0][1]+dY], [pts[1][0]-dX, pts[1][1]-dY], pts[1]]
-		elif (3 == numPts):
-			dX1 = (pts[1][0]-pts[0][0])/4.
-			dY1 = (pts[1][1]-pts[0][1])/4.
-			
-			dX2 = (pts[2][0]-pts[1][0])/4.
-			dY2 = (pts[2][1]-pts[1][1])/4.
-			
-			pts = [pts[0], [pts[1][0]-dX1, pts[1][1]-dY1], [pts[1][0]+dX2, pts[1][1]+dY2], pts[2]]
-		else:
-			firstPts = [pts[0], pts[1]]
-			lastPts = [pts[-2], pts[-1]]
-			midPts = []
-			
-			for i in range(2, numPts-2):
-				dxT = (pts[i+1][0]-pts[i-1][0])/2.
-				dyT = (pts[i+1][1]-pts[i-1][1])/2.
-				
-				dxA = (pts[i-1][0]-pts[i][0])
-				dyA = (pts[i-1][1]-pts[i][1])
-				vLenA = math.sqrt(float(dxA)*float(dxA) + float(dyA)*float(dyA))+0.001
-				dxB = (pts[i+1][0]-pts[i][0])
-				dyB = (pts[i+1][1]-pts[i][1])
-				vLenB = math.sqrt(float(dxB)*float(dxB) + float(dyB)*float(dyB))+0.001
+        num_pts = len(pts)
+        start_x, start_y = pts[0]
+        
+        if (2 > num_pts):
+            # not sure about this one
+            pass
+        elif (2 == num_pts):
+            dX = (pts[1][0] - pts[0][0]) / 3.
+            dY = (pts[1][1] - pts[0][1]) / 3.
+            pts = [pts[0], [pts[0][0] + dX, pts[0][1] + dY], [pts[1][0] - dX, pts[1][1] - dY], pts[1]]
+        elif (3 == num_pts):
+            dX1 = (pts[1][0] - pts[0][0]) / 4.
+            dY1 = (pts[1][1] - pts[0][1]) / 4.
+            
+            dX2 = (pts[2][0] - pts[1][0]) / 4.
+            dY2 = (pts[2][1] - pts[1][1]) / 4.
+            
+            pts = [pts[0], [pts[1][0] - dX1, pts[1][1] - dY1], [pts[1][0] + dX2, pts[1][1] + dY2], pts[2]]
+        else:
+            first_pts = [pts[0], pts[1]]
+            last_pts = [pts[-2], pts[-1]]
+            mid_pts = []
+            
+            for i in range(2, num_pts-2):
+                dx_t = (pts[i + 1][0] - pts[i - 1][0]) / 2.
+                dy_t = (pts[i + 1][1] - pts[i - 1][1]) / 2.
+                
+                dx_a = (pts[i - 1][0] - pts[i][0])
+                dy_a = (pts[i - 1][1] - pts[i][1])
+                vec_len_a = math.sqrt(float(dx_a) * float(dx_a) + float(dy_a) * float(dy_a)) + 0.001
+                dx_b = (pts[i + 1][0] - pts[i][0])
+                dy_b = (pts[i + 1][1] - pts[i][1])
+                vec_len_b = math.sqrt(float(dx_b) * float(dx_b) + float(dy_b) * float(dy_b)) + 0.001
 
-				if (vLenA > vLenB):
-					ratio = (vLenA / vLenB) / 2.
-					midPts.append([pts[i][0]-dxT*ratio, pts[i][1]-dyT*ratio])
-					midPts.append(pts[i])
-					midPts.append([pts[i][0]+(dxT/2.), pts[i][1]+(dyT/2.)])
-				else:
-					ratio = (vLenB / vLenA) / 2.
-					midPts.append([pts[i][0]-(dxT/2.), pts[i][1]-(dyT/2.)])
-					midPts.append(pts[i])
-					midPts.append([pts[i][0]+dxT*ratio, pts[i][1]+dyT*ratio])
-			
-			pts = firstPts
-			pts.extend(midPts)
-			pts.extend(lastPts)
+                if (vec_len_a > vec_len_b):
+                    ratio = (vec_len_a / vec_len_b) / 2.
+                    mid_pts.append([pts[i][0] - dx_t * ratio, pts[i][1] - dy_t * ratio])
+                    mid_pts.append(pts[i])
+                    mid_pts.append([pts[i][0] + (dx_t / 2.), pts[i][1] + (dy_t / 2.)])
+                else:
+                    ratio = (vec_len_b / vec_len_a) / 2.
+                    mid_pts.append([pts[i][0] - (dx_t / 2.), pts[i][1] - (dy_t / 2.)])
+                    mid_pts.append(pts[i])
+                    mid_pts.append([pts[i][0] + dx_t * ratio, pts[i][1] + dy_t * ratio])
+            
+            pts = first_pts
+            pts.extend(mid_pts)
+            pts.extend(last_pts)
 
-		self.setCtrlVerticesFromList(pts)
-	
-	def setCtrlVertices(self, ctrlVerts):
-		self.__strokeCtrlVerts = ctrlVerts[:]
-		self.updateCtrlVertices()
-		
-	def updateCtrlVertices(self):
-		pts = self.getCtrlVerticesAsList()
-		
-		if len(pts) > 3:
-			self.calcCurvePoints()
-		
-	def deleteCtrlVertexByIndex(self, pt):
-		if (pt == 0):
-			self.__strokeCtrlVerts[pt+1].clearLeftHandlePos()
-		elif (pt == len(self.__strokeCtrlVerts)-1):
-			self.__strokeCtrlVerts[pt-1].clearRightHandlePos()
-			
-		self.__strokeCtrlVerts.remove(self.__strokeCtrlVerts[pt])
-		self.updateCtrlVertices()
-		self.calcCurvePoints()
+        self.set_ctrl_vertices_from_list(pts)
+    
+    def set_ctrl_vertices(self, ctrl_verts):
+        self.__stroke_ctrl_verts = ctrl_verts[:]
+        self.update_ctrl_vertices()
+        
+    def update_ctrl_vertices(self):
+        pts = self.get_ctrl_vertices_as_list()
+        
+        if len(pts) > 3:
+            self.calc_curve_points()
+        
+    def delete_ctrl_vertex_by_index(self, pt):
+        if (pt == 0):
+            self.__stroke_ctrl_verts[pt + 1].clear_left_handle_pos()
+        elif (pt == len(self.__stroke_ctrl_verts)-1):
+            self.__stroke_ctrl_verts[pt - 1].clear_right_handle_pos()
+            
+        self.__stroke_ctrl_verts.remove(self.__stroke_ctrl_verts[pt])
+        self.update_ctrl_vertices()
+        self.calc_curve_points()
 
-	def deleteCtrlVertex(self, vert):
-		vert.select_handle(None)
-		self.__strokeCtrlVerts.remove(vert)
-		self.updateCtrlVertices()
-		self.calcCurvePoints()
+    def delete_ctrl_vertex(self, vert):
+        vert.select_handle(None)
+        self.__stroke_ctrl_verts.remove(vert)
+        self.update_ctrl_vertices()
+        self.calc_curve_points()
 
-	def divideCurveAtPoint(self, pts, t, index):
-		trueIndex = index*3
-		
-		p3 = pts[trueIndex]
-		p2 = pts[trueIndex-1]
-		p1 = pts[trueIndex-2]
-		p0 = pts[trueIndex-3]
-	
-		newPts = []
-		for i in range (0, 5):
-			newPts.append([0,0])
-			
-		for k in range (0, 2):
-			p0_1 = float((1.0-t)*p0[k] + (t * p1[k]))
-			p1_2 = float((1.0-t)*p1[k] + (t * p2[k]))
-			p2_3 = float((1.0-t)*p2[k] + (t * p3[k]))
- 			p01_12 = float((1.0-t)*p0_1 + (t * p1_2))
-			p12_23 = float((1.0-t)*p1_2 + (t * p2_3))
-			p0112_1223 = float((1.0-t)*p01_12 + (t * p12_23))
-		
-			newPts[0][k] = p0_1
-			newPts[1][k] = p01_12
-			newPts[2][k] = p0112_1223
-			newPts[3][k] = p12_23
-			newPts[4][k] = p2_3
-			
-		pts[trueIndex-2:trueIndex] = newPts
-		
-		return (pts[:trueIndex], pts[trueIndex:])
+    def divide_curve_at_point(self, pts, t, index):
+        trueIndex = index * 3
+        
+        p3 = pts[trueIndex]
+        p2 = pts[trueIndex - 1]
+        p1 = pts[trueIndex - 2]
+        p0 = pts[trueIndex - 3]
+    
+        new_pts = []
+        for i in range (0, 5):
+            new_pts.append([0,0])
+            
+        for k in range (0, 2):
+            p0_1 = float((1.0-t)*p0[k] + (t * p1[k]))
+            p1_2 = float((1.0-t)*p1[k] + (t * p2[k]))
+            p2_3 = float((1.0-t)*p2[k] + (t * p3[k]))
+            p01_12 = float((1.0-t)*p0_1 + (t * p1_2))
+            p12_23 = float((1.0-t)*p1_2 + (t * p2_3))
+            p0112_1223 = float((1.0-t)*p01_12 + (t * p12_23))
+        
+            new_pts[0][k] = p0_1
+            new_pts[1][k] = p01_12
+            new_pts[2][k] = p0112_1223
+            new_pts[3][k] = p12_23
+            new_pts[4][k] = p2_3
+            
+        pts[trueIndex - 2:trueIndex] = new_pts
+        
+        return (pts[:trueIndex], pts[trueIndex:])
 
-	def addCtrlVertex(self, t, index):
-		pts = self.getCtrlVerticesAsList()
+    def add_ctrl_vertex(self, t, index):
+        pts = self.get_ctrl_vertices_as_list()
 
-		(pts, remainder) = self.divideCurveAtPoint(pts, t, index)
-		
-		pts.extend(remainder)
+        (pts, remainder) = self.divide_curve_at_point(pts, t, index)
+        
+        pts.extend(remainder)
 
-		self.setCtrlVerticesFromList(pts)	
-		self.calcCurvePoints()
+        self.set_ctrl_vertices_from_list(pts)   
+        self.calc_curve_points()
 
-	def splitAtPoint(self, t, index):
-		pts = self.getCtrlVerticesAsList()
+    def split_at_point(self, t, index):
+        pts = self.get_ctrl_vertices_as_list()
 
-		(pts, remainder) = self.divideCurveAtPoint(pts, t, index)
-		
-		pts.append(remainder[0])
-		
-		self.setCtrlVerticesFromList(pts)	
-		self.calcCurvePoints()
+        (pts, remainder) = self.divide_curve_at_point(pts, t, index)
+        
+        pts.append(remainder[0])
+        
+        self.set_ctrl_vertices_from_list(pts)   
+        self.calc_curve_points()
 
-		return remainder
+        return remainder
 
-	def setParent(self, parent):
-		self.__parent = parent
+    def set_parent(self, parent):
+        self.__parent = parent
 
-	def getParent(self):
-		return self.__parent
+    def get_parent(self):
+        return self.__parent
 
-	parent = property(getParent, setParent)
+    parent = property(get_parent, set_parent)
 
-	def draw(self, gc, showCtrlVerts=0, nib=None):
-		minX = 9999
-		minY = 9999
-		maxX = 0
-		maxY = 0
-		
-		random.seed(self.seed)
-		
-		if (nib == None):
-			print "ERROR: No nib provided to draw stroke\n"
-			return
-		
-		gc.save()
-		gc.translate(self.__pos)		
+    def draw(self, gc, show_ctrl_verts=0, nib=None):
+        minX = 9999
+        minY = 9999
+        maxX = 0
+        maxY = 0
+        
+        random.seed(self.seed)
+        
+        if (nib == None):
+            print "ERROR: No nib provided to draw stroke\n"
+            return
+        
+        gc.save()
+        gc.translate(self.__pos)        
 
-		gc.setPen(nib.pen)
-		gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
-		
-		verts = self.getCtrlVerticesAsList()
-		if len(verts) > 0:
-			self.__strokeShape = QtGui.QPainterPath()
-			if self.__curvePath is None:
-				self.calcCurvePoints()
+        gc.setPen(nib.pen)
+        gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
+        
+        verts = self.get_ctrl_vertices_as_list()
+        if len(verts) > 0:
+            self.__stroke_shape = QtGui.QPainterPath()
+            if self.__curve_path is None:
+                self.calc_curve_points()
 
-			nib.draw(gc, self)
-		
-			path1 = QtGui.QPainterPath(self.__curvePath)
-			path2 = QtGui.QPainterPath(self.__curvePath).toReversed()
-			
-			distX, distY = nib.getActualWidths()
+            nib.draw(gc, self)
+        
+            path1 = QtGui.QPainterPath(self.__curve_path)
+            path2 = QtGui.QPainterPath(self.__curve_path).toReversed()
+            
+            distX, distY = nib.getActualWidths()
 
-			path1.translate(distX, -distY)
-			path2.translate(-distX, distY)
-			
-			self.__strokeShape.addPath(path1)
-			self.__strokeShape.connectPath(path2)
-			self.__strokeShape.closeSubpath()
+            path1.translate(distX, -distY)
+            path2.translate(-distX, distY)
+            
+            self.__stroke_shape.addPath(path1)
+            self.__stroke_shape.connectPath(path2)
+            self.__stroke_shape.closeSubpath()
 
-			#self.__strokeShape.setFillRule(QtCore.Qt.WindingFill)
+            #self.__stroke_shape.setFillRule(QtCore.Qt.WindingFill)
 
-			#gc.drawPath(self.__strokeShape)
-			
-			self.__boundRect = self.__strokeShape.controlPointRect()
-	
-		if (self.__startSerif):
-			verts = self.getCtrlVerticesAsList()
-			self.__startSerif.setCtrlVertices(verts)
-			self.__startSerif.setAngle(nib.getAngle())
-			self.__startSerif.draw(gc, nib)
-			
-		if (self.__endSerif):
-			verts = self.getCtrlVerticesAsList()
-			self.__endSerif.setCtrlVertices(verts)
-			self.__endSerif.setAngle(nib.getAngle())
-			self.__endSerif.draw(gc, nib)
-			
-		if self.__isSelected or showCtrlVerts:
-			for vert in self.__strokeCtrlVerts:
-				vert.draw(gc)
+            #gc.drawPath(self.__stroke_shape)
+            
+            self.__bound_rect = self.__stroke_shape.controlPointRect()
+    
+        if (self.__start_serif):
+            verts = self.get_ctrl_vertices_as_list()
+            self.__start_serif.set_ctrl_vertices(verts)
+            self.__start_serif.setAngle(nib.getAngle())
+            self.__start_serif.draw(gc, nib)
+            
+        if (self.__end_serif):
+            verts = self.get_ctrl_vertices_as_list()
+            self.__end_serif.set_ctrl_vertices(verts)
+            self.__end_serif.setAngle(nib.getAngle())
+            self.__end_serif.draw(gc, nib)
+            
+        if self.__is_selected or show_ctrl_verts:
+            for vert in self.__stroke_ctrl_verts:
+                vert.draw(gc)
 
-			if self.__boundRect is not None:
-				gc.setBrush(shared_qt.BRUSH_CLEAR)
-				gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
-		
-				gc.drawRect(self.__boundRect)
+            if self.__bound_rect is not None:
+                gc.setBrush(shared_qt.BRUSH_CLEAR)
+                gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
+        
+                gc.drawRect(self.__bound_rect)
 
-		gc.restore()
-		
-	def insideStroke(self, pt):
-		minDist = 10
-		testPt = pt - self.__pos
-		if self.__strokeShape is not None:
-			inside = self.__strokeShape.contains(testPt)
-		else:
-			inside = False
+        gc.restore()
+        
+    def insideStroke(self, pt):
+        minDist = 10
+        testPt = pt - self.__pos
+        if self.__stroke_shape is not None:
+            inside = self.__stroke_shape.contains(testPt)
+        else:
+            inside = False
 
-		if self.__boundRect.contains(testPt):
-			if self.__isSelected:
-				for i in range(0, self.__curvePath.elementCount()):
-					element = self.__curvePath.elementAt(i)
-					dist = math.sqrt(
-						math.pow(element.x-testPt.x(), 2) +
-						math.pow(element.y-testPt.y(), 2)
-					)
-					if dist < self.__handleSize:
-						return (True, i, None)
-				
-				if inside:
-					# get exact point
-					hitPoint = None
-					testBox = QtCore.QRect(testPt.x()-2, testPt.y()-2, 4, 4)
-					for i in range(0, 100):
-						pct = float(i) / 100.0
-						curvePt = self.__curvePath.pointAtPercent(pct)
-						if testBox.contains(int(curvePt.x()), int(curvePt.y())):
-							hitPoint = pct
-							break
+        if self.__bound_rect.contains(testPt):
+            if self.__is_selected:
+                for i in range(0, self.__curve_path.elementCount()):
+                    element = self.__curve_path.elementAt(i)
+                    dist = math.sqrt(
+                        math.pow(element.x-testPt.x(), 2) +
+                        math.pow(element.y-testPt.y(), 2)
+                    )
+                    if dist < self.__handle_size:
+                        return (True, i, None)
+                
+                if inside:
+                    # get exact point
+                    hitPoint = None
+                    testBox = QtCore.QRect(testPt.x()-2, testPt.y()-2, 4, 4)
+                    for i in range(0, 100):
+                        pct = float(i) / 100.0
+                        curvePt = self.__curve_path.pointAtPercent(pct)
+                        if testBox.contains(int(curvePt.x()), int(curvePt.y())):
+                            hitPoint = pct
+                            break
  
-					if hitPoint is not None:
-						return (True, int(math.ceil((len(self.__strokeCtrlVerts) - 1) * hitPoint)),  hitPoint)
-					else:
-						return (True, -1, None)
+                    if hitPoint is not None:
+                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * hitPoint)),  hitPoint)
+                    else:
+                        return (True, -1, None)
 
-			elif inside:
-				return (True, -1, None)
+            elif inside:
+                return (True, -1, None)
 
-		return (False, -1, None)
+        return (False, -1, None)
 
-	def getBoundRect(self):
-		return self.__boundRect
+    def get_bound_rect(self):
+        return self.__bound_rect
 
-	def setBoundRect(self, newBoundRect):
-		if newBoundRect is not None:
-			self.__boundRect = newBoundRect
-		
-	boundRect = property(getBoundRect, setBoundRect)
+    def setBoundRect(self, newBoundRect):
+        if newBoundRect is not None:
+            self.__bound_rect = newBoundRect
+        
+    boundRect = property(get_bound_rect, setBoundRect)
 
-	def getSelectState(self):
-		return self.__isSelected
+    def getSelectState(self):
+        return self.__is_selected
 
-	def setSelectState(self, newState):
-		self.__isSelected = newState
+    def setSelectState(self, newState):
+        self.__is_selected = newState
 
-	selected = property(getSelectState, setSelectState)
+    selected = property(getSelectState, setSelectState)
 
-	def deselectCtrlVerts(self):
-		for vert in self.__strokeCtrlVerts:
-			vert.select_handle(None)
+    def deselectCtrlVerts(self):
+        for vert in self.__stroke_ctrl_verts:
+            vert.select_handle(None)
 
-	def getStrokeShape(self):
-		return self.__strokeShape
+    def get_stroke_shape(self):
+        return self.__stroke_shape
 
-	def setStrokeShape(self, newStrokeShape):
-		self.__strokeShape = newStrokeShape
+    def set_stroke_shape(self, newStrokeShape):
+        self.__stroke_shape = newStrokeShape
 
-	strokeShape = property(getStrokeShape, setStrokeShape)
+    strokeShape = property(get_stroke_shape, set_stroke_shape)
 
-	def getCurvePath(self):
-		return self.__curvePath
+    def getCurvePath(self):
+        return self.__curve_path
 
-	def setCurvePath(self, newCurvePath):
-		self.__curvePath = newCurvePath
+    def setCurvePath(self, newCurvePath):
+        self.__curve_path = newCurvePath
 
-	curvePath = property(getCurvePath, setCurvePath)
+    curvePath = property(getCurvePath, setCurvePath)
 
 
 class StrokeInstance(object):
-	def __init__(self, parent=None):
-		self.__stroke = None
-		self.__pos = QtCore.QPoint(0, 0)
-		self.__color = QtGui.QColor(128, 128, 192, 90)
-		self.__boundRect = None
-		self.__parent = parent
-		self.__isSelected = False
-		
-	def __del__(self):
-		if self.__stroke:
-			self.__stroke.removeInstance(self)
+    def __init__(self, parent=None):
+        self.__stroke = None
+        self.__pos = QtCore.QPoint(0, 0)
+        self.__color = QtGui.QColor(128, 128, 192, 90)
+        self.__bound_rect = None
+        self.__parent = parent
+        self.__is_selected = False
+        
+    def __del__(self):
+        if self.__stroke:
+            self.__stroke.remove_instance(self)
 
-	def setPos(self, pt):
-		self.__pos = pt
-	
-	def getPos(self):
-		return self.__pos
+    def set_pos(self, pt):
+        self.__pos = pt
+    
+    def get_pos(self):
+        return self.__pos
 
-	pos = property(getPos, setPos)
+    pos = property(get_pos, set_pos)
 
-	def setStroke(self, stroke):
-		if self.__stroke:
-			self.__stroke.removeInstance(self)
+    def setStroke(self, stroke):
+        if self.__stroke:
+            self.__stroke.remove_instance(self)
 
-		self.__stroke = stroke
-		
-		self.__pos = QtCore.QPoint(stroke.getPos())
-		self.__boundRect = stroke.getBoundRect()
+        self.__stroke = stroke
+        
+        self.__pos = QtCore.QPoint(stroke.get_pos())
+        self.__bound_rect = stroke.get_bound_rect()
 
-		self.__stroke.addInstance(self)
+        self.__stroke.add_instance(self)
 
-	def getStroke(self):
-		return self.__stroke
+    def getStroke(self):
+        return self.__stroke
 
-	stroke = property(getStroke, setStroke)
+    stroke = property(getStroke, setStroke)
 
-	def setParent(self, parent):
-		self.__parent = parent
+    def setParent(self, parent):
+        self.__parent = parent
 
-	def getParent(self):
-		return self.__parent
+    def getParent(self):
+        return self.__parent
 
-	parent = property(getParent, setParent)
+    parent = property(getParent, setParent)
 
-	def getStrokeShape(self):
-		return self.__stroke.getStrokeShape()
+    def get_stroke_shape(self):
+        return self.__stroke.get_stroke_shape()
 
-	def getStartSerif(self):
-		return self.__stroke.getStartSerif()
+    def get_start_serif(self):
+        return self.__stroke.get_start_serif()
 
-	def getEndSerif(self):
-		return self.__stroke.getEndSerif()
+    def get_end_serif(self):
+        return self.__stroke.get_end_serif()
 
-	def draw(self, gc, showCtrlVerts=0, nib=None):
+    def draw(self, gc, show_ctrl_verts=0, nib=None):
 
-		if self.__stroke == None:
-			return
+        if self.__stroke == None:
+            return
 
-		strokeToDraw = Stroke(fromStroke=self.__stroke)
+        strokeToDraw = Stroke(from_stroke=self.__stroke)
 
-		#
-		# perform overrides
-		#
+        #
+        # perform overrides
+        #
 
-		strokePos = self.__stroke.getPos()		
-		gc.save()
+        strokePos = self.__stroke.get_pos()     
+        gc.save()
 
-		gc.translate(-strokePos)
-		gc.translate(self.__pos)
+        gc.translate(-strokePos)
+        gc.translate(self.__pos)
 
-		strokeToDraw.draw(gc, 0, nib)
-		self.__boundRect = strokeToDraw.boundRect
-		gc.restore()
+        strokeToDraw.draw(gc, 0, nib)
+        self.__bound_rect = strokeToDraw.boundRect
+        gc.restore()
 
-		if self.__isSelected or showCtrlVerts:
-			gc.save()
+        if self.__is_selected or show_ctrl_verts:
+            gc.save()
 
-			gc.translate(self.__pos)
-			gc.setBrush(shared_qt.BRUSH_CLEAR)
-			gc.setPen(shared_qt.PEN_MD_GRAY_DOT_2)
-			
-			gc.drawRect(self.__boundRect)
-			
-			gc.restore()
+            gc.translate(self.__pos)
+            gc.setBrush(shared_qt.BRUSH_CLEAR)
+            gc.setPen(shared_qt.PEN_MD_GRAY_DOT_2)
+            
+            gc.drawRect(self.__bound_rect)
+            
+            gc.restore()
 
 
-	def getHitPoint(self, idx):
-		return self.__stroke.getHitPoint(idx)
+    def getHitPoint(self, idx):
+        return self.__stroke.getHitPoint(idx)
 
-	def getBoundRect(self):
-		return self.__stroke.getBoundRect()
+    def get_bound_rect(self):
+        return self.__stroke.get_bound_rect()
 
-	def insideStroke(self, pt):
-		if self.__stroke is not None:
-			strokePos = self.__stroke.getPos()
-			testPt = pt + strokePos - self.__pos
-			inside = self.__stroke.insideStroke(testPt)
-		else:
-			inside = (False, -1, None)
+    def insideStroke(self, pt):
+        if self.__stroke is not None:
+            strokePos = self.__stroke.get_pos()
+            testPt = pt + strokePos - self.__pos
+            inside = self.__stroke.insideStroke(testPt)
+        else:
+            inside = (False, -1, None)
 
-		return inside
-	
-	def getCtrlVertices(self, copy=False):
-		return []
+        return inside
+    
+    def get_ctrl_vertices(self, copy=False):
+        return []
 
-	def deselectCtrlVerts(self):
-		if self.__stroke:
-			self.__stroke.deselectCtrlVerts()
+    def deselectCtrlVerts(self):
+        if self.__stroke:
+            self.__stroke.deselectCtrlVerts()
 
-	def getSelectState(self):
-		return self.__isSelected
+    def getSelectState(self):
+        return self.__is_selected
 
-	def setSelectState(self, newState):
-		self.__isSelected = newState
+    def setSelectState(self, newState):
+        self.__is_selected = newState
 
-	selected = property(getSelectState, setSelectState)
+    selected = property(getSelectState, setSelectState)
 
-	def calcCurvePoints(self):
-		if self.__stroke:
-			self.__stroke.calcCurvePoints()
+    def calc_curve_points(self):
+        if self.__stroke:
+            self.__stroke.calc_curve_points()

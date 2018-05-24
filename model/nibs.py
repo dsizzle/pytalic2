@@ -98,7 +98,7 @@ class Nib(object):
 		gc.setPen(nullpen)
 		gc.setBrush(brush)
 
-		newCurves = stroke.splitCurve(self.__angle)
+		newCurves = stroke.split_curve(self.__angle)
 			
 		for curve in newCurves:
 			path1 = QtGui.QPainterPath(curve)

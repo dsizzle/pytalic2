@@ -170,8 +170,8 @@ class MouseController(object):
         current_view.snapPoints = []
         if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
-            stroke_ctrl.tmp_stroke.generateCtrlVerticesFromPoints(stroke_ctrl.stroke_pts)
-            stroke_ctrl.tmp_stroke.updateCtrlVertices()
+            stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)
+            stroke_ctrl.tmp_stroke.update_ctrl_vertices()
 
         elif self.__main_ctrl.state == edit_control.DRAGGING:
             move_cmd = commands.Command('move_stroke_cmd')
@@ -223,7 +223,7 @@ class MouseController(object):
                     inside_info = sel_stroke.insideStroke(paper_pos)
                     if inside_info[1] >= 0:
                         ctrl_vertex_num = int((inside_info[1]+1) / 3)
-                        ctrl_vert = sel_stroke.getCtrlVertex(ctrl_vertex_num)
+                        ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
                         
                         handle_index = (inside_info[1]+1) % 3 +1
                         if not shift_down:
