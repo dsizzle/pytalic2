@@ -483,16 +483,16 @@ class EditorController(object):
         self.__stroke_controller.paste_instance_from_saved()
 
     def view_toggle_snap_axially_cb(self, event):
-        self.__snap_controller.toggleSnapAxially()
+        self.__snap_controller.toggle_snap_axially()
 
     def view_toggle_snap_to_grid_cb(self, event):
-        self.__snap_controller.toggleSnapToGrid()
+        self.__snap_controller.toggle_snap_to_grid()
 
     def view_toggle_snap_to_nib_axes_cb(self, event):
-        self.__snap_controller.toggleSnapToNibAxes()
+        self.__snap_controller.toggle_snap_to_nib_axes()
 
     def view_toggle_snap_to_ctrl_pts_cb(self, event):
-        self.__snap_controller.toggleSnapToCtrlPts()
+        self.__snap_controller.toggle_snap_to_ctrl_pts()
 
     def view_toggle_guidelines_cb(self, event):
         self.__current_view_pane.drawGuidelines = not self.__current_view_pane.drawGuidelines

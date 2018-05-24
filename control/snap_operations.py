@@ -10,174 +10,179 @@ SNAP_TO_STROKES     = 0x0010
 
 class SnapController(object):
     def __init__(self, parent):
-        self.__mainCtrl = parent
+        self.__main_ctrl = parent
         self.__snap = SNAP_TO_AXES
 
-    def toggleSnapAxially(self):
+    def toggle_snap_axially(self):
         self.__snap ^= SNAP_TO_AXES
 
-    def toggleSnapToGrid(self):
+    def toggle_snap_to_grid(self):
         self.__snap ^= SNAP_TO_GRID
 
-    def toggleSnapToNibAxes(self):
+    def toggle_snap_to_nib_axes(self):
         self.__snap ^= SNAP_TO_NIB_AXES
 
-    def toggleSnapToCtrlPts(self):
+    def toggle_snap_to_ctrl_pts(self):
         self.__snap ^= SNAP_TO_CTRL_PTS
 
-    def getSnap(self):
+    def get_snap(self):
         return self.__snap
 
-    def getSnappedPoints(self, pos):
-        selection = self.__mainCtrl.get_selection()
-        currentView = self.__mainCtrl.get_current_view()
-        curViewSelection = selection[currentView]
-        charSet = self.__mainCtrl.get_character_set()
+    def get_snapped_points(self, pos):
+        selection = self.__main_ctrl.get_selection()
+        current_view = self.__main_ctrl.get_current_view()
+        cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
 
-        snappedPoints = []
+        snapped_points = []
 
-        if len(curViewSelection.keys()) == 1:
-            selStroke = curViewSelection.keys()[0]
+        if len(cur_view_selection.keys()) == 1:
+            sel_stroke = cur_view_selection.keys()[0]
 
-            if len(curViewSelection[selStroke].keys()) == 1:
-                selPoint = curViewSelection[selStroke].keys()[0]
+            if len(cur_view_selection[sel_stroke].keys()) == 1:
+                sel_point = cur_view_selection[sel_stroke].keys()[0]
 
-                ctrlVerts = selStroke.getCtrlVertices(make_copy=False)
+                ctrl_verts = sel_stroke.getCtrlVertices(make_copy=False)
 
-                vertIndex = ctrlVerts.index(selPoint)
+                vert_index = ctrl_verts.index(sel_point)
 
-                if selPoint.isKnotSelected():
-                    if vertIndex == 0:
-                        vertIndex += 1
+                if sel_point.isKnotSelected():
+                    if vert_index == 0:
+                        vert_index += 1
                     else:
-                        vertIndex -= 1
+                        vert_index -= 1
 
-                vpos = ctrlVerts[vertIndex].getHandlePos(2)
-                strokePos = selStroke.getPos()
+                vpos = ctrl_verts[vert_index].getHandlePos(2)
+                stroke_pos = sel_stroke.getPos()
 
                 if self.__snap & SNAP_TO_GRID:
-                    snapPoint = self.closestGridPoint(pos)
+                    snap_point = self.closest_grid_point(pos)
 
-                    if snapPoint != QtCore.QPoint(-1, -1):
-                        snappedPoints.append(snapPoint)
-                        return snappedPoints
+                    if snap_point != QtCore.QPoint(-1, -1):
+                        snapped_points.append(snap_point)
+                        return snapped_points
 
                 if self.__snap & SNAP_TO_AXES:
-                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[0-charSet.guide_angle, 90])
+                    snap_point = self.snap_to_axes(stroke_pos, pos, vpos, \
+                        axis_angles=[0-char_set.guide_angle, 90])
 
-                    if snapPoint != QtCore.QPoint(-1, -1):
-                        snappedPoints.append(snapPoint)
-                        snappedPoints.append(vpos + strokePos)
-                        return snappedPoints
+                    if snap_point != QtCore.QPoint(-1, -1):
+                        snapped_points.append(snap_point)
+                        snapped_points.append(vpos + stroke_pos)
+                        return snapped_points
 
-                if self.__snap & SNAP_TO_NIB_AXES:                  
-                    snapPoint = self.snapToAxes(strokePos, pos, vpos, axisAngles=[charSet.nib_angle, charSet.nib_angle-90])
-                    
-                    if snapPoint != QtCore.QPoint(-1, -1):
-                        snappedPoints.append(snapPoint)
-                        snappedPoints.append(vpos + strokePos)
-                        return snappedPoints
+                if self.__snap & SNAP_TO_NIB_AXES:
+                    snap_point = self.snap_to_axes(stroke_pos, pos, vpos, \
+                        axis_angles=[char_set.nib_angle, char_set.nib_angle-90])
+
+                    if snap_point != QtCore.QPoint(-1, -1):
+                        snapped_points.append(snap_point)
+                        snapped_points.append(vpos + stroke_pos)
+                        return snapped_points
 
                 if self.__snap & SNAP_TO_CTRL_PTS:
-                    snapPoint = self.snapToCtrlPoint(strokePos, pos, vpos, selPoint)
+                    snap_point = self.snap_to_ctrl_point(pos, sel_point)
 
-                    if snapPoint != QtCore.QPoint(-1, -1):
-                        snappedPoints.append(snapPoint)
-                        return snappedPoints
+                    if snap_point != QtCore.QPoint(-1, -1):
+                        snapped_points.append(snap_point)
+                        return snapped_points
 
-        return snappedPoints
+        return snapped_points
 
-    def snapToAxes(self, strokePos, pos, vertPos, tolerance=10, axisAngles=[]):
-        snapPt = QtCore.QPoint(-1, -1)
+    def snap_to_axes(self, stroke_pos, pos, vert_pos, tolerance=10, axis_angles=[]):
+        snap_point = QtCore.QPoint(-1, -1)
 
-        if len(axisAngles) == 0:
-            return snapPt
-        
-        delta = pos - vertPos
-        vecLength = math.sqrt(float(delta.x())*float(delta.x()) + float(delta.y())*float(delta.y()))
+        if len(axis_angles) == 0:
+            return snap_point
 
-        for angle in axisAngles:
+        delta = pos - vert_pos
+        vec_length = math.sqrt(float(delta.x())*float(delta.x()) + \
+            float(delta.y())*float(delta.y()))
+
+        for angle in axis_angles:
 
             if delta.y() < 0:
                 angle += 180
 
-            newPt = QtCore.QPoint(vecLength * math.sin(math.radians(angle)), \
-                vecLength * math.cos(math.radians(angle)))
-            newPt = newPt + vertPos + strokePos
+            new_point = QtCore.QPoint(vec_length * math.sin(math.radians(angle)), \
+                vec_length * math.cos(math.radians(angle)))
+            new_point = new_point + vert_pos + stroke_pos
 
-            newDelta = pos - newPt
+            new_delta = pos - new_point
 
-            if abs(newDelta.x()) < tolerance:
-                snapPt = newPt
+            if abs(new_delta.x()) < tolerance:
+                snap_point = new_point
 
-        return snapPt
+        return snap_point
 
-    def snapToCtrlPoint(self, strokePos, pos, vertPos, selPoint, tolerance=10):
-        snapPt = QtCore.QPoint(-1, -1)
+    def snap_to_ctrl_point(self, pos, sel_point, tolerance=10):
+        snap_point = QtCore.QPoint(-1, -1)
 
-        testRect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, tolerance, tolerance)
-        curChar = self.__mainCtrl.get_current_char()
+        test_rect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, \
+            tolerance, tolerance)
+        cur_char = self.__main_ctrl.get_current_char()
 
-        for charStroke in curChar.strokes:
-            for ctrlVert in charStroke.getCtrlVertices(False):
-                if selPoint is not ctrlVert:
-                    testPoint = ctrlVert.getHandlePos(2)
+        for char_stroke in cur_char.strokes:
+            for ctrl_vert in char_stroke.getCtrlVertices(False):
+                if sel_point is not ctrl_vert:
+                    test_point = ctrl_vert.getHandlePos(2)
 
-                    if testPoint in testRect:
-                        snapPt = testPoint
+                    if test_point in test_rect:
+                        snap_point = test_point
                         break
 
-        return snapPt
+        return snap_point
 
-    def closestGridPoint(self, pt, nibWidth=0, tolerance=10):
-        gridPt = QtCore.QPoint(-1, -1)
+    def closest_grid_point(self, test_pt, nib_width=0, tolerance=10):
+        grid_pt = QtCore.QPoint(-1, -1)
 
-        guides = self.__mainCtrl.get_ui().guide_lines
-        nibWidth = guides.nibWidth
-        angleDX = math.tan(math.radians(guides.guideAngle))
+        guides = self.__main_ctrl.get_ui().guide_lines
+        nib_width = guides.nib_width
+        angle_dx = math.tan(math.radians(guides.guide_angle))
 
-        if nibWidth == 0:
-            return gridPt 
+        if nib_width == 0:
+            return grid_pt
 
-        ascentHeightNibs = guides.ascentHeight
-        capHeightNibs = guides.capHeight
-        
-        ascentHeightPixels = ascentHeightNibs * nibWidth
-        descentHeightPixels = guides.descentHeight * nibWidth
-        gapHeightPixels = guides.gapHeight * nibWidth
-        
-        ascentOnly = ascentHeightNibs * nibWidth
-        capOnly = ascentOnly - (capHeightNibs * nibWidth)
+        ascent_height_nibs = guides.ascent_height
+        cap_height_nibs = guides.cap_height
 
-        yLines = [0, \
-            gapHeightPixels + descentHeightPixels + capOnly, \
-            gapHeightPixels + descentHeightPixels + ascentOnly, \
-            gapHeightPixels + descentHeightPixels, \
-            descentHeightPixels]
-        
-        widthX = guides.nominalWidth * nibWidth
-        heightY = ascentHeightPixels + gapHeightPixels + descentHeightPixels
+        ascent_height_pixels = ascent_height_nibs * nib_width
+        descent_height_pixels = guides.descent_height * nib_width
+        gap_height_pixels = guides.gap_height * nib_width
 
-        for yLine in yLines:
-            testY = (pt.y() - yLine) % heightY
+        ascent_only = ascent_height_nibs * nib_width
+        cap_only = ascent_only - (cap_height_nibs * nib_width)
+
+        y_lines = [0, \
+            gap_height_pixels + descent_height_pixels + cap_only, \
+            gap_height_pixels + descent_height_pixels + ascent_only, \
+            gap_height_pixels + descent_height_pixels, \
+            descent_height_pixels]
+
+        width_x = guides.nominal_width * nib_width
+        height_y = ascent_height_pixels + gap_height_pixels + descent_height_pixels
+
+        for y_line in y_lines:
+            test_y = (test_pt.y() - y_line) % height_y
 
             y = -1
-            if abs(testY) <= tolerance:
-                y = pt.y() - testY
-            elif abs(yLine - testY) <= tolerance:
-                y = pt.y() - testY + heightY
-            
+            if abs(test_y) <= tolerance:
+                y = test_pt.y() - test_y
+            elif abs(y_line - test_y) <= tolerance:
+                y = test_pt.y() - test_y + height_y
+
             if y != -1:
-                dx = 0-int(y * angleDX)
-                testX = (pt.x() - dx) % widthX
+                dx = 0-int(y * angle_dx)
+                test_x = (test_pt.x() - dx) % width_x
 
                 x = -1
-                if abs(testX) <= tolerance:
-                    x = pt.x() - testX          
-                elif abs(widthX - testX) <= tolerance:
-                    x = pt.x() - testX + widthX
+                if abs(test_x) <= tolerance:
+                    x = test_pt.x() - test_x          
+                elif abs(width_x - test_x) <= tolerance:
+                    x = test_pt.x() - test_x + width_x
 
-                if x != -1 and (abs(pt.x() - x) <= tolerance*2 and abs(pt.y() - y) <= tolerance*2):
+                if x != -1 and (abs(test_pt.x() - x) <= tolerance*2 and \
+                    abs(test_pt.y() - y) <= tolerance*2):
                     return QtCore.QPoint(x, y)
 
-        return gridPt
+        return grid_pt

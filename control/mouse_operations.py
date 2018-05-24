@@ -112,8 +112,8 @@ class MouseController(object):
             
             snap_ctrl = self.__main_ctrl.get_snap_controller()
             stroke_ctrl = self.__main_ctrl.get_stroke_controller()
-            if snap_ctrl.getSnap() > 0:
-                current_view.snapPoints = snap_ctrl.getSnappedPoints(norm_paper_pos)
+            if snap_ctrl.get_snap() > 0:
+                current_view.snapPoints = snap_ctrl.get_snapped_points(norm_paper_pos)
             else:
                 current_view.snapPoints = []
                     
