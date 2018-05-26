@@ -123,7 +123,7 @@ class StrokeController(object):
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
             sel_stroke = char_set.get_saved_stroke(first_item+i)
-            instances[i].setStroke(sel_stroke)
+            instances[i].set_stroke(sel_stroke)
             cur_char.add_stroke_instance(instances[i])
             if not cur_view_selection.has_key(sel_stroke):
                 cur_view_selection = {}
@@ -194,7 +194,7 @@ class StrokeController(object):
         stroke_index = ui.stroke_selector_list.currentRow()
         saved_stroke = char_set.get_saved_stroke(stroke_index)
         new_stroke_instance = stroke.StrokeInstance()
-        new_stroke_instance.setStroke(saved_stroke)
+        new_stroke_instance.set_stroke(saved_stroke)
 
         paste_instance_saved_cmd = commands.Command('paste_instance_saved_cmd')
 

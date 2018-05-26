@@ -53,7 +53,7 @@ class SnapController(object):
                         vert_index -= 1
 
                 vpos = ctrl_verts[vert_index].get_handle_pos(2)
-                stroke_pos = sel_stroke.getPos()
+                stroke_pos = sel_stroke.pos
 
                 if self.__snap & SNAP_TO_GRID:
                     snap_point = self.closest_grid_point(pos)

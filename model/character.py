@@ -36,10 +36,10 @@ class Character(object):
 
         start_x, start_y = points[0]
 
-        my_stroke.setCtrlVerticesFromList(points)
-        my_stroke.setPos(QtCore.QPoint(start_x, start_y))
+        my_stroke.set_ctrl_vertices_from_list(points)
+        my_stroke.pos = QtCore.QPoint(start_x, start_y)
 
-        my_stroke.calcCurvePoints()
+        my_stroke.calc_curve_points()
         num_points = len(points)
         if num_points == 2:
             my_stroke.straighten()
@@ -47,7 +47,7 @@ class Character(object):
         if add:
             self.__strokes.append(my_stroke)
 
-        my_stroke.setParent(self)
+        my_stroke.set_parent(self)
 
         return my_stroke
 
@@ -63,20 +63,20 @@ class Character(object):
             new_points.append(new_points[-1])
             num_points = num_points + 1
 
-        raw_cv = my_stroke.calcCtrlVertices(new_points)
+        raw_cv = my_stroke.calc_ctrl_vertices(new_points)
         for point in raw_cv:
             temp_cv.append([point[0]-start_x+1, point[1]-start_y+1])
 
-        my_stroke.setCtrlVerticesFromList(temp_cv)
-        my_stroke.setPos(QtCore.QPoint(start_x, start_y))
+        my_stroke.set_ctrl_vertices_from_list(temp_cv)
+        my_stroke.pos = QtCore.QPoint(start_x, start_y)
 
-        my_stroke.calcCurvePoints()
+        my_stroke.calc_curve_points()
         if num_points == 2:
             my_stroke.straighten()
 
         self.__strokes.append(my_stroke)
 
-        my_stroke.setParent(self)
+        my_stroke.set_parent(self)
         return my_stroke
 
     def add_stroke(self, args):
@@ -92,7 +92,7 @@ class Character(object):
 
         if copy_stroke:
             new_stroke = self.copy_stroke({STROKE: stroke_to_add})
-            new_stroke.setParent(self)
+            new_stroke.set_parent(self)
         else:
             new_stroke = stroke_to_add
 
@@ -108,18 +108,18 @@ class Character(object):
 
         new_stroke_inst = model.stroke.StrokeInstance()
         if not isinstance(stroke_to_add, model.stroke.Stroke):
-            stroke_to_add = stroke_to_add.getStroke()
+            stroke_to_add = stroke_to_add.stroke
 
-        new_stroke_inst.setStroke(stroke_to_add)
+        new_stroke_inst.stroke = stroke_to_add
         self.__strokes.append(new_stroke_inst)
-        new_stroke_inst.setParent(self)
+        new_stroke_inst.set_parent(self)
 
         return new_stroke_inst
 
     def add_stroke_instance(self, inst):
         if not isinstance(inst, model.stroke.Stroke):
             self.__strokes.append(inst)
-            inst.setParent(self)
+            inst.set_parent(self)
 
     def copy_stroke(self, args):
         if args.has_key(STROKE):

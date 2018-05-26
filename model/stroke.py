@@ -25,8 +25,8 @@ class Stroke(object):
             self.__end_serif = from_stroke.get_end_serif()
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
             self.update_ctrl_vertices()
-            self.__pos = QtCore.QPoint(from_stroke.get_pos())
-            self.__stroke_shape = from_stroke.get_stroke_shape()
+            self.__pos = QtCore.QPoint(from_stroke.pos)
+            self.__stroke_shape = from_stroke.stroke_shape
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
         else:   
@@ -429,38 +429,38 @@ class Stroke(object):
 
         gc.restore()
         
-    def insideStroke(self, pt):
-        minDist = 10
-        testPt = pt - self.__pos
+    def inside_stroke(self, pt):
+        min_dist = 10
+        test_point = pt - self.__pos
         if self.__stroke_shape is not None:
-            inside = self.__stroke_shape.contains(testPt)
+            inside = self.__stroke_shape.contains(test_point)
         else:
             inside = False
 
-        if self.__bound_rect.contains(testPt):
+        if self.__bound_rect.contains(test_point):
             if self.__is_selected:
                 for i in range(0, self.__curve_path.elementCount()):
                     element = self.__curve_path.elementAt(i)
                     dist = math.sqrt(
-                        math.pow(element.x-testPt.x(), 2) +
-                        math.pow(element.y-testPt.y(), 2)
+                        math.pow(element.x-test_point.x(), 2) +
+                        math.pow(element.y-test_point.y(), 2)
                     )
                     if dist < self.__handle_size:
                         return (True, i, None)
                 
                 if inside:
                     # get exact point
-                    hitPoint = None
-                    testBox = QtCore.QRect(testPt.x()-2, testPt.y()-2, 4, 4)
+                    hit_point = None
+                    testBox = QtCore.QRect(test_point.x()-2, test_point.y()-2, 4, 4)
                     for i in range(0, 100):
                         pct = float(i) / 100.0
                         curvePt = self.__curve_path.pointAtPercent(pct)
                         if testBox.contains(int(curvePt.x()), int(curvePt.y())):
-                            hitPoint = pct
+                            hit_point = pct
                             break
  
-                    if hitPoint is not None:
-                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * hitPoint)),  hitPoint)
+                    if hit_point is not None:
+                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * hit_point)),  hit_point)
                     else:
                         return (True, -1, None)
 
@@ -472,21 +472,21 @@ class Stroke(object):
     def get_bound_rect(self):
         return self.__bound_rect
 
-    def setBoundRect(self, newBoundRect):
-        if newBoundRect is not None:
-            self.__bound_rect = newBoundRect
+    def set_bound_rect(self, new_bound_rect):
+        if new_bound_rect is not None:
+            self.__bound_rect = new_bound_rect
         
-    boundRect = property(get_bound_rect, setBoundRect)
+    bound_rect = property(get_bound_rect, set_bound_rect)
 
-    def getSelectState(self):
+    def get_select_state(self):
         return self.__is_selected
 
-    def setSelectState(self, newState):
+    def set_select_state(self, newState):
         self.__is_selected = newState
 
-    selected = property(getSelectState, setSelectState)
+    selected = property(get_select_state, set_select_state)
 
-    def deselectCtrlVerts(self):
+    def deselect_ctrl_verts(self):
         for vert in self.__stroke_ctrl_verts:
             vert.select_handle(None)
 
@@ -496,15 +496,15 @@ class Stroke(object):
     def set_stroke_shape(self, newStrokeShape):
         self.__stroke_shape = newStrokeShape
 
-    strokeShape = property(get_stroke_shape, set_stroke_shape)
+    stroke_shape = property(get_stroke_shape, set_stroke_shape)
 
-    def getCurvePath(self):
+    def get_curve_path(self):
         return self.__curve_path
 
-    def setCurvePath(self, newCurvePath):
+    def set_curve_path(self, newCurvePath):
         self.__curve_path = newCurvePath
 
-    curvePath = property(getCurvePath, setCurvePath)
+    curve_path = property(get_curve_path, set_curve_path)
 
 
 class StrokeInstance(object):
@@ -528,7 +528,7 @@ class StrokeInstance(object):
 
     pos = property(get_pos, set_pos)
 
-    def setStroke(self, stroke):
+    def set_stroke(self, stroke):
         if self.__stroke:
             self.__stroke.remove_instance(self)
 
@@ -539,18 +539,18 @@ class StrokeInstance(object):
 
         self.__stroke.add_instance(self)
 
-    def getStroke(self):
+    def get_stroke(self):
         return self.__stroke
 
-    stroke = property(getStroke, setStroke)
+    stroke = property(get_stroke, set_stroke)
 
-    def setParent(self, parent):
+    def set_parent(self, parent):
         self.__parent = parent
 
-    def getParent(self):
+    def get_parent(self):
         return self.__parent
 
-    parent = property(getParent, setParent)
+    parent = property(get_parent, set_parent)
 
     def get_stroke_shape(self):
         return self.__stroke.get_stroke_shape()
@@ -566,20 +566,20 @@ class StrokeInstance(object):
         if self.__stroke == None:
             return
 
-        strokeToDraw = Stroke(from_stroke=self.__stroke)
+        stroke_to_draw = Stroke(from_stroke=self.__stroke)
 
         #
         # perform overrides
         #
 
-        strokePos = self.__stroke.get_pos()     
+        stroke_pos = self.__stroke.pos 
         gc.save()
 
-        gc.translate(-strokePos)
+        gc.translate(-stroke_pos)
         gc.translate(self.__pos)
 
-        strokeToDraw.draw(gc, 0, nib)
-        self.__bound_rect = strokeToDraw.boundRect
+        stroke_to_draw.draw(gc, 0, nib)
+        self.__bound_rect = stroke_to_draw.bound_rect
         gc.restore()
 
         if self.__is_selected or show_ctrl_verts:
@@ -593,18 +593,14 @@ class StrokeInstance(object):
             
             gc.restore()
 
-
-    def getHitPoint(self, idx):
-        return self.__stroke.getHitPoint(idx)
-
     def get_bound_rect(self):
         return self.__stroke.get_bound_rect()
 
-    def insideStroke(self, pt):
+    def inside_stroke(self, pt):
         if self.__stroke is not None:
-            strokePos = self.__stroke.get_pos()
-            testPt = pt + strokePos - self.__pos
-            inside = self.__stroke.insideStroke(testPt)
+            stroke_pos = self.__stroke.pos
+            test_point = pt + stroke_pos - self.__pos
+            inside = self.__stroke.inside_stroke(test_point)
         else:
             inside = (False, -1, None)
 
@@ -613,17 +609,17 @@ class StrokeInstance(object):
     def get_ctrl_vertices(self, copy=False):
         return []
 
-    def deselectCtrlVerts(self):
+    def deselect_ctrl_verts(self):
         if self.__stroke:
-            self.__stroke.deselectCtrlVerts()
+            self.__stroke.deselect_ctrl_verts()
 
-    def getSelectState(self):
+    def get_select_state(self):
         return self.__is_selected
 
-    def setSelectState(self, newState):
+    def set_select_state(self, newState):
         self.__is_selected = newState
 
-    selected = property(getSelectState, setSelectState)
+    selected = property(get_select_state, set_select_state)
 
     def calc_curve_points(self):
         if self.__stroke:
