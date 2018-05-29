@@ -450,7 +450,7 @@ class Stroke(object):
                 if inside:
                     # get exact point
                     hit_point = None
-                    test_box = QtCore.QRect(test_point.x()-2, test_point.y()-2, 4, 4)
+                    test_box = QtCore.QRect(test_point.x()-2, test_point.y()-2, 10, 10)
                     for i in range(0, 100):
                         pct = float(i) / 100.0
                         curve_point = self.__curve_path.pointAtPercent(pct)
