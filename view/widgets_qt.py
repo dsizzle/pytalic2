@@ -37,11 +37,11 @@ class DoubleClickSplitter(QtGui.QSplitter):
     def __init__(self, parent):
         QtGui.QSplitter.__init__(self, parent)
         self.__parent = parent
-        self.__max_pane_width = 0
+        self.__max_pane_size = 0
         self.__pane_to_close = 1
 
     def createHandle(self):
-        splitter_handle = DoubleClickSplitterHandle(1, self)
+        splitter_handle = DoubleClickSplitterHandle(self.orientation(), self)
         QtCore.QObject.connect(splitter_handle, QtCore.SIGNAL("doubleClickSignal"), \
             self.onSashDoubleClick)
         return splitter_handle
@@ -49,21 +49,28 @@ class DoubleClickSplitter(QtGui.QSplitter):
     def onSashDoubleClick(self):
         max_pane = self.widget(self.__pane_to_close)
 
-        if self.__max_pane_width == 0:
-            self.__max_pane_width = max_pane.width()
+        size_to_use = max_pane.width()
+        cur_size = self.width()
 
-        if max_pane.size().width() > 0:
-            self.moveSplitter(self.width(), 1)
+        if self.orientation() == QtCore.Qt.Vertical:
+            size_to_use = max_pane.height()
+            cur_size = self.height()
+
+        if self.__max_pane_size == 0:
+            self.__max_pane_size = size_to_use
+
+        if size_to_use > 0:
+            self.moveSplitter(cur_size, 1)
         else:
-            self.moveSplitter(self.width()-self.__max_pane_width, 1)
-
+            self.moveSplitter(cur_size - self.__max_pane_size, 1)
+        
         self.repaint()
 
-    def setMaxPaneWidth(self, width):
-        self.__max_pane_width = width
+    def setMaxPaneSize(self, new_size):
+        self.__max_pane_size = new_size
 
-    def getMaxPaneWidth(self):
-        return self.__max_pane_width
+    def getMaxPaneSize(self):
+        return self.__max_pane_size
 
 
 class DoubleClickSplitterHandle(QtGui.QSplitterHandle):

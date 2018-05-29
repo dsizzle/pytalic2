@@ -55,8 +55,8 @@ class EditInterface(QtGui.QMainWindow):
         wid20 = self.width() - wid80
 
         self.main_splitter = view.widgets_qt.DoubleClickSplitter(self.main_widget)
-        self.side_splitter = QtGui.QSplitter(self.main_splitter)
-        self.side_splitter.setOrientation(2)
+        self.side_splitter = view.widgets_qt.DoubleClickSplitter(self.main_splitter)
+        self.side_splitter.setOrientation(QtCore.Qt.Vertical)
 
         self.char_selector_layout.setMargin(0)
         self.char_selector_layout.setSpacing(0)
@@ -326,11 +326,15 @@ class EditInterface(QtGui.QMainWindow):
 
         self.main_splitter.addWidget(self.main_view_tabs)
         self.main_splitter.addWidget(self.side_splitter)
+
         self.side_splitter.addWidget(self.tool_pane)
         self.side_splitter.addWidget(self.bottom_pane)
+        self.side_splitter.setCollapsible(0, False)
+        self.side_splitter.setCollapsible(1, True)
+        self.side_splitter.setMaxPaneSize(self.height() / 2)
         self.side_splitter.setSizes([self.height(), 0])
 
-        self.main_splitter.setMaxPaneWidth(wid20)
+        self.main_splitter.setMaxPaneSize(wid20)
         self.main_splitter.setSizes([wid80, wid20])
 
         self.view_layout.addWidget(self.main_splitter)
@@ -341,6 +345,7 @@ class EditInterface(QtGui.QMainWindow):
         main_size_policy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, \
             QtGui.QSizePolicy.Expanding)
         self.main_splitter.setSizePolicy(main_size_policy)
+        self.side_splitter.setSizePolicy(main_size_policy)
 
         self.dwg_area.setSizePolicy(main_size_policy)
         self.stroke_dwg_area.setSizePolicy(main_size_policy)
