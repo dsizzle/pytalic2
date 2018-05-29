@@ -1,352 +1,357 @@
-from PyQt4 import QtCore, QtGui
-
 import math
 
+from PyQt4 import QtCore, QtGui
+
 from model import nibs
-import shared_qt
+import view.shared_qt
 
-class drawingArea(QtGui.QFrame):
-	def __init__(self, parent):
-		QtGui.QWidget.__init__(self, parent)
-		self.setFocusPolicy(QtCore.Qt.ClickFocus)
-		self.setMouseTracking(True)
+class DrawingArea(QtGui.QFrame):
+    def __init__(self, parent):
+        QtGui.QFrame.__init__(self, parent)
+        self.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.setMouseTracking(True)
 
-		self.__origin = None
-		self.__originDelta = QtCore.QPoint(0, 0)
-		self.__scale = 1.0
-		self.__bgColor = QtGui.QColor(240, 240, 230)
-		self.__bgBrush = QtGui.QBrush(self.__bgColor, QtCore.Qt.SolidPattern) 
-		
-		self.__oldViewPos = None
-		self.__moveView = False
+        self.__origin = None
+        self.__origin_delta = QtCore.QPoint(0, 0)
+        self.__scale = 1.0
+        self.__bg_color = QtGui.QColor(240, 240, 230)
+        self.__bg_brush = QtGui.QBrush(self.__bg_color, QtCore.Qt.SolidPattern)
 
-		self.__guideLines = None 
-		self.__drawGuidelines = True
-		self.__drawNibGuides = True
-		self.__pointsToDraw = []
-		self.__strokesToDraw = []
-		self.__strokesToDrawSpecial = []
-		self.__snapPoints = []
-		self.__nib = nibs.Nib(color=QtGui.QColor(125,25,25))
-		self.__instNib = nibs.Nib(color=QtGui.QColor(25,125,25))
-		self.__nibSpecial = nibs.Nib(color=QtGui.QColor(25,25,125))
-		self.__bitmap = None
-		self.__bitmapSize = 40
+        self.__old_view_pos = None
+        self.__move_view = False
 
-	def resizeEvent(self, event):
-		self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
-		self.repaint()
+        self.__guide_lines = None
+        self.__draw_guide_lines = True
+        self.__draw_nib_guides = True
+        self.__strokes_to_draw = []
+        self.__strokes_to_draw_special = []
+        self.__snap_points = []
+        self.__nib = nibs.Nib(color=QtGui.QColor(125, 25, 25))
+        self.__nib_instance = nibs.Nib(color=QtGui.QColor(25, 125, 25))
+        self.__nib_special = nibs.Nib(color=QtGui.QColor(25, 25, 125))
+        self.__bitmap = None
+        self.__bitmap_size = 40
 
-	def getBitmap(self):
-		return self.__bitmap
+    def resizeEvent(self, event):
+        self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
+        self.repaint()
 
-	def getBitmapSize(self):
-		return self.__bitmapSize
+    def get_bitmap(self):
+        return self.__bitmap
 
-	def setBitmapSize(self, newBitmapSize):
-		self.__bitmapSize = newBitmapSize
+    def get_bitmap_size(self):
+        return self.__bitmap_size
 
-	bitmapSize = property(getBitmapSize, setBitmapSize)
+    def set_bitmap_size(self, new_bitmap_size):
+        self.__bitmap_size = new_bitmap_size
 
-	def getScale(self):
-		return self.__scale
+    bitmap_size = property(get_bitmap_size, set_bitmap_size)
 
-	def setScale(self, newScale):
-		self.__scale = newScale
-		if self.__scale < 0.01:
-			self.__scale = 0.01
-		elif self.__scale > 10.0:
-			self.__scale = 10.0
+    def get_scale(self):
+        return self.__scale
 
-	scale = property(getScale, setScale)
-		
-	def getOriginDelta(self):
-		return self.__originDelta
+    def set_scale(self, new_scale):
+        self.__scale = new_scale
+        if self.__scale < 0.01:
+            self.__scale = 0.01
+        elif self.__scale > 10.0:
+            self.__scale = 10.0
 
-	def setOriginDelta(self, newOriginDelta):
-		self.__originDelta = newOriginDelta
+    scale = property(get_scale, set_scale)
 
-	originDelta = property(getOriginDelta, setOriginDelta)
+    def get_origin_delta(self):
+        return self.__origin_delta
 
-	def getOrigin(self):
-		return self.__origin
+    def set_origin_delta(self, new_origin_delta):
+        self.__origin_delta = new_origin_delta
 
-	def getDrawGuidelines(self):
-		return self.__drawGuidelines
+    origin_delta = property(get_origin_delta, set_origin_delta)
 
-	def setDrawGuidelines(self, value):
-		self.__drawGuidelines = value
+    def get_origin(self):
+        return self.__origin
 
-	drawGuidelines = property(getDrawGuidelines, setDrawGuidelines)
+    def get_draw_guidelines(self):
+        return self.__draw_guide_lines
 
-	def getDrawNibGuides(self):
-		return self.__drawNibGuides
+    def set_draw_guidelines(self, value):
+        self.__draw_guide_lines = value
 
-	def setDrawNibGuides(self, value):
-		self.__drawNibGuides = value
+    draw_guidelines = property(get_draw_guidelines, set_draw_guidelines)
 
- 	drawNibGuides = property(getDrawNibGuides, setDrawNibGuides)
+    def get_draw_nib_guides(self):
+        return self.__draw_nib_guides
 
-	def setDrawStrokesSpecial(self, strokes):
-		self.__strokesToDrawSpecial = strokes
+    def set_draw_nib_guides(self, value):
+        self.__draw_nib_guides = value
 
-	def getDrawStrokesSpecial(self):
-		return self.__strokesToDrawSpecial
+    draw_nib_guides = property(get_draw_nib_guides, set_draw_nib_guides)
 
-	strokesSpecial = property(getDrawStrokesSpecial, setDrawStrokesSpecial)
+    def set_draw_strokes_special(self, strokes):
+        self.__strokes_to_draw_special = strokes
 
-	def setDrawStrokes(self, strokes):
-		self.__strokesToDraw = strokes
+    def get_draw_strokes_special(self):
+        return self.__strokes_to_draw_special
 
-	def getDrawStrokes(self):
-		return self.__strokesToDraw
-
-	strokes = property(getDrawStrokes, setDrawStrokes)
-
-	def setSnapPoints(self, points):
-		self.__snapPoints = points
-
-	def getSnapPoints(self):
-		return self.__snapPoints
-
-	snapPoints = property(getSnapPoints, setSnapPoints)
-
-	def getGuidelines(self):
-		return self.__guideLines
-
-	def setGuidelines(self, newGuides):
-		self.__guideLines = newGuides
-	
-	def getNib(self):
-		return self.__nib
-
-	def setNib(self, newNib):
-		self.__nib = newNib
-
-	nib = property(getNib, setNib)
-
-	def getInstNib(self):
-		return self.__instNib
-
-	def setInstNib(self, newNib):
-		self.__instNib = newNib
-
-	instNib = property(getInstNib, setInstNib)
-
-	def getNormalizedPosition(self, rawPos):
-		normPos = rawPos
-		normPos = normPos - self.__origin - self.__originDelta
-		normPos = normPos / self.__scale
-		
-		return normPos
-
-	def drawIcon(self, dc, strokesToDraw):
-		pixMap = QtGui.QPixmap(self.width(), self.height())
-		
-		if dc is None:
-			dc = QtGui.QPainter()
-
-		dc.begin(pixMap)
- 		dc.setRenderHint(QtGui.QPainter.Antialiasing)
-		
- 		dc.setBackground(self.__bgBrush)
- 		dc.eraseRect(self.frameRect())
- 		# for icon only translate to origin, not actual view position
-
- 		dc.translate(self.__origin)
- 		if len(strokesToDraw) > 0:
-			tmpStrokes = strokesToDraw[:]
-
-			while(len(tmpStrokes)):
-				stroke = tmpStrokes.pop()
-				stroke.draw(dc, False, nib=self.__nibSpecial) 
-
- 		dc.end()
- 		
- 		return pixMap.scaled(self.__bitmapSize, self.__bitmapSize, QtCore.Qt.KeepAspectRatioByExpanding, 1)
-
-	def paintEvent(self, event):
-		nibPixmap = QtGui.QPixmap(20, 2)
-
-		dc = QtGui.QPainter()
-
-		nibBrush = shared_qt.BRUSH_GREEN_SOLID 
-		dc.begin(nibPixmap)
-		dc.setRenderHint(QtGui.QPainter.Antialiasing)
-		dc.setBrush(nibBrush)
-		dc.eraseRect(self.frameRect())
-		dc.fillRect(self.frameRect(), QtGui.QColor(128, 0, 0, 180))
-		dc.end()
-		
-		self.__bitmap = self.drawIcon(dc, self.__strokesToDraw)
-
-		dc.begin(self)
-		dc.setRenderHint(QtGui.QPainter.Antialiasing)
-
-		dc.setBackground(self.__bgBrush)
-		dc.eraseRect(self.frameRect())
-		dc.save()
-		dc.translate(self.__origin + self.__originDelta)
-		dc.scale(self.__scale, self.__scale)
-
-		if self.__drawGuidelines:
-			self.__guideLines.draw(dc, self.size(), self.__origin + self.__originDelta)
-
-		if self.__drawNibGuides:
-			nibGuideWidth = self.__guideLines.nominal_width
-			nibGuideBasePosX = 0-(nibGuideWidth * 2 * self.__nib.width) - self.__nib.width * 2
-			nibGuideBasePosY = 0
-			nibGuideBaseHeight = self.__guideLines.base_height
-			nibGuideAscentPosY = nibGuideBasePosY - nibGuideBaseHeight * self.__nib.width * 2
-			nibGuideAscent = self.__guideLines.ascent_height
-			nibGuideDescent = self.__guideLines.descent_height
-			nibGuideDescentPosY = nibGuideBasePosY + nibGuideDescent * self.__nib.width * 2
-			
-
-			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY, nibGuideBaseHeight)
-			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideAscentPosY, nibGuideAscent)
-			self.__nib.vertNibWidthScale(dc, nibGuideBasePosX-self.__nib.width*2, nibGuideDescentPosY, nibGuideDescent)
-			self.__nib.horzNibWidthScale(dc, nibGuideBasePosX, nibGuideBasePosY+self.__nib.width*2, nibGuideWidth)
-
-		dc.setPen(shared_qt.PEN_LT_GRAY)
-		dc.setBrush(shared_qt.BRUSH_CLEAR)
-		dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)		
-				
-		if len(self.__strokesToDraw) > 0:
-			tmpStrokes = self.__strokesToDraw[:]
-
-			while(len(tmpStrokes)):
-				strk = tmpStrokes.pop()
-				if type(strk).__name__ == 'Stroke':
-					strk.draw(dc, False, nib=self.__nib)
-				else:
-					strk.draw(dc, False, nib=self.__instNib)
-
-		if len(self.__strokesToDrawSpecial) > 0:
-			tmpStrokes = self.__strokesToDrawSpecial[:]
-
-			while(len(tmpStrokes)):
-				strk = tmpStrokes.pop()
-				strk.draw(dc, True, nib=self.__nibSpecial)
-				
-
-		if len(self.__snapPoints) > 0:
-			dc.setPen(shared_qt.PEN_DK_GRAY_DASH_2)
-			dc.setBrush(shared_qt.BRUSH_CLEAR)
-			
-			if len(self.__snapPoints) > 1:
-				delta = self.__snapPoints[0] - self.__snapPoints[1]
-				 
-				vecLen = math.sqrt(delta.x() * delta.x() + delta.y() * delta.y())
-
-				if vecLen != 0:
-					delta = delta * 50 / vecLen
-				else:
-					delta = QtCore.QPoint(0, 0)
-					
-				dc.drawLine(self.__snapPoints[0], self.__snapPoints[0] + delta)
-				dc.drawLine(self.__snapPoints[1], self.__snapPoints[1] - delta)
-			else:
-				dc.drawEllipse(self.__snapPoints[0], 20, 20)
-
-		dc.restore()
-		dc.end()
-		QtGui.QFrame.paintEvent(self,event)
-
-
-class layoutArea(QtGui.QFrame):
-	def __init__(self, parent):
-		QtGui.QWidget.__init__(self, parent)
-		self.setFocusPolicy(QtCore.Qt.ClickFocus)
-		self.setMouseTracking(True)
-
-		self.__origin = None
-		self.__originDelta = QtCore.QPoint(0, 0)
-		self.__scale = 1.0
-		self.__bgColor = QtGui.QColor(240, 240, 230)
-		self.__bgBrush = QtGui.QBrush(self.__bgColor, QtCore.Qt.SolidPattern) 
-
-		self.__layout = []		
-		self.__strokesToDraw = []
-
-		self.__oldViewPos = None
-		self.__moveView = False
-
-		self.__nib = nibs.Nib(color=QtGui.QColor(125,25,25))
-
-	def resizeEvent(self, event):
-		self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
-		self.repaint()
-
-	def getScale(self):
-		return self.__scale
-
-	def setScale(self, newScale):
-		self.__scale = newScale
-		if self.__scale < 0.01:
-			self.__scale = 0.01
-		elif self.__scale > 10.0:
-			self.__scale = 10.0
-
-	scale = property(getScale, setScale)
-		
-	def getOriginDelta(self):
-		return self.__originDelta
-
-	def setOriginDelta(self, newOriginDelta):
-		self.__originDelta = newOriginDelta
-
-	originDelta = property(getOriginDelta, setOriginDelta)
-
-	def getOrigin(self):
-		return self.__origin
-	
-	def getNib(self):
-		return self.__nib
-
-	def setNib(self, newNib):
-		self.__nib = newNib
-
-	nib = property(getNib, setNib)
-
-	def getNormalizedPosition(self, rawPos):
-		normPos = rawPos
-		normPos = normPos - self.__origin - self.__originDelta
-		normPos = normPos / self.__scale
-		
-		return normPos
-
-	def setDrawStrokes(self, strokes):
-		self.__strokesToDraw = strokes
-
-	def getDrawStrokes(self):
-		return self.__strokesToDraw
-
-	strokes = property(getDrawStrokes, setDrawStrokes)
-
-	def setLayout(self, layout):
-		self.__layout = layoout
-
-	def getLayout(self):
-		return self.__layout
-
-	layout = property(getLayout, setLayout)
-
-	def paintEvent(self, event):
-		dc = QtGui.QPainter()
-
-		dc.begin(self)
-		dc.setRenderHint(QtGui.QPainter.Antialiasing)
-
-		dc.setBackground(self.__bgBrush)
-		dc.eraseRect(self.frameRect())
-		dc.save()
-		dc.translate(self.__origin + self.__originDelta)
-		dc.scale(self.__scale, self.__scale)
-
-		for character in self.__layout:
-			pass
-
-		dc.restore()
-		dc.end()
-		QtGui.QFrame.paintEvent(self,event)
+    strokes_special = property(get_draw_strokes_special, set_draw_strokes_special)
+
+    def set_draw_strokes(self, strokes):
+        self.__strokes_to_draw = strokes
+
+    def get_draw_strokes(self):
+        return self.__strokes_to_draw
+
+    strokes = property(get_draw_strokes, set_draw_strokes)
+
+    def set_snap_points(self, points):
+        self.__snap_points = points
+
+    def get_snap_points(self):
+        return self.__snap_points
+
+    snap_points = property(get_snap_points, set_snap_points)
+
+    def get_guidelines(self):
+        return self.__guide_lines
+
+    def set_guidelines(self, new_guides):
+        self.__guide_lines = new_guides
+
+    def get_nib(self):
+        return self.__nib
+
+    def set_nib(self, new_nib):
+        self.__nib = new_nib
+
+    nib = property(get_nib, set_nib)
+
+    def get_nib_instance(self):
+        return self.__nib_instance
+
+    def set_nib_instance(self, new_nib):
+        self.__nib_instance = new_nib
+
+    nib_instance = property(get_nib_instance, set_nib_instance)
+
+    def get_normalized_position(self, raw_position):
+        norm_position = raw_position
+        norm_position = norm_position - self.__origin - self.__origin_delta
+        norm_position = norm_position / self.__scale
+
+        return norm_position
+
+    def draw_icon(self, dc, strokes_to_draw):
+        pixmap = QtGui.QPixmap(self.width(), self.height())
+
+        if dc is None:
+            dc = QtGui.QPainter()
+
+        dc.begin(pixmap)
+        dc.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        dc.setBackground(self.__bg_brush)
+        dc.eraseRect(self.frameRect())
+        # for icon only translate to origin, not actual view position
+
+        dc.translate(self.__origin)
+        if len(strokes_to_draw) > 0:
+            tmp_strokes = strokes_to_draw[:]
+
+            while len(tmp_strokes):
+                stroke = tmp_strokes.pop()
+                stroke.draw(dc, False, nib=self.__nib_special) 
+
+        dc.end()
+
+        return pixmap.scaled(self.__bitmap_size, self.__bitmap_size, \
+            QtCore.Qt.KeepAspectRatioByExpanding, 1)
+
+    def paintEvent(self, event):
+        nib_pixmap = QtGui.QPixmap(20, 2)
+
+        dc = QtGui.QPainter()
+
+        nib_brush = view.shared_qt.BRUSH_GREEN_SOLID 
+        dc.begin(nib_pixmap)
+        dc.setRenderHint(QtGui.QPainter.Antialiasing)
+        dc.setBrush(nib_brush)
+        dc.eraseRect(self.frameRect())
+        dc.fillRect(self.frameRect(), QtGui.QColor(128, 0, 0, 180))
+        dc.end()
+
+        self.__bitmap = self.draw_icon(dc, self.__strokes_to_draw)
+
+        dc.begin(self)
+        dc.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        dc.setBackground(self.__bg_brush)
+        dc.eraseRect(self.frameRect())
+        dc.save()
+        dc.translate(self.__origin + self.__origin_delta)
+        dc.scale(self.__scale, self.__scale)
+
+        if self.__draw_guide_lines:
+            self.__guide_lines.draw(dc, self.size(), self.__origin + self.__origin_delta)
+
+        if self.__draw_nib_guides:
+            nib_guide_width = self.__guide_lines.nominal_width
+            nib_guide_base_pos_x = 0-(nib_guide_width * 2 * self.__nib.width) - \
+                self.__nib.width * 2
+            nib_guide_base_pos_y = 0
+            nib_guide_base_height = self.__guide_lines.base_height
+            nib_guide_ascent_pos_y = nib_guide_base_pos_y - nib_guide_base_height * \
+                self.__nib.width * 2
+            nib_guide_ascent = self.__guide_lines.ascent_height
+            nib_guide_descent = self.__guide_lines.descent_height
+            nib_guide_descent_pos_y = nib_guide_base_pos_y + nib_guide_descent * \
+                self.__nib.width * 2
+
+            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x, \
+                nib_guide_base_pos_y, nib_guide_base_height)
+            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
+                nib_guide_ascent_pos_y, nib_guide_ascent)
+            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
+                nib_guide_descent_pos_y, nib_guide_descent)
+            self.__nib.horzNibWidthScale(dc, nib_guide_base_pos_x, \
+                nib_guide_base_pos_y+self.__nib.width*2, nib_guide_width)
+
+        dc.setPen(view.shared_qt.PEN_LT_GRAY)
+        dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+        dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
+
+        if len(self.__strokes_to_draw) > 0:
+            tmp_strokes = self.__strokes_to_draw[:]
+
+            while len(tmp_strokes):
+                strk = tmp_strokes.pop()
+                if type(strk).__name__ == 'Stroke':
+                    strk.draw(dc, False, nib=self.__nib)
+                else:
+                    strk.draw(dc, False, nib=self.__nib_instance)
+
+        if len(self.__strokes_to_draw_special) > 0:
+            tmp_strokes = self.__strokes_to_draw_special[:]
+
+            while len(tmp_strokes):
+                strk = tmp_strokes.pop()
+                strk.draw(dc, True, nib=self.__nib_special)
+
+        if len(self.__snap_points) > 0:
+            dc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_2)
+            dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+
+            if len(self.__snap_points) > 1:
+                delta = self.__snap_points[0] - self.__snap_points[1]
+
+                vec_length = math.sqrt(delta.x() * delta.x() + delta.y() * delta.y())
+
+                if vec_length != 0:
+                    delta = delta * 50 / vec_length
+                else:
+                    delta = QtCore.QPoint(0, 0)
+
+                dc.drawLine(self.__snap_points[0], self.__snap_points[0] + delta)
+                dc.drawLine(self.__snap_points[1], self.__snap_points[1] - delta)
+            else:
+                dc.drawEllipse(self.__snap_points[0], 20, 20)
+
+        dc.restore()
+        dc.end()
+        QtGui.QFrame.paintEvent(self, event)
+
+
+class LayoutArea(QtGui.QFrame):
+    def __init__(self, parent):
+        QtGui.QFrame.__init__(self, parent)
+        self.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.setMouseTracking(True)
+
+        self.__origin = None
+        self.__origin_delta = QtCore.QPoint(0, 0)
+        self.__scale = 1.0
+        self.__bg_color = QtGui.QColor(240, 240, 230)
+        self.__bg_brush = QtGui.QBrush(self.__bg_color, QtCore.Qt.SolidPattern)
+
+        self.__layout = []
+        self.__strokes_to_draw = []
+
+        self.__old_view_pos = None
+        self.__move_view = False
+
+        self.__nib = nibs.Nib(color=QtGui.QColor(125, 25, 25))
+
+    def resizeEvent(self, event):
+        self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
+        self.repaint()
+
+    def get_scale(self):
+        return self.__scale
+
+    def set_scale(self, new_scale):
+        self.__scale = new_scale
+        if self.__scale < 0.01:
+            self.__scale = 0.01
+        elif self.__scale > 10.0:
+            self.__scale = 10.0
+
+    scale = property(get_scale, set_scale)
+
+    def get_origin_delta(self):
+        return self.__origin_delta
+
+    def set_origin_delta(self, new_origin_delta):
+        self.__origin_delta = new_origin_delta
+
+    origin_delta = property(get_origin_delta, set_origin_delta)
+
+    def get_origin(self):
+        return self.__origin
+
+    def get_nib(self):
+        return self.__nib
+
+    def set_nib(self, new_nib):
+        self.__nib = new_nib
+
+    nib = property(get_nib, set_nib)
+
+    def get_normalized_position(self, raw_position):
+        norm_position = raw_position
+        norm_position = norm_position - self.__origin - self.__origin_delta
+        norm_position = norm_position / self.__scale
+
+        return norm_position
+
+    def set_draw_strokes(self, strokes):
+        self.__strokes_to_draw = strokes
+
+    def get_draw_strokes(self):
+        return self.__strokes_to_draw
+
+    strokes = property(get_draw_strokes, set_draw_strokes)
+
+    def set_layout(self, layout):
+        self.__layout = layout
+
+    def get_layout(self):
+        return self.__layout
+
+    layout = property(get_layout, set_layout)
+
+    def paintEvent(self, event):
+        dc = QtGui.QPainter()
+
+        dc.begin(self)
+        dc.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        dc.setBackground(self.__bg_brush)
+        dc.eraseRect(self.frameRect())
+        dc.save()
+        dc.translate(self.__origin + self.__origin_delta)
+        dc.scale(self.__scale, self.__scale)
+
+        for character in self.__layout:
+            pass
+
+        dc.restore()
+        dc.end()
+        QtGui.QFrame.paintEvent(self, event)

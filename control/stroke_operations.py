@@ -44,7 +44,7 @@ class StrokeController(object):
 
         self.__stroke_pts = []
         self.__tmp_stroke = stroke.Stroke()
-        ui.dwg_area.strokesSpecial.append(self.__tmp_stroke)
+        ui.dwg_area.strokes_special.append(self.__tmp_stroke)
 
     def save_stroke(self):
         selected_strokes = []
@@ -114,7 +114,7 @@ class StrokeController(object):
 
         for sel_stroke in cur_view_selection:
             char_set.save_stroke(sel_stroke)
-            bitmap = ui.dwg_area.drawIcon(None, [sel_stroke])
+            bitmap = ui.dwg_area.draw_icon(None, [sel_stroke])
             ui.stroke_selector_list.addItem(str(first_item+i))
             cur_item = ui.stroke_selector_list.item(first_item+i)
             ui.stroke_selector_list.setCurrentRow(first_item+i)
@@ -634,7 +634,7 @@ class StrokeController(object):
             self.__main_ctrl.state = control.edit_control.IDLE
             self.__tmp_stroke = None
             self.__stroke_pts = []
-            current_view.strokesSpecial = []
+            current_view.strokes_special = []
             ui.repaint()
             return
 
@@ -661,7 +661,7 @@ class StrokeController(object):
 
         cur_view_selection[self.__tmp_stroke] = {}
         self.__tmp_stroke.selected = True
-        current_view.strokesSpecial = []
+        current_view.strokes_special = []
         self.__tmp_stroke = None
 
         self.__main_ctrl.set_ui_state_selection(True)

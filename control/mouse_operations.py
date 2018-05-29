@@ -107,15 +107,15 @@ class MouseController(object):
             current_view.originDelta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
         elif self.__main_ctrl.state == edit_control.DRAGGING:
-            norm_paper_pos = current_view.getNormalizedPosition(paper_pos) 
+            norm_paper_pos = current_view.get_normalized_position(paper_pos) 
             delta_pos = paper_pos - norm_paper_pos
             
             snap_ctrl = self.__main_ctrl.get_snap_controller()
             stroke_ctrl = self.__main_ctrl.get_stroke_controller()
             if snap_ctrl.get_snap() > 0:
-                current_view.snapPoints = snap_ctrl.get_snapped_points(norm_paper_pos)
+                current_view.snap_points = snap_ctrl.get_snapped_points(norm_paper_pos)
             else:
-                current_view.snapPoints = []
+                current_view.snap_points = []
                     
             delta = (paper_pos - self.__saved_mouse_pos_paper[current_view]) / current_view.scale
             self.__move_delta += delta
@@ -125,8 +125,8 @@ class MouseController(object):
                 'delta' : delta,
             }
 
-            if len(current_view.snapPoints) > 0:
-                args['snap_point'] = current_view.snapPoints[0]
+            if len(current_view.snap_points) > 0:
+                args['snap_point'] = current_view.snap_points[0]
 
             stroke_ctrl.move_selected(args)
         elif left_down and alt_down and self.__main_ctrl.state == edit_control.IDLE:
@@ -165,9 +165,9 @@ class MouseController(object):
         adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui.main_view_tabs.tabBar().height())
 
-        paper_pos = current_view.getNormalizedPosition(adjusted_pos)
+        paper_pos = current_view.get_normalized_position(adjusted_pos)
         
-        current_view.snapPoints = []
+        current_view.snap_points = []
         if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
             stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)

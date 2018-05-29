@@ -60,7 +60,7 @@ class EditorController(object):
 
         for idx in range(0, self.__ui.char_selector_list.count()):
             self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
-        self.__ui.dwg_area.bitmapSize = ICON_SIZE
+        self.__ui.dwg_area.bitmap_size = ICON_SIZE
 
         self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
@@ -204,23 +204,23 @@ class EditorController(object):
             self.load(file_name)
 
             self.__ui.base_height_spin.setValue(self.__char_set.base_height)
-            self.__ui.guide_lines.baseHeight = self.__char_set.base_height
+            self.__ui.guide_lines.base_height = self.__char_set.base_height
             self.__ui.cap_height_spin.setValue(self.__char_set.cap_height)
-            self.__ui.guide_lines.capHeight = self.__char_set.cap_height
+            self.__ui.guide_lines.cap_height = self.__char_set.cap_height
             self.__ui.cap_height_spin.setMaximum(self.__char_set.ascent_height)
             self.__ui.ascent_height_spin.setValue(self.__char_set.ascent_height)
-            self.__ui.guide_lines.ascentHeight = self.__char_set.ascent_height
+            self.__ui.guide_lines.ascent_height = self.__char_set.ascent_height
             self.__ui.descent_height_spin.setValue(self.__char_set.descent_height)
-            self.__ui.guide_lines.descentHeight = self.__char_set.descent_height
+            self.__ui.guide_lines.descent_height = self.__char_set.descent_height
             self.__ui.angle_spin.setValue(self.__char_set.guide_angle)
-            self.__ui.guide_lines.guideAngle = self.__char_set.guide_angle
-            self.__ui.charSetNibAngleSpin.setValue(self.__char_set.nib_angle)
-            self.__ui.guide_lines.nibAngle = self.__char_set.nib_angle
+            self.__ui.guide_lines.guide_angle = self.__char_set.guide_angle
+            self.__ui.char_set_nib_angle_spin.setValue(self.__char_set.nib_angle)
+            self.__ui.guide_lines.nib_angle = self.__char_set.nib_angle
             self.__ui.dwg_area.nib.angle = self.__char_set.nib_angle
-            self.__ui.dwg_area.instNib.angle = self.__char_set.nib_angle
+            self.__ui.dwg_area.nib_instance.angle = self.__char_set.nib_angle
             self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nib_angle
             self.__ui.nominal_width_spin.setValue(self.__char_set.nominal_width)
-            self.__ui.guide_lines.nominalWidth = self.__char_set.nominal_width
+            self.__ui.guide_lines.nominal_width = self.__char_set.nominal_width
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
 
@@ -233,7 +233,7 @@ class EditorController(object):
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
                 for sel_stroke in saved_stroke_list:
-                    bitmap = self.__ui.dwg_area.drawIcon(None, [sel_stroke])
+                    bitmap = self.__ui.dwg_area.draw_icon(None, [sel_stroke])
                     self.__ui.stroke_selector_list.addItem(str(i))
                     cur_item = self.__ui.stroke_selector_list.item(i)
                     self.__ui.stroke_selector_list.setCurrentRow(i)
@@ -571,7 +571,7 @@ class EditorController(object):
         self.__ui.repaint()
 
     def set_icon(self):
-        icon_bitmap = self.__current_view_pane.getBitmap()
+        icon_bitmap = self.__current_view_pane.get_bitmap()
         if icon_bitmap:
             if self.__current_view_pane == self.__ui.dwg_area:
                 self.__cur_char.bitmap_preview = icon_bitmap
@@ -631,7 +631,7 @@ class EditorController(object):
 
         self.__property_controller.char_set_nib_angle_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.dwg_area.nib, \
-            self.__ui.dwg_area.instNib, self.__ui.stroke_dwg_area.nib])
+            self.__ui.dwg_area.nib_instance, self.__ui.stroke_dwg_area.nib])
 
     def char_width_changed_cb(self, new_value):
         prev_value = self.__cur_char.width

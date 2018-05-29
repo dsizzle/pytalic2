@@ -75,17 +75,17 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_selector_list.currentItemChanged.connect(self.__parent.stroke_selected_cb)
         self.view_layout.addWidget(self.stroke_selector_list)
 
-        self.dwg_area = view.paper.drawingArea(self.main_splitter)
+        self.dwg_area = view.paper.DrawingArea(self.main_splitter)
         self.dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
         self.dwg_area.setLineWidth(2)
 
-        self.stroke_dwg_area = view.paper.drawingArea(self)
+        self.stroke_dwg_area = view.paper.DrawingArea(self)
         self.stroke_dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
         self.stroke_dwg_area.setLineWidth(2)
         self.stroke_dwg_area.drawGuidelines = False
         self.stroke_dwg_area.drawNibGuides = False
 
-        self.preview_area = view.paper.layoutArea(self)
+        self.preview_area = view.paper.LayoutArea(self)
         self.preview_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
         self.preview_area.setLineWidth(2)
 
@@ -316,7 +316,7 @@ class EditInterface(QtGui.QMainWindow):
         self.tool_pane_layout.setSpacing(5)
         self.tool_pane_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.stroke_dwg_area.setOriginDelta(QtCore.QPoint())
+        self.stroke_dwg_area.set_origin_delta(QtCore.QPoint())
 
         self.main_view_tabs = QtGui.QTabWidget(self.main_widget)
         self.main_view_tabs.addTab(self.dwg_area, "Character")
@@ -358,8 +358,8 @@ class EditInterface(QtGui.QMainWindow):
         self.setCentralWidget(self.main_widget)
 
         self.guide_lines = guides.GuideLines()
-        self.dwg_area.setGuidelines(self.guide_lines)
-        self.stroke_dwg_area.setGuidelines(self.guide_lines)
+        self.dwg_area.set_guidelines(self.guide_lines)
+        self.stroke_dwg_area.set_guidelines(self.guide_lines)
 
     def create_menu(self):
         self.tool_bar = self.addToolBar("main")
