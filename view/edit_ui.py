@@ -5,7 +5,6 @@ from PyQt4 import QtCore, QtGui
 
 from model import guides
 import view.paper
-import view.splitter
 import view.widgets_qt
 
 ICON_SIZE = 40
@@ -55,7 +54,7 @@ class EditInterface(QtGui.QMainWindow):
         wid80 = int(self.width()*.75)
         wid20 = self.width() - wid80
 
-        self.main_splitter = view.splitter.MySplitter(self.main_widget)
+        self.main_splitter = view.widgets_qt.DoubleClickSplitter(self.main_widget)
         self.side_splitter = QtGui.QSplitter(self.main_splitter)
         self.side_splitter.setOrientation(2)
 
@@ -201,7 +200,7 @@ class EditInterface(QtGui.QMainWindow):
 
         self.guides_color_label = QtGui.QLabel(self.char_set_prop_frame)
         self.guides_color_label.setText("Guideline color:")
-        self.guides_color_button = view.widgets_qt.select_color_button(self.char_set_prop_frame)
+        self.guides_color_button = view.widgets_qt.SelectColorButton(self.char_set_prop_frame)
         self.guides_color_button.setColor(QtGui.QColor(200, 195, 180))
         QtCore.QObject.connect(self.guides_color_button, \
             QtCore.SIGNAL("valueChanged(QColor)"), \
