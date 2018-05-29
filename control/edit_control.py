@@ -495,15 +495,15 @@ class EditorController(object):
         self.__snap_controller.toggle_snap_to_ctrl_pts()
 
     def view_toggle_guidelines_cb(self, event):
-        self.__current_view_pane.drawGuidelines = not self.__current_view_pane.drawGuidelines
+        self.__current_view_pane.draw_guidelines = not self.__current_view_pane.draw_guidelines
         self.__ui.repaint()
 
     def view_toggle_nib_guides_cb(self, event):
-        self.__current_view_pane.drawNibGuides = not self.__current_view_pane.drawNibGuides
+        self.__current_view_pane.draw_nib_guides = not self.__current_view_pane.draw_nib_guides
         self.__ui.repaint()
 
     def view_reset_origin_cb(self, event):
-        self.__current_view_pane.originDelta = QtCore.QPoint(0, 0)
+        self.__current_view_pane.origin_delta = QtCore.QPoint(0, 0)
         self.__ui.repaint()
 
     def view_reset_zoom_cb(self, event):
@@ -564,8 +564,8 @@ class EditorController(object):
         else:
             self.__ui.view_guides.setEnabled(True)
             self.__ui.view_nib_guides.setEnabled(True)
-            self.__ui.view_guides.setChecked(self.__current_view_pane.drawGuidelines)
-            self.__ui.view_nib_guides.setChecked(self.__current_view_pane.drawNibGuides)
+            self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
+            self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.set_icon()
 
         self.__ui.repaint()
