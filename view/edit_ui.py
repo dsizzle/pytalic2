@@ -568,6 +568,7 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_delete.setShortcut('Backspace')
         self.stroke_delete.setIcon(QtGui.QIcon("icons/delete.png"))
         self.stroke_delete.setIconText("Delete")
+        self.stroke_delete.setEnabled(False)
         self.stroke_delete.triggered.connect(self.__parent.delete_strokes_cb)
         self.stroke_menu.addAction(self.stroke_delete)
         self.tool_bar.addAction(self.stroke_delete)

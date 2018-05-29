@@ -514,6 +514,7 @@ class EditorController(object):
         self.__ui.stroke_add_vertex.setEnabled(state)
         self.__ui.stroke_split_at_point.setEnabled(state)
         self.__ui.stroke_save.setEnabled(state)
+        self.__ui.stroke_delete.setEnabled(state)
         self.__ui.edit_cut.setEnabled(state)
         self.__ui.edit_copy.setEnabled(state)
         self.__ui.stroke_straighten.setEnabled(state)
@@ -549,8 +550,11 @@ class EditorController(object):
 
         if self.__current_view_pane == self.__ui.dwg_area:
             self.__ui.stroke_new.setEnabled(True)
+            if len(self.__selection.keys()):
+                self.set_ui_state_selection(True)
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(False)
+            self.__ui.stroke_delete.setEnabled(False)
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
             self.__ui.view_guides.setEnabled(False)
