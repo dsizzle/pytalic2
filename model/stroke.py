@@ -390,7 +390,7 @@ class Stroke(object):
             path1 = QtGui.QPainterPath(self.__curve_path)
             path2 = QtGui.QPainterPath(self.__curve_path).toReversed()
 
-            dist_x, dist_y = nib.getActualWidths()
+            dist_x, dist_y = nib.get_actual_widths()
 
             path1.translate(dist_x, -dist_y)
             path2.translate(-dist_x, dist_y)

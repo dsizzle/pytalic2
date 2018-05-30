@@ -205,13 +205,13 @@ class DrawingArea(QtGui.QFrame):
             nib_guide_descent_pos_y = nib_guide_base_pos_y + nib_guide_descent * \
                 self.__nib.width * 2
 
-            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x, \
+            self.__nib.vert_nib_width_scale(dc, nib_guide_base_pos_x, \
                 nib_guide_base_pos_y, nib_guide_base_height)
-            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
+            self.__nib.vert_nib_width_scale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
                 nib_guide_ascent_pos_y, nib_guide_ascent)
-            self.__nib.vertNibWidthScale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
+            self.__nib.vert_nib_width_scale(dc, nib_guide_base_pos_x-self.__nib.width*2, \
                 nib_guide_descent_pos_y, nib_guide_descent)
-            self.__nib.horzNibWidthScale(dc, nib_guide_base_pos_x, \
+            self.__nib.horz_nib_width_scale(dc, nib_guide_base_pos_x, \
                 nib_guide_base_pos_y+self.__nib.width*2, nib_guide_width)
 
         dc.setPen(view.shared_qt.PEN_LT_GRAY)
