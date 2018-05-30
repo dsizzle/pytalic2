@@ -649,4 +649,9 @@ class EditInterface(QtGui.QMainWindow):
         QtGui.QMainWindow.paintEvent(self, event)
 
     def closeEvent(self, event):
-        self.__parent.quit_cb(event)
+        close = self.__parent.quit_cb(event)
+
+        if close:
+            event.accept()
+        else:
+            event.ignore()

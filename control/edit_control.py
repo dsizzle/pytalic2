@@ -117,8 +117,10 @@ class EditorController(object):
         self.__mouse_controller.wheel_event(event)
 
     def quit_cb(self, event):
+        close = False
         if self.__cmd_stack.save_count == 0:
             self.__ui.close()
+            close = True
         else:
             reply = self.__ui.message_dialog.question(self.__ui, \
                 'Quit Program', \
@@ -128,6 +130,9 @@ class EditorController(object):
 
             if reply == QtGui.QMessageBox.Yes:
                 self.__ui.close()
+                close = True
+
+        return close
 
     def undo_cb(self, event):
         self.__cmd_stack.undo()
