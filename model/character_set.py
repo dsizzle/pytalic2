@@ -82,6 +82,8 @@ class CharacterSet(object):
         except IndexError:
             print "ERROR: saved stroke to remove doesn't exist!"
 
+    saved_stroke = property(get_saved_stroke, set_saved_stroke)
+
     def set_nominal_width(self, new_width):
         self.__nominal_width_nibs = new_width
 

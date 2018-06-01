@@ -157,6 +157,7 @@ class MouseController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
+        cur_char = self.__main_ctrl.get_current_char()
 
         ui = self.__main_ctrl.get_ui()
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
@@ -200,7 +201,7 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.ADDING_CTRL_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.inside_stroke(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[1] >= 0:
                         stroke_ctrl.add_control_point(sel_stroke, inside_info)
                         break
@@ -210,7 +211,7 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.SPLIT_AT_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.inside_stroke(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[1] >= 0:
                         stroke_ctrl.split_stroke_at_point(sel_stroke, inside_info)
                         break
@@ -220,14 +221,15 @@ class MouseController(object):
         else:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.inside_stroke(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[1] >= 0:
                         ctrl_vertex_num = int((inside_info[1]+1) / 3)
                         ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
                         
                         handle_index = (inside_info[1]+1) % 3 +1
                         if not shift_down:
-                            sel_stroke.deselect_ctrl_verts()
+                            if type(sel_stroke).__name__ == 'Stroke':
+                                sel_stroke.deselect_ctrl_verts()
                             cur_view_selection[sel_stroke] = {}
 
                         cur_view_selection[sel_stroke][ctrl_vert] = handle_index
@@ -241,7 +243,8 @@ class MouseController(object):
                         if shift_down:
                             if not cur_view_selection.has_key(sel_stroke):
                                 cur_view_selection[sel_stroke] = {}
-                                sel_stroke.deselect_ctrl_verts()
+                                if type(sel_stroke).__name__ == 'Stroke':
+                                    sel_stroke.deselect_ctrl_verts()
 
                             sel_stroke.selected = True
                         else:
@@ -249,7 +252,8 @@ class MouseController(object):
                                 del cur_view_selection[sel_stroke]
 
                             sel_stroke.selected = False
-                            sel_stroke.deselect_ctrl_verts()
+                            if type(sel_stroke).__name__ == 'Stroke':
+                                sel_stroke.deselect_ctrl_verts()
 
                 vert_list = cur_view_selection.values()
                 behavior_list = []
@@ -265,17 +269,19 @@ class MouseController(object):
                     ui.behavior_combo.setCurrentIndex(0)
 
             if len(cur_view_selection.keys()) == 0 or shift_down:
-                for sel_stroke in current_view.strokes:
-                    inside_info = sel_stroke.inside_stroke(paper_pos)
+                for sel_stroke in current_view.character.children:
+                    inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
                         if not cur_view_selection.has_key(sel_stroke):
                             cur_view_selection[sel_stroke] = {} 
-                            sel_stroke.deselect_ctrl_verts()
+                            if type(sel_stroke).__name__ == 'Stroke':
+                                sel_stroke.deselect_ctrl_verts()
 
                         sel_stroke.selected = True  
                     elif not shift_down:
                         sel_stroke.selected = False
-                        sel_stroke.deselect_ctrl_verts()
+                        if type(sel_stroke).__name__ == 'Stroke':
+                            sel_stroke.deselect_ctrl_verts()
 
             if len(cur_view_selection.keys()) > 0:
                 self.__main_ctrl.set_ui_state_selection(True)

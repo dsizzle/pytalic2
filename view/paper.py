@@ -23,8 +23,8 @@ class DrawingArea(QtGui.QFrame):
         self.__guide_lines = None
         self.__draw_guide_lines = True
         self.__draw_nib_guides = True
+        self.__character = None
         self.__strokes_to_draw = []
-        self.__strokes_to_draw_special = []
         self.__snap_points = []
         self.__nib = nibs.Nib(color=QtGui.QColor(125, 25, 25))
         self.__nib_instance = nibs.Nib(color=QtGui.QColor(25, 125, 25))
@@ -86,14 +86,6 @@ class DrawingArea(QtGui.QFrame):
 
     draw_nib_guides = property(get_draw_nib_guides, set_draw_nib_guides)
 
-    def set_draw_strokes_special(self, strokes):
-        self.__strokes_to_draw_special = strokes
-
-    def get_draw_strokes_special(self):
-        return self.__strokes_to_draw_special
-
-    strokes_special = property(get_draw_strokes_special, set_draw_strokes_special)
-
     def set_draw_strokes(self, strokes):
         self.__strokes_to_draw = strokes
 
@@ -101,6 +93,14 @@ class DrawingArea(QtGui.QFrame):
         return self.__strokes_to_draw
 
     strokes = property(get_draw_strokes, set_draw_strokes)
+
+    def set_draw_character(self, new_character):
+        self.__character = new_character
+
+    def get_draw_character(self):
+        return self.__character
+
+    character = property(get_draw_character, set_draw_character)
 
     def set_snap_points(self, points):
         self.__snap_points = points
@@ -158,7 +158,7 @@ class DrawingArea(QtGui.QFrame):
 
             while len(tmp_strokes):
                 stroke = tmp_strokes.pop()
-                stroke.draw(dc, False, nib=self.__nib_special) 
+                stroke.draw(dc, nib=self.__nib_special) 
 
         dc.end()
 
@@ -178,7 +178,8 @@ class DrawingArea(QtGui.QFrame):
         dc.fillRect(self.frameRect(), QtGui.QColor(128, 0, 0, 180))
         dc.end()
 
-        self.__bitmap = self.draw_icon(dc, self.__strokes_to_draw)
+        if self.__character:
+            self.__bitmap = self.draw_icon(dc, self.__character.children)
 
         dc.begin(self)
         dc.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -218,22 +219,15 @@ class DrawingArea(QtGui.QFrame):
         dc.setBrush(view.shared_qt.BRUSH_CLEAR)
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
 
+        if self.__character:
+            self.__character.draw(dc, self.__nib, self.__nib_instance)
+            
         if len(self.__strokes_to_draw) > 0:
             tmp_strokes = self.__strokes_to_draw[:]
 
             while len(tmp_strokes):
                 strk = tmp_strokes.pop()
-                if type(strk).__name__ == 'Stroke':
-                    strk.draw(dc, False, nib=self.__nib)
-                else:
-                    strk.draw(dc, False, nib=self.__nib_instance)
-
-        if len(self.__strokes_to_draw_special) > 0:
-            tmp_strokes = self.__strokes_to_draw_special[:]
-
-            while len(tmp_strokes):
-                strk = tmp_strokes.pop()
-                strk.draw(dc, True, nib=self.__nib_special)
+                strk.draw(dc, nib=self.__nib_special)
 
         if len(self.__snap_points) > 0:
             dc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_2)

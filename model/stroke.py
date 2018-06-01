@@ -366,7 +366,7 @@ class Stroke(object):
 
     parent = property(get_parent, set_parent)
 
-    def draw(self, gc, show_ctrl_verts=0, nib=None):
+    def draw(self, gc, nib=None):
         random.seed(self.seed)
 
         if nib is None:
@@ -417,7 +417,7 @@ class Stroke(object):
             self.__end_serif.setAngle(nib.getAngle())
             self.__end_serif.draw(gc, nib)
 
-        if self.__is_selected or show_ctrl_verts:
+        if self.__is_selected:
             for vert in self.__stroke_ctrl_verts:
                 vert.draw(gc)
 
@@ -429,12 +429,12 @@ class Stroke(object):
 
         gc.restore()
 
-    def inside_stroke(self, point):
+    def is_inside(self, point):
         test_point = point - self.__pos
         if self.__stroke_shape is not None:
-            inside = self.__stroke_shape.contains(test_point)
+            is_inside = self.__stroke_shape.contains(test_point)
         else:
-            inside = False
+            is_inside = False
 
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
@@ -447,7 +447,7 @@ class Stroke(object):
                     if dist < self.__handle_size:
                         return (True, i, None)
 
-                if inside:
+                if is_inside:
                     # get exact point
                     hit_point = None
                     test_box = QtCore.QRect(test_point.x()-2, test_point.y()-2, 10, 10)
@@ -464,7 +464,7 @@ class Stroke(object):
                     else:
                         return (True, -1, None)
 
-            elif inside:
+            elif is_inside:
                 return (True, -1, None)
 
         return (False, -1, None)
@@ -561,7 +561,7 @@ class StrokeInstance(object):
     def get_end_serif(self):
         return self.__stroke.get_end_serif()
 
-    def draw(self, gc, show_ctrl_verts=0, nib=None):
+    def draw(self, gc, nib=None):
 
         if self.__stroke == None:
             return
@@ -582,7 +582,7 @@ class StrokeInstance(object):
         self.__bound_rect = stroke_to_draw.bound_rect
         gc.restore()
 
-        if self.__is_selected or show_ctrl_verts:
+        if self.__is_selected:
             gc.save()
 
             gc.translate(self.__pos)
@@ -596,15 +596,15 @@ class StrokeInstance(object):
     def get_bound_rect(self):
         return self.__stroke.get_bound_rect()
 
-    def inside_stroke(self, point):
+    def is_inside(self, point):
         if self.__stroke is not None:
             stroke_pos = self.__stroke.pos
             test_point = point + stroke_pos - self.__pos
-            inside = self.__stroke.inside_stroke(test_point)
+            is_inside = self.__stroke.is_inside(test_point)
         else:
-            inside = (False, -1, None)
+            is_inside = (False, -1, None)
 
-        return inside
+        return is_inside
 
     def get_ctrl_vertices(self, copy_stroke=False):
         return []

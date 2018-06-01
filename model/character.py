@@ -2,18 +2,16 @@ from PyQt4 import QtCore
 
 import model.stroke
 import thirdparty.dp
+import view.shared_qt
 
 STROKE = 'stroke'
 
-class Character(object):
+class Glyph(object):
     def __init__(self):
-        self.__width = 4
-        self.__left_spacing = 1.0
-        self.__right_spacing = 1.0
-
         self.__strokes = []
         self.__bitmap_preview = None
 
+        self.__is_selected = False
         self.__pos = QtCore.QPoint(0, 0)
 
     def __getstate__(self):
@@ -30,6 +28,35 @@ class Character(object):
         return self.__pos
 
     pos = property(get_pos, set_pos)
+
+    def get_strokes(self):
+        return self.__strokes
+
+    def set_strokes(self, new_strokes):
+        self.__strokes = new_strokes
+
+    strokes = property(get_strokes, set_strokes)
+
+    children = property(get_strokes, set_strokes)
+
+    def get_bitmap(self):
+        return self.__bitmap_preview
+
+    def set_bitmap(self, bmap):
+        self.__bitmap_preview = bmap
+
+    def del_bitmap(self):
+        del self.__bitmap_preview
+
+    bitmap_preview = property(get_bitmap, set_bitmap, del_bitmap, "bitmap_preview property")
+
+    def get_select_state(self):
+        return self.__is_selected
+
+    def set_select_state(self, new_state):
+        self.__is_selected = new_state
+
+    selected = property(get_select_state, set_select_state)
 
     def new_stroke(self, points, add=True):
         my_stroke = model.stroke.Stroke()
@@ -148,20 +175,73 @@ class Character(object):
             print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
             print self.__strokes
 
+    def is_inside(self, point):
+        test_point = point - self.__pos
+
+        for sel_stroke in self.__strokes:
+            insideInfo = sel_stroke.is_inside(test_point)
+
+            if insideInfo[0]:
+                return (True, -1, None)
+
+        return (False, -1, None)
+
+    def calc_curve_points(self):
+        for sel_stroke in self.__strokes:
+            sel_stroke.calc_curve_points()
+
+    def draw(self, gc, nib=None, nib_glyph=None):
+        gc.save()
+        gc.translate(self.__pos)
+
+        topLeft = QtCore.QPoint()
+        botRight = QtCore.QPoint()
+
+        for sel_stroke in self.__strokes:
+            sel_stroke.draw(gc, nib)
+            if sel_stroke.bound_rect.topLeft().x() < topLeft.x():
+                topLeft.setX(sel_stroke.bound_rect.topLeft().x())
+            if sel_stroke.bound_rect.topLeft().y() < topLeft.y():
+                topLeft.setY(sel_stroke.bound_rect.topLeft().y())
+            if sel_stroke.bound_rect.bottomRight().x() > botRight.x():
+                botRight.setX(sel_stroke.bound_rect.bottomRight().x())
+            if sel_stroke.bound_rect.bottomRight().y() > botRight.y():
+                botRight.setY(sel_stroke.bound_rect.bottomRight().y())
+
+        if self.__is_selected:
+            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
+
+            gc.drawRect(QtCore.QRectF(topLeft, botRight))
+
+        gc.restore()
+
+class Character(Glyph):
+    def __init__(self):
+        Glyph.__init__(self)
+        self.__width = 4
+        self.__left_spacing = 1.0
+        self.__right_spacing = 1.0
+
+        self.__glyphs = []
+
+    def add_glyph(self, glyph_to_add):
+        if isinstance(glyph_to_add, Glyph):
+            self.__glyphs.append(glyph_to_add)
+
+    def remove_glyph(self, glyph_to_remove):
+        self.__glyphs.remove(glyph_to_remove)
+
     @property
-    def strokes(self):
-        return self.__strokes
+    def glyphs(self):
+        return self.__glyphs
 
-    def get_bitmap(self):
-        return self.__bitmap_preview
+    @property
+    def children(self):
+        child_items = self.strokes[:]
+        child_items.extend(self.__glyphs[:])
 
-    def set_bitmap(self, bmap):
-        self.__bitmap_preview = bmap
-
-    def del_bitmap(self):
-        del self.__bitmap_preview
-
-    bitmap_preview = property(get_bitmap, set_bitmap, del_bitmap, "bitmap_preview property")
+        return child_items
 
     def get_width(self):
         return self.__width
@@ -187,11 +267,18 @@ class Character(object):
 
     right_spacing = property(get_right_spacing, set_right_spacing)
 
-    def draw(self, gc, show_ctrl_verts=0, draw_handles=0, nib=None):
-        gc.save()
-        gc.translate(self.__pos)
+    def draw(self, gc, nib=None, nib_glyph=None):
+        if nib_glyph is None:
+            nib_glyph = nib
 
-        for stroke in self.__strokes:
-            stroke.draw(gc, show_ctrl_verts, draw_handles, nib)
+        gc.save()
+        gc.translate(self.pos)
+
+        for glyph in self.__glyphs:
+            glyph.draw(gc, nib_glyph)
+
+        for stroke in self.strokes:
+            stroke.draw(gc, nib)
 
         gc.restore()
+

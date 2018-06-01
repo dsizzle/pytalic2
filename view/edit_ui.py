@@ -322,6 +322,7 @@ class EditInterface(QtGui.QMainWindow):
         self.main_view_tabs.addTab(self.dwg_area, "Character")
         self.main_view_tabs.addTab(self.stroke_dwg_area, "Stroke")
         self.main_view_tabs.addTab(self.preview_area, "Preview")
+        self.main_view_tabs.setTabEnabled(1, False)
         self.main_view_tabs.currentChanged.connect(self.__parent.view_tab_changed_cb)
 
         self.main_splitter.addWidget(self.main_view_tabs)
