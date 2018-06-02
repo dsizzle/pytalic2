@@ -269,7 +269,7 @@ class MouseController(object):
                     ui.behavior_combo.setCurrentIndex(0)
 
             if len(cur_view_selection.keys()) == 0 or shift_down:
-                for sel_stroke in current_view.character.children:
+                for sel_stroke in current_view.symbol.children:
                     inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
                         if not cur_view_selection.has_key(sel_stroke):

@@ -359,7 +359,7 @@ class StrokeController(object):
     def join_strokes(self, strokes):
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -423,7 +423,7 @@ class StrokeController(object):
 
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -450,7 +450,7 @@ class StrokeController(object):
 
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -535,7 +535,7 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
 
         if args.has_key('strokes'):
             sel_stroke = args['strokes']
@@ -562,7 +562,7 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
 
         if args.has_key('strokes'):
             sel_stroke = args['strokes']
@@ -647,7 +647,7 @@ class StrokeController(object):
     def add_new_stroke(self):
         #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.character
+        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()

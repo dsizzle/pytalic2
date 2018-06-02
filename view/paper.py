@@ -23,7 +23,7 @@ class DrawingArea(QtGui.QFrame):
         self.__guide_lines = None
         self.__draw_guide_lines = True
         self.__draw_nib_guides = True
-        self.__character = None
+        self.__symbol = None
         self.__strokes_to_draw = []
         self.__snap_points = []
         self.__nib = nibs.Nib(color=QtGui.QColor(125, 25, 25))
@@ -94,13 +94,13 @@ class DrawingArea(QtGui.QFrame):
 
     strokes = property(get_draw_strokes, set_draw_strokes)
 
-    def set_draw_character(self, new_character):
-        self.__character = new_character
+    def set_draw_symbol(self, new_symbol):
+        self.__symbol = new_symbol
 
-    def get_draw_character(self):
-        return self.__character
+    def get_draw_symbol(self):
+        return self.__symbol
 
-    character = property(get_draw_character, set_draw_character)
+    symbol = property(get_draw_symbol, set_draw_symbol)
 
     def set_snap_points(self, points):
         self.__snap_points = points
@@ -178,8 +178,8 @@ class DrawingArea(QtGui.QFrame):
         dc.fillRect(self.frameRect(), QtGui.QColor(128, 0, 0, 180))
         dc.end()
 
-        if self.__character:
-            self.__bitmap = self.draw_icon(dc, self.__character.children)
+        if self.__symbol:
+            self.__bitmap = self.draw_icon(dc, self.__symbol.children)
 
         dc.begin(self)
         dc.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -219,8 +219,8 @@ class DrawingArea(QtGui.QFrame):
         dc.setBrush(view.shared_qt.BRUSH_CLEAR)
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
 
-        if self.__character:
-            self.__character.draw(dc, self.__nib, self.__nib_instance)
+        if self.__symbol:
+            self.__symbol.draw(dc, self.__nib, self.__nib_instance)
             
         if len(self.__strokes_to_draw) > 0:
             tmp_strokes = self.__strokes_to_draw[:]
@@ -343,7 +343,7 @@ class LayoutArea(QtGui.QFrame):
         dc.translate(self.__origin + self.__origin_delta)
         dc.scale(self.__scale, self.__scale)
 
-        for character in self.__layout:
+        for symbol in self.__layout:
             pass
 
         dc.restore()

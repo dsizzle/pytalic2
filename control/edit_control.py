@@ -371,9 +371,9 @@ class EditorController(object):
         for sel_stroke in strokes_to_cut:
             #self.__cur_char.delete_stroke({'stroke' : sel_stroke})
             if type(sel_stroke).__name__ == 'Stroke':
-                self.__current_view_pane.character.delete_stroke({'stroke' : sel_stroke})
+                self.__current_view_pane.symbol.delete_stroke({'stroke' : sel_stroke})
             else:
-                self.__current_view_pane.character.remove_glyph(sel_stroke)
+                self.__current_view_pane.symbol.remove_glyph(sel_stroke)
 
             self.__clipboard.append(sel_stroke)
             if self.__selection[self.__current_view_pane].has_key(sel_stroke):
@@ -484,13 +484,13 @@ class EditorController(object):
             paste_stroke.selected = True
             if type(paste_stroke).__name__ == 'Stroke':
                 #self.__cur_char.add_stroke({'stroke' : paste_stroke, 'copyStroke' : False})
-                self.__current_view_pane.character.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
+                self.__current_view_pane.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
             else:
                 #self.__cur_char.new_stroke_instance({'stroke' : paste_stroke})
                 new_glyph = character.Glyph()
                 new_glyph.set_strokes(paste_stroke.strokes)
-                #self.__current_view_pane.character.new_stroke_instance({'stroke' : paste_stroke})
-                self.__current_view_pane.character.add_glyph(new_glyph)
+                #self.__current_view_pane.symbol.new_stroke_instance({'stroke' : paste_stroke})
+                self.__current_view_pane.symbol.add_glyph(new_glyph)
 
         self.set_ui_state_selection(True)
         self.__ui.repaint()
@@ -550,14 +550,14 @@ class EditorController(object):
         self.__char_set.current_char = cur_char_idx
         self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokes = []
-        self.__ui.dwg_area.character = self.__cur_char
+        self.__ui.dwg_area.symbol = self.__cur_char
         self.__ui.repaint()
         self.set_icon()
 
     def stroke_selected_cb(self, event):
         sel_saved_stroke = self.__char_set.get_saved_stroke(self.__ui.stroke_selector_list.currentRow())
 
-        self.__ui.stroke_dwg_area.character = sel_saved_stroke
+        self.__ui.stroke_dwg_area.symbol = sel_saved_stroke
 
         self.__ui.repaint()
         self.set_icon()
@@ -572,7 +572,7 @@ class EditorController(object):
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)
-            self.__current_view_pane.character.selected = False
+            self.__current_view_pane.symbol.selected = False
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
             self.__ui.view_guides.setEnabled(False)
@@ -590,20 +590,21 @@ class EditorController(object):
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.set_icon()
 
-        for sel_stroke in self.__current_view_pane.character.children:
-            if self.__selection[self.__current_view_pane].has_key(sel_stroke):
-                sel_stroke.selected = True
-            else:
-                sel_stroke.selected = False
+        if self.__current_view_pane != self.__ui.preview_area:
+            for sel_stroke in self.__current_view_pane.symbol.children:
+                if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                    sel_stroke.selected = True
+                else:
+                    sel_stroke.selected = False
 
-        if type(self.__current_view_pane.character).__name__ == "Character":
-            for sel_glyph in self.__current_view_pane.character.glyphs:
+            if type(self.__current_view_pane.symbol).__name__ == "Character":
+                for sel_glyph in self.__current_view_pane.symbol.glyphs:
 
-                for sel_stroke in sel_glyph.strokes:
-                    if self.__selection[self.__current_view_pane].has_key(sel_stroke):
-                        sel_stroke.selected = True
-                    else:
-                        sel_stroke.selected = False
+                    for sel_stroke in sel_glyph.strokes:
+                        if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                            sel_stroke.selected = True
+                        else:
+                            sel_stroke.selected = False
 
         self.__ui.repaint()
 
