@@ -310,7 +310,8 @@ class EditorController(object):
 
     def save_stroke_cb(self, event):
         self.__stroke_controller.save_stroke()
-        self.__ui.main_view_tabs.setTabEnabled(1, True)
+        self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+            True)
 
     def add_control_point_cb(self, event):
         self.state = ADDING_CTRL_POINT
@@ -559,10 +560,12 @@ class EditorController(object):
             sel_saved_stroke = self.__char_set.get_saved_stroke(self.__ui.stroke_selector_list.currentRow())
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_stroke
-            self.__ui.main_view_tabs.setTabEnabled(1, True)
+            self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+                True)
         else:
             self.__ui.stroke_dwg_area.symbol = None
-            self.__ui.main_view_tabs.setTabEnabled(1, False)
+            self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+                False)
 
         self.__ui.repaint()
         self.set_icon()

@@ -682,7 +682,8 @@ class StrokeController(object):
             ui.main_view_tabs.setTabEnabled(idx, True)
 
         if len(char_set.get_saved_strokes()) == 0:
-            ui.main_view_tabs.setTabEnabled(1, False)
+            ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
+                False)
 
         ui.repaint()
 
