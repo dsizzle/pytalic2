@@ -555,10 +555,11 @@ class EditorController(object):
         self.set_icon()
 
     def stroke_selected_cb(self, event):
-        if self.__ui.stroke_selector_list.currentRow() > 0:
+        if self.__ui.stroke_selector_list.currentRow() >= 0:
             sel_saved_stroke = self.__char_set.get_saved_stroke(self.__ui.stroke_selector_list.currentRow())
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_stroke
+            self.__ui.main_view_tabs.setTabEnabled(1, True)
         else:
             self.__ui.stroke_dwg_area.symbol = None
             self.__ui.main_view_tabs.setTabEnabled(1, False)
