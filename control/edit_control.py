@@ -374,7 +374,7 @@ class EditorController(object):
                 self.__current_view_pane.character.delete_stroke({'stroke' : sel_stroke})
             else:
                 self.__current_view_pane.character.remove_glyph(sel_stroke)
-                
+
             self.__clipboard.append(sel_stroke)
             if self.__selection[self.__current_view_pane].has_key(sel_stroke):
                 del self.__selection[self.__current_view_pane][sel_stroke]
@@ -572,6 +572,7 @@ class EditorController(object):
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)
+            self.__current_view_pane.character.selected = False
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
             self.__ui.view_guides.setEnabled(False)
@@ -588,6 +589,21 @@ class EditorController(object):
             self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.set_icon()
+
+        for sel_stroke in self.__current_view_pane.character.children:
+            if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                sel_stroke.selected = True
+            else:
+                sel_stroke.selected = False
+
+        if type(self.__current_view_pane.character).__name__ == "Character":
+            for sel_glyph in self.__current_view_pane.character.glyphs:
+
+                for sel_stroke in sel_glyph.strokes:
+                    if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                        sel_stroke.selected = True
+                    else:
+                        sel_stroke.selected = False
 
         self.__ui.repaint()
 
