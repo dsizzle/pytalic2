@@ -16,7 +16,7 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-from model import character_set, commands, stroke
+from model import character_set, character, commands, stroke
 from view import edit_ui
 
 ICON_SIZE = 40
@@ -370,7 +370,11 @@ class EditorController(object):
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             #self.__cur_char.delete_stroke({'stroke' : sel_stroke})
-            self.__current_view_pane.character.delete_stroke({'stroke' : sel_stroke})
+            if type(sel_stroke).__name__ == 'Stroke':
+                self.__current_view_pane.character.delete_stroke({'stroke' : sel_stroke})
+            else:
+                self.__current_view_pane.character.remove_glyph(sel_stroke)
+                
             self.__clipboard.append(sel_stroke)
             if self.__selection[self.__current_view_pane].has_key(sel_stroke):
                 del self.__selection[self.__current_view_pane][sel_stroke]
@@ -472,7 +476,7 @@ class EditorController(object):
 
         for sel_stroke in strokes_to_paste:
             if copy_strokes and type(sel_stroke).__name__ == 'Stroke':
-                paste_stroke = stroke.Stroke(fromStroke=sel_stroke)
+                paste_stroke = stroke.Stroke(from_stroke=sel_stroke)
             else:
                 paste_stroke = sel_stroke
 
@@ -483,7 +487,10 @@ class EditorController(object):
                 self.__current_view_pane.character.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
             else:
                 #self.__cur_char.new_stroke_instance({'stroke' : paste_stroke})
-                self.__current_view_pane.character.new_stroke_instance({'stroke' : paste_stroke})
+                new_glyph = character.Glyph()
+                new_glyph.set_strokes(paste_stroke.strokes)
+                #self.__current_view_pane.character.new_stroke_instance({'stroke' : paste_stroke})
+                self.__current_view_pane.character.add_glyph(new_glyph)
 
         self.set_ui_state_selection(True)
         self.__ui.repaint()

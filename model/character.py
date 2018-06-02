@@ -186,10 +186,6 @@ class Glyph(object):
 
         return (False, -1, None)
 
-    def calc_curve_points(self):
-        for sel_stroke in self.__strokes:
-            sel_stroke.calc_curve_points()
-
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
         gc.translate(self.__pos)

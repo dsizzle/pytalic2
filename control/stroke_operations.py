@@ -357,8 +357,9 @@ class StrokeController(object):
             ui.repaint()
 
     def join_strokes(self, strokes):
-        cur_char = self.__main_ctrl.get_current_char()
+        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.character
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -420,8 +421,9 @@ class StrokeController(object):
         else:
             return
 
-        cur_char = self.__main_ctrl.get_current_char()
+        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.character
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -446,8 +448,9 @@ class StrokeController(object):
         else:
             return
 
-        cur_char = self.__main_ctrl.get_current_char()
+        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.character
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
@@ -530,7 +533,9 @@ class StrokeController(object):
 
     def split_stroke(self, args):
         ui = self.__main_ctrl.get_ui()
-        cur_char = self.__main_ctrl.get_current_char()
+        #cur_char = self.__main_ctrl.get_current_char()
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.character
 
         if args.has_key('strokes'):
             sel_stroke = args['strokes']
@@ -555,7 +560,9 @@ class StrokeController(object):
 
     def unsplit_stroke(self, args):
         ui = self.__main_ctrl.get_ui()
-        cur_char = self.__main_ctrl.get_current_char()
+        #cur_char = self.__main_ctrl.get_current_char()
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.character
 
         if args.has_key('strokes'):
             sel_stroke = args['strokes']
@@ -718,7 +725,8 @@ class StrokeController(object):
             else:
                 sel_stroke.pos += delta
 
-            sel_stroke.calc_curve_points()
+            if type(sel_stroke).__name__ == 'Stroke':
+                sel_stroke.calc_curve_points()
 
 def dist_between_pts(p0, p1):
     return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
