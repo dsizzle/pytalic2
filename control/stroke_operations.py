@@ -188,7 +188,7 @@ class StrokeController(object):
 
         self.__main_ctrl.set_ui_state_selection(True)
 
-    def paste_instance_from_saved(self):
+    def paste_glyph_from_saved(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
         ui = self.__main_ctrl.get_ui()
@@ -196,32 +196,32 @@ class StrokeController(object):
         char_index = char_set.get_current_char_index()
         stroke_index = ui.stroke_selector_list.currentRow()
         saved_stroke = char_set.get_saved_stroke(stroke_index)
-        new_stroke_instance = character.Glyph() 
-        new_stroke_instance.set_strokes(saved_stroke.strokes)
+        new_glyph = character.Glyph() 
+        new_glyph.set_strokes(saved_stroke.strokes)
 
-        paste_instance_saved_cmd = commands.Command('paste_instance_saved_cmd')
+        paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
         do_args = {
-            'strokes' : new_stroke_instance,
+            'strokes' : new_glyph,
             'char_index' : char_index,
         }
 
         undo_args = {
-            'strokes' : new_stroke_instance,
+            'strokes' : new_glyph,
             'char_index' : char_index,
         }
 
-        paste_instance_saved_cmd.set_do_args(do_args)
-        paste_instance_saved_cmd.set_undo_args(undo_args)
-        paste_instance_saved_cmd.set_do_function(self.paste_instance)
-        paste_instance_saved_cmd.set_undo_function(self.delete_instance)
+        paste_glyph_saved_cmd.set_do_args(do_args)
+        paste_glyph_saved_cmd.set_undo_args(undo_args)
+        paste_glyph_saved_cmd.set_do_function(self.paste_glyph)
+        paste_glyph_saved_cmd.set_undo_function(self.delete_glyph)
 
-        cmd_stack.do_command(paste_instance_saved_cmd)
+        cmd_stack.do_command(paste_glyph_saved_cmd)
         ui.edit_undo.setEnabled(True)
 
         ui.repaint()
 
-    def paste_instance(self, args):
+    def paste_glyph(self, args):
         if args.has_key('char_index'):
             char_index = args['char_index']
         else:
@@ -246,7 +246,7 @@ class StrokeController(object):
         ui.dwg_area.repaint()
         self.__main_ctrl.set_icon()
 
-    def delete_instance(self, args):
+    def delete_glyph(self, args):
         if args.has_key('char_index'):
             char_index = args['char_index']
         else:

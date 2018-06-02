@@ -484,20 +484,17 @@ class EditorController(object):
             self.__selection[self.__current_view_pane][paste_stroke] = {}
             paste_stroke.selected = True
             if type(paste_stroke).__name__ == 'Stroke':
-                #self.__cur_char.add_stroke({'stroke' : paste_stroke, 'copyStroke' : False})
                 self.__current_view_pane.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
             else:
-                #self.__cur_char.new_stroke_instance({'stroke' : paste_stroke})
                 new_glyph = character.Glyph()
                 new_glyph.set_strokes(paste_stroke.strokes)
-                #self.__current_view_pane.symbol.new_stroke_instance({'stroke' : paste_stroke})
                 self.__current_view_pane.symbol.add_glyph(new_glyph)
 
         self.set_ui_state_selection(True)
         self.__ui.repaint()
 
-    def paste_instance_from_saved_cb(self, event):
-        self.__stroke_controller.paste_instance_from_saved()
+    def paste_glyph_from_saved_cb(self, event):
+        self.__stroke_controller.paste_glyph_from_saved()
 
     def view_toggle_snap_axially_cb(self, event):
         self.__snap_controller.toggle_snap_axially()
@@ -577,15 +574,20 @@ class EditorController(object):
             self.__ui.stroke_new.setEnabled(True)
             if len(self.__selection.keys()):
                 self.set_ui_state_selection(True)
+            if self.__ui.stroke_selector_list.count() > 0:
+                self.__ui.stroke_load.setEnabled(True)
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)
             self.__current_view_pane.symbol.selected = False
+            self.__ui.stroke_save.setEnabled(False)
+            self.__ui.stroke_load.setEnabled(False)
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
             self.__ui.view_guides.setEnabled(False)
             self.__ui.view_nib_guides.setEnabled(False)
-
+            self.__ui.stroke_save.setEnabled(False)
+            self.__ui.stroke_load.setEnabled(False)
         if not self.__selection.has_key(self.__current_view_pane):
             self.__selection[self.__current_view_pane] = {}
         if self.__current_view_pane == self.__ui.preview_area:

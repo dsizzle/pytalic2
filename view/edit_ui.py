@@ -372,8 +372,8 @@ class EditInterface(QtGui.QMainWindow):
         self.file_menu = self.main_menu.addMenu('&File')
         self.edit_menu = self.main_menu.addMenu('&Edit')
         self.view_menu = self.main_menu.addMenu('&View')
-
         self.stroke_menu = self.main_menu.addMenu('Stro&ke')
+        self.glyph_menu = self.main_menu.addMenu('&Glyph')
         self.help_menu = self.main_menu.addMenu('&Help')
 
         self.file_new = QtGui.QAction("&New", self)
@@ -613,16 +613,15 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_split_at_point.triggered.connect(self.__parent.split_at_point_cb)
         self.stroke_menu.addAction(self.stroke_split_at_point)
 
-        self.stroke_menu.addSeparator()
         self.stroke_save = QtGui.QAction("Save Stroke(s) as Glyph", self)
         self.stroke_save.setEnabled(False)
         self.stroke_save.triggered.connect(self.__parent.save_stroke_cb)
-        self.stroke_menu.addAction(self.stroke_save)
+        self.glyph_menu.addAction(self.stroke_save)
 
         self.stroke_load = QtGui.QAction("Paste From Saved", self)
         self.stroke_load.setEnabled(False)
-        self.stroke_load.triggered.connect(self.__parent.paste_instance_from_saved_cb)
-        self.stroke_menu.addAction(self.stroke_load)
+        self.stroke_load.triggered.connect(self.__parent.paste_glyph_from_saved_cb)
+        self.glyph_menu.addAction(self.stroke_load)
 
         self.help_about = QtGui.QAction("About", self)
         self.help_about.triggered.connect(self.about_cb)
