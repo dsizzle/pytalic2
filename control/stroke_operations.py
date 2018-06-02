@@ -61,8 +61,8 @@ class StrokeController(object):
             if type(sel_stroke).__name__ == 'Stroke':
                 selected_strokes.append(sel_stroke)
 
-        #        new_stroke_instance = stroke.StrokeInstance()
-        #        instances.append(new_stroke_instance)
+        if len(selected_strokes) == 0:
+            return
 
         new_glyph = character.Glyph()
 
@@ -93,8 +93,7 @@ class StrokeController(object):
 
     def save_strokes(self, args):
         deleted_strokes = []
-        i = 0
-
+        
         if args.has_key('strokes'):
             saved_selection = args['strokes']
         else:
@@ -119,32 +118,22 @@ class StrokeController(object):
         char_set.save_stroke(instances)
         instances.strokes = saved_selection
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
-        ui.stroke_selector_list.addItem(str(first_item + i))
-        cur_item = ui.stroke_selector_list.item(first_item + i)
-        ui.stroke_selector_list.setCurrentRow(first_item + i)
+        ui.stroke_selector_list.addItem(str(first_item))
+        cur_item = ui.stroke_selector_list.item(first_item)
+        ui.stroke_selector_list.setCurrentRow(first_item)
         cur_item.setIcon(QtGui.QIcon(bitmap))
 
-        for sel_stroke in saved_selection: #cur_view_selection:
-            #char_set.save_stroke(sel_stroke)
-            #bitmap = ui.dwg_area.draw_icon(None, [sel_stroke])
-            #ui.stroke_selector_list.addItem(str(first_item+i))
-            #cur_item = ui.stroke_selector_list.item(first_item+i)
-            #ui.stroke_selector_list.setCurrentRow(first_item+i)
-            #cur_item.setIcon(QtGui.QIcon(bitmap))
-            cur_char = char_set.current_char
+        cur_char = current_view.symbol
+        for sel_stroke in saved_selection: 
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
-            #sel_stroke = char_set.get_saved_stroke(first_item+i)
-            #instances[i].set_stroke(sel_stroke)
-            #cur_char.add_stroke_instance(instances[i])
             
             if not cur_view_selection.has_key(sel_stroke):
                 cur_view_selection = {}
-                sel_stroke.deselectCtrlVerts()
+                sel_stroke.deselect_ctrl_verts()
 
             sel_stroke.selected = True
-            i += 1
-
+            
         cur_char.add_glyph(instances)
 
         for sel_stroke in deleted_strokes:
@@ -158,11 +147,9 @@ class StrokeController(object):
 
     def unsave_strokes(self, args):
         added_strokes = []
-        i = 0
-
+        
         if args.has_key('instances'):
             instances = args['instances']
-            i = len(instances)-1
         else:
             return
 
@@ -178,21 +165,21 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
 
         char_set.remove_saved_stroke(instances)
-            
+        cur_char = current_view.symbol
+        cur_char.remove_glyph(instances)
+
         #instances.reverse()
         for sel_stroke in instances.strokes:
             #sel_stroke = inst.getStroke()
-            ui.stroke_selector_list.takeItem(first_item+i)
-            cur_char = char_set.current_char
-            cur_char.remove_glyph(instances)
             cur_char.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             added_strokes.append(sel_stroke)
-            i -= 1
 
+        ui.stroke_selector_list.takeItem(first_item)
+            
         for sel_stroke in added_strokes:
             if not cur_view_selection.has_key(sel_stroke):
                 cur_view_selection[sel_stroke] = {}
-                sel_stroke.deselectCtrlVerts()
+                sel_stroke.deselect_ctrl_verts()
 
             sel_stroke.selected = True
 
