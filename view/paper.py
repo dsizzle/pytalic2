@@ -223,12 +223,17 @@ class DrawingArea(QtGui.QFrame):
             self.__symbol.draw(dc, self.__nib, self.__nib_instance)
             
         if len(self.__strokes_to_draw) > 0:
+            dc.save()
+            dc.translate(self.__symbol.pos)
+
             tmp_strokes = self.__strokes_to_draw[:]
 
             while len(tmp_strokes):
                 strk = tmp_strokes.pop()
                 strk.draw(dc, nib=self.__nib_special)
 
+            dc.restore()
+            
         if len(self.__snap_points) > 0:
             dc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_2)
             dc.setBrush(view.shared_qt.BRUSH_CLEAR)
