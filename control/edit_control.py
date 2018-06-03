@@ -233,11 +233,11 @@ class EditorController(object):
 
             self.__ui.stroke_selector_list.clear()
 
-            saved_stroke_list = self.__char_set.get_saved_strokes()
-            if len(saved_stroke_list) > 0:
+            saved_glyph_list = self.__char_set.get_saved_glyphs()
+            if len(saved_glyph_list) > 0:
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
-                for sel_stroke in saved_stroke_list:
+                for sel_stroke in saved_glyph_list:
                     bitmap = self.__ui.dwg_area.draw_icon(None, sel_stroke.strokes)
                     self.__ui.stroke_selector_list.addItem(str(i))
                     cur_item = self.__ui.stroke_selector_list.item(i)
@@ -496,6 +496,9 @@ class EditorController(object):
     def paste_glyph_from_saved_cb(self, event):
         self.__stroke_controller.paste_glyph_from_saved()
 
+    def delete_saved_glyph_cb(self, event):
+        self.__stroke_controller.delete_saved_glyph()
+
     def view_toggle_snap_axially_cb(self, event):
         self.__snap_controller.toggle_snap_axially()
 
@@ -555,9 +558,9 @@ class EditorController(object):
 
     def stroke_selected_cb(self, event):
         if self.__ui.stroke_selector_list.currentRow() >= 0:
-            sel_saved_stroke = self.__char_set.get_saved_stroke(self.__ui.stroke_selector_list.currentRow())
+            sel_saved_glyph = self.__char_set.get_saved_glyph(self.__ui.stroke_selector_list.currentRow())
 
-            self.__ui.stroke_dwg_area.symbol = sel_saved_stroke
+            self.__ui.stroke_dwg_area.symbol = sel_saved_glyph
             self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
                 True)
         else:

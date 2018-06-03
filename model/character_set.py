@@ -14,7 +14,7 @@ class CharacterSet(object):
         self.__guide_angle = 5
         self.__nib_angle = 40
 
-        self.__saved_strokes = []
+        self.__saved_glyphs = []
 
     def new_character(self, char_code):
         my_char = model.character.Character()
@@ -56,33 +56,33 @@ class CharacterSet(object):
     def get_char_list(self):
         return self.__characters
 
-    def get_saved_strokes(self):
-        return self.__saved_strokes
+    def get_saved_glyphs(self):
+        return self.__saved_glyphs
 
     def save_stroke(self, item):
-        self.__saved_strokes.append(item)
+        self.__saved_glyphs.append(item)
 
-    def get_saved_stroke(self, index):
-        if len(self.__saved_strokes) > index:
-            return self.__saved_strokes[index]
+    def get_saved_glyph(self, index):
+        if len(self.__saved_glyphs) > index:
+            return self.__saved_glyphs[index]
 
         return None
 
-    def set_saved_stroke(self, index, stroke):
-        if len(self.__saved_strokes) < index:
+    def set_saved_glyph(self, index, stroke):
+        if len(self.__saved_glyphs) < index:
             return
 
-        tmp_stroke = self.__saved_strokes[index]
-        self.__saved_strokes[index] = stroke
+        tmp_stroke = self.__saved_glyphs[index]
+        self.__saved_glyphs[index] = stroke
         del tmp_stroke
 
-    def remove_saved_stroke(self, item):
+    def remove_saved_glyph(self, item):
         try:
-            self.__saved_strokes.remove(item)
+            self.__saved_glyphs.remove(item)
         except IndexError:
             print "ERROR: saved stroke to remove doesn't exist!"
 
-    saved_stroke = property(get_saved_stroke, set_saved_stroke)
+    saved_glyph = property(get_saved_glyph, set_saved_glyph)
 
     def set_nominal_width(self, new_width):
         self.__nominal_width_nibs = new_width

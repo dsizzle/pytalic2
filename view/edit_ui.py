@@ -623,6 +623,11 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_load.triggered.connect(self.__parent.paste_glyph_from_saved_cb)
         self.glyph_menu.addAction(self.stroke_load)
 
+        self.glyph_delete = QtGui.QAction("Delete Saved", self)
+        self.glyph_delete.setEnabled(False)
+        self.glyph_delete.triggered.connect(self.__parent.delete_saved_glyph_cb)
+        self.glyph_menu.addAction(self.glyph_delete)
+
         self.help_about = QtGui.QAction("About", self)
         self.help_about.triggered.connect(self.about_cb)
         self.help_menu.addAction(self.help_about)
