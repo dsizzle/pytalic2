@@ -237,6 +237,7 @@ class EditorController(object):
             if len(saved_glyph_list) > 0:
                 i = 0
                 self.__ui.stroke_load.setEnabled(True)
+                self.__ui.glyph_delete.setEnabled(True)
                 for sel_stroke in saved_glyph_list:
                     bitmap = self.__ui.dwg_area.draw_icon(None, sel_stroke.strokes)
                     self.__ui.stroke_selector_list.addItem(str(i))
@@ -580,18 +581,21 @@ class EditorController(object):
                 self.set_ui_state_selection(True)
             if self.__ui.stroke_selector_list.count() > 0:
                 self.__ui.stroke_load.setEnabled(True)
+                self.__ui.glyph_delete.setEnabled(True)
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)
             self.__current_view_pane.symbol.selected = False
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
+            self.__ui.glyph_delete.setEnabled(False)
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
             self.__ui.view_guides.setEnabled(False)
             self.__ui.view_nib_guides.setEnabled(False)
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
+            self.__ui.glyph_delete.setEnabled(False)
         if not self.__selection.has_key(self.__current_view_pane):
             self.__selection[self.__current_view_pane] = {}
         if self.__current_view_pane == self.__ui.preview_area:

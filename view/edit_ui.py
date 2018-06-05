@@ -615,7 +615,7 @@ class EditInterface(QtGui.QMainWindow):
 
         self.stroke_save = QtGui.QAction("Save Stroke(s) as Glyph", self)
         self.stroke_save.setEnabled(False)
-        self.stroke_save.triggered.connect(self.__parent.save_stroke_cb)
+        self.stroke_save.triggered.connect(self.__parent.save_glyph_cb)
         self.glyph_menu.addAction(self.stroke_save)
 
         self.stroke_load = QtGui.QAction("Paste From Saved", self)

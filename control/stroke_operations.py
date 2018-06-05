@@ -142,6 +142,7 @@ class StrokeController(object):
             sel_stroke.selected = False
 
         ui.stroke_load.setEnabled(True)
+        ui.glyph_delete.setEnabled(True)
         self.__main_ctrl.set_ui_state_selection(True)
 
     def unsave_glyphs(self, args):
@@ -180,10 +181,11 @@ class StrokeController(object):
 
             sel_stroke.selected = True
 
+        self.__main_ctrl.set_ui_state_selection(True)
+
         if ui.stroke_selector_list.count() == 0:
             ui.stroke_load.setEnabled(False)
-
-        self.__main_ctrl.set_ui_state_selection(True)
+            ui.glyph_delete.setEnabled(False)
 
     def paste_glyph_from_saved(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
@@ -301,6 +303,10 @@ class StrokeController(object):
 
         cmd_stack.do_command(delete_saved_glyph_cmd)
         ui.edit_undo.setEnabled(True)
+
+        if ui.stroke_selector_list.count() == 0:
+            ui.stroke_load.setEnabled(False)
+            ui.glyph_delete.setEnabled(False)
 
         ui.repaint()
 
