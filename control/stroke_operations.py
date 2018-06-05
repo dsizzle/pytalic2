@@ -64,6 +64,9 @@ class StrokeController(object):
             return
 
         new_glyph = character.Glyph()
+        new_glyph.strokes = selected_strokes
+        glyph_instance = character.GlyphInstance()
+        glyph_instance.glyph = new_glyph
 
         item_num = ui.stroke_selector_list.count()
 
@@ -71,12 +74,12 @@ class StrokeController(object):
 
         do_args = {
             'strokes' : selected_strokes,
-            'glyph' : new_glyph,
+            'glyph' : glyph_instance,
             'first_item' : item_num,
         }
 
         undo_args = {
-            'glyph' : new_glyph,
+            'glyph' : glyph_instance,
             'first_item' : item_num,
         }
 
@@ -99,7 +102,7 @@ class StrokeController(object):
             return
 
         if args.has_key('glyph'):
-            glyph = args['glyph']
+            glyph_instance = args['glyph']
         else:
             return
 
@@ -114,8 +117,8 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
 
-        char_set.save_glyph(glyph)
-        glyph.strokes = saved_selection
+        char_set.save_glyph(glyph_instance.glyph)
+        #glyph.strokes = saved_selection
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
         ui.stroke_selector_list.addItem(str(first_item))
         cur_item = ui.stroke_selector_list.item(first_item)
@@ -133,7 +136,7 @@ class StrokeController(object):
 
             sel_stroke.selected = True
             
-        cur_char.add_glyph(glyph)
+        cur_char.add_glyph(glyph_instance)
 
         for sel_stroke in deleted_strokes:
             if cur_view_selection.has_key(sel_stroke):
@@ -149,7 +152,7 @@ class StrokeController(object):
         added_strokes = []
         
         if args.has_key('glyph'):
-            glyph = args['glyph']
+            glyph_instance = args['glyph']
         else:
             return
 
@@ -164,11 +167,11 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
 
-        char_set.remove_saved_glyph(glyph)
+        char_set.remove_saved_glyph(glyph_instance.glyph)
         cur_char = current_view.symbol
-        cur_char.remove_glyph(glyph)
+        cur_char.remove_glyph(glyph_instance)
 
-        for sel_stroke in glyph.strokes:
+        for sel_stroke in glyph_instance.strokes:
             cur_char.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             added_strokes.append(sel_stroke)
 
@@ -195,8 +198,8 @@ class StrokeController(object):
         char_index = char_set.get_current_char_index()
         glyph_index = ui.stroke_selector_list.currentRow()
         saved_glyph = char_set.get_saved_glyph(glyph_index)
-        new_glyph = character.Glyph() 
-        new_glyph.set_strokes(saved_glyph.strokes)
+        new_glyph = character.GlyphInstance() 
+        new_glyph.set_glyph(saved_glyph)
 
         paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
@@ -326,6 +329,11 @@ class StrokeController(object):
         
         ui.stroke_selector_list.takeItem(glyph_index)
         char_set.remove_saved_glyph(glyph)
+        instance_list = glyph.instances.keys()
+
+        for glyph_instance in instance_list:
+            char = glyph_instance.parent
+            char.remove_glyph(glyph_instance)
 
     def add_saved_glyph(self, args):
         if args.has_key('glyph_index'):

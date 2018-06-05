@@ -13,6 +13,8 @@ class Glyph(object):
 
         self.__is_selected = False
         self.__pos = QtCore.QPoint(0, 0)
+        self.__bound_rect = None
+        self.__instances = {}
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()
@@ -20,6 +22,20 @@ class Glyph(object):
         save_dict["_Character__bitmap_preview"] = None
 
         return save_dict
+
+    def add_instance(self, parent):
+        self.__instances[parent] = 1
+
+    def remove_instance(self, instance):
+        self.__instances.pop(instance, None)
+
+    @property
+    def instances(self):
+        return self.__instances
+
+    @property
+    def bound_rect(self):
+        return self.__bound_rect
 
     def set_pos(self, point):
         self.__pos = point
@@ -204,13 +220,16 @@ class Glyph(object):
             if sel_stroke.bound_rect.bottomRight().y() > botRight.y():
                 botRight.setY(sel_stroke.bound_rect.bottomRight().y())
 
+            self.__bound_rect = QtCore.QRectF(topLeft, botRight)
+
         if self.__is_selected:
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
             gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
 
-            gc.drawRect(QtCore.QRectF(topLeft, botRight))
+            gc.drawRect(self.__bound_rect)
 
         gc.restore()
+
 
 class Character(Glyph):
     def __init__(self):
@@ -222,11 +241,13 @@ class Character(Glyph):
         self.__glyphs = []
 
     def add_glyph(self, glyph_to_add):
-        if isinstance(glyph_to_add, Glyph):
+        if isinstance(glyph_to_add, GlyphInstance):
             self.__glyphs.append(glyph_to_add)
+            glyph_to_add.parent = self
 
     def remove_glyph(self, glyph_to_remove):
         self.__glyphs.remove(glyph_to_remove)
+        glyph_to_remove.parent = None
 
     @property
     def glyphs(self):
@@ -277,4 +298,99 @@ class Character(Glyph):
             stroke.draw(gc, nib)
 
         gc.restore()
+
+
+class GlyphInstance(object):
+    def __init__(self, parent=None):
+        self.__glyph = None
+        self.__pos = QtCore.QPoint()
+        self.__parent = parent
+        self.__is_selected = False
+
+    def __del__(self):
+        if self.__glyph:
+            self.__glyph.remove_instance(self)
+
+    def set_pos(self, point):
+        self.__pos = point
+
+    def get_pos(self):
+        return self.__pos
+
+    pos = property(get_pos, set_pos)
+
+    @property
+    def strokes(self):
+        if self.__glyph:
+            return self.__glyph.strokes
+
+        return None
+
+    def set_glyph(self, glyph):
+        if self.__glyph:
+            self.__glyph.remove_instance(self)
+
+        self.__glyph = glyph
+
+        self.__pos = QtCore.QPoint(glyph.get_pos())
+        #self.__bound_rect = stroke.get_bound_rect()
+
+        self.__glyph.add_instance(self)
+
+    def get_glyph(self):
+        return self.__glyph
+
+    glyph = property(get_glyph, set_glyph)
+
+    def set_parent(self, parent):
+        self.__parent = parent
+
+    def get_parent(self):
+        return self.__parent
+
+    parent = property(get_parent, set_parent)
+
+    def draw(self, gc, nib=None):
+        if self.__glyph == None:
+            return
+
+        glyph_to_draw = self.__glyph
+
+        glyph_pos = self.__glyph.pos
+        gc.save()
+
+        gc.translate(-glyph_pos)
+        gc.translate(self.__pos)
+
+        glyph_to_draw.draw(gc, nib)
+        bound_rect = glyph_to_draw.bound_rect
+        gc.restore()
+
+        if self.__is_selected:
+            gc.save()
+
+            gc.translate(self.__pos)
+            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT_2)
+
+            gc.drawRect(bound_rect)
+
+            gc.restore()
+
+    def is_inside(self, point):
+        if self.__glyph is not None:
+            test_point = point - self.__pos
+            is_inside = self.__glyph.is_inside(test_point)
+        else:
+            is_inside = (False, -1, None)
+
+        return is_inside
+
+    def get_select_state(self):
+        return self.__is_selected
+
+    def set_select_state(self, new_state):
+        self.__is_selected = new_state
+
+    selected = property(get_select_state, set_select_state)
 
