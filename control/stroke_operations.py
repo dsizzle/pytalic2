@@ -125,7 +125,6 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
 
         char_set.save_glyph(glyph_instance.glyph)
-        #glyph.strokes = saved_selection
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
         ui.stroke_selector_list.addItem(str(first_item))
         cur_item = ui.stroke_selector_list.item(first_item)
