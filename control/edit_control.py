@@ -573,6 +573,7 @@ class EditorController(object):
         self.set_icon()
 
     def view_tab_changed_cb(self, event):
+        previous_pane = self.__current_view_pane
         self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
 
         if self.__current_view_pane == self.__ui.dwg_area:
@@ -582,6 +583,8 @@ class EditorController(object):
             if self.__ui.stroke_selector_list.count() > 0:
                 self.__ui.stroke_load.setEnabled(True)
                 self.__ui.glyph_delete.setEnabled(True)
+            if previous_pane == self.__ui.stroke_dwg_area:
+                previous_pane.symbol.calculate_bound_rect()
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)

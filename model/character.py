@@ -202,25 +202,31 @@ class Glyph(object):
 
         return (False, -1, None)
 
+    def calculate_bound_rect(self):
+        top_left = QtCore.QPoint()
+        bot_right = QtCore.QPoint()
+
+        for sel_stroke in self.__strokes:
+            if sel_stroke.bound_rect.topLeft().x() < top_left.x():
+                top_left.setX(sel_stroke.bound_rect.topLeft().x())
+            if sel_stroke.bound_rect.topLeft().y() < top_left.y():
+                top_left.setY(sel_stroke.bound_rect.topLeft().y())
+            if sel_stroke.bound_rect.bottomRight().x() > bot_right.x():
+                bot_right.setX(sel_stroke.bound_rect.bottomRight().x())
+            if sel_stroke.bound_rect.bottomRight().y() > bot_right.y():
+                bot_right.setY(sel_stroke.bound_rect.bottomRight().y())
+
+            self.__bound_rect = QtCore.QRectF(top_left, bot_right)
+
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
         gc.translate(self.__pos)
 
-        topLeft = QtCore.QPoint()
-        botRight = QtCore.QPoint()
+        if not self.__bound_rect:
+            self.calculate_bound_rect()
 
         for sel_stroke in self.__strokes:
             sel_stroke.draw(gc, nib)
-            if sel_stroke.bound_rect.topLeft().x() < topLeft.x():
-                topLeft.setX(sel_stroke.bound_rect.topLeft().x())
-            if sel_stroke.bound_rect.topLeft().y() < topLeft.y():
-                topLeft.setY(sel_stroke.bound_rect.topLeft().y())
-            if sel_stroke.bound_rect.bottomRight().x() > botRight.x():
-                botRight.setX(sel_stroke.bound_rect.bottomRight().x())
-            if sel_stroke.bound_rect.bottomRight().y() > botRight.y():
-                botRight.setY(sel_stroke.bound_rect.bottomRight().y())
-
-            self.__bound_rect = QtCore.QRectF(topLeft, botRight)
 
         if self.__is_selected:
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
@@ -333,8 +339,7 @@ class GlyphInstance(object):
         self.__glyph = glyph
 
         self.__pos = QtCore.QPoint(glyph.get_pos())
-        #self.__bound_rect = stroke.get_bound_rect()
-
+        
         self.__glyph.add_instance(self)
 
     def get_glyph(self):
