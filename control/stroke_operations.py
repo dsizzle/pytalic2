@@ -444,7 +444,6 @@ class StrokeController(object):
             ui.repaint()
 
     def join_strokes(self, strokes):
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
@@ -508,7 +507,6 @@ class StrokeController(object):
         else:
             return
 
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
@@ -535,7 +533,6 @@ class StrokeController(object):
         else:
             return
 
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
@@ -620,7 +617,6 @@ class StrokeController(object):
 
     def split_stroke(self, args):
         ui = self.__main_ctrl.get_ui()
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
 
@@ -647,7 +643,6 @@ class StrokeController(object):
 
     def unsplit_stroke(self, args):
         ui = self.__main_ctrl.get_ui()
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
 
@@ -732,7 +727,6 @@ class StrokeController(object):
         ui.edit_undo.setEnabled(True)
 
     def add_new_stroke(self):
-        #cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
