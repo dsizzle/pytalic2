@@ -59,11 +59,14 @@ class CharacterSet(object):
     def get_saved_glyphs(self):
         return self.__saved_glyphs
 
-    def save_stroke(self, item):
+    def save_glyph(self, item):
         self.__saved_glyphs.append(item)
 
+    def insert_glyph(self, index, item):
+        self.__saved_glyphs.insert(index, item)
+        
     def get_saved_glyph(self, index):
-        if len(self.__saved_glyphs) > index:
+        if len(self.__saved_glyphs) > index and index >= 0:
             return self.__saved_glyphs[index]
 
         return None

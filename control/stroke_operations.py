@@ -48,7 +48,7 @@ class StrokeController(object):
         current_view.strokes.append(self.__tmp_stroke)
         self.__tmp_stroke.selected = True
 
-    def save_stroke(self):
+    def save_glyph(self):
         selected_strokes = []
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
@@ -67,7 +67,7 @@ class StrokeController(object):
 
         item_num = ui.stroke_selector_list.count()
 
-        save_stroke_cmd = commands.Command('save_stroke_cmd')
+        save_glyph_cmd = commands.Command('save_glyph_cmd')
 
         do_args = {
             'strokes' : selected_strokes,
@@ -80,17 +80,17 @@ class StrokeController(object):
             'first_item' : item_num,
         }
 
-        save_stroke_cmd.set_do_args(do_args)
-        save_stroke_cmd.set_undo_args(undo_args)
-        save_stroke_cmd.set_do_function(self.save_strokes)
-        save_stroke_cmd.set_undo_function(self.unsave_strokes)
+        save_glyph_cmd.set_do_args(do_args)
+        save_glyph_cmd.set_undo_args(undo_args)
+        save_glyph_cmd.set_do_function(self.save_glyphs)
+        save_glyph_cmd.set_undo_function(self.unsave_glyphs)
 
-        cmd_stack.do_command(save_stroke_cmd)
+        cmd_stack.do_command(save_glyph_cmd)
         ui.edit_undo.setEnabled(True)
 
         ui.repaint()
 
-    def save_strokes(self, args):
+    def save_glyphs(self, args):
         deleted_strokes = []
         
         if args.has_key('strokes'):
@@ -114,7 +114,7 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
 
-        char_set.save_stroke(glyph)
+        char_set.save_glyph(glyph)
         glyph.strokes = saved_selection
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
         ui.stroke_selector_list.addItem(str(first_item))
@@ -144,7 +144,7 @@ class StrokeController(object):
         ui.stroke_load.setEnabled(True)
         self.__main_ctrl.set_ui_state_selection(True)
 
-    def unsave_strokes(self, args):
+    def unsave_glyphs(self, args):
         added_strokes = []
         
         if args.has_key('glyph'):
@@ -267,7 +267,84 @@ class StrokeController(object):
         ui.dwg_area.repaint()
 
     def delete_saved_glyph(self):
-        pass
+        cmd_stack = self.__main_ctrl.get_command_stack()
+        ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
+
+        glyph_index = ui.stroke_selector_list.currentRow()
+        
+        saved_glyph = char_set.get_saved_glyph(glyph_index)
+        
+        if not saved_glyph:
+            return
+
+        cur_item = ui.stroke_selector_list.item(glyph_index)
+        cur_item_icon = cur_item.icon()
+
+        delete_saved_glyph_cmd = commands.Command('delete_saved_glyph_cmd')
+
+        do_args = {
+            'glyph' : saved_glyph,
+            'glyph_index' : glyph_index,
+        }
+
+        undo_args = {
+            'glyph' : saved_glyph,
+            'glyph_index' : glyph_index,
+            'bitmap' : cur_item_icon,
+        }
+
+        delete_saved_glyph_cmd.set_do_args(do_args)
+        delete_saved_glyph_cmd.set_undo_args(undo_args)
+        delete_saved_glyph_cmd.set_do_function(self.remove_saved_glyph)
+        delete_saved_glyph_cmd.set_undo_function(self.add_saved_glyph)
+
+        cmd_stack.do_command(delete_saved_glyph_cmd)
+        ui.edit_undo.setEnabled(True)
+
+        ui.repaint()
+
+    def remove_saved_glyph(self, args):
+        if args.has_key('glyph_index'):
+            glyph_index = args['glyph_index']
+        else:
+            return
+
+        if args.has_key('glyph'):
+            glyph = args['glyph']
+        else:
+            return
+
+        ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
+        
+        ui.stroke_selector_list.takeItem(glyph_index)
+        char_set.remove_saved_glyph(glyph)
+
+    def add_saved_glyph(self, args):
+        if args.has_key('glyph_index'):
+            glyph_index = args['glyph_index']
+        else:
+            return
+
+        if args.has_key('glyph'):
+            glyph = args['glyph']
+        else:
+            return
+
+        if args.has_key('bitmap'):
+            bitmap = args['bitmap']
+        else:
+            return
+
+        ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
+
+        ui.stroke_selector_list.insertItem(glyph_index, str(glyph_index))
+        new_item = ui.stroke_selector_list.item(glyph_index)
+        new_item.setIcon(bitmap)
+
+        char_set.insert_glyph(glyph_index, glyph)
 
     def straighten_stroke(self):
         cmd_stack = self.__main_ctrl.get_command_stack()

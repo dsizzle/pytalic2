@@ -308,8 +308,8 @@ class EditorController(object):
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
 
-    def save_stroke_cb(self, event):
-        self.__stroke_controller.save_stroke()
+    def save_glyph_cb(self, event):
+        self.__stroke_controller.save_glyph()
         self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
             True)
 
