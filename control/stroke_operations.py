@@ -76,11 +76,13 @@ class StrokeController(object):
             'strokes' : selected_strokes,
             'glyph' : glyph_instance,
             'first_item' : item_num,
+            'character' : current_view.symbol
         }
 
         undo_args = {
             'glyph' : glyph_instance,
             'first_item' : item_num,
+            'character' : current_view.symbol
         }
 
         save_glyph_cmd.set_do_args(do_args)
@@ -111,6 +113,11 @@ class StrokeController(object):
         else:
             return
 
+        if args.has_key('character'):
+            cur_char = args['character']
+        else:
+            return
+
         char_set = self.__main_ctrl.get_character_set()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
@@ -125,7 +132,6 @@ class StrokeController(object):
         ui.stroke_selector_list.setCurrentRow(first_item)
         cur_item.setIcon(QtGui.QIcon(bitmap))
 
-        cur_char = current_view.symbol
         for sel_stroke in saved_selection: 
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
@@ -161,6 +167,11 @@ class StrokeController(object):
         else:
             return
 
+        if args.has_key('character'):
+            cur_char = args['character']
+        else:
+            return
+
         char_set = self.__main_ctrl.get_character_set()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
@@ -168,7 +179,6 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
 
         char_set.remove_saved_glyph(glyph_instance.glyph)
-        cur_char = current_view.symbol
         cur_char.remove_glyph(glyph_instance)
 
         for sel_stroke in glyph_instance.strokes:
