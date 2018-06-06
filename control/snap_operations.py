@@ -95,7 +95,7 @@ class SnapController(object):
         if len(axis_angles) == 0:
             return snap_point
 
-        delta = pos - vert_pos
+        delta = pos - vert_pos - stroke_pos
         vec_length = math.sqrt(float(delta.x())*float(delta.x()) + \
             float(delta.y())*float(delta.y()))
 
@@ -125,7 +125,7 @@ class SnapController(object):
         for char_stroke in cur_char.strokes:
             for ctrl_vert in char_stroke.get_ctrl_vertices(False):
                 if sel_point is not ctrl_vert:
-                    test_point = ctrl_vert.get_handle_pos(2)
+                    test_point = ctrl_vert.get_handle_pos(2) + char_stroke.pos
 
                     if test_point in test_rect:
                         snap_point = test_point

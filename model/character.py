@@ -203,20 +203,29 @@ class Glyph(object):
         return (False, -1, None)
 
     def calculate_bound_rect(self):
-        top_left = QtCore.QPoint()
-        bot_right = QtCore.QPoint()
+        top_left = None
+        bot_right = None
 
         for sel_stroke in self.__strokes:
-            if sel_stroke.bound_rect.topLeft().x() < top_left.x():
-                top_left.setX(sel_stroke.bound_rect.topLeft().x())
-            if sel_stroke.bound_rect.topLeft().y() < top_left.y():
-                top_left.setY(sel_stroke.bound_rect.topLeft().y())
-            if sel_stroke.bound_rect.bottomRight().x() > bot_right.x():
-                bot_right.setX(sel_stroke.bound_rect.bottomRight().x())
-            if sel_stroke.bound_rect.bottomRight().y() > bot_right.y():
-                bot_right.setY(sel_stroke.bound_rect.bottomRight().y())
+            stroke_top_left = sel_stroke.bound_rect.topLeft() + sel_stroke.pos
+            stroke_bot_right = sel_stroke.bound_rect.bottomRight() + sel_stroke.pos
 
-            self.__bound_rect = QtCore.QRectF(top_left, bot_right)
+            if top_left is None:
+                top_left = stroke_top_left
+            if bot_right is None:
+                bot_right = stroke_bot_right
+
+            if stroke_top_left.x() < top_left.x():
+                top_left.setX(stroke_top_left.x())
+            if stroke_top_left.y() < top_left.y():
+                top_left.setY(stroke_top_left.y())
+            if stroke_bot_right.x() > bot_right.x():
+                bot_right.setX(stroke_bot_right.x())
+            if stroke_bot_right.y() > bot_right.y():
+                bot_right.setY(stroke_bot_right.y())
+
+        self.__bound_rect = QtCore.QRectF(top_left, \
+            bot_right)
 
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()

@@ -204,22 +204,23 @@ class Stroke(object):
         self.__stroke_ctrl_verts = []
 
         tmp_points = points[:]
+        self.__pos = QtCore.QPoint(tmp_points[0][0], tmp_points[0][1])
         left = QtCore.QPoint()
         right = QtCore.QPoint()
 
         while tmp_points:
             point = tmp_points.pop(0)
-            center = QtCore.QPoint(point[0], point[1])
+            center = QtCore.QPoint(point[0], point[1]) - self.__pos
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                right = QtCore.QPoint(point[0], point[1])
+                right = QtCore.QPoint(point[0], point[1]) - self.__pos
 
             self.__stroke_ctrl_verts.append(model.control_vertex.ControlVertex(left, center, right))
 
             right = None
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                left = QtCore.QPoint(point[0], point[1])
+                left = QtCore.QPoint(point[0], point[1]) - self.__pos
 
     def generate_ctrl_vertices_from_points(self, points):
         num_points = len(points)
@@ -418,6 +419,10 @@ class Stroke(object):
             self.__end_serif.draw(gc, nib)
 
         if self.__is_selected:
+            gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
+            gc.setBrush(shared_qt.BRUSH_CLEAR)
+            gc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)
+
             for vert in self.__stroke_ctrl_verts:
                 vert.draw(gc)
 
@@ -426,6 +431,7 @@ class Stroke(object):
                 gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
 
                 gc.drawRect(self.__bound_rect)
+
 
         gc.restore()
 
