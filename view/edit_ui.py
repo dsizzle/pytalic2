@@ -586,6 +586,18 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_join.triggered.connect(self.__parent.join_strokes_cb)
         self.stroke_menu.addAction(self.stroke_join)
 
+        self.stroke_flip_x = QtGui.QAction("Flip X", self)
+        self.stroke_flip_x.setStatusTip('flip stroke horizontally')
+        self.stroke_flip_x.setEnabled(True)
+        self.stroke_flip_x.triggered.connect(self.__parent.flip_stroke_x_cb)
+        self.stroke_menu.addAction(self.stroke_flip_x)
+
+        self.stroke_flip_y = QtGui.QAction("Flip Y", self)
+        self.stroke_flip_y.setStatusTip('flip stroke vertically')
+        self.stroke_flip_y.setEnabled(True)
+        self.stroke_flip_y.triggered.connect(self.__parent.flip_stroke_y_cb)
+        self.stroke_menu.addAction(self.stroke_flip_y)
+
         self.stroke_menu.addSeparator()
         self.stroke_align_tangents = QtGui.QAction("Set Tangent To Symmetric", self)
         self.stroke_align_tangents.setEnabled(False)

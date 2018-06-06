@@ -548,6 +548,12 @@ class EditorController(object):
     def join_strokes_cb(self, event):
         self.__stroke_controller.join_selected_strokes()
 
+    def flip_stroke_x_cb(self, event):
+        self.__stroke_controller.flip_selected_strokes_x()
+
+    def flip_stroke_y_cb(self, event):
+        self.__stroke_controller.flip_selected_strokes_y()
+
     def char_selected_cb(self, event):
         cur_char_idx = self.__ui.char_selector_list.currentRow()
         self.__char_set.current_char = cur_char_idx

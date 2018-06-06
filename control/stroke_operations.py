@@ -781,6 +781,80 @@ class StrokeController(object):
 
         ui.repaint()
 
+    def flip_selected_strokes_x(self):
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.symbol
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        ui = self.__main_ctrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
+
+        flip_strokes_x_cmd = commands.Command("flip_strokes_x_cmd")
+
+        do_args = {
+            'strokes' : cur_view_selection.keys()
+        }
+
+        undo_args = {
+            'strokes' : cur_view_selection.keys()
+        }
+
+        flip_strokes_x_cmd.set_do_args(do_args)
+        flip_strokes_x_cmd.set_undo_args(undo_args)
+        flip_strokes_x_cmd.set_do_function(self.flip_strokes_x)
+        flip_strokes_x_cmd.set_undo_function(self.flip_strokes_x)
+        
+        cmd_stack.do_command(flip_strokes_x_cmd)
+        ui.edit_undo.setEnabled(True)
+
+        ui.repaint()
+
+    def flip_strokes_x(self, args):
+        if args.has_key('strokes'):
+            strokes_to_flip = args['strokes']
+        else:
+            return
+
+        for sel_stroke in strokes_to_flip:
+            sel_stroke.flip_x()
+
+    def flip_selected_strokes_y(self):
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.symbol
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        ui = self.__main_ctrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
+
+        flip_strokes_y_cmd = commands.Command("flip_strokes_y_cmd")
+
+        do_args = {
+            'strokes' : cur_view_selection.keys()
+        }
+
+        undo_args = {
+            'strokes' : cur_view_selection.keys()
+        }
+
+        flip_strokes_y_cmd.set_do_args(do_args)
+        flip_strokes_y_cmd.set_undo_args(undo_args)
+        flip_strokes_y_cmd.set_do_function(self.flip_strokes_y)
+        flip_strokes_y_cmd.set_undo_function(self.flip_strokes_y)
+        
+        cmd_stack.do_command(flip_strokes_y_cmd)
+        ui.edit_undo.setEnabled(True)
+
+        ui.repaint()
+
+    def flip_strokes_y(self, args):
+        if args.has_key('strokes'):
+            strokes_to_flip = args['strokes']
+        else:
+            return
+
+        for sel_stroke in strokes_to_flip:
+            sel_stroke.flip_y()
+
     def move_selected(self, args):
         if args.has_key('strokes'):
             selection = args['strokes']
