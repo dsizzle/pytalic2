@@ -687,6 +687,18 @@ class EditorController(object):
         self.__property_controller.nominal_width_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.guide_lines])
 
+    def char_set_left_space_changed_cb(self, new_value):
+        prev_value = self.__char_set.left_spacing
+
+        self.__property_controller.char_set_left_space_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
+
+    def char_set_right_space_changed_cb(self, new_value):
+        prev_value = self.__char_set.right_spacing
+
+        self.__property_controller.char_set_right_space_changed(prev_value, \
+            new_value, [self.__char_set, self.__ui.guide_lines])
+
     def guide_color_changed_cb(self, new_color):
         self.__ui.guide_lines.line_color = new_color
         self.__ui.repaint()
@@ -736,7 +748,7 @@ class EditorController(object):
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.x()
             if prev_value == new_value:
                 return
-                
+
             self.__stroke_controller.selection_position_changed_x(prev_value, \
                 new_value)
      

@@ -98,6 +98,12 @@ class PropertyController(object):
     def nominal_width_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['nominal_width'], ['nominal_width_spin'])
 
+    def char_set_left_space_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['left_spacing'], ['char_set_left_space_spin'])
+
+    def char_set_right_space_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['right_spacing'], ['char_set_right_space_spin'])
+        
     def char_set_nib_angle_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['nib_angle', 'angle', 'angle', 'angle'], \
             ['char_set_nib_angle_spin'])

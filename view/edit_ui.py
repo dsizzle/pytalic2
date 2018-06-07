@@ -198,6 +198,34 @@ class EditInterface(QtGui.QMainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.guide_nominal_width_changed_cb)
 
+        self.char_set_left_space_label = QtGui.QLabel(self.char_set_prop_frame)
+        self.char_set_left_space_label.setText("Left spacing:")
+
+        self.char_set_left_space_spin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
+        self.char_set_left_space_spin.setMinimum(0)
+        self.char_set_left_space_spin.setMaximum(3)
+        self.char_set_left_space_spin.setValue(1.0)
+        self.char_set_left_space_spin.setWrapping(True)
+        self.char_set_left_space_spin.setDecimals(1)
+        self.char_set_left_space_spin.setSingleStep(0.1)
+        QtCore.QObject.connect(self.char_set_left_space_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.char_set_left_space_changed_cb)
+
+        self.char_set_right_space_label = QtGui.QLabel(self.char_set_prop_frame)
+        self.char_set_right_space_label.setText("Right spacing:")
+
+        self.char_set_right_space_spin = QtGui.QDoubleSpinBox(self.char_set_prop_frame)
+        self.char_set_right_space_spin.setMinimum(0)
+        self.char_set_right_space_spin.setMaximum(3)
+        self.char_set_right_space_spin.setValue(1.0)
+        self.char_set_right_space_spin.setWrapping(True)
+        self.char_set_right_space_spin.setDecimals(1)
+        self.char_set_right_space_spin.setSingleStep(0.1)
+        QtCore.QObject.connect(self.char_set_right_space_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.char_set_right_space_changed_cb)
+
         self.guides_color_label = QtGui.QLabel(self.char_set_prop_frame)
         self.guides_color_label.setText("Guideline color:")
         self.guides_color_button = view.widgets_qt.SelectColorButton(self.char_set_prop_frame)
@@ -234,6 +262,10 @@ class EditInterface(QtGui.QMainWindow):
             self.gap_height_spin)
         self.char_set_prop_layout.addRow(self.nominal_width_label, \
             self.nominal_width_spin)
+        self.char_set_prop_layout.addRow(self.char_set_left_space_label, \
+            self.char_set_left_space_spin)
+        self.char_set_prop_layout.addRow(self.char_set_right_space_label, \
+            self.char_set_right_space_spin)
         self.char_set_prop_layout.addRow(self.guides_color_label, \
             self.guides_color_button)
         self.char_set_prop_layout.addRow(self.char_set_nib_angle_label, \

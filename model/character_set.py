@@ -6,6 +6,8 @@ class CharacterSet(object):
         self.__current_char = None
 
         self.__nominal_width_nibs = 4.0
+        self.__left_spacing = 1.0
+        self.__right_spacing = 1.0
         self.__base_height_nibs = 5.0
         self.__ascent_height_nibs = 3.0
         self.__descent_height_nibs = 3.0
@@ -94,6 +96,22 @@ class CharacterSet(object):
         return self.__nominal_width_nibs
 
     nominal_width = property(get_nominal_width, set_nominal_width)
+
+    def set_left_spacing(self, new_left_spacing):
+        self.__left_spacing = new_left_spacing
+
+    def get_left_spacing(self):
+        return self.__left_spacing
+
+    left_spacing = property(get_left_spacing, set_left_spacing)
+
+    def set_right_spacing(self, new_right_spacing):
+        self.__right_spacing = new_right_spacing
+
+    def get_right_spacing(self):
+        return self.__right_spacing
+
+    right_spacing = property(get_right_spacing, set_right_spacing) 
 
     def set_base_height(self, new_base_height):
         self.__base_height_nibs = new_base_height
