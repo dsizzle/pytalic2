@@ -291,6 +291,44 @@ class EditInterface(QtGui.QMainWindow):
         self.stroke_prop_frame = QtGui.QFrame(self.tool_pane)
         self.stroke_prop_layout = QtGui.QFormLayout(self.stroke_prop_frame)
 
+        self.position_label = QtGui.QLabel(self.stroke_prop_frame)
+        self.position_label.setText("Position")
+
+        self.stroke_prop_layout.addRow(self.position_label)
+
+        self.position_x_label = QtGui.QLabel(self.stroke_prop_frame)
+        self.position_x_label.setText("X")
+
+        self.position_x_spin = QtGui.QDoubleSpinBox(self.stroke_prop_frame)
+        self.position_x_spin.setValue(0.0)
+        self.position_x_spin.setWrapping(False)
+        self.position_x_spin.setDecimals(1)
+        self.position_x_spin.setSingleStep(1.0)
+        self.position_x_spin.setMinimum(-100000)
+        self.position_x_spin.setMaximum(100000)
+        self.position_x_spin.setKeyboardTracking(False)
+        QtCore.QObject.connect(self.position_x_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.position_x_changed_cb)
+
+        self.position_y_label = QtGui.QLabel(self.stroke_prop_frame)
+        self.position_y_label.setText("Y")
+
+        self.position_y_spin = QtGui.QDoubleSpinBox(self.stroke_prop_frame)
+        self.position_y_spin.setValue(0.0)
+        self.position_y_spin.setWrapping(False)
+        self.position_y_spin.setDecimals(1)
+        self.position_y_spin.setSingleStep(1.0)
+        self.position_y_spin.setMinimum(-100000)
+        self.position_y_spin.setMaximum(100000)
+        self.position_y_spin.setKeyboardTracking(False)
+        QtCore.QObject.connect(self.position_y_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.position_y_changed_cb)
+
+        self.stroke_prop_layout.addRow(self.position_x_label, self.position_x_spin)
+        self.stroke_prop_layout.addRow(self.position_y_label, self.position_y_spin)
+
         self.behavior_label = QtGui.QLabel(self.stroke_prop_frame)
         self.behavior_label.setText("Vertex Behavior")
 

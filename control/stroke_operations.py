@@ -884,5 +884,75 @@ class StrokeController(object):
             if type(sel_stroke).__name__ == 'Stroke':
                 sel_stroke.calc_curve_points()
 
+        if len(selection.keys()):
+            ui = self.__main_ctrl.get_ui()        
+            ui.position_x_spin.setValue(selection.keys()[0].pos.x())
+            ui.position_y_spin.setValue(selection.keys()[0].pos.y())
+
+    def selection_position_changed_x(self, prev_value, new_value):
+        delta = QtCore.QPoint(new_value - prev_value, 0)
+        undelta = QtCore.QPoint(prev_value - new_value, 0)
+
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.symbol
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        ui = self.__main_ctrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
+
+        do_args = {
+            'strokes' : cur_view_selection,
+            'delta' : delta,
+        }
+
+        undo_args = {
+            'strokes' : cur_view_selection,
+            'delta' : undelta
+        }
+
+        position_x_cmd = commands.Command("position_x_cmd")
+        position_x_cmd.set_do_args(do_args)
+        position_x_cmd.set_undo_args(undo_args)
+        position_x_cmd.set_do_function(self.move_selected)
+        position_x_cmd.set_undo_function(self.move_selected)
+
+        cmd_stack.do_command(position_x_cmd)
+        ui.edit_undo.setEnabled(True)
+
+        ui.repaint()
+
+    def selection_position_changed_y(self, prev_value, new_value):
+        delta = QtCore.QPoint(0, new_value - prev_value)
+        undelta = QtCore.QPoint(0, prev_value - new_value)
+
+        current_view = self.__main_ctrl.get_current_view()
+        cur_char = current_view.symbol
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        ui = self.__main_ctrl.get_ui()
+        cmd_stack = self.__main_ctrl.get_command_stack()
+
+        do_args = {
+            'strokes' : cur_view_selection,
+            'delta' : delta,
+        }
+
+        undo_args = {
+            'strokes' : cur_view_selection,
+            'delta' : undelta
+        }
+
+        position_y_cmd = commands.Command("position_y_cmd")
+        position_y_cmd.set_do_args(do_args)
+        position_y_cmd.set_undo_args(undo_args)
+        position_y_cmd.set_do_function(self.move_selected)
+        position_y_cmd.set_undo_function(self.move_selected)
+
+        cmd_stack.do_command(position_y_cmd)
+        ui.edit_undo.setEnabled(True)
+        
+        ui.repaint()
+
+
 def dist_between_pts(p0, p1):
     return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

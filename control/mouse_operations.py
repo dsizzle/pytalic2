@@ -173,6 +173,8 @@ class MouseController(object):
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
             stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)
             stroke_ctrl.tmp_stroke.update_ctrl_vertices()
+            ui.position_x_spin.setValue(stroke_ctrl.tmp_stroke.pos.x())
+            ui.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
 
         elif self.__main_ctrl.state == edit_control.DRAGGING:
             move_cmd = commands.Command('move_stroke_cmd')
@@ -285,6 +287,10 @@ class MouseController(object):
 
             if len(cur_view_selection.keys()) > 0:
                 self.__main_ctrl.set_ui_state_selection(True)
+                ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
+                ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
             else:
                 self.__main_ctrl.set_ui_state_selection(False)
                 ui.behavior_combo.setCurrentIndex(0)
+                ui.position_x_spin.setValue(0)
+                ui.position_y_spin.setValue(0)
