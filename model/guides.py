@@ -25,6 +25,8 @@ class GuideLines(object):
         self.__descent_height_pixels = 0
         self.__cap_height_pixels = 0
         self.__gap_height_pixels = 0
+        self.__left_spacing_pixels = 0
+        self.__right_spacing_pixels = 0
 
         # degrees
         self.__angle = 5
@@ -130,6 +132,7 @@ class GuideLines(object):
 
     def set_left_spacing(self, new_left_spacing):
         self.__left_spacing = new_left_spacing
+        self.__left_spacing_pixels = self.__nib_width * new_left_spacing
 
     def get_left_spacing(self):
         return self.__left_spacing
@@ -138,6 +141,7 @@ class GuideLines(object):
 
     def set_right_spacing(self, new_right_spacing):
         self.__right_spacing = new_right_spacing
+        self.__right_spacing_pixels = self.__nib_width * new_right_spacing
 
     def get_right_spacing(self):
         return self.__right_spacing
@@ -155,6 +159,8 @@ class GuideLines(object):
         self.__cap_height_pixels = new_nib_width * \
             (self.__cap_height_nibs + self.__base_height_nibs)
         self.__gap_height_pixels = new_nib_width * self.__gap_height_nibs
+        self.__left_spacing_pixels = new_nib_width * self.__left_spacing
+        self.__right_spacing_pixels = new_nib_width * self.__right_spacing
 
     def get_nib_width(self):
         return self.__nib_width
