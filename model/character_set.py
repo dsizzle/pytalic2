@@ -95,7 +95,7 @@ class CharacterSet(object):
     def get_nominal_width(self):
         return self.__nominal_width_nibs
 
-    nominal_width = property(get_nominal_width, set_nominal_width)
+    width = property(get_nominal_width, set_nominal_width)
 
     def set_left_spacing(self, new_left_spacing):
         self.__left_spacing = new_left_spacing

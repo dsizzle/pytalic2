@@ -194,7 +194,7 @@ class DrawingArea(QtGui.QFrame):
             self.__guide_lines.draw(dc, self.size(), self.__origin + self.__origin_delta)
 
         if self.__draw_nib_guides:
-            nib_guide_width = self.__guide_lines.nominal_width
+            nib_guide_width = self.__guide_lines.width
             nib_guide_base_pos_x = 0-(nib_guide_width * 2 * self.__nib.width) - \
                 self.__nib.width * 2
             nib_guide_base_pos_y = 0

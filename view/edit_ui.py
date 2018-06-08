@@ -319,6 +319,13 @@ class EditInterface(QtGui.QMainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.char_right_space_changed_cb)
 
+        self.override_char_set = QtGui.QCheckBox(self.char_prop_frame)
+        self.override_char_set.setText("Override Character Set")
+        QtCore.QObject.connect(self.override_char_set, \
+            QtCore.SIGNAL("stateChanged(int)"), \
+            self.__parent.override_char_set_changed_cb)
+
+        self.char_prop_layout.addRow(self.override_char_set)
         self.char_prop_layout.addRow(self.main_char_prop_label)
         self.char_prop_layout.addRow(self.char_width_label, self.char_width_spin)
         self.char_prop_layout.addRow(self.left_space_label, self.left_space_spin)

@@ -252,6 +252,7 @@ class Character(Glyph):
         self.__width = 4
         self.__left_spacing = 1.0
         self.__right_spacing = 1.0
+        self.__override_spacing = False
 
         self.__glyphs = []
 
@@ -298,6 +299,14 @@ class Character(Glyph):
         self.__right_spacing = new_right_spacing
 
     right_spacing = property(get_right_spacing, set_right_spacing)
+
+    def get_override_spacing(self):
+        return self.__override_spacing
+
+    def set_override_spacing(self, state):
+        self.__override_spacing = state
+
+    override_spacing = property(get_override_spacing, set_override_spacing)
 
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:

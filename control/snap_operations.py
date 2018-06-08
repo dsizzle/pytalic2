@@ -153,7 +153,7 @@ class SnapController(object):
         left_space_pixels = guides.left_spacing * nib_width
         right_space_pixels = guides.right_spacing * nib_width
 
-        width_x = guides.nominal_width * nib_width
+        width_x = guides.width * nib_width
         height_y = base_height_pixels + ascent_height_pixels + \
             gap_height_pixels + descent_height_pixels
         full_width_x = width_x + left_space_pixels + right_space_pixels

@@ -560,6 +560,10 @@ class EditorController(object):
         self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char
+        check_state = QtCore.Qt.Unchecked
+        if self.__cur_char.override_spacing:
+            check_state = QtCore.Qt.Checked
+        self.__ui.override_char_set.setCheckState(check_state)
         self.__ui.repaint()
         self.set_icon()
 
@@ -682,22 +686,34 @@ class EditorController(object):
             new_value, [self.__char_set, self.__ui.guide_lines])
 
     def guide_nominal_width_changed_cb(self, new_value):
-        prev_value = self.__char_set.nominal_width
+        prev_value = self.__char_set.width
+
+        ctrl_list = [self.__char_set]
+        if not self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
 
         self.__property_controller.nominal_width_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, ctrl_list)
 
     def char_set_left_space_changed_cb(self, new_value):
         prev_value = self.__char_set.left_spacing
 
+        ctrl_list = [self.__char_set]
+        if not self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
+
         self.__property_controller.char_set_left_space_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, ctrl_list)
 
     def char_set_right_space_changed_cb(self, new_value):
         prev_value = self.__char_set.right_spacing
 
+        ctrl_list = [self.__char_set]
+        if not self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
+
         self.__property_controller.char_set_right_space_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, ctrl_list)
 
     def guide_color_changed_cb(self, new_color):
         self.__ui.guide_lines.line_color = new_color
@@ -713,20 +729,46 @@ class EditorController(object):
     def char_width_changed_cb(self, new_value):
         prev_value = self.__cur_char.width
 
+        ctrl_list = [self.__cur_char]
+        if self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
+
         self.__property_controller.char_width_changed(prev_value, \
-            new_value, [self.__cur_char])
+            new_value, ctrl_list)
 
     def char_left_space_changed_cb(self, new_value):
         prev_value = self.__cur_char.left_spacing
 
+        ctrl_list = [self.__cur_char]
+        if self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
+
         self.__property_controller.char_left_space_changed(prev_value, \
-            new_value, [self.__cur_char])
+            new_value, ctrl_list)
 
     def char_right_space_changed_cb(self, new_value):
         prev_value = self.__cur_char.right_spacing
 
+        ctrl_list = [self.__cur_char]
+        if self.__cur_char.override_spacing:
+            ctrl_list.append(self.__ui.guide_lines)
+
         self.__property_controller.char_right_space_changed(prev_value, \
-            new_value, [self.__cur_char])
+            new_value, ctrl_list)
+
+    def override_char_set_changed_cb(self, newState):
+        if newState == QtCore.Qt.Checked:
+            self.__cur_char.override_spacing = True
+            self.__ui.guide_lines.left_spacing = self.__cur_char.left_spacing
+            self.__ui.guide_lines.right_spacing = self.__cur_char.right_spacing
+            self.__ui.guide_lines.width = self.__cur_char.width
+        else:
+            self.__cur_char.override_spacing = False
+            self.__ui.guide_lines.left_spacing = self.__char_set.left_spacing
+            self.__ui.guide_lines.right_spacing = self.__char_set.right_spacing
+            self.__ui.guide_lines.width = self.__char_set.width
+
+        self.__ui.repaint()
 
     def vert_behavior_combo_changed_cb(self, new_value):
         if new_value == 0:
