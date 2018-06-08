@@ -191,14 +191,33 @@ class GuideLines(object):
 
         # horizontal grid
         dist = self.__base_width_pixels
+        spacer = self.__left_spacing_pixels + self.__right_spacing_pixels
+        gc.drawLine(bot_x+self.__right_spacing_pixels, bot_y, \
+            top_x+self.__right_spacing_pixels, top_y)
         gc.drawLine(bot_x-dist, bot_y, top_x-dist, top_y)
-        pos = dist
+        gc.drawLine(bot_x-dist-self.__left_spacing_pixels, bot_y, \
+            top_x-dist-self.__left_spacing_pixels, top_y)
+
+        pos = spacer
         gc.setPen(self.__line_pen_lt)
 
         while pos < csize.width():
-            gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
-            pos = pos + dist
-            gc.drawLine(bot_x-pos, bot_y, top_x-pos, top_y)
+              gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
+              pos = pos + dist 
+              gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
+              pos = pos + self.__right_spacing_pixels
+              gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
+              pos = pos + self.__left_spacing_pixels
+              gc.drawLine(bot_x+pos, bot_y, top_x+pos, top_y)
+
+        pos = dist
+        while pos < csize.width():
+              gc.drawLine(bot_x-pos, bot_y, top_x-pos, top_y)
+              pos = pos + self.__left_spacing_pixels
+              gc.drawLine(bot_x-pos, bot_y, top_x-pos, top_y)
+              pos = pos + self.__right_spacing_pixels
+              gc.drawLine(bot_x-pos, bot_y, top_x-pos, top_y)
+              pos = pos + dist
 
         # baseline
         gc.setPen(self.__line_pen_2)

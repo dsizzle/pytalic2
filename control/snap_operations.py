@@ -143,24 +143,34 @@ class SnapController(object):
         if nib_width == 0:
             return grid_pt
 
-        ascent_height_nibs = guides.ascent_height
-        cap_height_nibs = guides.cap_height
-
-        ascent_height_pixels = ascent_height_nibs * nib_width
+        ascent_height_pixels = guides.ascent_height * nib_width
         descent_height_pixels = guides.descent_height * nib_width
         gap_height_pixels = guides.gap_height * nib_width
 
-        ascent_only = ascent_height_nibs * nib_width
-        cap_only = ascent_only - (cap_height_nibs * nib_width)
+        base_height_pixels = guides.base_height * nib_width
+        cap_height_pixels = guides.cap_height * nib_width
 
-        y_lines = [0, \
-            gap_height_pixels + descent_height_pixels + cap_only, \
-            gap_height_pixels + descent_height_pixels + ascent_only, \
-            gap_height_pixels + descent_height_pixels, \
-            descent_height_pixels]
+        left_space_pixels = guides.left_spacing * nib_width
+        right_space_pixels = guides.right_spacing * nib_width
 
         width_x = guides.nominal_width * nib_width
-        height_y = ascent_height_pixels + gap_height_pixels + descent_height_pixels
+        height_y = base_height_pixels + ascent_height_pixels + \
+            gap_height_pixels + descent_height_pixels
+        full_width_x = width_x + left_space_pixels + right_space_pixels
+
+        x_lines = [ \
+            full_width_x, \
+            full_width_x + right_space_pixels, \
+            full_width_x + left_space_pixels + right_space_pixels]
+
+        y_lines = [ \
+            height_y, \
+            height_y + descent_height_pixels, \
+            height_y + descent_height_pixels + gap_height_pixels, \
+            height_y + descent_height_pixels + gap_height_pixels + \
+                (ascent_height_pixels - cap_height_pixels),
+            height_y + descent_height_pixels + gap_height_pixels + \
+                ascent_height_pixels]
 
         for y_line in y_lines:
             test_y = (test_pt.y() - y_line) % height_y
@@ -172,17 +182,20 @@ class SnapController(object):
                 y = test_pt.y() - test_y + height_y
 
             if y != -1:
-                dx = 0-int(y * angle_dx)
-                test_x = (test_pt.x() - dx) % width_x
+                y_dx = int(y * angle_dx)
+                for x_line in x_lines:
+                    dx = x_line - y_dx
+                
+                    test_x = (test_pt.x() - dx) % full_width_x
 
-                x = -1
-                if abs(test_x) <= tolerance:
-                    x = test_pt.x() - test_x          
-                elif abs(width_x - test_x) <= tolerance:
-                    x = test_pt.x() - test_x + width_x
+                    x = -1
+                    if abs(test_x) <= tolerance:
+                        x = test_pt.x() - test_x          
+                    elif abs(full_width_x - test_x) <= tolerance:
+                        x = test_pt.x() - test_x + full_width_x
 
-                if x != -1 and (abs(test_pt.x() - x) <= tolerance*2 and \
-                    abs(test_pt.y() - y) <= tolerance*2):
-                    return QtCore.QPoint(x, y)
+                    if x != -1 and (abs(test_pt.x() - x) <= tolerance*2 and \
+                        abs(test_pt.y() - y) <= tolerance*2):
+                        return QtCore.QPoint(x, y)
 
         return grid_pt
