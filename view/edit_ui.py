@@ -274,6 +274,9 @@ class EditInterface(QtGui.QMainWindow):
         self.char_prop_frame = QtGui.QFrame(self.tool_pane)
         self.char_prop_layout = QtGui.QFormLayout(self.char_prop_frame)
 
+        self.main_char_prop_label = QtGui.QLabel(self.char_prop_frame)
+        self.main_char_prop_label.setText("Note: All units are nib-widths.")
+
         self.char_width_label = QtGui.QLabel(self.char_prop_frame)
         self.char_width_label.setText("Character width:")
 
@@ -316,6 +319,7 @@ class EditInterface(QtGui.QMainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.char_right_space_changed_cb)
 
+        self.char_prop_layout.addRow(self.main_char_prop_label)
         self.char_prop_layout.addRow(self.char_width_label, self.char_width_spin)
         self.char_prop_layout.addRow(self.left_space_label, self.left_space_spin)
         self.char_prop_layout.addRow(self.right_space_label, self.right_space_spin)
