@@ -3,7 +3,7 @@ import math
 from PyQt4 import QtCore, QtGui
 
 import control.edit_control
-from model import character, commands, stroke
+from model import character, commands, stroke, instance
 
 class StrokeController(object):
     def __init__(self, parent):
@@ -65,7 +65,7 @@ class StrokeController(object):
 
         new_glyph = character.Glyph()
         new_glyph.strokes = selected_strokes
-        glyph_instance = character.GlyphInstance()
+        glyph_instance = instance.GlyphInstance()
         glyph_instance.glyph = new_glyph
 
         item_num = ui.stroke_selector_list.count()
@@ -207,8 +207,8 @@ class StrokeController(object):
         char_index = char_set.get_current_char_index()
         glyph_index = ui.stroke_selector_list.currentRow()
         saved_glyph = char_set.get_saved_glyph(glyph_index)
-        new_glyph = character.GlyphInstance() 
-        new_glyph.set_glyph(saved_glyph)
+        new_glyph = instance.GlyphInstance() 
+        new_glyph.glyph = saved_glyph
 
         paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
@@ -239,7 +239,7 @@ class StrokeController(object):
             return
 
         if 'strokes' in args:
-            stroke_instance = args['strokes']
+            glyph_instance = args['strokes']
         else:
             return
 
@@ -251,8 +251,8 @@ class StrokeController(object):
 
         ui.char_selector_list.setCurrentRow(char_index)
 
-        cur_char.add_glyph(stroke_instance)
-        cur_view_selection[stroke_instance] = {}
+        cur_char.add_glyph(glyph_instance)
+        cur_view_selection[glyph_instance] = {}
 
         ui.dwg_area.repaint()
         self.__main_ctrl.set_icon()
