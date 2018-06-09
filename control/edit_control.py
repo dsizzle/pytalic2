@@ -16,7 +16,7 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-from model import character_set, character, commands, stroke
+from model import character_set, character, commands, stroke, instance
 from view import edit_ui
 
 ICON_SIZE = 40
@@ -487,8 +487,8 @@ class EditorController(object):
             if type(paste_stroke).__name__ == 'Stroke':
                 self.__current_view_pane.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
             else:
-                new_glyph = character.Glyph()
-                new_glyph.set_strokes(paste_stroke.strokes)
+                new_glyph = instance.GlyphInstance()
+                new_glyph.glyph = paste_stroke.glyph
                 self.__current_view_pane.symbol.add_glyph(new_glyph)
 
         self.set_ui_state_selection(True)
