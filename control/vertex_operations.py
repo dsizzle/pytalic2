@@ -54,12 +54,12 @@ class VertexController(object):
     def set_ctrl_vertex_behavior(self, args):
         ui = self.__main_ctrl.get_ui()
 
-        if args.has_key('verts'):
+        if 'verts' in args:
             vert_list = args['verts']
         else:
             return
 
-        if args.has_key('behaviors'):
+        if 'behaviors' in args:
             behavior_list = args['behaviors']
         else:
             return

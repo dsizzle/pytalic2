@@ -36,7 +36,7 @@ class CharacterSet(object):
         return None
 
     def set_current_char(self, char):
-        if self.__characters.has_key(char):
+        if char in self.__characters:
             self.__current_char = char
         else:
             self.new_character(char)
@@ -50,7 +50,7 @@ class CharacterSet(object):
         return self.__current_char
 
     def get_char(self, char_to_get):
-        if self.__characters.has_key(char_to_get):
+        if char_to_get in self.__characters:
             return self.__characters[char_to_get]
 
         return None

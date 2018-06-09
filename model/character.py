@@ -125,12 +125,12 @@ class Glyph(object):
     def add_stroke(self, args):
         copy_stroke = True
 
-        if args.has_key(STROKE):
+        if STROKE in args:
             stroke_to_add = args[STROKE]
         else:
             return
 
-        if args.has_key('copy_stroke'):
+        if 'copy_stroke' in args:
             copy_stroke = args['copy_stroke']
 
         if copy_stroke:
@@ -144,7 +144,7 @@ class Glyph(object):
         return new_stroke
 
     def new_stroke_instance(self, args):
-        if args.has_key(STROKE):
+        if STROKE in args:
             stroke_to_add = args[STROKE]
         else:
             return
@@ -165,7 +165,7 @@ class Glyph(object):
             inst.set_parent(self)
 
     def copy_stroke(self, args):
-        if args.has_key(STROKE):
+        if STROKE in args:
             stroke_to_copy = args[STROKE]
         else:
             return
@@ -180,7 +180,7 @@ class Glyph(object):
         return copied_stroke
 
     def delete_stroke(self, args):
-        if args.has_key(STROKE):
+        if STROKE in args:
             stroke_to_delete = args[STROKE]
         else:
             return

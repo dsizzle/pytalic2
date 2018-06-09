@@ -98,22 +98,22 @@ class StrokeController(object):
     def save_glyphs(self, args):
         deleted_strokes = []
         
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             saved_selection = args['strokes']
         else:
             return
 
-        if args.has_key('glyph'):
+        if 'glyph' in args:
             glyph_instance = args['glyph']
         else:
             return
 
-        if args.has_key('first_item'):
+        if 'first_item' in args:
             first_item = args['first_item']
         else:
             return
 
-        if args.has_key('character'):
+        if 'character' in args:
             cur_char = args['character']
         else:
             return
@@ -135,7 +135,7 @@ class StrokeController(object):
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
             
-            if not cur_view_selection.has_key(sel_stroke):
+            if sel_stroke not in cur_view_selection:
                 cur_view_selection = {}
                 sel_stroke.deselect_ctrl_verts()
 
@@ -144,7 +144,7 @@ class StrokeController(object):
         cur_char.add_glyph(glyph_instance)
 
         for sel_stroke in deleted_strokes:
-            if cur_view_selection.has_key(sel_stroke):
+            if sel_stroke in cur_view_selection:
                 del cur_view_selection[sel_stroke]
 
             sel_stroke.selected = False
@@ -156,17 +156,17 @@ class StrokeController(object):
     def unsave_glyphs(self, args):
         added_strokes = []
         
-        if args.has_key('glyph'):
+        if 'glyph' in args:
             glyph_instance = args['glyph']
         else:
             return
 
-        if args.has_key('first_item'):
+        if 'first_item' in args:
             first_item = args['first_item']
         else:
             return
 
-        if args.has_key('character'):
+        if 'character' in args:
             cur_char = args['character']
         else:
             return
@@ -187,7 +187,7 @@ class StrokeController(object):
         ui.stroke_selector_list.takeItem(first_item)
             
         for sel_stroke in added_strokes:
-            if not cur_view_selection.has_key(sel_stroke):
+            if sel_stroke not in cur_view_selection:
                 cur_view_selection[sel_stroke] = {}
                 sel_stroke.deselect_ctrl_verts()
 
@@ -233,12 +233,12 @@ class StrokeController(object):
         ui.repaint()
 
     def paste_glyph(self, args):
-        if args.has_key('char_index'):
+        if 'char_index' in args:
             char_index = args['char_index']
         else:
             return
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             stroke_instance = args['strokes']
         else:
             return
@@ -258,12 +258,12 @@ class StrokeController(object):
         self.__main_ctrl.set_icon()
 
     def delete_glyph(self, args):
-        if args.has_key('char_index'):
+        if 'char_index' in args:
             char_index = args['char_index']
         else:
             return
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             stroke_to_del = args['strokes']
         else:
             return
@@ -275,7 +275,7 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
 
         cur_char.remove_glyph(stroke_to_del)
-        if cur_view_selection.has_key(stroke_to_del):
+        if stroke_to_del in cur_view_selection:
             del cur_view_selection[stroke_to_del]
 
         ui.dwg_area.repaint()
@@ -323,12 +323,12 @@ class StrokeController(object):
         ui.repaint()
 
     def remove_saved_glyph(self, args):
-        if args.has_key('glyph_index'):
+        if 'glyph_index' in args:
             glyph_index = args['glyph_index']
         else:
             return
 
-        if args.has_key('glyph'):
+        if 'glyph' in args:
             glyph = args['glyph']
         else:
             return
@@ -345,17 +345,17 @@ class StrokeController(object):
             char.remove_glyph(glyph_instance)
 
     def add_saved_glyph(self, args):
-        if args.has_key('glyph_index'):
+        if 'glyph_index' in args:
             glyph_index = args['glyph_index']
         else:
             return
 
-        if args.has_key('glyph'):
+        if 'glyph' in args:
             glyph = args['glyph']
         else:
             return
 
-        if args.has_key('bitmap'):
+        if 'bitmap' in args:
             bitmap = args['bitmap']
         else:
             return
@@ -453,7 +453,7 @@ class StrokeController(object):
         cur_stroke = stroke_list.pop(0)
         vert_list = cur_stroke.get_ctrl_vertices_as_list()
         cur_char.delete_stroke({'stroke': cur_stroke})
-        if cur_view_selection.has_key(cur_stroke):
+        if cur_stroke in cur_view_selection:
             del cur_view_selection[cur_stroke]
             cur_stroke.selected = False
 
@@ -461,7 +461,7 @@ class StrokeController(object):
             cur_stroke = stroke_list.pop(0)
             cur_verts = cur_stroke.get_ctrl_vertices_as_list()
             cur_char.delete_stroke({'stroke': cur_stroke})
-            if cur_view_selection.has_key(cur_stroke):
+            if cur_stroke in cur_view_selection:
                 del cur_view_selection[cur_stroke]
                 cur_stroke.selected = False
 
@@ -497,12 +497,12 @@ class StrokeController(object):
         return new_stroke
 
     def unjoin_all_strokes(self, args):
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes = args['strokes']
         else:
             return
 
-        if args.has_key('joined_stroke'):
+        if 'joined_stroke' in args:
             joined_stroke = args['joined_stroke']
         else:
             return
@@ -514,7 +514,7 @@ class StrokeController(object):
 
         cur_char.delete_stroke({'stroke': joined_stroke})
         joined_stroke.selected = False
-        if cur_view_selection.has_key(joined_stroke):
+        if joined_stroke in cur_view_selection:
             del cur_view_selection[joined_stroke]
 
         for sel_stroke in strokes.keys():
@@ -523,12 +523,12 @@ class StrokeController(object):
             sel_stroke.selected = True
 
     def join_all_strokes(self, args):
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes = args['strokes']
         else:
             return
 
-        if args.has_key('joined_stroke'):
+        if 'joined_stroke' in args:
             joined_stroke = args['joined_stroke']
         else:
             return
@@ -544,7 +544,7 @@ class StrokeController(object):
 
         for sel_stroke in strokes.keys():
             cur_char.delete_stroke({'stroke': sel_stroke})
-            if cur_view_selection.has_key(sel_stroke):
+            if sel_stroke in cur_view_selection:
                 del cur_view_selection[sel_stroke]
             sel_stroke.selected = False
 
@@ -595,12 +595,12 @@ class StrokeController(object):
     def set_stroke_control_vertices(self, args):
         ui = self.__main_ctrl.get_ui()
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             sel_stroke_list = args['strokes']
         else:
             return
 
-        if args.has_key('ctrl_verts'):
+        if 'ctrl_verts' in args:
             ctrl_vert_list = args['ctrl_verts']
         else:
             return
@@ -620,17 +620,17 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             sel_stroke = args['strokes']
         else:
             return
 
-        if args.has_key('ctrl_verts'):
+        if 'ctrl_verts' in args:
             ctrl_verts = args['ctrl_verts']
         else:
             return
 
-        if args.has_key('new_stroke'):
+        if 'new_stroke' in args:
             new_stroke = args['new_stroke']
         else:
             return
@@ -646,17 +646,17 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             sel_stroke = args['strokes']
         else:
             return
 
-        if args.has_key('ctrl_verts'):
+        if 'ctrl_verts' in args:
             ctrl_verts = args['ctrl_verts']
         else:
             return
 
-        if args.has_key('stroke_to_delete'):
+        if 'stroke_to_delete' in args:
             del_stroke = args['stroke_to_delete']
         else:
             return
@@ -810,7 +810,7 @@ class StrokeController(object):
         ui.repaint()
 
     def flip_strokes_x(self, args):
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes_to_flip = args['strokes']
         else:
             return
@@ -847,7 +847,7 @@ class StrokeController(object):
         ui.repaint()
 
     def flip_strokes_y(self, args):
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes_to_flip = args['strokes']
         else:
             return
@@ -856,18 +856,18 @@ class StrokeController(object):
             sel_stroke.flip_y()
 
     def move_selected(self, args):
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             selection = args['strokes']
         else:
             return
 
-        if args.has_key('delta'):
+        if 'delta' in args:
             delta = args['delta']
         else:
             return
 
         snap_point = None
-        if args.has_key('snap_point'):
+        if 'snap_point' in args:
             snap_point = args['snap_point']
 
         for sel_stroke in selection.keys():

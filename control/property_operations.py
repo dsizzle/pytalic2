@@ -38,22 +38,22 @@ class PropertyController(object):
         ui.repaint()
 
     def change_property_control(self, args):
-        if args.has_key('value'):
+        if 'value' in args:
             val = args['value']
         else:
             return
 
-        if args.has_key('attr_names'):
+        if 'attr_names' in args:
             attr_names = args['attr_names']
         else:
             return
 
-        if args.has_key('ctrl_names'):
+        if 'ctrl_names' in args:
             ctrl_names = args['ctrl_names']
         else:
             return
 
-        if args.has_key('objects'):
+        if 'objects' in args:
             objects_to_set = args['objects']
         else:
             return

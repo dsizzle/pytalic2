@@ -243,14 +243,14 @@ class MouseController(object):
                         
                     else:
                         if shift_down:
-                            if not cur_view_selection.has_key(sel_stroke):
+                            if sel_stroke not in cur_view_selection:
                                 cur_view_selection[sel_stroke] = {}
                                 if type(sel_stroke).__name__ == 'Stroke':
                                     sel_stroke.deselect_ctrl_verts()
 
                             sel_stroke.selected = True
                         else:
-                            if cur_view_selection.has_key(sel_stroke):
+                            if sel_stroke in cur_view_selection:
                                 del cur_view_selection[sel_stroke]
 
                             sel_stroke.selected = False
@@ -274,7 +274,7 @@ class MouseController(object):
                 for sel_stroke in current_view.symbol.children:
                     inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
-                        if not cur_view_selection.has_key(sel_stroke):
+                        if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
                             if type(sel_stroke).__name__ == 'Stroke':
                                 sel_stroke.deselect_ctrl_verts()

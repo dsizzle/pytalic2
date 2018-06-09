@@ -358,12 +358,12 @@ class EditorController(object):
         self.__ui.repaint()
 
     def cut_clipboard(self, args):
-        if args.has_key('char_index'):
+        if 'char_index' in args:
             char_index = args['char_index']
         else:
             return
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes_to_cut = args['strokes']
         else:
             return
@@ -378,7 +378,7 @@ class EditorController(object):
                 self.__current_view_pane.symbol.remove_glyph(sel_stroke)
 
             self.__clipboard.append(sel_stroke)
-            if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+            if sel_stroke in self.__selection[self.__current_view_pane]:
                 del self.__selection[self.__current_view_pane][sel_stroke]
             sel_stroke.selected = False
 
@@ -410,12 +410,12 @@ class EditorController(object):
         self.__ui.repaint()
 
     def copy_clipboard(self, args):
-        if args.has_key('char_index'):
+        if 'char_index' in args:
             char_index = args['char_index']
         else:
             return
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes_to_copy = args['strokes']
         else:
             return
@@ -454,17 +454,17 @@ class EditorController(object):
         self.__ui.repaint()
 
     def paste_clipboard(self, args):
-        if args.has_key('char_index'):
+        if 'char_index' in args:
             char_index = args['char_index']
         else:
             return
 
-        if args.has_key('strokes'):
+        if 'strokes' in args:
             strokes_to_paste = args['strokes']
         else:
             return
 
-        if args.has_key('copy'):
+        if 'copy' in args:
             copy_strokes = args['copy']
         else:
             copy_strokes = True
@@ -614,7 +614,7 @@ class EditorController(object):
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
-        if not self.__selection.has_key(self.__current_view_pane):
+        if self.__current_view_pane not in self.__selection:
             self.__selection[self.__current_view_pane] = {}
         if self.__current_view_pane == self.__ui.preview_area:
             self.__ui.view_guides.setEnabled(False)
@@ -628,7 +628,7 @@ class EditorController(object):
 
         if self.__current_view_pane != self.__ui.preview_area:
             for sel_stroke in self.__current_view_pane.symbol.children:
-                if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                if sel_stroke in self.__selection[self.__current_view_pane]:
                     sel_stroke.selected = True
                 else:
                     sel_stroke.selected = False
@@ -637,7 +637,7 @@ class EditorController(object):
                 for sel_glyph in self.__current_view_pane.symbol.glyphs:
 
                     for sel_stroke in sel_glyph.strokes:
-                        if self.__selection[self.__current_view_pane].has_key(sel_stroke):
+                        if sel_stroke in self.__selection[self.__current_view_pane]:
                             sel_stroke.selected = True
                         else:
                             sel_stroke.selected = False
