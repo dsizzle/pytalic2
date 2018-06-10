@@ -28,6 +28,9 @@ DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
 
+START_CHAR_CODE = 32
+END_CHAR_CODE = 128
+
 class EditorController(object):
     """
     EditorController is the main Controller for pyTalic Editor
@@ -49,7 +52,7 @@ class EditorController(object):
         self.__state = 0
 
         char_list = []
-        for i in range(32, 128):
+        for i in range(START_CHAR_CODE, END_CHAR_CODE):
             char_list.append(str(unichr(i)))
 
         self.__ui.create_ui()
@@ -368,7 +371,7 @@ class EditorController(object):
         else:
             return
 
-        self.__ui.char_selector_list.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_inde - START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             #self.__cur_char.delete_stroke({'stroke' : sel_stroke})
@@ -420,7 +423,7 @@ class EditorController(object):
         else:
             return
 
-        self.__ui.char_selector_list.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
@@ -469,7 +472,7 @@ class EditorController(object):
         else:
             copy_strokes = True
 
-        self.__ui.char_selector_list.setCurrentRow(char_index)
+        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
 
         for sel_stroke in self.__selection[self.__current_view_pane].keys():
             sel_stroke.selected = False
@@ -556,7 +559,7 @@ class EditorController(object):
 
     def char_selected_cb(self, event):
         cur_char_idx = self.__ui.char_selector_list.currentRow()
-        self.__char_set.current_char = cur_char_idx
+        self.__char_set.current_char = cur_char_idx + START_CHAR_CODE
         self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char

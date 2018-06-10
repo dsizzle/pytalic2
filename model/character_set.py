@@ -36,10 +36,11 @@ class CharacterSet(object):
         return None
 
     def set_current_char(self, char):
-        if char in self.__characters:
-            self.__current_char = char
+        unicode_char = unichr(char)
+        if unicode_char in self.__characters:
+            self.__current_char = unicode_char
         else:
-            self.new_character(char)
+            self.new_character(unicode_char)
 
     current_char = property(get_current_char, set_current_char)
 
