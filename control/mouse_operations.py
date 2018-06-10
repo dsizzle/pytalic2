@@ -104,6 +104,7 @@ class MouseController(object):
         
         if self.__main_ctrl.state == edit_control.MOVING_PAPER:
             delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
+            current_view.origin_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
         elif self.__main_ctrl.state == edit_control.DRAGGING:
             norm_paper_pos = current_view.get_normalized_position(paper_pos) 
