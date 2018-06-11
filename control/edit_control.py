@@ -794,7 +794,7 @@ class EditorController(object):
         self.__vertex_controller.break_tangents()
 
     def position_x_changed_cb(self, new_value):
-        if len(self.__selection[self.__current_view_pane].keys()):
+        if len(self.__selection[self.__current_view_pane].keys()) and self.__state != DRAWING_NEW_STROKE:
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.x()
             if prev_value == new_value:
                 return
@@ -803,7 +803,7 @@ class EditorController(object):
                 new_value)
      
     def position_y_changed_cb(self, new_value):
-        if len(self.__selection[self.__current_view_pane].keys()):
+        if len(self.__selection[self.__current_view_pane].keys()) and self.__state != DRAWING_NEW_STROKE:
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.y()
             if prev_value == new_value:
                 return
