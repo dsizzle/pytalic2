@@ -371,7 +371,7 @@ class EditorController(object):
         else:
             return
 
-        self.__ui.char_selector_list.setCurrentRow(char_inde - START_CHAR_CODE)
+        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             #self.__cur_char.delete_stroke({'stroke' : sel_stroke})
