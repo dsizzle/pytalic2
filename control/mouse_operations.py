@@ -107,7 +107,7 @@ class MouseController(object):
             current_view.origin_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
         elif self.__main_ctrl.state == edit_control.DRAGGING:
-            norm_paper_pos = current_view.get_normalized_position(paper_pos) 
+            norm_paper_pos = current_view.get_normalized_position(paper_pos)
             delta_pos = paper_pos - norm_paper_pos
             
             snap_ctrl = self.__main_ctrl.get_snap_controller()
@@ -166,7 +166,7 @@ class MouseController(object):
         adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui.main_view_tabs.tabBar().height())
 
-        paper_pos = current_view.get_normalized_position(adjusted_pos) - current_view.symbol.pos
+        paper_pos = current_view.get_normalized_position(adjusted_pos)
         
         current_view.snap_points = []
         if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:

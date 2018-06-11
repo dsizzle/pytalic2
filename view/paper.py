@@ -137,6 +137,8 @@ class DrawingArea(QtGui.QFrame):
         norm_position = norm_position - self.__origin - self.__origin_delta
         norm_position = norm_position / self.__scale
 
+        norm_position = norm_position - self.symbol.pos
+
         return norm_position
 
     def draw_icon(self, dc, strokes_to_draw):
@@ -317,6 +319,8 @@ class LayoutArea(QtGui.QFrame):
         norm_position = raw_position
         norm_position = norm_position - self.__origin - self.__origin_delta
         norm_position = norm_position / self.__scale
+
+        norm_position = norm_position - self.layout.pos
 
         return norm_position
 
