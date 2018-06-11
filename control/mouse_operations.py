@@ -221,76 +221,86 @@ class MouseController(object):
             self.__main_ctrl.state = edit_control.IDLE
             QtGui.qApp.restoreOverrideCursor()
         else:
-            if len(cur_view_selection.keys()) > 0:
-                for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos)
-                    if inside_info[1] >= 0:
-                        ctrl_vertex_num = int((inside_info[1]+1) / 3)
-                        ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
-                        
-                        handle_index = (inside_info[1]+1) % 3 +1
-                        if not shift_down:
+            self.update_selection(paper_pos, shift_down)
+
+    def update_selection(self, paper_pos, shift_down):
+        current_view = self.__main_ctrl.get_current_view()
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+        cur_char = self.__main_ctrl.get_current_char()
+
+        ui = self.__main_ctrl.get_ui()
+        
+        if len(cur_view_selection.keys()) > 0:
+            for sel_stroke in cur_view_selection.keys():
+                inside_info = sel_stroke.is_inside(paper_pos)
+                if inside_info[1] >= 0:
+                    ctrl_vertex_num = int((inside_info[1]+1) / 3)
+                    ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
+                    
+                    handle_index = (inside_info[1] + 1) % 3 +1
+                    if not shift_down:
+                        if type(sel_stroke).__name__ == 'Stroke':
+                            sel_stroke.deselect_ctrl_verts()
+                        cur_view_selection[sel_stroke] = {}
+
+                    cur_view_selection[sel_stroke][ctrl_vert] = handle_index
+
+                    for ctrl_vert in cur_view_selection[sel_stroke].keys():
+                        ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
+
+                    sel_stroke.selected = True
+                    
+                else:
+                    if shift_down:
+                        if sel_stroke not in cur_view_selection:
+                            cur_view_selection[sel_stroke] = {}
                             if type(sel_stroke).__name__ == 'Stroke':
                                 sel_stroke.deselect_ctrl_verts()
-                            cur_view_selection[sel_stroke] = {}
-
-                        cur_view_selection[sel_stroke][ctrl_vert] = handle_index
-
-                        for ctrl_vert in cur_view_selection[sel_stroke].keys():
-                            ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
 
                         sel_stroke.selected = True
-                        
                     else:
-                        if shift_down:
-                            if sel_stroke not in cur_view_selection:
-                                cur_view_selection[sel_stroke] = {}
-                                if type(sel_stroke).__name__ == 'Stroke':
-                                    sel_stroke.deselect_ctrl_verts()
+                        if sel_stroke in cur_view_selection:
+                            del cur_view_selection[sel_stroke]
 
-                            sel_stroke.selected = True
-                        else:
-                            if sel_stroke in cur_view_selection:
-                                del cur_view_selection[sel_stroke]
-
-                            sel_stroke.selected = False
-                            if type(sel_stroke).__name__ == 'Stroke':
-                                sel_stroke.deselect_ctrl_verts()
-
-                vert_list = cur_view_selection.values()
-                behavior_list = []
-                
-                for vert_dict in vert_list:
-                    for vert in vert_dict.keys():
-                        behavior_list.append(vert.behavior)
-
-                behavior_list = list(set(behavior_list))
-                if len(behavior_list) == 1:
-                    ui.behavior_combo.setCurrentIndex(behavior_list[0])
-                else:
-                    ui.behavior_combo.setCurrentIndex(0)
-
-            if len(cur_view_selection.keys()) == 0 or shift_down:
-                for sel_stroke in current_view.symbol.children:
-                    inside_info = sel_stroke.is_inside(paper_pos)
-                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
-                        if sel_stroke not in cur_view_selection:
-                            cur_view_selection[sel_stroke] = {} 
-                            if type(sel_stroke).__name__ == 'Stroke':
-                                sel_stroke.deselect_ctrl_verts()
-
-                        sel_stroke.selected = True  
-                    elif not shift_down:
                         sel_stroke.selected = False
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
 
-            if len(cur_view_selection.keys()) > 0:
-                self.__main_ctrl.set_ui_state_selection(True)
-                ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
-                ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
+            vert_list = cur_view_selection.values()
+            behavior_list = []
+            
+            for vert_dict in vert_list:
+                for vert in vert_dict.keys():
+                    behavior_list.append(vert.behavior)
+
+            behavior_list = list(set(behavior_list))
+            if len(behavior_list) == 1:
+                ui.behavior_combo.setCurrentIndex(behavior_list[0])
             else:
-                self.__main_ctrl.set_ui_state_selection(False)
                 ui.behavior_combo.setCurrentIndex(0)
-                ui.position_x_spin.setValue(0)
-                ui.position_y_spin.setValue(0)
+
+        if len(cur_view_selection.keys()) == 0 or shift_down:
+            for sel_stroke in current_view.symbol.children:
+                inside_info = sel_stroke.is_inside(paper_pos)
+                if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                    if sel_stroke not in cur_view_selection:
+                        cur_view_selection[sel_stroke] = {} 
+                        if type(sel_stroke).__name__ == 'Stroke':
+                            sel_stroke.deselect_ctrl_verts()
+
+                    sel_stroke.selected = True  
+                elif not shift_down:
+                    sel_stroke.selected = False
+                    if type(sel_stroke).__name__ == 'Stroke':
+                        sel_stroke.deselect_ctrl_verts()
+
+        if len(cur_view_selection.keys()) > 0:
+            self.__main_ctrl.set_ui_state_selection(True)
+            ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
+            ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
+        else:
+            self.__main_ctrl.set_ui_state_selection(False)
+            ui.behavior_combo.setCurrentIndex(0)
+            ui.position_x_spin.setValue(0)
+            ui.position_y_spin.setValue(0)
