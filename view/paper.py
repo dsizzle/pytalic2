@@ -278,11 +278,17 @@ class LayoutArea(QtGui.QFrame):
         self.__old_view_pos = None
         self.__move_view = False
 
+        # will we ever need a bitmap?
+        self.__bitmap = None
+
         self.__nib = nibs.Nib(color=QtGui.QColor(125, 25, 25))
 
     def resizeEvent(self, event):
         self.__origin = QtCore.QPoint(self.size().width()/2, self.size().height()/2)
         self.repaint()
+
+    def get_bitmap(self):
+        return self.__bitmap
 
     def get_scale(self):
         return self.__scale

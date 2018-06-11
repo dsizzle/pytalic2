@@ -281,19 +281,20 @@ class MouseController(object):
                 ui.behavior_combo.setCurrentIndex(0)
 
         if len(cur_view_selection.keys()) == 0 or shift_down:
-            for sel_stroke in current_view.symbol.children:
-                inside_info = sel_stroke.is_inside(paper_pos)
-                if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
-                    if sel_stroke not in cur_view_selection:
-                        cur_view_selection[sel_stroke] = {} 
+            if current_view != ui.preview_area:
+                for sel_stroke in current_view.symbol.children:
+                    inside_info = sel_stroke.is_inside(paper_pos)
+                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                        if sel_stroke not in cur_view_selection:
+                            cur_view_selection[sel_stroke] = {} 
+                            if type(sel_stroke).__name__ == 'Stroke':
+                                sel_stroke.deselect_ctrl_verts()
+
+                        sel_stroke.selected = True  
+                    elif not shift_down:
+                        sel_stroke.selected = False
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
-
-                    sel_stroke.selected = True  
-                elif not shift_down:
-                    sel_stroke.selected = False
-                    if type(sel_stroke).__name__ == 'Stroke':
-                        sel_stroke.deselect_ctrl_verts()
 
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.set_ui_state_selection(True)
