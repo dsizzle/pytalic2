@@ -227,8 +227,8 @@ class EditorController(object):
             self.__ui.dwg_area.nib.angle = self.__char_set.nib_angle
             self.__ui.dwg_area.nib_instance.angle = self.__char_set.nib_angle
             self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nib_angle
-            self.__ui.nominal_width_spin.setValue(self.__char_set.nominal_width)
-            self.__ui.guide_lines.nominal_width = self.__char_set.nominal_width
+            self.__ui.nominal_width_spin.setValue(self.__char_set.width)
+            self.__ui.guide_lines.width = self.__char_set.width
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
 
