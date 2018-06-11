@@ -270,7 +270,7 @@ class LayoutArea(QtGui.QFrame):
         self.__bg_color = QtGui.QColor(240, 240, 230)
         self.__bg_brush = QtGui.QBrush(self.__bg_color, QtCore.Qt.SolidPattern)
 
-        self.__layout = []
+        self.__layout = None
         self.__strokes_to_draw = []
 
         self.__old_view_pos = None
@@ -348,8 +348,14 @@ class LayoutArea(QtGui.QFrame):
         dc.translate(self.__origin + self.__origin_delta)
         dc.scale(self.__scale, self.__scale)
 
-        for symbol in self.__layout:
-            pass
+        if self.__layout:
+            dc.save()
+            dc.translate(self.__layout.pos)
+
+            for symbol in self.__layout.object_list:
+                symbol.draw(dc, self.__nib)
+
+            dc.restore()
 
         dc.restore()
         dc.end()
