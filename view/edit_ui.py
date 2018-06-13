@@ -440,6 +440,7 @@ class EditInterface(QtGui.QMainWindow):
         self.setCentralWidget(self.main_widget)
 
         self.guide_lines = guides.GuideLines()
+        self.guide_lines.nib_width = self.dwg_area.nib.width * 2
         self.dwg_area.set_guidelines(self.guide_lines)
         self.stroke_dwg_area.set_guidelines(self.guide_lines)
 

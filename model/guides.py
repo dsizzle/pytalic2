@@ -33,7 +33,6 @@ class GuideLines(object):
         self.__angle_dx = math.tan(math.radians(self.__angle))
 
         self.__nib_width = 0
-        self.__last_nib_width = 0
         self.__line_color = None
         self.__line_color_lt = None
         self.__line_color_alpha = None
@@ -169,11 +168,8 @@ class GuideLines(object):
 
     def draw(self, gc, size, origin, nib=None):
 
-        nib_width = 20 #nib.getWidth() << 1
-
-        if self.__last_nib_width != nib_width:
-            self.__last_nib_width = nib_width
-            self.nib_width = nib_width
+        if self.nib_width == 0:
+            return
 
         scale = gc.worldTransform().m11()
 
