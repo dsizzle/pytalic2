@@ -20,7 +20,7 @@ class CharacterSet(object):
 
     def new_character(self, char_code):
         my_char = model.character.Character()
-        self.__characters[char_code] = my_char
+        self.__characters[unichr(char_code)] = my_char
         self.__current_char = char_code
 
     def delete_char(self, char_to_delete):
@@ -31,16 +31,16 @@ class CharacterSet(object):
 
     def get_current_char(self):
         if self.__current_char is not None:
-            return self.__characters[self.__current_char]
+            return self.__characters[unichr(self.__current_char)]
 
         return None
 
     def set_current_char(self, char):
         unicode_char = unichr(char)
         if unicode_char in self.__characters:
-            self.__current_char = unicode_char
+            self.__current_char = char
         else:
-            self.new_character(unicode_char)
+            self.new_character(char)
 
     current_char = property(get_current_char, set_current_char)
 
