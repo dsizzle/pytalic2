@@ -26,7 +26,7 @@ class DrawingArea(QtGui.QFrame):
         self.__symbol = None
         self.__strokes_to_draw = []
         self.__snap_points = []
-        initial_nib_width = self.width() / 10
+        initial_nib_width = self.width() / 5
         self.__nib = nibs.Nib(width=initial_nib_width, color=QtGui.QColor(125, 25, 25))
         self.__nib_instance = nibs.Nib(width=initial_nib_width, color=QtGui.QColor(25, 125, 25))
         self.__nib_special = nibs.Nib(width=initial_nib_width, color=QtGui.QColor(25, 25, 125))
@@ -34,7 +34,11 @@ class DrawingArea(QtGui.QFrame):
         self.__bitmap_size = 40
 
     def resizeEvent(self, event):
-        self.__origin = QtCore.QPoint(self.size().width() / 2, self.size().height() / 2)
+        x_pos = (self.__guide_lines.width + self.__guide_lines.left_spacing + \
+            self.__guide_lines.right_spacing) * self.__nib.width / 2
+        y_pos = (self.__guide_lines.base_height + self.__guide_lines.ascent_height + \
+            self.__guide_lines.descent_height) * self.__nib.width / 2
+        self.__origin = QtCore.QPoint(self.size().width() / 2 + x_pos, self.size().height() / 2 + y_pos)
         self.repaint()
 
     def get_bitmap(self):
