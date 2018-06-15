@@ -7,6 +7,6 @@ Requires Python 2.x and PyQt4
 
 Current screenshot of the editor:
 
-[[https://github.com/dsizzle/pytalic2/blob/master/pytalic_editor_screen01.PNG|alt=screenshot]]
+[https://github.com/dsizzle/pytalic2/blob/master/pytalic_editor_screen01.PNG|alt=screenshot]
 
 Icons are from http://www.fatcow.com/free-icons
