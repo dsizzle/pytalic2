@@ -7,7 +7,7 @@ class Layout(object):
         self.__object_list = []
         self.__pos = QtCore.QPoint()
 
-    def set_object_list(self, new_objects):
+    def set_object_list(self, new_object_list):
         self.__object_list = new_object_list
 
     def get_object_list(self):
@@ -31,39 +31,48 @@ class Layout(object):
 
     pos = property(get_pos, set_pos)
 
-    def init_with_string(self, string_to_layout, char_set, nib_width=20):
-        layout_total_length = 0
+    def init_with_string(self, string_to_layout, char_set, nib_width):
         height = char_set.base_height * nib_width
-        current_x = 0
+        
+        for char in self.object_list:
+            del char
 
-        prev_left_space = 0
+        self.object_list = []
+
         for char in string_to_layout:
             char_object = char_set.get_char(char)
 
             if char_object is None:
-                char_set.new_character(unichr(ord(char)))
+                char_set.new_character(ord(char))
                 char_object = char_set.get_char(char)
 
-            if char_object.override_spacing:
-                width = char_object.width
-                left_space = char_object.left_spacing
-                right_space = char_object.right_spacing
+            new_character = model.instance.CharacterInstance()
+            new_character.character = char_object
+            self.add_object(new_character)
+        
+        self.update_layout(char_set, nib_width)
+
+    def update_layout(self, char_set, nib_width):
+        layout_total_length = 0
+        current_x = 0
+        prev_left_space = 0
+
+        for char_object in self.object_list:
+            if char_object.character.override_spacing:
+                width = char_object.character.width
+                left_space = char_object.character.left_spacing
+                right_space = char_object.character.right_spacing
             else:
                 width = char_set.width
                 left_space = char_set.left_spacing
                 right_space = char_set.right_spacing
 
-            current_x += (width + right_space + prev_left_space) * nib_width
+            delta_x = (width + right_space + prev_left_space) * nib_width 
+            current_x += delta_x
             prev_left_space = left_space
 
-            new_character = model.instance.CharacterInstance()
-            new_character.character = char_object
-            new_character.pos = QtCore.QPoint(current_x, 0)
-            self.add_object(new_character)
+            char_object.pos = QtCore.QPoint(current_x, 0)
 
-            layout_total_length += (width + left_space + right_space) * nib_width 
+            layout_total_length += delta_x 
 
         self.__pos = QtCore.QPoint(-layout_total_length / 2, 0)
-
-    def update_layout(self):
-        pass
