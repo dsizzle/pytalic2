@@ -593,6 +593,7 @@ class EditorController(object):
     def view_tab_changed_cb(self, event):
         previous_pane = self.__current_view_pane
         self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
+        self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
 
         if self.__current_view_pane == self.__ui.dwg_area:
             self.__ui.stroke_new.setEnabled(True)
@@ -612,34 +613,27 @@ class EditorController(object):
             self.__ui.glyph_delete.setEnabled(False)
         elif self.__current_view_pane == self.__ui.preview_area:
             self.__ui.stroke_new.setEnabled(False)
-            self.__ui.view_guides.setEnabled(False)
             self.__ui.view_nib_guides.setEnabled(False)
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
-        if self.__current_view_pane not in self.__selection:
-            self.__selection[self.__current_view_pane] = {}
-        if self.__current_view_pane == self.__ui.preview_area:
-            self.__ui.view_guides.setEnabled(False)
-            self.__ui.view_nib_guides.setEnabled(False)
         else:
-            self.__ui.view_guides.setEnabled(True)
             self.__ui.view_nib_guides.setEnabled(True)
-            self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.set_icon()
 
+        if self.__current_view_pane not in self.__selection:
+            self.__selection[self.__current_view_pane] = {}        
+        
         if self.__current_view_pane != self.__ui.preview_area:
-            for sel_stroke in self.__current_view_pane.symbol.children:
-                if sel_stroke in self.__selection[self.__current_view_pane]:
-                    sel_stroke.selected = True
+            for sel_item in self.__current_view_pane.symbol.children:
+                if sel_item in self.__selection[self.__current_view_pane]:
+                    sel_item.selected = True
                 else:
-                    sel_stroke.selected = False
+                    sel_item.selected = False
 
-            if type(self.__current_view_pane.symbol).__name__ == "Character":
-                for sel_glyph in self.__current_view_pane.symbol.glyphs:
-
-                    for sel_stroke in sel_glyph.strokes:
+                if type(sel_item).__name__ == "GlyphInstance":
+                    for sel_stroke in sel_item.strokes:
                         if sel_stroke in self.__selection[self.__current_view_pane]:
                             sel_stroke.selected = True
                         else:

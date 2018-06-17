@@ -336,6 +336,9 @@ class LayoutArea(Canvas):
         dc.translate(self.origin + self.origin_delta)
         dc.scale(self.scale, self.scale)
 
+        if self.draw_guidelines and self.guide_lines:
+            self.guide_lines.draw(dc, self.size(), self.origin + self.origin_delta)
+
         if self.layout:
             dc.save()
             dc.translate(self.layout.pos)

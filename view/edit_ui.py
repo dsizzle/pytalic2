@@ -443,6 +443,7 @@ class EditInterface(QtGui.QMainWindow):
         self.guide_lines.nib_width = self.dwg_area.nib.width * 2
         self.dwg_area.set_guidelines(self.guide_lines)
         self.stroke_dwg_area.set_guidelines(self.guide_lines)
+        self.preview_area.set_guidelines(self.guide_lines)
 
     def create_menu(self):
         self.tool_bar = self.addToolBar("main")
