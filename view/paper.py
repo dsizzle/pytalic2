@@ -60,7 +60,16 @@ class Canvas(QtGui.QFrame):
     def bg_brush(self):
         return self.__bg_brush
 
-    def get_bitmap(self):
+    def get_bitmap_size(self):
+        return self.__bitmap_size
+
+    def set_bitmap_size(self, new_bitmap_size):
+        self.__bitmap_size = new_bitmap_size
+
+    bitmap_size = property(get_bitmap_size, set_bitmap_size)
+    
+    @property
+    def bitmap(self):
         return self.__bitmap
 
     def get_guidelines(self):

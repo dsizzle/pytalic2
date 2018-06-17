@@ -642,7 +642,7 @@ class EditorController(object):
         self.__ui.repaint()
 
     def set_icon(self):
-        icon_bitmap = self.__current_view_pane.get_bitmap()
+        icon_bitmap = self.__current_view_pane.bitmap
         if icon_bitmap:
             if self.__current_view_pane == self.__ui.dwg_area:
                 self.__cur_char.bitmap_preview = icon_bitmap
