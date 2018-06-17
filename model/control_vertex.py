@@ -102,18 +102,18 @@ class ControlVertex(object):
         self.__handle_pos[handle] = point
 
     def get_handle_pos_as_list(self):
-        knot = (self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y())
+        knot = [self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y()]
         handle_list = []
 
         if self.__handle_pos[LEFT_HANDLE]:
-            handle_list.append((self.__handle_pos[LEFT_HANDLE].x(), \
-                self.__handle_pos[LEFT_HANDLE].y()))
+            handle_list.append([self.__handle_pos[LEFT_HANDLE].x(), \
+                self.__handle_pos[LEFT_HANDLE].y()])
 
         handle_list.append(knot)
 
         if self.__handle_pos[RIGHT_HANDLE]:
-            handle_list.append((self.__handle_pos[RIGHT_HANDLE].x(), \
-                self.__handle_pos[RIGHT_HANDLE].y()))
+            handle_list.append([self.__handle_pos[RIGHT_HANDLE].x(), \
+                self.__handle_pos[RIGHT_HANDLE].y()])
 
         return handle_list
 
