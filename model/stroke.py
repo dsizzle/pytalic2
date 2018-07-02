@@ -94,7 +94,7 @@ class Stroke(object):
             xpos += delta_x
             ypos += delta_y
 
-        self.set_ctrl_vertices_from_list(temp_ctrl_verts)
+        self.set_ctrl_vertices_from_list(temp_ctrl_verts, False)
         self.calc_curve_points()
 
     def flip_x(self):
@@ -234,27 +234,32 @@ class Stroke(object):
 
         return points
 
-    def set_ctrl_vertices_from_list(self, points):
+    def set_ctrl_vertices_from_list(self, points, reset_pos=True):
         self.__stroke_ctrl_verts = []
 
         tmp_points = points[:]
-        self.__pos = QtCore.QPoint(tmp_points[0][0], tmp_points[0][1])
+        if reset_pos:
+            self.__pos = QtCore.QPoint(tmp_points[0][0], tmp_points[0][1])
+            offset = self.__pos
+        else:
+            offset = QtCore.QPoint(0, 0)
+
         left = QtCore.QPoint()
         right = QtCore.QPoint()
 
         while tmp_points:
             point = tmp_points.pop(0)
-            center = QtCore.QPoint(point[0], point[1]) - self.__pos
+            center = QtCore.QPoint(point[0], point[1]) - offset
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                right = QtCore.QPoint(point[0], point[1]) - self.__pos
+                right = QtCore.QPoint(point[0], point[1]) - offset
 
             self.__stroke_ctrl_verts.append(model.control_vertex.ControlVertex(left, center, right))
 
             right = None
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                left = QtCore.QPoint(point[0], point[1]) - self.__pos
+                left = QtCore.QPoint(point[0], point[1]) - offset
 
     def generate_ctrl_vertices_from_points(self, points):
         num_points = len(points)
@@ -378,7 +383,7 @@ class Stroke(object):
 
         points.extend(remainder)
 
-        self.set_ctrl_vertices_from_list(points)
+        self.set_ctrl_vertices_from_list(points, False)
         self.calc_curve_points()
 
     def split_at_point(self, t, index):
@@ -388,7 +393,7 @@ class Stroke(object):
 
         points.append(remainder[0])
 
-        self.set_ctrl_vertices_from_list(points)
+        self.set_ctrl_vertices_from_list(points, False)
         self.calc_curve_points()
 
         return remainder

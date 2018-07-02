@@ -487,7 +487,7 @@ class StrokeController(object):
             vert_list.extend(cur_verts[1:])
 
         new_stroke = stroke.Stroke()
-        new_stroke.set_ctrl_vertices_from_list(vert_list)
+        new_stroke.set_ctrl_vertices_from_list(vert_list, False)
         new_stroke.calc_curve_points()
         cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
 
@@ -610,7 +610,7 @@ class StrokeController(object):
 
         for i in range(0, len(sel_stroke_list)):
             sel_stroke = sel_stroke_list[i]
-            sel_stroke.set_ctrl_vertices_from_list(ctrl_vert_list[i])
+            sel_stroke.set_ctrl_vertices_from_list(ctrl_vert_list[i], False)
             sel_stroke.calc_curve_points()
 
         ui.repaint()
@@ -635,7 +635,7 @@ class StrokeController(object):
         else:
             return
 
-        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts)
+        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts, False)
         sel_stroke.calc_curve_points()
 
         cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
@@ -661,7 +661,7 @@ class StrokeController(object):
         else:
             return
 
-        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts)
+        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts, False)
         sel_stroke.calc_curve_points()
         cur_char.delete_stroke({'stroke': del_stroke})
         ui.repaint()
@@ -704,7 +704,7 @@ class StrokeController(object):
         verts_after = sel_stroke.get_ctrl_vertices_as_list()
 
         new_stroke = stroke.Stroke()
-        new_stroke.set_ctrl_vertices_from_list(new_verts)
+        new_stroke.set_ctrl_vertices_from_list(new_verts, False)
 
         undo_args = {
             'strokes' : sel_stroke,
