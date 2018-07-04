@@ -704,7 +704,7 @@ class StrokeController(object):
         verts_after = sel_stroke.get_ctrl_vertices_as_list()
 
         new_stroke = stroke.Stroke()
-        new_stroke.set_ctrl_vertices_from_list(new_verts, False)
+        new_stroke.set_ctrl_vertices_from_list(new_verts, True)
 
         undo_args = {
             'strokes' : sel_stroke,

@@ -396,7 +396,12 @@ class Stroke(object):
         self.set_ctrl_vertices_from_list(points, False)
         self.calc_curve_points()
 
-        return remainder
+        norm_remainder = []
+
+        for point in remainder:
+            norm_remainder.append([point[0]+self.__pos.x(), point[1]+self.__pos.y()])
+        
+        return norm_remainder
 
     def set_parent(self, parent):
         self.__parent = parent
