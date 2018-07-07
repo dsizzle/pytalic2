@@ -5,12 +5,10 @@ The main controller module for pyTalic Editor.
 
 Contains EditorController class.
 """
-import os
-import os.path
-import pickle
 
 from PyQt4 import QtGui, QtCore
 
+import control.file_operations
 import control.mouse_operations
 import control.property_operations
 import control.snap_operations
@@ -18,8 +16,7 @@ import control.stroke_operations
 import control.vertex_operations
 from model import character_set, character, commands, stroke, instance
 from view import edit_ui
-
-ICON_SIZE = 40
+import view.shared_qt
 
 IDLE = 0
 MOVING_PAPER = 1
@@ -41,8 +38,6 @@ class EditorController(object):
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__file_name = None
-        self.__dir_name = os.getcwd()
         self.__clipboard = []
         self.__cmd_stack = commands.CommandStack()
         self.__selection = {}
@@ -58,16 +53,12 @@ class EditorController(object):
         self.__ui.create_ui()
         self.__ui.char_selector_list.addItems(QtCore.QStringList(char_list))
 
-        self.blank_pixmap = QtGui.QPixmap(ICON_SIZE, ICON_SIZE)
-        self.blank_pixmap.fill(QtGui.QColor(240, 240, 240))
-
-        for idx in range(0, self.__ui.char_selector_list.count()):
-            self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
-        self.__ui.dwg_area.bitmap_size = ICON_SIZE
+        self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
 
         self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
 
+        self.__file_controller = control.file_operations.FileController(self)
         self.__property_controller = control.property_operations.PropertyController(self)
         self.__mouse_controller = control.mouse_operations.MouseController(self)
         self.__snap_controller = control.snap_operations.SnapController(self)
@@ -93,6 +84,9 @@ class EditorController(object):
 
     def get_character_set(self):
         return self.__char_set
+
+    def set_character_set(self, new_char_set):
+        self.__char_set = new_char_set
 
     def get_state(self):
         return self.__state
@@ -152,162 +146,31 @@ class EditorController(object):
         self.__ui.repaint()
 
     def file_new_cb(self, event):
-        self.__file_name = None
-
-        self.__char_set = character_set.CharacterSet()
-        self.__ui.base_height_spin.setValue(self.__char_set.base_height)
-        self.__ui.cap_height_spin.setValue(self.__char_set.cap_height)
-        self.__ui.cap_height_spin.setMaximum(self.__char_set.ascent_height)
-        self.__ui.ascent_height_spin.setValue(self.__char_set.ascent_height)
-        self.__ui.descent_height_spin.setValue(self.__char_set.descent_height)
-        self.__ui.angle_spin.setValue(5)
+        self.__file_controller.file_new()
 
         self.name = (self.__label + " - Untitled")
         self.__ui.setWindowTitle(self.name)
 
-        self.__ui.stroke_selector_list.clear()
-
-        for idx in range(0, self.__ui.char_selector_list.count()):
-            self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
-
-        self.__ui.char_selector_list.setCurrentRow(0)
         self.__cur_char = self.__char_set.current_char
 
         self.__cmd_stack = commands.CommandStack()
-        self.__ui.edit_undo.setEnabled(False)
-        self.__ui.edit_redo.setEnabled(False)
-        self.__ui.file_save.setEnabled(False)
 
     def file_save_as_cb(self, event):
-        file_name = self.__ui.file_save_dialog.getSaveFileName(self.__ui, \
-             "Save Character Set", self.__dir_name, \
-             "Character Set Files (*.cs)")
-
-        if file_name:
-            (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
-            (name, ext) = os.path.splitext(self.__file_name)
-
-            if ext != ".cs":
-                self.__file_name += ".cs"
-
-            self.save(self.__file_name)
-            self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
-            self.__cmd_stack.reset_save_count()
-            self.__ui.file_save.setEnabled(True)
+        file_path = self.__file_controller.file_save_as()
+        self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
     def file_save_cb(self, event):
-        if self.__file_name and os.path.isfile(self.__file_name):
-            self.save(self.__file_name)
-            self.__cmd_stack.reset_save_count()
-        else:
-            self.file_save_as_cb(event)
+        self.__file_controller.file_save()
 
     def file_open_cb(self):
-        file_name = None
-        file_name = self.__ui.file_open_dialog.getOpenFileName(self.__ui, \
-             "Open Character Set", self.__dir_name, \
-             "Character Set Files (*.cs)")
+        file_path = self.__file_controller.file_open()
 
-        if file_name:
-            self.load(file_name)
+        self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
-            self.__ui.base_height_spin.setValue(self.__char_set.base_height)
-            self.__ui.guide_lines.base_height = self.__char_set.base_height
-            self.__ui.cap_height_spin.setValue(self.__char_set.cap_height)
-            self.__ui.guide_lines.cap_height = self.__char_set.cap_height
-            self.__ui.cap_height_spin.setMaximum(self.__char_set.ascent_height)
-            self.__ui.ascent_height_spin.setValue(self.__char_set.ascent_height)
-            self.__ui.guide_lines.ascent_height = self.__char_set.ascent_height
-            self.__ui.descent_height_spin.setValue(self.__char_set.descent_height)
-            self.__ui.guide_lines.descent_height = self.__char_set.descent_height
-            self.__ui.angle_spin.setValue(self.__char_set.guide_angle)
-            self.__ui.guide_lines.guide_angle = self.__char_set.guide_angle
-            self.__ui.char_set_nib_angle_spin.setValue(self.__char_set.nib_angle)
-            self.__ui.guide_lines.nib_angle = self.__char_set.nib_angle
-            self.__ui.dwg_area.nib.angle = self.__char_set.nib_angle
-            self.__ui.dwg_area.nib_instance.angle = self.__char_set.nib_angle
-            self.__ui.stroke_dwg_area.nib.angle = self.__char_set.nib_angle
-            self.__ui.nominal_width_spin.setValue(self.__char_set.width)
-            self.__ui.guide_lines.width = self.__char_set.width
+        self.__selection[self.__current_view_pane] = {}
+        self.__ui.repaint()
 
-            (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
 
-            self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
-
-            self.__ui.stroke_selector_list.clear()
-
-            saved_glyph_list = self.__char_set.get_saved_glyphs()
-            if len(saved_glyph_list) > 0:
-                i = 0
-                self.__ui.stroke_load.setEnabled(True)
-                self.__ui.glyph_delete.setEnabled(True)
-                for sel_stroke in saved_glyph_list:
-                    bitmap = self.__ui.dwg_area.draw_icon(None, sel_stroke.strokes)
-                    self.__ui.stroke_selector_list.addItem(str(i))
-                    cur_item = self.__ui.stroke_selector_list.item(i)
-                    self.__ui.stroke_selector_list.setCurrentRow(i)
-                    cur_item.setIcon(QtGui.QIcon(bitmap))
-                    i += 1
-
-            for idx in range(0, self.__ui.char_selector_list.count()):
-                self.__ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.blank_pixmap))
-
-            idx = 0
-            char_list = self.__char_set.get_char_list()
-
-            for character in char_list.keys():
-                if len(char_list[character].strokes) > 0:
-                    self.__ui.char_selector_list.setCurrentRow(idx)
-                    self.__ui.repaint()
-
-                idx += 1
-
-            self.__ui.char_selector_list.setCurrentRow(1)
-            self.__ui.char_selector_list.setCurrentRow(0)
-
-            self.__selection[self.__current_view_pane] = {}
-            self.__ui.repaint()
-
-            self.__cmd_stack.clear()
-            self.__cmd_stack.reset_save_count()
-            self.__ui.file_save.setEnabled(True)
-
-    def save(self, file_name):
-        try:
-            data_file_fd = open(file_name, 'wb')
-        except IOError:
-            print "ERROR: Couldn't open %s for writing." % (file_name)
-            return 1
-
-        try:
-            data_pickler = pickle.Pickler(data_file_fd, pickle.HIGHEST_PROTOCOL)
-            data_pickler.dump(self.__char_set)
-        except pickle.PicklingError:
-            print "ERROR: Couldn't serialize data"
-            return 1
-
-        if data_file_fd:
-            data_file_fd.close()
-
-    def load(self, file_name):
-        try:
-            data_file_fd = open(file_name, 'rb')
-        except IOError:
-            print "ERROR: Couldn't open %s for reading." % (file_name)
-            return 1
-
-        try:
-            data_pickler = pickle.Unpickler(data_file_fd)
-            self.__char_set = data_pickler.load()
-        except pickle.UnpicklingError:
-            print "ERROR: Couldn't unserialize data"
-            return 1
-        except Exception:
-            print "ERROR: OTHER"
-            return 1
-
-        if data_file_fd:
-            data_file_fd.close()
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()

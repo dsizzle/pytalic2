@@ -5,6 +5,8 @@ a place to store some Qt objects that are shared amongst modules
 """
 from PyQt4 import QtCore, QtGui
 
+ICON_SIZE = 40
+
 COLOR_LT_GRAY = QtGui.QColor(200, 200, 200)
 COLOR_MD_GRAY = QtGui.QColor(128, 128, 128)
 COLOR_DK_GRAY = QtGui.QColor(100, 100, 100)
