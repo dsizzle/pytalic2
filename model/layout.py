@@ -33,7 +33,8 @@ class Layout(object):
 
     def init_with_string(self, string_to_layout, char_set, nib_width):
         height = char_set.base_height * nib_width
-        
+        cur_char = char_set.get_current_char_index()
+
         for char in self.object_list:
             del char
 
@@ -50,6 +51,7 @@ class Layout(object):
             new_character.character = char_object
             self.add_object(new_character)
         
+        char_set.set_current_char(cur_char)
         self.update_layout(char_set, nib_width)
 
     def update_layout(self, char_set, nib_width):
