@@ -8,6 +8,7 @@ Contains EditorController class.
 
 from PyQt4 import QtGui, QtCore
 
+import control.clipboard_operations
 import control.file_operations
 import control.mouse_operations
 import control.property_operations
@@ -38,7 +39,6 @@ class EditorController(object):
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__clipboard = []
         self.__cmd_stack = commands.CommandStack()
         self.__selection = {}
         self.__char_set = None
@@ -58,6 +58,7 @@ class EditorController(object):
         self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
         self.__selection[self.__current_view_pane] = {}
 
+        self.__clipboard_controller = control.clipboard_operations.ClipboardController(self)
         self.__file_controller = control.file_operations.FileController(self)
         self.__property_controller = control.property_operations.PropertyController(self)
         self.__mouse_controller = control.mouse_operations.MouseController(self)
@@ -174,7 +175,7 @@ class EditorController(object):
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
-
+        
     def save_glyph_cb(self, event):
         self.__stroke_controller.save_glyph()
         self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
@@ -199,166 +200,13 @@ class EditorController(object):
             self.cut_strokes_cb(event)
 
     def cut_strokes_cb(self, event):
-        cut_strokes_cmd = commands.Command('cut_strokes_cmd')
-        char_index = self.__char_set.get_current_char_index()
-
-        do_args = {
-            'strokes' : self.__selection[self.__current_view_pane].copy(),
-            'char_index' : char_index,
-        }
-
-        undo_args = {
-            'strokes' : self.__selection[self.__current_view_pane].copy(),
-            'char_index' : char_index,
-            'copy' : False,
-        }
-
-        cut_strokes_cmd.set_do_args(do_args)
-        cut_strokes_cmd.set_undo_args(undo_args)
-        cut_strokes_cmd.set_do_function(self.cut_clipboard)
-        cut_strokes_cmd.set_undo_function(self.paste_clipboard)
-
-        self.__cmd_stack.do_command(cut_strokes_cmd)
-        self.__ui.edit_undo.setEnabled(True)
-
-        self.__ui.repaint()
-
-    def cut_clipboard(self, args):
-        if 'char_index' in args:
-            char_index = args['char_index']
-        else:
-            return
-
-        if 'strokes' in args:
-            strokes_to_cut = args['strokes']
-        else:
-            return
-
-        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
-        self.__clipboard = []
-        for sel_stroke in strokes_to_cut:
-            #self.__cur_char.delete_stroke({'stroke' : sel_stroke})
-            if type(sel_stroke).__name__ == 'Stroke':
-                self.__current_view_pane.symbol.delete_stroke({'stroke' : sel_stroke})
-            else:
-                self.__current_view_pane.symbol.remove_glyph(sel_stroke)
-
-            self.__clipboard.append(sel_stroke)
-            if sel_stroke in self.__selection[self.__current_view_pane]:
-                del self.__selection[self.__current_view_pane][sel_stroke]
-            sel_stroke.selected = False
-
-        self.__ui.edit_paste.setEnabled(True)
-        self.__ui.repaint()
+        self.__clipboard_controller.cut_strokes()
 
     def copy_strokes_cb(self, event):
-        copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = self.__char_set.get_current_char_index()
-
-        do_args = {
-            'strokes' : self.__selection[self.__current_view_pane].copy(),
-            'char_index' : char_index,
-        }
-
-        undo_args = {
-            'strokes' : self.__selection[self.__current_view_pane].copy(),
-            'char_index' : char_index,
-        }
-
-        copy_strokes_cmd.set_do_args(do_args)
-        copy_strokes_cmd.set_undo_args(undo_args)
-        copy_strokes_cmd.set_do_function(self.copy_clipboard)
-        copy_strokes_cmd.set_undo_function(self.paste_clipboard)
-
-        self.__cmd_stack.do_command(copy_strokes_cmd)
-        self.__ui.edit_undo.setEnabled(True)
-
-        self.__ui.repaint()
-
-    def copy_clipboard(self, args):
-        if 'char_index' in args:
-            char_index = args['char_index']
-        else:
-            return
-
-        if 'strokes' in args:
-            strokes_to_copy = args['strokes']
-        else:
-            return
-
-        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
-        self.__clipboard = []
-        for sel_stroke in strokes_to_copy.keys():
-            self.__clipboard.append(sel_stroke)
-
-        self.__ui.edit_paste.setEnabled(True)
-        self.__ui.repaint()
+        self.__clipboard_controller.copy_strokes()
 
     def paste_strokes_cb(self, event):
-        paste_strokes_cmd = commands.Command('paste_strokes_cmd')
-        char_index = self.__char_set.get_current_char_index()
-
-        do_args = {
-            'strokes' : self.__clipboard[:],
-            'char_index' : char_index,
-        }
-
-        undo_args = {
-            'strokes' : self.__clipboard[:],
-            'char_index' : char_index,
-            'copy' : True,
-        }
-
-        paste_strokes_cmd.set_do_args(do_args)
-        paste_strokes_cmd.set_undo_args(undo_args)
-        paste_strokes_cmd.set_do_function(self.paste_clipboard)
-        paste_strokes_cmd.set_undo_function(self.cut_clipboard)
-
-        self.__cmd_stack.do_command(paste_strokes_cmd)
-        self.__ui.edit_undo.setEnabled(True)
-
-        self.__ui.repaint()
-
-    def paste_clipboard(self, args):
-        if 'char_index' in args:
-            char_index = args['char_index']
-        else:
-            return
-
-        if 'strokes' in args:
-            strokes_to_paste = args['strokes']
-        else:
-            return
-
-        if 'copy' in args:
-            copy_strokes = args['copy']
-        else:
-            copy_strokes = True
-
-        self.__ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
-
-        for sel_stroke in self.__selection[self.__current_view_pane].keys():
-            sel_stroke.selected = False
-
-        self.__selection[self.__current_view_pane] = {}
-
-        for sel_stroke in strokes_to_paste:
-            if copy_strokes and type(sel_stroke).__name__ == 'Stroke':
-                paste_stroke = stroke.Stroke(from_stroke=sel_stroke)
-            else:
-                paste_stroke = sel_stroke
-
-            self.__selection[self.__current_view_pane][paste_stroke] = {}
-            paste_stroke.selected = True
-            if type(paste_stroke).__name__ == 'Stroke':
-                self.__current_view_pane.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
-            else:
-                new_glyph = instance.GlyphInstance()
-                new_glyph.glyph = paste_stroke.glyph
-                self.__current_view_pane.symbol.add_glyph(new_glyph)
-
-        self.set_ui_state_selection(True)
-        self.__ui.repaint()
+        self.__clipboard_controller.paste_strokes()
 
     def paste_glyph_from_saved_cb(self, event):
         self.__stroke_controller.paste_glyph_from_saved()

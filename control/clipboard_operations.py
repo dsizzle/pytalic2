@@ -56,7 +56,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             if type(sel_stroke).__name__ == 'Stroke':
