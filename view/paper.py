@@ -68,9 +68,13 @@ class Canvas(QtGui.QFrame):
 
     bitmap_size = property(get_bitmap_size, set_bitmap_size)
     
-    @property
-    def bitmap(self):
+    def get_bitmap(self):
         return self.__bitmap
+
+    def set_bitmap(self, new_bitmap):
+        self.__bitmap = new_bitmap
+
+    bitmap = property(get_bitmap, set_bitmap)
 
     def get_guidelines(self):
         return self.__guide_lines
@@ -246,7 +250,7 @@ class DrawingArea(Canvas):
         dc.end()
 
         if self.symbol:
-            self.__bitmap = self.draw_icon(dc, self.symbol.children)
+            self.bitmap = self.draw_icon(dc, self.symbol.children)
 
         dc.begin(self)
         dc.setRenderHint(QtGui.QPainter.Antialiasing)
