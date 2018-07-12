@@ -380,11 +380,11 @@ class StrokeController(object):
         verts_after_list = []
 
         for sel_stroke in cur_view_selection.keys():
-            verts_before = sel_stroke.get_ctrl_vertices_as_list()
+            verts_before = sel_stroke.get_ctrl_vertices()
 
             sel_stroke.straighten()
 
-            verts_after = sel_stroke.get_ctrl_vertices_as_list()
+            verts_after = sel_stroke.get_ctrl_vertices()
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)
@@ -584,15 +584,15 @@ class StrokeController(object):
         vert_delete_cmd = commands.Command("vert_delete_cmd")
         vert_delete_cmd.set_do_args(do_args)
         vert_delete_cmd.set_undo_args(undo_args)
-        vert_delete_cmd.set_do_function(self.set_stroke_control_vertices)
-        vert_delete_cmd.set_undo_function(self.set_stroke_control_vertices)
+        vert_delete_cmd.set_do_function(self.set_stroke_control_vertices_from_list)
+        vert_delete_cmd.set_undo_function(self.set_stroke_control_vertices_from_list)
 
         cmd_stack.add_to_undo(vert_delete_cmd)
         cmd_stack.save_count += 1
         ui.edit_undo.setEnabled(True)
         ui.repaint()
 
-    def set_stroke_control_vertices(self, args):
+    def set_stroke_control_vertices_from_list(self, args):
         ui = self.__main_ctrl.get_ui()
 
         if 'strokes' in args:
@@ -614,6 +614,29 @@ class StrokeController(object):
             sel_stroke.calc_curve_points()
 
         ui.repaint()
+
+    def set_stroke_control_vertices(self, args):
+        ui = self.__main_ctrl.get_ui()
+
+        if 'strokes' in args:
+            sel_stroke_list = args['strokes']
+        else:
+            return
+
+        if 'ctrl_verts' in args:
+            ctrl_vert_list = args['ctrl_verts']
+        else:
+            return
+
+        if len(ctrl_vert_list) != len(sel_stroke_list):
+            return
+
+        for i in range(0, len(sel_stroke_list)):
+            sel_stroke = sel_stroke_list[i]
+            sel_stroke.set_ctrl_vertices(ctrl_vert_list[i])
+            sel_stroke.calc_curve_points()
+
+        ui.repaint()    
 
     def split_stroke(self, args):
         ui = self.__main_ctrl.get_ui()
@@ -686,8 +709,8 @@ class StrokeController(object):
 
         add_vertex_cmd.set_do_args(do_args)
         add_vertex_cmd.set_undo_args(undo_args)
-        add_vertex_cmd.set_do_function(self.set_stroke_control_vertices)
-        add_vertex_cmd.set_undo_function(self.set_stroke_control_vertices)
+        add_vertex_cmd.set_do_function(self.set_stroke_control_vertices_from_list)
+        add_vertex_cmd.set_undo_function(self.set_stroke_control_vertices_from_list)
 
         cmd_stack.add_to_undo(add_vertex_cmd)
         cmd_stack.save_count += 1
