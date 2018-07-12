@@ -387,6 +387,30 @@ class EditInterface(QtGui.QMainWindow):
 
         self.stroke_prop_layout.addRow(self.behavior_label, self.behavior_combo)
 
+        self.stroke_override_nib_angle = QtGui.QCheckBox(self.stroke_prop_frame)
+        self.stroke_override_nib_angle.setText("Override Character Set")
+        QtCore.QObject.connect(self.stroke_override_nib_angle, \
+            QtCore.SIGNAL("stateChanged(int)"), \
+            self.__parent.stroke_override_nib_angle_changed_cb)
+
+        self.stroke_prop_layout.addRow(self.stroke_override_nib_angle)
+
+        self.stroke_nib_angle_label = QtGui.QLabel(self.stroke_prop_frame)
+        self.stroke_nib_angle_label.setText("Nib Angle:")
+
+        self.stroke_nib_angle_spin = QtGui.QDoubleSpinBox(self.stroke_prop_frame)
+        self.stroke_nib_angle_spin.setMinimum(0)
+        self.stroke_nib_angle_spin.setMaximum(90)
+        self.stroke_nib_angle_spin.setValue(40)
+        self.stroke_nib_angle_spin.setWrapping(True)
+        self.stroke_nib_angle_spin.setDecimals(0)
+        self.stroke_nib_angle_spin.setSingleStep(1.0)
+        QtCore.QObject.connect(self.stroke_nib_angle_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.stroke_nib_angle_changed_cb)
+
+        self.stroke_prop_layout.addRow(self.stroke_nib_angle_label, self.stroke_nib_angle_spin)
+
         self.property_tabs = QtGui.QTabWidget(self.tool_pane)
         self.property_tabs.addTab(self.stroke_prop_frame, "Stroke")
         self.property_tabs.addTab(self.char_prop_frame, "Character")

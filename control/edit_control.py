@@ -498,6 +498,28 @@ class EditorController(object):
     def break_tangents_cb(self, event):
         self.__vertex_controller.break_tangents()
 
+    def stroke_override_nib_angle_changed_cb(self, newState):
+        if newState == QtCore.Qt.Checked:
+            for sel_stroke in self.__selection[self.__current_view_pane].keys():
+                sel_stroke.override_nib_angle = True
+                sel_stroke.nib_angle = self.__ui.stroke_nib_angle_spin.value()
+        else:
+            for sel_stroke in self.__selection[self.__current_view_pane].keys():
+                sel_stroke.override_nib_angle = False
+        
+        self.__ui.repaint()
+
+    def stroke_nib_angle_changed_cb(self, new_value):
+        if len(self.__selection[self.__current_view_pane].keys()) == 1:
+            sel_stroke = self.__selection[self.__current_view_pane].keys()[0]
+            prev_value = sel_stroke.nib_angle
+            if prev_value == new_value:
+                return
+
+            self.__property_controller.stroke_nib_angle_changed(prev_value, \
+                new_value, [sel_stroke])
+        
+
     def position_x_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) and self.__state != DRAWING_NEW_STROKE:
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.x()

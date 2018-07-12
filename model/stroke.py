@@ -12,6 +12,7 @@ import random
 from PyQt4 import QtCore, QtGui
 
 import model.control_vertex
+import nibs
 #import serif
 from view import shared_qt
 
@@ -28,6 +29,8 @@ class Stroke(object):
             self.__stroke_shape = from_stroke.stroke_shape
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
+            self.__nib_angle = from_stroke.nib_angle
+            self.__override_nib_angle = from_stroke.override_nib_angle
         else:
             self.__start_serif = None
             self.__end_serif = None
@@ -36,6 +39,8 @@ class Stroke(object):
             self.__stroke_shape = None
             self.__curve_path = None
             self.__bound_rect = None
+            self.__nib_angle = None
+            self.__override_nib_angle = False
 
         self.__handle_size = 10
         self.__instances = {}
@@ -57,6 +62,22 @@ class Stroke(object):
         self.__dict__ = state_dict
 
         self.calc_curve_points()
+
+    def get_nib_angle(self):
+        return self.__nib_angle
+
+    def set_nib_angle(self, new_nib_angle):
+        self.__nib_angle = new_nib_angle
+
+    nib_angle = property(get_nib_angle, set_nib_angle)
+
+    def get_override_nib_angle(self):
+        return self.__override_nib_angle
+
+    def set_override_nib_angle(self, state):
+        self.__override_nib_angle = state
+
+    override_nib_angle = property(get_override_nib_angle, set_override_nib_angle)
 
     def add_instance(self, inst):
         self.__instances[inst] = 1
@@ -418,10 +439,15 @@ class Stroke(object):
             print "ERROR: No nib provided to draw stroke\n"
             return
 
+        draw_nib = nibs.Nib()
+        draw_nib.from_nib(nib)
+        if self.override_nib_angle:
+            draw_nib.angle = self.nib_angle
+
         gc.save()
         gc.translate(self.__pos)
 
-        gc.setPen(nib.pen)
+        gc.setPen(draw_nib.pen)
         gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
 
         verts = self.get_ctrl_vertices_as_list()
@@ -430,7 +456,7 @@ class Stroke(object):
             if self.__curve_path is None:
                 self.calc_curve_points()
 
-            nib.draw(gc, self)
+            draw_nib.draw(gc, self)
 
             path1 = QtGui.QPainterPath(self.__curve_path)
             path2 = QtGui.QPainterPath(self.__curve_path).toReversed()

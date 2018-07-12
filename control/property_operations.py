@@ -117,3 +117,6 @@ class PropertyController(object):
     def char_right_space_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['right_spacing'], ['right_space_spin'])
 
+    def stroke_nib_angle_changed(self, prev_value, new_value, objects):
+        self.__prop_change(prev_value, new_value, objects, ['nib_angle'], \
+            ['stroke_nib_angle_spin'])
