@@ -15,7 +15,7 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-from model import character_set, character, commands, stroke, instance
+from model import character_set, character, commands, instance, layout, stroke
 from view import edit_ui
 import view.shared_qt
 
@@ -67,6 +67,12 @@ class EditorController(object):
         self.__vertex_controller = control.vertex_operations.VertexController(self)
 
         self.file_new_cb(None)
+        
+        self.__layout_abc = layout.Layout()
+        self.__layout_abc.init_with_string("TEST", self.__char_set, \
+            nib_width=self.__ui.dwg_area.nib.width * 2)
+
+        self.__ui.preview_area.layout = self.__layout_abc
 
     def get_command_stack(self):
         return self.__cmd_stack
@@ -171,7 +177,11 @@ class EditorController(object):
         self.__selection[self.__current_view_pane] = {}
         self.__ui.repaint()
 
+        self.__layout_abc = layout.Layout()
+        self.__layout_abc.init_with_string("TEST", self.__char_set, \
+            nib_width=self.__ui.dwg_area.nib.width * 2)
 
+        self.__ui.preview_area.layout = self.__layout_abc
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
@@ -270,6 +280,7 @@ class EditorController(object):
 
     def char_selected_cb(self, event):
         cur_char_idx = self.__ui.char_selector_list.currentRow()
+        
         self.__char_set.current_char = cur_char_idx + START_CHAR_CODE
         self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokes = []
@@ -328,6 +339,8 @@ class EditorController(object):
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
+            self.__ui.preview_area.layout.update_layout(self.__char_set, \
+                nib_width=self.__ui.dwg_area.nib.width * 2)
         else:
             self.__ui.view_nib_guides.setEnabled(True)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)

@@ -10,6 +10,7 @@ class PropertyController(object):
 
         cmd_stack = self.__main_ctrl.get_command_stack()
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         do_args = {
             'value' : new_value,
@@ -35,6 +36,8 @@ class PropertyController(object):
         cmd_stack.do_command(change_cmd)
         ui.edit_undo.setEnabled(True)
 
+        ui.preview_area.layout.update_layout(char_set, \
+                nib_width=ui.dwg_area.nib.width*2)
         ui.repaint()
 
     def change_property_control(self, args):
