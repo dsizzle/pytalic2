@@ -450,7 +450,8 @@ class EditorController(object):
 
         self.__property_controller.char_set_nib_angle_changed(prev_value, \
             new_value, [self.__char_set, self.__ui.dwg_area.nib, \
-            self.__ui.dwg_area.nib_instance, self.__ui.stroke_dwg_area.nib])
+            self.__ui.dwg_area.nib_instance, self.__ui.stroke_dwg_area.nib, \
+            self.__ui.preview_area.nib])
 
     def char_width_changed_cb(self, new_value):
         prev_value = self.__cur_char.width

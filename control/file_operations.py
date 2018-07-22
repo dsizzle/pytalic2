@@ -110,6 +110,7 @@ class FileController(object):
             ui.dwg_area.nib.angle = char_set.nib_angle
             ui.dwg_area.nib_instance.angle = char_set.nib_angle
             ui.stroke_dwg_area.nib.angle = char_set.nib_angle
+            ui.preview_area.nib.angle = char_set.nib_angle
             ui.nominal_width_spin.setValue(char_set.width)
             ui.guide_lines.width = char_set.width
 
