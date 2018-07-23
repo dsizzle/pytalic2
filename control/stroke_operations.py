@@ -204,7 +204,7 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
         ui = self.__main_ctrl.get_ui()
 
-        char_index = char_set.get_current_char_index()
+        char_index = ui.char_selector_list.currentRow()
         glyph_index = ui.stroke_selector_list.currentRow()
         saved_glyph = char_set.get_saved_glyph(glyph_index)
         new_glyph = instance.GlyphInstance() 
