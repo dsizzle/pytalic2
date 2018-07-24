@@ -57,7 +57,7 @@ class Layout(object):
     def update_layout(self, char_set, nib_width):
         layout_total_length = 0
         current_x = 0
-        prev_left_space = 0
+        prev_right_space = 0
 
         for char_object in self.object_list:
             if char_object.character.override_spacing:
@@ -69,9 +69,9 @@ class Layout(object):
                 left_space = char_set.left_spacing
                 right_space = char_set.right_spacing
 
-            delta_x = (width + right_space + prev_left_space) * nib_width 
+            delta_x = (width + left_space + prev_right_space) * nib_width 
             current_x += delta_x
-            prev_left_space = left_space
+            prev_right_space = right_space
 
             char_object.pos = QtCore.QPoint(current_x, 0)
 
