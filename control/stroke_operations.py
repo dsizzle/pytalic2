@@ -798,7 +798,7 @@ class StrokeController(object):
         for idx in range(0, ui.main_view_tabs.count()):
             ui.main_view_tabs.setTabEnabled(idx, True)
 
-        if len(char_set.get_saved_glyphs()) == 0:
+        if len(char_set.glyphs) == 0:
             ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
                 False)
 

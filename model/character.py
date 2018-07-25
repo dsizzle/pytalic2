@@ -250,12 +250,21 @@ class Glyph(object):
 class Character(Glyph):
     def __init__(self):
         Glyph.__init__(self)
+        self.__unicode_character = -1
         self.__width = 4
         self.__left_spacing = 1.0
         self.__right_spacing = 1.0
         self.__override_spacing = False
 
         self.__glyphs = []
+
+    def get_unicode_character(self):
+        return self.__unicode_character
+
+    def set_unicode_character(self, unicode_char):
+        self.__unicode_character = unicode_char
+
+    unicode_character = property(get_unicode_character, set_unicode_character)
 
     def add_glyph(self, glyph_to_add):
         if isinstance(glyph_to_add, model.instance.GlyphInstance):

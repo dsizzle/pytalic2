@@ -15,7 +15,7 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-from model import character_set, character, commands, stroke, instance
+from model import character_set, character, commands, instance, stroke
 from view import edit_ui
 import view.shared_qt
 
@@ -41,17 +41,13 @@ class EditorController(object):
 
         self.__cmd_stack = commands.CommandStack()
         self.__selection = {}
-        self.__char_set = None
+
+        self.__char_set = character_set.CharacterSet()
         self.__cur_char = None
 
         self.__state = 0
 
-        char_list = []
-        for i in range(START_CHAR_CODE, END_CHAR_CODE):
-            char_list.append(str(unichr(i)))
-
         self.__ui.create_ui()
-        self.__ui.char_selector_list.addItems(QtCore.QStringList(char_list))
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
 
@@ -151,6 +147,15 @@ class EditorController(object):
 
         self.name = (self.__label + " - Untitled")
         self.__ui.setWindowTitle(self.name)
+
+        self.__char_set = character_set.CharacterSet()
+        for i in range(START_CHAR_CODE, END_CHAR_CODE):
+            char_item = QtGui.QListWidgetItem()
+            char_item.setText(str(unichr(i)))
+            char_id = self.__char_set.new_character(i)
+            char_item.setData(QtCore.Qt.UserRole, char_id)
+            char_item.setData(QtCore.Qt.UserRole+1, i)
+            self.__ui.char_selector_list.addItem(char_item)
 
         self.__cur_char = self.__char_set.current_char
 
@@ -269,9 +274,8 @@ class EditorController(object):
         self.__stroke_controller.flip_selected_strokes_y()
 
     def char_selected_cb(self, event):
-        cur_char_idx = self.__ui.char_selector_list.currentRow()
-        self.__char_set.current_char = cur_char_idx + START_CHAR_CODE
-        self.__cur_char = self.__char_set.current_char
+        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
+        self.__cur_char = self.__char_set.characters[cur_char_idx]
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char
         
