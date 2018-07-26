@@ -1,7 +1,9 @@
-import edit_control
 from model import commands
 from model import instance
 from model import stroke
+
+START_CHAR_CODE = 32
+END_CHAR_CODE = 128
 
 class ClipboardController(object):
     def __init__(self, parent):
@@ -56,7 +58,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             if type(sel_stroke).__name__ == 'Stroke':
@@ -117,7 +119,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
@@ -177,7 +179,7 @@ class ClipboardController(object):
         else:
             copy_strokes = True
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False

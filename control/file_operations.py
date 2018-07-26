@@ -1,4 +1,4 @@
-    
+
 import os
 import os.path
 import pickle
@@ -7,6 +7,9 @@ from PyQt4 import QtGui, QtCore
 
 import model.character_set
 import view.shared_qt
+
+START_CHAR_CODE = 32
+END_CHAR_CODE = 128
 
 class FileController(object):
     def __init__(self, parent):
@@ -33,11 +36,16 @@ class FileController(object):
 
         ui.stroke_selector_list.clear()
 
-        for idx in range(0, ui.char_selector_list.count()):
-            ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
+        for i in range(START_CHAR_CODE, END_CHAR_CODE):
+            char_item = QtGui.QListWidgetItem()
+            char_item.setText(str(unichr(i)))
+            char_id = char_set.new_character(i)
+            char_item.setData(QtCore.Qt.UserRole, char_id)
+            char_item.setData(QtCore.Qt.UserRole+1, i)
+            char_item.setIcon(QtGui.QIcon(self.__blank_pixmap))
+            ui.char_selector_list.addItem(char_item)
 
         ui.char_selector_list.setCurrentRow(0)
-        #self.__cur_char = self.__char_set.current_char
 
         ui.edit_undo.setEnabled(False)
         ui.edit_redo.setEnabled(False)

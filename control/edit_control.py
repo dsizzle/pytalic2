@@ -26,9 +26,6 @@ DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
 
-START_CHAR_CODE = 32
-END_CHAR_CODE = 128
-
 class EditorController(object):
     """
     EditorController is the main Controller for pyTalic Editor
@@ -147,15 +144,6 @@ class EditorController(object):
 
         self.name = (self.__label + " - Untitled")
         self.__ui.setWindowTitle(self.name)
-
-        self.__char_set = character_set.CharacterSet()
-        for i in range(START_CHAR_CODE, END_CHAR_CODE):
-            char_item = QtGui.QListWidgetItem()
-            char_item.setText(str(unichr(i)))
-            char_id = self.__char_set.new_character(i)
-            char_item.setData(QtCore.Qt.UserRole, char_id)
-            char_item.setData(QtCore.Qt.UserRole+1, i)
-            self.__ui.char_selector_list.addItem(char_item)
 
         self.__cur_char = self.__char_set.current_char
 
