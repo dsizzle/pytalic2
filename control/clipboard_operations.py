@@ -2,8 +2,6 @@ from model import commands
 from model import instance
 from model import stroke
 
-START_CHAR_CODE = 32
-END_CHAR_CODE = 128
 
 class ClipboardController(object):
     def __init__(self, parent):
@@ -19,7 +17,7 @@ class ClipboardController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         cut_strokes_cmd = commands.Command('cut_strokes_cmd')
-        char_index = char_set.get_current_char_index()
+        char_index = ui.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -58,7 +56,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             if type(sel_stroke).__name__ == 'Stroke':
@@ -83,8 +81,7 @@ class ClipboardController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = char_set.get_current_char_index()
-        print char_index
+        char_index = char_index = ui.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -119,7 +116,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index)
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
@@ -133,7 +130,7 @@ class ClipboardController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
-        char_index = char_set.get_current_char_index()
+        char_index = ui.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : self.__clipboard[:],
@@ -179,7 +176,7 @@ class ClipboardController(object):
         else:
             copy_strokes = True
 
-        ui.char_selector_list.setCurrentRow(char_index - START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index)
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False
