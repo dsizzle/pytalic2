@@ -1,17 +1,21 @@
 from PyQt4 import QtCore
 
+import model.character_set
 import view.shared_qt
 
 class Instance(object):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, char_set=None):
         self.__instanced_object = None
         self.__pos = QtCore.QPoint()
         self.__parent = parent
+        self.__char_set = char_set
         self.__is_selected = False
+        self.__obj_type = None
 
     def __del__(self):
-        if self.__instanced_object:
-            self.__instanced_object.remove_instance(self)
+        pass
+        #if self.__instanced_object:
+        #    self.__instanced_object.remove_instance(self)
 
     def set_pos(self, point):
         self.__pos = point
@@ -21,20 +25,36 @@ class Instance(object):
 
     pos = property(get_pos, set_pos)
 
+    def get_obj_type(self):
+        return self.__obj_type
+
+    def set_obj_type(self, new_obj_type):
+        self.__obj_type = new_obj_type
+
+    obj_type = property(get_obj_type, set_obj_type)
+
     def set_instanced_object(self, new_instanced_object):
         if self.__instanced_object:
-            self.__instanced_object.remove_instance(self)
-
+            self.actual_object.remove_instance(self)
+        
         self.__instanced_object = new_instanced_object
 
-        self.__pos = QtCore.QPoint(new_instanced_object.get_pos())
+        if self.__char_set:    
+            self.__pos = QtCore.QPoint(self.actual_object.get_pos())
         
-        self.__instanced_object.add_instance(self)
+            self.actual_object.add_instance(self)
 
     def get_instanced_object(self):
         return self.__instanced_object
 
     instanced_object = property(get_instanced_object, set_instanced_object)
+
+    @property
+    def actual_object(self):
+        if self.__char_set:
+            return self.__char_set.objects[self.obj_type][self.__instanced_object]
+
+        return None
 
     def set_parent(self, parent):
         self.__parent = parent
@@ -53,9 +73,9 @@ class Instance(object):
     selected = property(get_select_state, set_select_state)
 
     def is_inside(self, point):
-        if self.__instanced_object is not None:
+        if self.__instanced_object and self.__char_set:
             test_point = point - self.__pos
-            is_inside = self.__instanced_object.is_inside(test_point)
+            is_inside =  self.actual_object.is_inside(test_point)
         else:
             is_inside = (False, -1, None)
 
@@ -65,7 +85,10 @@ class Instance(object):
         if self.__instanced_object is None:
             return
 
-        object_to_draw = self.__instanced_object
+        if self.__char_set is None:
+            return
+
+        object_to_draw = self.actual_object
         object_pos = object_to_draw.pos
 
         gc.save()
@@ -90,8 +113,9 @@ class Instance(object):
 
 
 class StrokeInstance(Instance):
-    def __init__(self, parent=None):
-        Instance.__init__(self, parent)
+    def __init__(self, parent=None, char_set=None):
+        Instance.__init__(self, parent, char_set)
+        self.obj_type = "Stroke"
 
     stroke = property(Instance.get_instanced_object, Instance.set_instanced_object)
 
@@ -99,13 +123,13 @@ class StrokeInstance(Instance):
         return self.stroke.get_stroke_shape()
 
     def get_bound_rect(self):
-        return self.__stroke.get_bound_rect()
+        return self.stroke.get_bound_rect()
 
     def is_inside(self, point):
-        if self.__stroke is not None:
-            stroke_pos = self.__stroke.pos
+        if self.stroke is not None:
+            stroke_pos = self.stroke.pos
             test_point = point + stroke_pos - self.__pos
-            is_inside = self.__stroke.is_inside(test_point)
+            is_inside = self.stroke.is_inside(test_point)
         else:
             is_inside = (False, -1, None)
 
@@ -121,21 +145,23 @@ class StrokeInstance(Instance):
 
 
 class GlyphInstance(Instance):
-    def __init__(self, parent=None):
-        Instance.__init__(self, parent)
+    def __init__(self, parent=None, char_set=None):
+        Instance.__init__(self, parent, char_set)
+        self.obj_type = "Glyph"
 
     glyph = property(Instance.get_instanced_object, Instance.set_instanced_object)
 
     @property
     def strokes(self):
-        if self.glyph:
-            return self.glyph.strokes
+        if self.actual_object:
+            return self.actual_object.strokes
 
         return None
 
 
 class CharacterInstance(Instance):
-    def __init__(self, parent=None):
-        Instance.__init__(self, parent)
+    def __init__(self, parent=None, char_set=None):
+        Instance.__init__(self, parent, char_set)
+        self.obj_type = "Character"
 
     character = property(Instance.get_instanced_object, Instance.set_instanced_object)

@@ -55,6 +55,7 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
+        char_set = self.__main_ctrl.get_character_set()
 
         for sel_stroke in cur_view_selection.keys():
             if type(sel_stroke).__name__ == 'Stroke':
@@ -65,8 +66,9 @@ class StrokeController(object):
 
         new_glyph = character.Glyph()
         new_glyph.strokes = selected_strokes
-        glyph_instance = instance.GlyphInstance()
-        glyph_instance.glyph = new_glyph
+        glyph_id = char_set.save_glyph(new_glyph)
+        glyph_instance = instance.GlyphInstance(char_set=char_set)
+        glyph_instance.glyph = glyph_id
 
         item_num = ui.stroke_selector_list.count()
 
@@ -124,12 +126,13 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
 
-        char_set.save_glyph(glyph_instance.glyph)
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
-        ui.stroke_selector_list.addItem(str(first_item))
-        cur_item = ui.stroke_selector_list.item(first_item)
+        glyph_item = QtGui.QListWidgetItem()
+        glyph_item.setText(str(first_item))
+        glyph_item.setData(QtCore.Qt.UserRole, glyph_instance.glyph)
+        glyph_item.setIcon(QtGui.QIcon(bitmap))
+        ui.stroke_selector_list.addItem(glyph_item)
         ui.stroke_selector_list.setCurrentRow(first_item)
-        cur_item.setIcon(QtGui.QIcon(bitmap))
 
         for sel_stroke in saved_selection: 
             deleted_strokes.append(sel_stroke)
@@ -141,6 +144,7 @@ class StrokeController(object):
 
             sel_stroke.selected = True
             
+        # should just add the id! 
         cur_char.add_glyph(glyph_instance)
 
         for sel_stroke in deleted_strokes:
@@ -177,7 +181,6 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
 
-        char_set.remove_saved_glyph(glyph_instance.glyph)
         cur_char.remove_glyph(glyph_instance)
 
         for sel_stroke in glyph_instance.strokes:
@@ -204,11 +207,11 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
         ui = self.__main_ctrl.get_ui()
 
-        char_index = char_set.get_current_char_index()
-        glyph_index = ui.stroke_selector_list.currentRow()
-        saved_glyph = char_set.get_saved_glyph(glyph_index)
-        new_glyph = instance.GlyphInstance() 
-        new_glyph.glyph = saved_glyph
+        char_index = ui.char_selector_list.currentRow()
+        glyph_item = ui.stroke_selector_list.currentItem()
+        glyph_index = str(glyph_item.data(QtCore.Qt.UserRole).toString())
+        new_glyph = instance.GlyphInstance(char_set=char_set) 
+        new_glyph.glyph = glyph_index
 
         paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
@@ -286,26 +289,22 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
 
         glyph_index = ui.stroke_selector_list.currentRow()
-        
-        saved_glyph = char_set.get_saved_glyph(glyph_index)
-        
-        if not saved_glyph:
-            return
 
-        cur_item = ui.stroke_selector_list.item(glyph_index)
+        cur_item = ui.stroke_selector_list.currentItem()
         cur_item_icon = cur_item.icon()
+        glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
 
         delete_saved_glyph_cmd = commands.Command('delete_saved_glyph_cmd')
 
         do_args = {
-            'glyph' : saved_glyph,
             'glyph_index' : glyph_index,
+            'glyph_id' : glyph_id
         }
 
         undo_args = {
-            'glyph' : saved_glyph,
             'glyph_index' : glyph_index,
             'bitmap' : cur_item_icon,
+            'glyph_id' : glyph_id
         }
 
         delete_saved_glyph_cmd.set_do_args(do_args)
@@ -328,16 +327,20 @@ class StrokeController(object):
         else:
             return
 
-        if 'glyph' in args:
-            glyph = args['glyph']
+        if 'glyph_id' in args:
+             glyph_id = args['glyph_id']
         else:
-            return
+             return
 
         ui = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
         
-        ui.stroke_selector_list.takeItem(glyph_index)
-        char_set.remove_saved_glyph(glyph)
+        glyph_item = ui.stroke_selector_list.takeItem(glyph_index)
+        
+        glyph = char_set.glyphs[glyph_id]
+
+        # should we save these to restore once you 
+        # undelete saved glyph?
         instance_list = glyph.instances.keys()
 
         for glyph_instance in instance_list:
@@ -350,10 +353,10 @@ class StrokeController(object):
         else:
             return
 
-        if 'glyph' in args:
-            glyph = args['glyph']
+        if 'glyph_id' in args:
+             glyph_id = args['glyph_id']
         else:
-            return
+             return
 
         if 'bitmap' in args:
             bitmap = args['bitmap']
@@ -363,11 +366,13 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
-        ui.stroke_selector_list.insertItem(glyph_index, str(glyph_index))
-        new_item = ui.stroke_selector_list.item(glyph_index)
-        new_item.setIcon(bitmap)
+        glyph_item = QtGui.QListWidgetItem()
+        glyph_item.setText(str(glyph_index))
+        glyph_item.setData(QtCore.Qt.UserRole, glyph_id)
+        glyph_item.setIcon(QtGui.QIcon(bitmap))
 
-        char_set.insert_glyph(glyph_index, glyph)
+        ui.stroke_selector_list.insertItem(glyph_index, glyph_item)
+
 
     def straighten_stroke(self):
         cmd_stack = self.__main_ctrl.get_command_stack()

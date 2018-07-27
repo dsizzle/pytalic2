@@ -1,4 +1,5 @@
 import model.character
+import model.instance
 import model.stroke
 
 class CharacterSet(object):
@@ -16,10 +17,23 @@ class CharacterSet(object):
 
         self.__current_char = None
 
-        self.__characters = {}
+        self.__char_type = type(model.character.Character()).__name__
+        self.__stroke_type = type(model.stroke.Stroke()).__name__
+        self.__glyph_type = type(model.character.Glyph()).__name__
+        self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
+        self.__glyph_inst_type = type(model.instance.GlyphInstance()).__name__
+
+        self.__objects = {}
+        self.__objects[self.__char_type] = {}
+        self.__objects[self.__stroke_type] = {}
+        self.__objects[self.__glyph_type] = {}
+        self.__objects[self.__stroke_inst_type] = {}
+        self.__objects[self.__glyph_inst_type] = {}
+        
+        #self.__characters = {}
         self.__character_xref = {}
-        self.__saved_glyphs = {}
-        self.__strokes = {}
+        #self.__saved_glyphs = {}
+        #self.__strokes = {}
 
         self.__char_id = 0
         self.__glyph_id = 0
@@ -40,7 +54,8 @@ class CharacterSet(object):
     def new_character(self, char_code):
         new_char = model.character.Character()
         new_char_id = self.__get_next_char_id()
-        self.__characters[new_char_id] = new_char
+        
+        self.__objects[self.__char_type][new_char_id] = new_char
 
         if char_code:
             new_char.unicode_character = char_code
@@ -51,18 +66,18 @@ class CharacterSet(object):
         return new_char_id
 
     def delete_char(self, char_to_delete):
-        if char_to_delete in self.__characters:
-            char_code = self.__characters[char_to_delete].unicode_character
-            self.__characters[char_to_delete] = None
+        if char_to_delete in self.__objects[self.__char_type]:
+            char_code = self.__objects[self.__char_type][char_to_delete].unicode_character
+            self.__objects[self.__char_type][char_to_delete] = None
             del self.__character_xref[unichr(char_code)]
         elif char_to_delete in self.__character_xref:
             char = self.__character_xref[char_to_delete]
-            self.__characters[char] = None
+            self.__objects[self.__char_type][char] = None
             del self.__character_xref[char_to_delete]
 
     def get_current_char(self):
         if self.__current_char is not None:
-            return self.__characters[self.__current_char]
+            return self.__objects[self.__char_type][self.__current_char]
 
         return None
 
@@ -76,7 +91,7 @@ class CharacterSet(object):
     current_char = property(get_current_char, set_current_char)
 
     def get_current_char_name(self):
-        current_char_object = self.__characters[self.__current_char]
+        current_char_object = self.__objects[self.__char_type][self.__current_char]
         return unichr(current_char_object.unicode_character)
 
     def get_current_char_index(self):
@@ -85,43 +100,47 @@ class CharacterSet(object):
     def get_char(self, char_to_get):
         if char_to_get in self.__character_xref:
             char_id = self.__character_xref[char_to_get]
-            return self.__characters[char_id]
+            return self.__objects[self.__char_type][char_id]
 
         return None
 
     @property
+    def objects(self):
+        return self.__objects
+
+    @property
     def characters(self):
-        return self.__characters
+        return self.__objects[self.__char_type]
 
     @property
     def glyphs(self):
-        return self.__saved_glyphs
+        return self.__objects[self.__glyph_type]
 
     def save_glyph(self, item):
         glyph_id = self.__get_next_glyph_id()
-        self.__saved_glyphs[glyph_id] = item
+        self.__objects[self.__glyph_type][glyph_id] = item
         return glyph_id
 
     def insert_glyph(self, glyph_id, item):
-        self.__saved_glyphs[glyph_id] = item
+        self.__objects[self.__glyph_type][glyph_id] = item
         
     def get_saved_glyph(self, glyph_id):
-        if glyph_id in self.__saved_glyphs:
-            return self.__saved_glyphs[glyph_id]
+        if glyph_id in self.__objects[self.__glyph_type]:
+            return self.__objects[self.__glyph_type][glyph_id]
 
         return None
 
     def set_saved_glyph(self, glyph_id, stroke):
-        if glyph_id not in self.__saved_glyphs:
+        if glyph_id not in self.__objects[self.__glyph_type]:
             return
 
-        tmp_stroke = self.__saved_glyphs[glyph_id]
-        self.__saved_glyphs[glyph_id] = stroke
+        tmp_stroke = self.__objects[self.__glyph_type][glyph_id]
+        self.__objects[self.__glyph_type][glyph_id] = stroke
         del tmp_stroke
 
     def remove_saved_glyph(self, glyph_id):
         try:
-            del self.__saved_glyphs[glyph_id]
+            del self.__objects[self.__glyph_type][glyph_id]
         except IndexError:
             print "ERROR: saved glyph to remove doesn't exist!"
 
