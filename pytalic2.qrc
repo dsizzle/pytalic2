@@ -1,0 +1,29 @@
+<RCC>
+  <qresource>
+    <file>icons/zoom_actual.png</file>
+    <file>icons/script_save.png</file>
+    <file>icons/cross_promotion_selling.png</file>
+    <file>icons/draw_path.png</file>
+    <file>icons/draw_vertex.png</file>
+    <file>icons/edit_path.png</file>
+    <file>icons/grid.png</file>
+    <file>icons/quill.png</file>
+    <file>icons/vector.png</file>
+    <file>icons/vector_delete.png</file>
+    <file>icons/vector_add.png</file>
+    <file>icons/transform_path.png</file>
+    <file>icons/transform_move.png</file>
+    <file>icons/draw_calligraphic.png</file>
+    <file>icons/arrow_redo.png</file>
+    <file>icons/arrow_undo.png</file>
+    <file>icons/cut.png</file>
+    <file>icons/delete.png</file>
+    <file>icons/draw_calligraphic.png</file>
+    <file>icons/draw_path.png</file>
+    <file>icons/page_white_copy.png</file>
+    <file>icons/page_white_paste.png</file>
+    <file>icons/save_as.png</file>
+    <file>icons/script_go.png</file>
+    <file>icons/script_add.png</file>
+  </qresource>
+</RCC>
