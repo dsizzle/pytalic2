@@ -17,6 +17,7 @@ import control.stroke_operations
 import control.vertex_operations
 from model import character_set, character, commands, stroke, instance
 from view import edit_ui
+import view.paper
 import view.shared_qt
 
 IDLE = 0
@@ -55,7 +56,7 @@ class EditorController(object):
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
 
-        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
+        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__selection[self.__current_view_pane] = {}
 
         self.__clipboard_controller = control.clipboard_operations.ClipboardController(self)
@@ -170,8 +171,6 @@ class EditorController(object):
 
         self.__selection[self.__current_view_pane] = {}
         self.__ui.repaint()
-
-
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
@@ -303,22 +302,28 @@ class EditorController(object):
 
     def view_tab_changed_cb(self, event):
         previous_pane = self.__current_view_pane
-        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget()
+        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
 
         if self.__current_view_pane == self.__ui.dwg_area:
             self.__ui.stroke_new.setEnabled(True)
+            self.__ui.view_nib_guides.setEnabled(True)
+            self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             if len(self.__selection.keys()):
                 self.set_ui_state_selection(True)
             if self.__ui.stroke_selector_list.count() > 0:
                 self.__ui.stroke_load.setEnabled(True)
                 self.__ui.glyph_delete.setEnabled(True)
-            if previous_pane == self.__ui.stroke_dwg_area:
+            if previous_pane == self.__ui.stroke_dwg_area and \
+                previous_pane.symbol:
                 previous_pane.symbol.calculate_bound_rect()
         elif self.__current_view_pane == self.__ui.stroke_dwg_area:
             self.__ui.stroke_new.setEnabled(True)
             self.__ui.stroke_delete.setEnabled(True)
-            self.__current_view_pane.symbol.selected = False
+            if self.__current_view_pane.symbol:
+                self.__current_view_pane.symbol.selected = False
+            self.__ui.view_nib_guides.setEnabled(True)
+            self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
@@ -336,7 +341,8 @@ class EditorController(object):
         if self.__current_view_pane not in self.__selection:
             self.__selection[self.__current_view_pane] = {}        
         
-        if self.__current_view_pane != self.__ui.preview_area:
+        if self.__current_view_pane != self.__ui.preview_area and \
+            self.__current_view_pane.symbol:
             for sel_item in self.__current_view_pane.symbol.children:
                 if sel_item in self.__selection[self.__current_view_pane]:
                     sel_item.selected = True
