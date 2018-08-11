@@ -320,10 +320,6 @@ class Ui_MainWindow(object):
         self.char_set_right_space_spin.setProperty("value", 1.0)
         self.char_set_right_space_spin.setObjectName(_fromUtf8("char_set_right_space_spin"))
         self.formLayout.setWidget(10, QtGui.QFormLayout.FieldRole, self.char_set_right_space_spin)
-        self.guides_color_button = QtGui.QPushButton(self.char_set_prop_tab)
-        self.guides_color_button.setText(_fromUtf8(""))
-        self.guides_color_button.setObjectName(_fromUtf8("guides_color_button"))
-        self.formLayout.setWidget(11, QtGui.QFormLayout.FieldRole, self.guides_color_button)
         self.char_set_nib_angle_spin = QtGui.QSpinBox(self.char_set_prop_tab)
         self.char_set_nib_angle_spin.setWrapping(True)
         self.char_set_nib_angle_spin.setMaximum(90)
@@ -336,6 +332,7 @@ class Ui_MainWindow(object):
         self.label_12 = QtGui.QLabel(self.char_set_prop_tab)
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.formLayout.setWidget(12, QtGui.QFormLayout.LabelRole, self.label_12)
+        
         self.property_tabs.addTab(self.char_set_prop_tab, _fromUtf8(""))
         self.view_layout.addWidget(self.main_splitter)
         self.main_layout.addLayout(self.view_layout)
@@ -584,7 +581,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.main_view_tabs.setCurrentIndex(0)
-        self.property_tabs.setCurrentIndex(0)
+        self.property_tabs.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

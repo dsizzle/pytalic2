@@ -98,6 +98,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         QtCore.QObject.connect(self.guides_color_button, \
             QtCore.SIGNAL("valueChanged(QColor)"), \
             self.__parent.guide_color_changed_cb)
+        self.formLayout.setWidget(11, QtGui.QFormLayout.FieldRole, self.guides_color_button)
 
         QtCore.QObject.connect(self.char_set_nib_angle_spin, \
             QtCore.SIGNAL("valueChanged(double)"), \

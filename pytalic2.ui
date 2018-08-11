@@ -183,7 +183,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="stroke_prop_tab">
             <attribute name="title">
@@ -657,13 +657,6 @@
                </property>
               </widget>
              </item>
-             <item row="11" column="1">
-              <widget class="QPushButton" name="guides_color_button">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
              <item row="12" column="1">
               <widget class="QSpinBox" name="char_set_nib_angle_spin">
                <property name="wrapping">
@@ -690,6 +683,9 @@
                 <string>Nib angle</string>
                </property>
               </widget>
+             </item>
+             <item row="11" column="1">
+              <widget class="QWidget" name="button_placeholder" native="true"/>
              </item>
             </layout>
            </widget>
