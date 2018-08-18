@@ -61,6 +61,11 @@ class Instance(object):
 
         return is_inside
 
+    @property
+    def bound_rect(self):
+        if self.__instanced_object:
+            return self.__instanced_object.bound_rect
+            
     def draw(self, gc, nib=None):
         if self.__instanced_object is None:
             return
@@ -97,9 +102,6 @@ class StrokeInstance(Instance):
 
     def get_stroke_shape(self):
         return self.stroke.get_stroke_shape()
-
-    def get_bound_rect(self):
-        return self.__stroke.get_bound_rect()
 
     def is_inside(self, point):
         if self.__stroke is not None:
