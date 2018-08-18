@@ -295,7 +295,16 @@ class MouseController(object):
                         sel_stroke.selected = False
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
-
+            else:
+                for sel_symbol in ui.preview_area.layout.object_list:
+                    inside_info = sel_symbol.is_inside(paper_pos)
+                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                        if sel_symbol not in cur_view_selection:
+                            cur_view_selection[sel_symbol] = {}     
+                        sel_symbol.selected = True  
+                    elif not shift_down:
+                        sel_symbol.selected = False
+                        
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.set_ui_state_selection(True)
             ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())

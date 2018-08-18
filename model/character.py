@@ -339,7 +339,7 @@ class Character(Glyph):
             self.bound_rect = QtCore.QRectF(top_left, bot_right)
 
     def is_inside(self, point):
-        test_point = point - self.__pos
+        test_point = point - self.pos
 
         for sel_child in self.children:
             insideInfo = sel_child.is_inside(test_point)
