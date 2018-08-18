@@ -346,8 +346,8 @@ class EditorController(object):
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
-            self.__ui.preview_area.layout.update_layout(self.__char_set, \
-                nib_width=self.__ui.dwg_area.nib.width * 2)
+            #self.__ui.preview_area.layout.update_layout(self.__char_set, \
+            #    nib_width=self.__ui.dwg_area.nib.width * 2)
         else:
             self.__ui.view_nib_guides.setEnabled(True)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
@@ -559,5 +559,11 @@ class EditorController(object):
 
             self.__stroke_controller.selection_position_changed_y(prev_value, \
                 new_value)
+
+    def layout_update_cb(self):
+        self.__ui.preview_area.layout.update_layout(self.__char_set, \
+            nib_width=self.__ui.dwg_area.nib.width * 2)
+
+        self.__ui.repaint()
 
 

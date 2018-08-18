@@ -658,7 +658,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.stroke_delete)
 
         self.retranslateUi(MainWindow)
-        self.main_view_tabs.setCurrentIndex(2)
+        self.main_view_tabs.setCurrentIndex(0)
         self.property_tabs.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

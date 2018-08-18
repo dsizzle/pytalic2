@@ -112,6 +112,10 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.stroke_nib_angle_changed_cb)
 
+        QtCore.QObject.connect(self.layout_reset_button, \
+            QtCore.SIGNAL("clicked()"), \
+            self.__parent.layout_update_cb)
+
         self.create_menu()
 
         self.stroke_dwg_area.set_origin_delta(QtCore.QPoint())
