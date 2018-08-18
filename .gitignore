@@ -1,5 +1,4 @@
 *.pyc
 shapes\*.pyc
 thirdparty\*.pyc
-.idea\*.xml
-.idea\*.iml
+.idea
