@@ -31,32 +31,6 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         
         self.stroke_selector_list.currentItemChanged.connect(self.__parent.stroke_selected_cb)
 
-        dwg_area_layout = self.dwg_tab.children()[0]
-        self.dwg_area = view.paper.DrawingArea(self.dwg_tab)
-        self.dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-        self.dwg_area.setLineWidth(2)
-        self.dwg_area.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, \
-            QtGui.QSizePolicy.Expanding))
-        dwg_area_layout.addWidget(self.dwg_area)
-
-        glyph_dwg_area_layout = self.glyph_dwg_tab.children()[0]
-        self.stroke_dwg_area = view.paper.DrawingArea(self.glyph_dwg_tab)
-        self.stroke_dwg_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-        self.stroke_dwg_area.setLineWidth(2)
-        self.stroke_dwg_area.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, \
-            QtGui.QSizePolicy.Expanding))
-        self.stroke_dwg_area.drawGuidelines = False
-        self.stroke_dwg_area.drawNibGuides = False
-        glyph_dwg_area_layout.addWidget(self.stroke_dwg_area)
-
-        preview_area_layout = self.preview_tab.children()[0]
-        self.preview_area = view.paper.LayoutArea(self.preview_tab)
-        self.preview_area.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
-        self.preview_area.setLineWidth(2)
-        self.preview_area.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, \
-            QtGui.QSizePolicy.Expanding))
-        preview_area_layout.addWidget(self.preview_area)
-
         QtCore.QObject.connect(self.base_height_spin, \
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.guide_base_height_changed_cb)
@@ -93,13 +67,11 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.char_set_right_space_changed_cb)
 
-        self.guides_color_button = view.widgets_qt.SelectColorButton(self)
         self.guides_color_button.setColor(QtGui.QColor(200, 195, 180))
         QtCore.QObject.connect(self.guides_color_button, \
             QtCore.SIGNAL("valueChanged(QColor)"), \
             self.__parent.guide_color_changed_cb)
-        self.formLayout.setWidget(11, QtGui.QFormLayout.FieldRole, self.guides_color_button)
-
+        
         QtCore.QObject.connect(self.char_set_nib_angle_spin, \
             QtCore.SIGNAL("valueChanged(int)"), \
             self.__parent.char_set_nib_angle_changed_cb)
