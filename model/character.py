@@ -34,9 +34,13 @@ class Glyph(object):
     def instances(self):
         return self.__instances
 
-    @property
-    def bound_rect(self):
+    def get_bound_rect(self):
         return self.__bound_rect
+
+    def set_bound_rect(self, new_bound_rect):
+        self.__bound_rect = new_bound_rect
+
+    bound_rect = property(get_bound_rect, set_bound_rect)
 
     def set_pos(self, point):
         self.__pos = point
@@ -309,6 +313,42 @@ class Character(Glyph):
 
     override_spacing = property(get_override_spacing, set_override_spacing)
 
+    def calculate_bound_rect(self):
+        top_left = None
+        bot_right = None
+
+        for sel_child in self.children:
+            stroke_top_left = sel_child.bound_rect.topLeft() + sel_child.pos
+            stroke_bot_right = sel_child.bound_rect.bottomRight() + sel_child.pos
+
+            if top_left is None:
+                top_left = stroke_top_left
+            if bot_right is None:
+                bot_right = stroke_bot_right
+
+            if stroke_top_left.x() < top_left.x():
+                top_left.setX(stroke_top_left.x())
+            if stroke_top_left.y() < top_left.y():
+                top_left.setY(stroke_top_left.y())
+            if stroke_bot_right.x() > bot_right.x():
+                bot_right.setX(stroke_bot_right.x())
+            if stroke_bot_right.y() > bot_right.y():
+                bot_right.setY(stroke_bot_right.y())
+
+        if top_left and bot_right:
+            self.bound_rect = QtCore.QRectF(top_left, bot_right)
+
+    def is_inside(self, point):
+        test_point = point - self.__pos
+
+        for sel_child in self.children:
+            insideInfo = sel_child.is_inside(test_point)
+
+            if insideInfo[0]:
+                return (True, -1, None)
+
+        return (False, -1, None)
+
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:
             nib_glyph = nib
@@ -321,6 +361,15 @@ class Character(Glyph):
 
         for stroke in self.strokes:
             stroke.draw(gc, nib)
+
+        if not self.bound_rect:
+            self.calculate_bound_rect()
+
+        if self.selected:
+            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
+
+            gc.drawRect(self.bound_rect)
 
         gc.restore()
 
