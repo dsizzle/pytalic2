@@ -332,7 +332,6 @@ class Ui_MainWindow(object):
         self.label_12 = QtGui.QLabel(self.char_set_prop_tab)
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.formLayout.setWidget(12, QtGui.QFormLayout.LabelRole, self.label_12)
-        
         self.property_tabs.addTab(self.char_set_prop_tab, _fromUtf8(""))
         self.view_layout.addWidget(self.main_splitter)
         self.main_layout.addLayout(self.view_layout)
@@ -675,7 +674,7 @@ class Ui_MainWindow(object):
         self.stroke_new.setShortcut(_translate("MainWindow", "Shift+N", None))
         self.stroke_delete.setText(_translate("MainWindow", "&Delete", None))
         self.stroke_delete.setToolTip(_translate("MainWindow", "Delete selected stroke(s)", None))
-        self.stroke_delete.setShortcut(_translate("MainWindow", "Backspace, Del, Ctrl+S", None))
+        self.stroke_delete.setShortcut(_translate("MainWindow", "Backspace", None))
         self.stroke_straighten.setText(_translate("MainWindow", "Straighten", None))
         self.stroke_join.setText(_translate("MainWindow", "Join", None))
         self.stroke_flip_x.setText(_translate("MainWindow", "Flip X", None))

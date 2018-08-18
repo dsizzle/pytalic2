@@ -684,9 +684,6 @@
                </property>
               </widget>
              </item>
-             <item row="11" column="1">
-              <widget class="QWidget" name="button_placeholder" native="true"/>
-             </item>
             </layout>
            </widget>
           </widget>
@@ -1144,7 +1141,7 @@
     <string>Delete selected stroke(s)</string>
    </property>
    <property name="shortcut">
-    <string>Backspace, Del, Ctrl+S</string>
+    <string>Backspace</string>
    </property>
   </action>
   <action name="stroke_straighten">
