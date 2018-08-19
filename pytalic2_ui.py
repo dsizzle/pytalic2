@@ -667,7 +667,7 @@ class Ui_MainWindow(object):
         self.main_view_tabs.setTabText(self.main_view_tabs.indexOf(self.dwg_tab), _translate("MainWindow", "Character", None))
         self.main_view_tabs.setTabText(self.main_view_tabs.indexOf(self.glyph_dwg_tab), _translate("MainWindow", "Glyph", None))
         self.layout_reset_button.setText(_translate("MainWindow", "Reset Layout", None))
-        self.layout_combo.setItemText(0, _translate("MainWindow", "a-z, A-Z, 0-9", None))
+        self.layout_combo.setItemText(0, _translate("MainWindow", "ABCDEFGHIJKLMNOPQRSTUV   abcdefghijklmnopqrstuvwxyz0123456789", None))
         self.layout_combo.setItemText(1, _translate("MainWindow", "Both fickle dwarves jinx my pig quiz", None))
         self.layout_combo.setItemText(2, _translate("MainWindow", "The five boxing wizards jump quickly", None))
         self.layout_combo.setItemText(3, _translate("MainWindow", "Fix problem quickly with galvanized jets", None))

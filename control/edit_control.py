@@ -67,13 +67,9 @@ class EditorController(object):
         self.__stroke_controller = control.stroke_operations.StrokeController(self)
         self.__vertex_controller = control.vertex_operations.VertexController(self)
 
-        self.file_new_cb(None)
-        
-        self.__layout_abc = layout.Layout()
-        self.__layout_abc.init_with_string("TEST", self.__char_set, \
-            nib_width=self.__ui.dwg_area.nib.width * 2)
+        self.__layouts = []
 
-        self.__ui.preview_area.layout = self.__layout_abc
+        self.file_new_cb(None)
 
     def get_command_stack(self):
         return self.__cmd_stack
@@ -163,6 +159,8 @@ class EditorController(object):
 
         self.__cmd_stack = commands.CommandStack()
 
+        self.make_layouts()
+
     def file_save_as_cb(self, event):
         file_path = self.__file_controller.file_save_as()
         self.__ui.setWindowTitle(self.__label + " - " + file_path)
@@ -178,11 +176,7 @@ class EditorController(object):
         self.__selection[self.__current_view_pane] = {}
         self.__ui.repaint()
 
-        self.__layout_abc = layout.Layout()
-        self.__layout_abc.init_with_string("TEST", self.__char_set, \
-            nib_width=self.__ui.dwg_area.nib.width * 2)
-
-        self.__ui.preview_area.layout = self.__layout_abc
+        self.make_layouts()
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
@@ -566,4 +560,22 @@ class EditorController(object):
 
         self.__ui.repaint()
 
+    def layout_changed_cb(self, new_index):
+        self.__ui.preview_area.layout = self.__layouts[new_index]
 
+        self.__ui.repaint()
+
+    def make_layouts(self):
+        num_layouts = self.__ui.layout_combo.count()
+        self.__layouts = []
+
+        for i in range(0, num_layouts):
+            layout_string = str(self.__ui.layout_combo.itemText(i))
+
+            new_layout = layout.Layout()
+            new_layout.init_with_string(layout_string, self.__char_set, \
+                nib_width=self.__ui.dwg_area.nib.width * 2)
+
+            self.__layouts.append(new_layout)
+
+        self.__ui.preview_area.layout = self.__layouts[0]

@@ -265,7 +265,7 @@
                  </property>
                  <item>
                   <property name="text">
-                   <string>a-z, A-Z, 0-9</string>
+                   <string>ABCDEFGHIJKLMNOPQRSTUV   abcdefghijklmnopqrstuvwxyz0123456789</string>
                   </property>
                  </item>
                  <item>
