@@ -74,8 +74,6 @@ class Layout(object):
                 left_space = char_set.left_spacing
                 right_space = char_set.right_spacing
 
-            print current_x, current_y
-
             char_object.pos = QtCore.QPoint(current_x, current_y)
 
             delta_x = (width + left_space + prev_right_space) * nib_width 
