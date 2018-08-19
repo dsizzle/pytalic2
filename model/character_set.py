@@ -154,6 +154,11 @@ class CharacterSet(object):
 
     gap_height = property(get_gap_height, set_gap_height)
 
+    @property
+    def height(self):
+        return self.__base_height_nibs + self.__descent_height_nibs + \
+            self.__ascent_height_nibs
+             
     def set_guide_angle(self, new_angle):
         self.__guide_angle = new_angle
 
