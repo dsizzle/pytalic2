@@ -91,6 +91,7 @@ class FileController(object):
              "Character Set Files (*.cs)")
 
         if file_path:
+            ui.setUpdatesEnabled(False)
             self.load(file_path)
             char_set = self.__main_ctrl.get_character_set()
         
@@ -154,6 +155,7 @@ class FileController(object):
             cmd_stack.clear()
             cmd_stack.reset_save_count()
             ui.file_save.setEnabled(True)
+            ui.setUpdatesEnabled(True)
 
             return file_path
 
