@@ -159,7 +159,8 @@ class EditorController(object):
 
     def file_save_as_cb(self, event):
         file_path = self.__file_controller.file_save_as()
-        self.__ui.setWindowTitle(self.__label + " - " + file_path)
+        if file_path:
+            self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
     def file_save_cb(self, event):
         self.__file_controller.file_save()
@@ -167,9 +168,11 @@ class EditorController(object):
     def file_open_cb(self):
         file_path = self.__file_controller.file_open()
 
-        self.__ui.setWindowTitle(self.__label + " - " + file_path)
+        if file_path:
+            self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
-        self.clear_selection()
+            self.clear_selection()
+        
         self.__ui.repaint()
 
     def create_new_stroke_cb(self, event):

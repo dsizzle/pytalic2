@@ -48,6 +48,8 @@ class FileController(object):
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
+        file_path = None
+        
         file_name = ui.file_save_dialog.getSaveFileName(ui, \
              "Save Character Set", self.__dir_name, \
              "Character Set Files (*.cs)")
@@ -65,7 +67,7 @@ class FileController(object):
             ui.file_save.setEnabled(True)
             cmd_stack.reset_save_count()
 
-            return file_path
+        return file_path
             
     def file_save(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
@@ -157,7 +159,7 @@ class FileController(object):
             ui.file_save.setEnabled(True)
             ui.setUpdatesEnabled(True)
 
-            return file_path
+        return file_path
 
     def save(self, file_name):
         char_set = self.__main_ctrl.get_character_set()
