@@ -764,7 +764,7 @@ class Ui_MainWindow(object):
         self.stroke_new.setShortcut(_translate("MainWindow", "Shift+N", None))
         self.stroke_delete.setText(_translate("MainWindow", "&Delete", None))
         self.stroke_delete.setToolTip(_translate("MainWindow", "Delete selected stroke(s)", None))
-        self.stroke_delete.setShortcut(_translate("MainWindow", "Backspace, Del, Ctrl+S", None))
+        self.stroke_delete.setShortcut(_translate("MainWindow", "Backspace", None))
         self.stroke_straighten.setText(_translate("MainWindow", "Straighten", None))
         self.stroke_join.setText(_translate("MainWindow", "Join", None))
         self.stroke_flip_x.setText(_translate("MainWindow", "Flip X", None))

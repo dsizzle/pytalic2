@@ -1321,7 +1321,7 @@
     <string>Delete selected stroke(s)</string>
    </property>
    <property name="shortcut">
-    <string>Backspace, Del, Ctrl+S</string>
+    <string>Backspace</string>
    </property>
   </action>
   <action name="stroke_straighten">
