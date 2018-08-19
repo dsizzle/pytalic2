@@ -29,7 +29,7 @@ class SelectColorButton(QtGui.QPushButton):
     @QtCore.pyqtSlot()
     def changeColor(self):
         new_color = QtGui.QColorDialog.getColor(self.__color, self.__parent)
-        if new_color != self.__color:
+        if new_color != self.__color and new_color.isValid():
             self.setColor(new_color)
 
 

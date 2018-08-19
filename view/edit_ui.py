@@ -73,7 +73,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             self.__parent.guide_color_changed_cb)
         
         QtCore.QObject.connect(self.char_set_nib_angle_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+            QtCore.SIGNAL("valueChanged(int)"), \
             self.__parent.char_set_nib_angle_changed_cb)
 
         QtCore.QObject.connect(self.char_width_spin, \
@@ -109,7 +109,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             self.__parent.stroke_override_nib_angle_changed_cb)
 
         QtCore.QObject.connect(self.stroke_nib_angle_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+            QtCore.SIGNAL("valueChanged(int)"), \
             self.__parent.stroke_nib_angle_changed_cb)
 
         QtCore.QObject.connect(self.layout_reset_button, \

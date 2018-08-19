@@ -309,8 +309,20 @@ class MouseController(object):
             self.__main_ctrl.set_ui_state_selection(True)
             ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
             ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
+            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
+                cur_view_selection.keys()[0].nib_angle:
+                ui.stroke_nib_angle_spin.setValue(cur_view_selection.keys()[0].nib_angle)
+            else:
+                ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
+            check_state = QtCore.Qt.Unchecked
+            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
+                cur_view_selection.keys()[0].override_nib_angle:
+                check_state = QtCore.Qt.Checked
+            ui.stroke_override_nib_angle.setCheckState(check_state)
         else:
             self.__main_ctrl.set_ui_state_selection(False)
             ui.behavior_combo.setCurrentIndex(0)
             ui.position_x_spin.setValue(0)
             ui.position_y_spin.setValue(0)
+            ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
+            ui.stroke_override_nib_angle.setCheckState(QtCore.Qt.Unchecked)
