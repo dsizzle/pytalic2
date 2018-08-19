@@ -163,7 +163,8 @@ class EditorController(object):
 
     def file_save_as_cb(self, event):
         file_path = self.__file_controller.file_save_as()
-        self.__ui.setWindowTitle(self.__label + " - " + file_path)
+        if file_path:
+            self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
     def file_save_cb(self, event):
         self.__file_controller.file_save()
@@ -171,9 +172,11 @@ class EditorController(object):
     def file_open_cb(self):
         file_path = self.__file_controller.file_open()
 
-        self.__ui.setWindowTitle(self.__label + " - " + file_path)
+        if file_path:
+            self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
-        self.__selection[self.__current_view_pane] = {}
+            self.clear_selection()
+        
         self.__ui.repaint()
 
         self.make_layouts()
@@ -291,6 +294,8 @@ class EditorController(object):
             check_state = QtCore.Qt.Checked
         self.__ui.override_char_set.setCheckState(check_state)
         self.override_char_set_changed_cb(check_state)
+
+        self.clear_selection()
         self.__ui.repaint()
         self.set_icon()
 
@@ -350,8 +355,8 @@ class EditorController(object):
             self.set_icon()
 
         if self.__current_view_pane not in self.__selection:
-            self.__selection[self.__current_view_pane] = {}        
-        
+            self.clear_selection()
+
         if self.__current_view_pane != self.__ui.preview_area and \
             self.__current_view_pane.symbol:
             for sel_item in self.__current_view_pane.symbol.children:
@@ -581,3 +586,15 @@ class EditorController(object):
             self.__layouts.append(new_layout)
 
         self.__ui.preview_area.layout = self.__layouts[0]
+
+    def clear_selection(self):
+        if self.__current_view_pane in self.__selection:
+            for sel_stroke in self.__selection[self.__current_view_pane].keys():
+                sel_stroke.deselect_ctrl_verts()
+
+                sel_stroke.selected = False
+
+        self.__selection[self.__current_view_pane] = {}
+
+        self.set_ui_state_selection(False)
+

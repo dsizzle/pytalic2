@@ -167,7 +167,7 @@
                 <bool>true</bool>
                </property>
                <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
+                <enum>Qt::WheelFocus</enum>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Panel</enum>
@@ -208,7 +208,7 @@
                 <bool>true</bool>
                </property>
                <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
+                <enum>Qt::WheelFocus</enum>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Panel</enum>
@@ -247,6 +247,9 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
+                 </property>
                  <property name="text">
                   <string>Reset Layout</string>
                  </property>
@@ -260,12 +263,15 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
+                 </property>
                  <property name="frame">
                   <bool>true</bool>
                  </property>
                  <item>
                   <property name="text">
-                   <string>ABCDEFGHIJKLMNOPQRSTUV   abcdefghijklmnopqrstuvwxyz0123456789</string>
+                   <string>ABCDEFGHIJKLMNOPQRSTUVWXYZ  abcdefghijklmnopqrstuvwxyz  0123456789</string>
                   </property>
                  </item>
                  <item>
@@ -329,7 +335,7 @@
                 <bool>true</bool>
                </property>
                <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
+                <enum>Qt::WheelFocus</enum>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Panel</enum>
@@ -739,10 +745,10 @@
                 <number>1</number>
                </property>
                <property name="minimum">
-                <double>1.000000000000000</double>
+                <double>0.500000000000000</double>
                </property>
                <property name="maximum">
-                <double>5.000000000000000</double>
+                <double>4.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>0.500000000000000</double>

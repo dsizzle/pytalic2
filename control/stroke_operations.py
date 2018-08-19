@@ -36,12 +36,14 @@ class StrokeController(object):
 
         self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
-
+        
+        ui.setUpdatesEnabled(False)
         dwg_tab = ui.main_view_tabs.indexOf(current_view)
 
         for idx in range(0, ui.main_view_tabs.count()):
             if idx != dwg_tab:
                 ui.main_view_tabs.setTabEnabled(idx, False)
+        ui.setUpdatesEnabled(True)        
 
         self.__stroke_pts = []
         self.__tmp_stroke = stroke.Stroke()
