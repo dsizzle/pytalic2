@@ -169,7 +169,7 @@ class EditorController(object):
 
         self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
-        self.__selection[self.__current_view_pane] = {}
+        self.clear_selection()
         self.__ui.repaint()
 
     def create_new_stroke_cb(self, event):
@@ -284,6 +284,8 @@ class EditorController(object):
             check_state = QtCore.Qt.Checked
         self.__ui.override_char_set.setCheckState(check_state)
         self.override_char_set_changed_cb(check_state)
+
+        self.clear_selection()
         self.__ui.repaint()
         self.set_icon()
 
@@ -341,8 +343,8 @@ class EditorController(object):
             self.set_icon()
 
         if self.__current_view_pane not in self.__selection:
-            self.__selection[self.__current_view_pane] = {}        
-        
+            self.clear_selection()
+
         if self.__current_view_pane != self.__ui.preview_area and \
             self.__current_view_pane.symbol:
             for sel_item in self.__current_view_pane.symbol.children:
@@ -546,4 +548,13 @@ class EditorController(object):
             self.__stroke_controller.selection_position_changed_y(prev_value, \
                 new_value)
 
+    def clear_selection(self):
+        if self.__current_view_pane in self.__selection:
+            for sel_stroke in self.__selection[self.__current_view_pane].keys():
+                sel_stroke.deselect_ctrl_verts()
 
+                sel_stroke.selected = False
+
+        self.__selection[self.__current_view_pane] = {}
+
+        self.set_ui_state_selection(False)
