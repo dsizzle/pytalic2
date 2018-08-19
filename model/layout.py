@@ -31,7 +31,7 @@ class Layout(object):
 
     pos = property(get_pos, set_pos)
 
-    def init_with_string(self, string_to_layout, char_set, nib_width):
+    def init_with_string(self, string_to_layout, char_set, nib_width, line_width=9):
         height = char_set.base_height * nib_width
         cur_char = char_set.get_current_char_index()
 
@@ -52,12 +52,17 @@ class Layout(object):
             self.add_object(new_character)
         
         char_set.set_current_char(cur_char)
-        self.update_layout(char_set, nib_width)
+        self.update_layout(char_set, nib_width, line_width)
 
-    def update_layout(self, char_set, nib_width):
-        layout_total_length = 0
+    def update_layout(self, char_set, nib_width, line_width=9):
+        layout_total_height = 0
         current_x = 0
+        current_y = 0
         prev_right_space = 0
+        gap_height = char_set.gap_height
+        height = char_set.height
+        max_x = nib_width * line_width * \
+            (char_set.width + char_set.left_spacing + char_set.right_spacing)
 
         for char_object in self.object_list:
             if char_object.character.override_spacing:
@@ -69,12 +74,18 @@ class Layout(object):
                 left_space = char_set.left_spacing
                 right_space = char_set.right_spacing
 
+            print current_x, current_y
+
+            char_object.pos = QtCore.QPoint(current_x, current_y)
+
             delta_x = (width + left_space + prev_right_space) * nib_width 
             current_x += delta_x
             prev_right_space = right_space
 
-            char_object.pos = QtCore.QPoint(current_x, 0)
+            if current_x > max_x:
+                prev_right_space = 0
+                current_x = 0
+                current_y += (height + gap_height) * nib_width
+                layout_total_height += (height + gap_height) * nib_width
 
-            layout_total_length += delta_x 
-
-        self.__pos = QtCore.QPoint(-layout_total_length / 2, 0)
+        self.__pos = QtCore.QPoint(-max_x / 2, -layout_total_height / 2)
