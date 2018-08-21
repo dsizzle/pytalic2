@@ -211,6 +211,14 @@ class DrawingArea(Canvas):
 
     nib_instance = property(get_nib_instance, set_nib_instance)
 
+    def get_nib_special(self):
+        return self.__nib_special
+
+    def set_nib_special(self, new_nib_special):
+        self.__nib_special = new_nib_special
+
+    nib_special = property(get_nib_special, set_nib_special)
+    
     def draw_icon(self, dc, strokes_to_draw):
         pixmap = QtGui.QPixmap(self.width(), self.height())
 
