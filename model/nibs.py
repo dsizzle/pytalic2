@@ -24,7 +24,7 @@ class Nib(object):
 
         self.seed = time.localtime()
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
-            self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
+            self.__color.blue(), 90), 2, QtCore.Qt.SolidLine)
         self.guide_brush = QtGui.QBrush(QtGui.QColor(125, 125, 125, 50), QtCore.Qt.SolidPattern)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 220), QtCore.Qt.SolidPattern)
@@ -40,7 +40,7 @@ class Nib(object):
 
         self.seed = time.localtime()
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
-            self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
+            self.__color.blue(), 90), 2, QtCore.Qt.SolidLine)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 220), QtCore.Qt.SolidPattern)
 
@@ -50,7 +50,7 @@ class Nib(object):
     def set_color(self, color):
         self.__color = color
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
-            self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
+            self.__color.blue(), 90), 2, QtCore.Qt.SolidLine)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 220), QtCore.Qt.SolidPattern)
 
@@ -58,13 +58,13 @@ class Nib(object):
 
     def set_alpha(self, alpha):
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
-            self.__color.blue(), ((90.0 / 255.0) * alpha)), 1, QtCore.Qt.SolidLine)
+            self.__color.blue(), ((90.0 / 255.0) * alpha)), 2, QtCore.Qt.SolidLine)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), ((220.0 / 255.0) * alpha)), QtCore.Qt.SolidPattern)
 
     def reset_alpha(self):
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
-            self.__color.blue(), 90), 1, QtCore.Qt.SolidLine)
+            self.__color.blue(), 90), 2, QtCore.Qt.SolidLine)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 220), QtCore.Qt.SolidPattern)
 
@@ -99,11 +99,8 @@ class Nib(object):
         return self.__nibwidth_x, self.__nibwidth_y
 
     def draw(self, gc, stroke):
-        nullpen = QtGui.QPen(QtGui.QColor(0, 0, 0, 0), 1, QtCore.Qt.SolidLine)
-        brush = self.brush
-
-        gc.setPen(nullpen)
-        gc.setBrush(brush)
+        gc.setPen(self.pen)
+        gc.setBrush(self.brush)
 
         new_curves = stroke.split_curve(self.__angle)
 
