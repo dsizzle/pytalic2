@@ -55,19 +55,9 @@ class GuideLines(object):
 
     def set_line_color(self, linecolor):
         self.__line_color = linecolor
-        lt_red = self.__line_color.red()+30
-        lt_green = self.__line_color.green()+30
-        lt_blue = self.__line_color.blue()+30
-
-        if lt_red > 255: 
-            lt_red = 255
-        if lt_green > 255:
-            lt_green = 255
-        if lt_blue > 255:
-            lt_blue = 255
-
-        self.__line_color_lt = QtGui.QColor(lt_red, lt_green, lt_blue)
-        self.__line_color_alpha = QtGui.QColor(lt_red, lt_green, lt_blue, 128)
+        self.__line_color_lt = linecolor.lighter(150) 
+        self.__line_color_alpha = QtGui.QColor(self.__line_color_lt.red(), \
+            self.__line_color_lt.green(), self.__line_color_lt.blue(), 128)
         self.__line_pen_lt = QtGui.QPen(self.__line_color_lt, 1, QtCore.Qt.SolidLine)
         self.__line_pen = QtGui.QPen(self.__line_color, 1, QtCore.Qt.SolidLine)
         self.__line_pen_2 = QtGui.QPen(self.__line_color, 2, QtCore.Qt.SolidLine)
