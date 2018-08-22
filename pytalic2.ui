@@ -1409,6 +1409,9 @@
    <property name="text">
     <string>Save Stroke(s) As Glyph</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
   </action>
   <action name="help_about">
    <property name="text">
@@ -1421,6 +1424,9 @@
    </property>
    <property name="text">
     <string>Paste From Saved</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
    </property>
   </action>
   <action name="glyph_delete">
