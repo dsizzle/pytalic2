@@ -767,6 +767,16 @@ class StrokeController(object):
             self.__stroke_pts = []
             current_view.strokes = []
             ui.repaint()
+
+            ui.setUpdatesEnabled(False)
+            for idx in range(0, ui.main_view_tabs.count()):
+                ui.main_view_tabs.setTabEnabled(idx, True)
+
+            if len(char_set.get_saved_glyphs()) == 0:
+                ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
+                False)
+            ui.setUpdatesEnabled(True)
+
             return
 
         self.__main_ctrl.state = control.edit_control.IDLE
@@ -797,12 +807,14 @@ class StrokeController(object):
 
         self.__main_ctrl.set_ui_state_selection(True)
 
+        ui.setUpdatesEnabled(False)
         for idx in range(0, ui.main_view_tabs.count()):
             ui.main_view_tabs.setTabEnabled(idx, True)
 
         if len(char_set.get_saved_glyphs()) == 0:
             ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
                 False)
+        ui.setUpdatesEnabled(True)
 
         ui.repaint()
 
