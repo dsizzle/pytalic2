@@ -20,10 +20,19 @@ class FileController(object):
     def file_new(self):
         self.__file_name = None
 
-        self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
-        char_set = self.__main_ctrl.get_character_set()
         ui = self.__main_ctrl.get_ui()
 
+        ui.setUpdatesEnabled(False)
+        self.__main_ctrl.clear_selection()
+        ui.dwg_area.strokes = []
+        ui.dwg_area.subject = None
+        ui.stroke_dwg_area.strokes = []
+        ui.stroke_dwg_area.subject = None
+        ui.preview_area.subject = None
+
+        self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
+        char_set = self.__main_ctrl.get_character_set()
+        
         ui.base_height_spin.setValue(char_set.base_height)
         ui.cap_height_spin.setValue(char_set.cap_height)
         ui.cap_height_spin.setMaximum(char_set.ascent_height)
@@ -36,13 +45,16 @@ class FileController(object):
         for idx in range(0, ui.char_selector_list.count()):
             ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
 
+        ui.setUpdatesEnabled(True)
+        ui.char_selector_list.setCurrentRow(1)
+        ui.repaint()
         ui.char_selector_list.setCurrentRow(0)
-        #self.__cur_char = self.__char_set.current_char
-
+        
         ui.edit_undo.setEnabled(False)
         ui.edit_redo.setEnabled(False)
         ui.file_save.setEnabled(False)
-        
+
+        ui.repaint()
 
     def file_save_as(self):
         ui = self.__main_ctrl.get_ui()

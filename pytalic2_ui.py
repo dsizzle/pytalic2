@@ -777,8 +777,10 @@ class Ui_MainWindow(object):
         self.stroke_add_vertex.setText(_translate("MainWindow", "Add Control Point", None))
         self.stroke_split_at_point.setText(_translate("MainWindow", "Split At Point", None))
         self.stroke_save.setText(_translate("MainWindow", "Save Stroke(s) As Glyph", None))
+        self.stroke_save.setShortcut(_translate("MainWindow", "Ctrl+Shift+C", None))
         self.help_about.setText(_translate("MainWindow", "&About", None))
         self.stroke_load.setText(_translate("MainWindow", "Paste From Saved", None))
+        self.stroke_load.setShortcut(_translate("MainWindow", "Ctrl+Shift+V", None))
         self.glyph_delete.setText(_translate("MainWindow", "Delete Saved", None))
 
 from view.paper import DrawingArea, LayoutArea

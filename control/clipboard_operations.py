@@ -27,7 +27,6 @@ class ClipboardController(object):
         undo_args = {
             'strokes' : cur_view_selection.copy(),
             'char_index' : char_index,
-            'copy' : False,
         }
 
         cut_strokes_cmd.set_do_args(do_args)
@@ -89,19 +88,21 @@ class ClipboardController(object):
         }
 
         undo_args = {
-            'strokes' : cur_view_selection.copy(),
-            'char_index' : char_index,
+            
         }
 
         copy_strokes_cmd.set_do_args(do_args)
         copy_strokes_cmd.set_undo_args(undo_args)
         copy_strokes_cmd.set_do_function(self.copy_clipboard)
-        copy_strokes_cmd.set_undo_function(self.paste_clipboard)
+        copy_strokes_cmd.set_undo_function(self.clear_clipboard)
 
         cmd_stack.do_command(copy_strokes_cmd)
         ui.edit_undo.setEnabled(True)
 
         ui.repaint()
+
+    def clear_clipboard(self, args):
+        self.__clipboard = []
 
     def copy_clipboard(self, args):
         ui = self.__main_ctrl.get_ui()
@@ -132,15 +133,21 @@ class ClipboardController(object):
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
         char_index = char_set.get_current_char_index()
 
+        paste_strokes = []
+        for sel_stroke in self.__clipboard:
+            if type(sel_stroke).__name__ == 'Stroke':
+                paste_strokes.append(stroke.Stroke(from_stroke=sel_stroke))
+            else:
+                paste_strokes.append(sel_stroke)
+
         do_args = {
-            'strokes' : self.__clipboard[:],
+            'strokes' : paste_strokes,
             'char_index' : char_index,
         }
 
         undo_args = {
-            'strokes' : self.__clipboard[:],
+            'strokes' : paste_strokes,
             'char_index' : char_index,
-            'copy' : True,
         }
 
         paste_strokes_cmd.set_do_args(do_args)
@@ -171,11 +178,6 @@ class ClipboardController(object):
         else:
             return
 
-        if 'copy' in args:
-            copy_strokes = args['copy']
-        else:
-            copy_strokes = True
-
         ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
 
         for sel_stroke in cur_view_selection.keys():
@@ -184,18 +186,13 @@ class ClipboardController(object):
         cur_view_selection = {}
 
         for sel_stroke in strokes_to_paste:
-            if copy_strokes and type(sel_stroke).__name__ == 'Stroke':
-                paste_stroke = stroke.Stroke(from_stroke=sel_stroke)
-            else:
-                paste_stroke = sel_stroke
-
-            cur_view_selection[paste_stroke] = {}
-            paste_stroke.selected = True
-            if type(paste_stroke).__name__ == 'Stroke':
-                current_view.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
+            cur_view_selection[sel_stroke] = {}
+            sel_stroke.selected = True
+            if type(sel_stroke).__name__ == 'Stroke':
+                current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             else:
                 new_glyph = instance.GlyphInstance()
-                new_glyph.glyph = paste_stroke.glyph
+                new_glyph.glyph = sel_stroke.glyph
                 current_view.symbol.add_glyph(new_glyph)
 
         self.__main_ctrl.set_ui_state_selection(True)
