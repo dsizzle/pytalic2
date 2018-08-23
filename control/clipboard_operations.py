@@ -82,8 +82,7 @@ class ClipboardController(object):
 
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
         char_index = char_set.get_current_char_index()
-        print char_index
-
+        
         do_args = {
             'strokes' : cur_view_selection.copy(),
             'char_index' : char_index,
