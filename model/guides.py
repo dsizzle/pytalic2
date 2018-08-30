@@ -165,21 +165,19 @@ class GuideLines(object):
 
     nib_width = property(get_nib_width, set_nib_width)
 
-    def draw(self, gc, size, origin, nib=None):
-
+    def draw(self, gc, rect, origin, nib=None):
+        
         if self.nib_width == 0:
             return
+        
+        csize = rect.size()
 
-        scale = gc.worldTransform().m11()
-
-        csize = QtCore.QSize(size.width() / scale, size.height() / scale)
-
-        coords_rect = QtCore.QRect(-origin.x() / scale, -origin.y() / scale, \
-            csize.width(), csize.height())
-
-        top_x = self.__angle_dx * origin.y() / scale
+        coords_rect = rect 
+        
+        gc.drawEllipse(origin, 10, 10) 
+        top_x = self.__angle_dx * (origin.y() - rect.topLeft().y())
         top_y = coords_rect.topLeft().y()
-        bot_x = -(self.__angle_dx * (csize.height() - origin.y() / scale))
+        bot_x = -(self.__angle_dx * (rect.bottomRight().y() - origin.y()))
         bot_y = coords_rect.bottomRight().y()
         gc.setPen(self.__line_pen)
         gc.drawLine(bot_x, bot_y, top_x, top_y)
@@ -216,7 +214,7 @@ class GuideLines(object):
 
         # baseline
         gc.setPen(self.__line_pen_2)
-        gc.drawLine(coords_rect.topLeft().x(), 0, coords_rect.bottomRight().x(), 0)
+        gc.drawLine(coords_rect.topLeft().x(), origin.y(), coords_rect.bottomRight().x(), origin.y())
 
         # base height line
         gc.setPen(self.__line_pen)

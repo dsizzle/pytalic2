@@ -156,6 +156,8 @@ class EditorController(object):
         self.__cur_char = self.__char_set.current_char
 
         self.__cmd_stack = commands.CommandStack()
+        self.__current_view_pane.centerOn(QtCore.QPoint(0, 0))
+        self.__ui.repaint()
 
     def file_save_as_cb(self, event):
         file_path = self.__file_controller.file_save_as()
@@ -237,11 +239,11 @@ class EditorController(object):
         self.__ui.repaint()
 
     def view_reset_origin_cb(self, event):
-        self.__current_view_pane.origin_delta = QtCore.QPoint(0, 0)
+        self.__current_view_pane.centerOn(QtCore.QPoint(0, 0))
         self.__ui.repaint()
 
     def view_reset_zoom_cb(self, event):
-        self.__current_view_pane.scale = 1
+        self.__current_view_pane.resetMatrix()
         self.__ui.repaint()
 
     def set_ui_state_selection(self, state):

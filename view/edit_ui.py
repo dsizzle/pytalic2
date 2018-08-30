@@ -20,6 +20,9 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.file_open_dialog = QtGui.QFileDialog()
         self.file_save_dialog = QtGui.QFileDialog()
         self.__parent = parent
+        self.__dwg_scene = QtGui.QGraphicsScene(-750, -750, 1500, 1500)
+        self.__glyph_scene = QtGui.QGraphicsScene(-750, -750, 1500, 1500)
+        self.__layout_scene = QtGui.QGraphicsScene(-50000, -50000, 100000, 100000)
 
         self.setupUi(self)
 
@@ -114,15 +117,18 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
 
         self.create_menu()
 
-        self.stroke_dwg_area.set_origin_delta(QtCore.QPoint())
-
         self.main_view_tabs.currentChanged.connect(self.__parent.view_tab_changed_cb)
 
         self.guide_lines = guides.GuideLines()
         self.guide_lines.nib_width = self.dwg_area.nib.width * 2
         self.dwg_area.set_guidelines(self.guide_lines)
+        self.dwg_area.setScene(self.__dwg_scene)
+
         self.stroke_dwg_area.set_guidelines(self.guide_lines)
+        self.stroke_dwg_area.setScene(self.__glyph_scene)
+
         self.preview_area.set_guidelines(self.guide_lines)
+        self.preview_area.setScene(self.__layout_scene)
 
     def create_menu(self):
         self.file_new.triggered.connect(self.__parent.file_new_cb)
