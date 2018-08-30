@@ -278,7 +278,7 @@ class EditorController(object):
         cur_char_idx = self.__ui.char_selector_list.currentRow()
         self.__char_set.current_char = cur_char_idx + START_CHAR_CODE
         self.__cur_char = self.__char_set.current_char
-        self.__ui.dwg_area.strokes = []
+        #self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char
         
         self.__ui.left_space_spin.setValue(self.__cur_char.left_spacing)

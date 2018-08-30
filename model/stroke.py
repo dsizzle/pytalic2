@@ -18,8 +18,9 @@ from view import shared_qt
 
 DEBUG_BBOXES = False
 
-class Stroke(object):
+class Stroke(QtGui.QGraphicsItem):
     def __init__(self, from_stroke=None, parent=None):
+        QtGui.QGraphicsItem.__init__(self, parent)
         if from_stroke is not None:
             self.__start_serif = from_stroke.get_start_serif()
             self.__end_serif = from_stroke.get_end_serif()
@@ -31,6 +32,7 @@ class Stroke(object):
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
             self.__override_nib_angle = from_stroke.override_nib_angle
+            self.__nib = from_stroke.nib
         else:
             self.__start_serif = None
             self.__end_serif = None
@@ -41,6 +43,7 @@ class Stroke(object):
             self.__bound_rect = None
             self.__nib_angle = None
             self.__override_nib_angle = False
+            self.__nib = None
 
         self.__handle_size = 10
         self.__instances = {}
@@ -49,6 +52,8 @@ class Stroke(object):
         self.__is_selected = False
 
         self.seed = time.localtime()
+        self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable | \
+                QtGui.QGraphicsItem.ItemIsMovable)
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()
@@ -78,6 +83,14 @@ class Stroke(object):
         self.__override_nib_angle = state
 
     override_nib_angle = property(get_override_nib_angle, set_override_nib_angle)
+
+    def get_nib(self):
+        return self.__nib
+
+    def set_nib(self, new_nib):
+        self.__nib = new_nib
+
+    nib = property(get_nib, set_nib)
 
     def add_instance(self, inst):
         self.__instances[inst] = 1
@@ -432,15 +445,18 @@ class Stroke(object):
 
     parent = property(get_parent, set_parent)
 
+    def paint(self, gc, option, widget):
+        self.draw(gc)
+
     def draw(self, gc, nib=None):
         random.seed(self.seed)
 
-        if nib is None:
-            print "ERROR: No nib provided to draw stroke\n"
-            return
+        if self.nib is None:
+           print "ERROR: No nib provided to draw stroke\n"
+           return
 
         draw_nib = nibs.Nib()
-        draw_nib.from_nib(nib)
+        draw_nib.from_nib(self.nib)
         if self.override_nib_angle:
             draw_nib.angle = self.nib_angle
 
@@ -461,7 +477,7 @@ class Stroke(object):
             path1 = QtGui.QPainterPath(self.__curve_path)
             path2 = QtGui.QPainterPath(self.__curve_path).toReversed()
 
-            dist_x, dist_y = nib.get_actual_widths()
+            dist_x, dist_y = draw_nib.get_actual_widths()
 
             path1.translate(dist_x, -dist_y)
             path2.translate(-dist_x, dist_y)
@@ -479,16 +495,16 @@ class Stroke(object):
         if self.__start_serif:
             verts = self.get_ctrl_vertices_as_list()
             self.__start_serif.set_ctrl_vertices(verts)
-            self.__start_serif.setAngle(nib.getAngle())
-            self.__start_serif.draw(gc, nib)
+            self.__start_serif.setAngle(self.nib.getAngle())
+            self.__start_serif.draw(gc, self.nib)
 
         if self.__end_serif:
             verts = self.get_ctrl_vertices_as_list()
             self.__end_serif.set_ctrl_vertices(verts)
-            self.__end_serif.setAngle(nib.getAngle())
-            self.__end_serif.draw(gc, nib)
+            self.__end_serif.setAngle(self.nib.getAngle())
+            self.__end_serif.draw(gc, self.nib)
 
-        if self.__is_selected:
+        if self.isSelected(): #__is_selected:
             gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
             gc.setBrush(shared_qt.BRUSH_CLEAR)
             gc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)
@@ -553,6 +569,12 @@ class Stroke(object):
             self.__bound_rect = new_bound_rect
 
     bound_rect = property(get_bound_rect, set_bound_rect)
+
+    def boundingRect(self):
+        if self.bound_rect is None:
+            return QtCore.QRectF(0, 0, 0, 0)
+
+        return self.bound_rect
 
     def get_select_state(self):
         return self.__is_selected

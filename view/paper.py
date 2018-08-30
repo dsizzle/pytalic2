@@ -123,9 +123,11 @@ class Canvas(QtGui.QGraphicsView):
     nib = property(get_nib, set_nib)
 
     def get_normalized_position(self, raw_position):
-        norm_position = raw_position
-        norm_position = norm_position - self.__origin - self.__origin_delta
-        norm_position = norm_position / self.__scale
+        # norm_position = raw_position
+        # norm_position = norm_position - self.__origin - self.__origin_delta
+        # norm_position = norm_position / self.__scale
+
+        norm_position = self.mapToScene(raw_position)
 
         if self.subject:
             norm_position = norm_position - self.subject.pos
@@ -134,6 +136,15 @@ class Canvas(QtGui.QGraphicsView):
 
     def set_subject(self, subject):
         self.__subject = subject
+
+        for item in self.scene().items():
+            self.scene().removeItem(item)
+
+        if subject:
+            for item in subject.children:
+                self.scene().addItem(item)
+
+        self.scene().update()
 
     def get_subject(self):
         return self.__subject

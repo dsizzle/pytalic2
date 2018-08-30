@@ -47,8 +47,10 @@ class StrokeController(object):
 
         self.__stroke_pts = []
         self.__tmp_stroke = stroke.Stroke()
-        current_view.strokes.append(self.__tmp_stroke)
+        self.__tmp_stroke.nib = current_view.get_nib_special()
+        current_view.scene().addItem(self.__tmp_stroke)
         self.__tmp_stroke.selected = True
+        current_view.scene().update()
 
     def save_glyph(self):
         selected_strokes = []
@@ -783,26 +785,28 @@ class StrokeController(object):
         self.__stroke_pts = []
 
         add_stroke_cmd = commands.Command('add_stroke_cmd')
+
         do_args = {
+            'char' : cur_char,
             'stroke' : self.__tmp_stroke,
             'copy_stroke' : False,
         }
 
         undo_args = {
+            'char' : cur_char,
             'stroke' : self.__tmp_stroke,
         }
 
         add_stroke_cmd.set_do_args(do_args)
         add_stroke_cmd.set_undo_args(undo_args)
-        add_stroke_cmd.set_do_function(cur_char.add_stroke)
-        add_stroke_cmd.set_undo_function(cur_char.delete_stroke)
+        add_stroke_cmd.set_do_function(self.add_stroke_to_character)
+        add_stroke_cmd.set_undo_function(self.remove_stroke_from_character)
 
         cmd_stack.do_command(add_stroke_cmd)
         ui.edit_undo.setEnabled(True)
 
         cur_view_selection[self.__tmp_stroke] = {}
         self.__tmp_stroke.selected = True
-        current_view.strokes = []
         self.__tmp_stroke = None
 
         self.__main_ctrl.set_ui_state_selection(True)
@@ -817,6 +821,34 @@ class StrokeController(object):
         ui.setUpdatesEnabled(True)
 
         ui.repaint()
+        current_view.scene().update()
+
+    def add_stroke_to_character(self, args):
+        current_view = self.__main_ctrl.get_current_view()
+        if 'char' in args:
+            cur_char = args['char']
+        else:
+            return
+
+        cur_char.add_stroke(args)
+        self.__tmp_stroke.nib = current_view.get_nib()
+        current_view.scene().update()
+        
+    def remove_stroke_from_character(self, args):
+        current_view = self.__main_ctrl.get_current_view()
+        if 'char' in args:
+            cur_char = args['char']
+        else:
+            return
+        
+        if 'stroke' in args:
+            sel_stroke = args['stroke']
+        else:
+            return
+
+        cur_char.delete_stroke(args)
+        current_view.scene().removeItem(sel_stroke)
+        current_view.scene().update()
 
     def flip_selected_strokes_x(self):
         current_view = self.__main_ctrl.get_current_view()

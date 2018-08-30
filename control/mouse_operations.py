@@ -189,11 +189,14 @@ class MouseController(object):
         
         current_view.snap_points = []
         if self.__main_ctrl.state == edit_control.DRAWING_NEW_STROKE:
+            stroke_ctrl.tmp_stroke.prepareGeometryChange()
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
             stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)
             stroke_ctrl.tmp_stroke.update_ctrl_vertices()
             ui.position_x_spin.setValue(stroke_ctrl.tmp_stroke.pos.x())
             ui.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
+
+            current_view.scene().update()
 
         elif self.__main_ctrl.state == edit_control.DRAGGING:
             move_cmd = commands.Command('move_stroke_cmd')
