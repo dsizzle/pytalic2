@@ -26,7 +26,6 @@ class Stroke(object):
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
             self.update_ctrl_vertices()
             self.__pos = QtCore.QPoint(from_stroke.pos)
-            self.__stroke_shape = from_stroke.stroke_shape
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
@@ -36,7 +35,6 @@ class Stroke(object):
             self.__end_serif = None
             self.__stroke_ctrl_verts = []
             self.__pos = QtCore.QPoint(0, 0)
-            self.__stroke_shape = None
             self.__curve_path = None
             self.__bound_rect = None
             self.__nib_angle = None
@@ -53,7 +51,6 @@ class Stroke(object):
     def __getstate__(self):
         save_dict = self.__dict__.copy()
 
-        save_dict["_Stroke__stroke_shape"] = None
         save_dict["_Stroke__curve_path"] = None
 
         return save_dict
@@ -452,29 +449,12 @@ class Stroke(object):
 
         verts = self.get_ctrl_vertices_as_list()
         if len(verts) > 0:
-            self.__stroke_shape = QtGui.QPainterPath()
             if self.__curve_path is None:
                 self.calc_curve_points()
 
             draw_nib.draw(gc, self)
 
-            path1 = QtGui.QPainterPath(self.__curve_path)
-            path2 = QtGui.QPainterPath(self.__curve_path).toReversed()
-
-            dist_x, dist_y = nib.get_actual_widths()
-
-            path1.translate(dist_x, -dist_y)
-            path2.translate(-dist_x, dist_y)
-
-            self.__stroke_shape.addPath(path1)
-            self.__stroke_shape.connectPath(path2)
-            self.__stroke_shape.closeSubpath()
-
-            #self.__stroke_shape.setFillRule(QtCore.Qt.WindingFill)
-
-            #gc.drawPath(self.__stroke_shape)
-
-            self.__bound_rect = self.__stroke_shape.controlPointRect()
+            self.__bound_rect = self.__curve_path.controlPointRect()
 
         if self.__start_serif:
             verts = self.get_ctrl_vertices_as_list()
@@ -507,10 +487,12 @@ class Stroke(object):
 
     def is_inside(self, point):
         test_point = point - self.__pos
-        if self.__stroke_shape is not None:
-            is_inside = self.__stroke_shape.contains(test_point)
+        test_box = QtCore.QRectF(test_point.x()-5, test_point.y()-5, 10, 10)
+        if self.__curve_path is not None:
+            is_inside = self.__curve_path.intersects(test_box)
         else:
             is_inside = False
+
 
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
@@ -526,7 +508,6 @@ class Stroke(object):
                 if is_inside:
                     # get exact point
                     hit_point = None
-                    test_box = QtCore.QRect(test_point.x()-2, test_point.y()-2, 10, 10)
                     for i in range(0, 100):
                         pct = float(i) / 100.0
                         curve_point = self.__curve_path.pointAtPercent(pct)
@@ -565,14 +546,6 @@ class Stroke(object):
     def deselect_ctrl_verts(self):
         for vert in self.__stroke_ctrl_verts:
             vert.select_handle(None)
-
-    def get_stroke_shape(self):
-        return self.__stroke_shape
-
-    def set_stroke_shape(self, new_stroke_shape):
-        self.__stroke_shape = new_stroke_shape
-
-    stroke_shape = property(get_stroke_shape, set_stroke_shape)
 
     def get_curve_path(self):
         return self.__curve_path
