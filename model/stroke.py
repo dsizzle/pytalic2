@@ -454,7 +454,16 @@ class Stroke(object):
 
             draw_nib.draw(gc, self)
 
-            self.__bound_rect = self.__curve_path.controlPointRect()
+            tmp_bound_rect = self.__curve_path.controlPointRect()
+            bound_rect_width = tmp_bound_rect.width() * 0.55
+            bound_rect_height = tmp_bound_rect.height() * 0.55
+            bound_rect_center = tmp_bound_rect.center()
+            tmp_bound_rect.setBottomRight(QtCore.QPointF(bound_rect_center.x()+bound_rect_width, \
+                bound_rect_center.y()+bound_rect_height))
+            tmp_bound_rect.setTopLeft(QtCore.QPointF(bound_rect_center.x()-bound_rect_width, \
+                bound_rect_center.y()-bound_rect_height))
+            
+            self.__bound_rect = tmp_bound_rect
 
         if self.__start_serif:
             verts = self.get_ctrl_vertices_as_list()
@@ -492,7 +501,6 @@ class Stroke(object):
             is_inside = self.__curve_path.intersects(test_box)
         else:
             is_inside = False
-
 
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
