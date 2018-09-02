@@ -25,6 +25,8 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
 
         self.setWindowTitle(label)
 
+        self.setAcceptDrops(True)
+
     def create_ui(self):
         
         self.char_selector_list.currentItemChanged.connect(self.__parent.char_selected_cb)
@@ -192,3 +194,13 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat('application/x-qabstractitemmodeldatalist'):
+            event.acceptProposedAction()
+        
+    def dropEvent(self, event):
+        if self.dwg_area.rect().contains(event.pos()) and self.dwg_area.underMouse():
+            stroke_ctrl = self.__parent.get_stroke_controller()
+            stroke_ctrl.paste_glyph_from_saved()
+            
