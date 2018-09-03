@@ -22,7 +22,8 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.__parent = parent
 
         self.setupUi(self)
-
+        self.__dwg_context_menu = QtGui.QMenu()
+        self.__glyph_context_menu = QtGui.QMenu()
         self.setWindowTitle(label)
 
         self.setAcceptDrops(True)
@@ -166,6 +167,32 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         
         self.help_about.triggered.connect(self.about_cb)
         
+        self.__dwg_context_menu.addAction(self.edit_cut)
+        self.__dwg_context_menu.addAction(self.edit_copy)
+        self.__dwg_context_menu.addAction(self.edit_paste)
+        self.__dwg_context_menu.addSeparator()
+        self.__dwg_context_menu.addAction(self.stroke_straighten)
+        self.__dwg_context_menu.addAction(self.stroke_join)
+        self.__dwg_context_menu.addAction(self.stroke_flip_x)
+        self.__dwg_context_menu.addAction(self.stroke_flip_y)
+        self.__dwg_context_menu.addSeparator()
+        self.__dwg_context_menu.addAction(self.stroke_add_vertex)
+        self.__dwg_context_menu.addAction(self.stroke_split_at_point)
+        self.__dwg_context_menu.addSeparator()
+        self.__dwg_context_menu.addAction(self.stroke_save)
+
+        self.__glyph_context_menu.addAction(self.edit_cut)
+        self.__glyph_context_menu.addAction(self.edit_copy)
+        self.__glyph_context_menu.addAction(self.edit_paste)
+        self.__glyph_context_menu.addSeparator()
+        self.__glyph_context_menu.addAction(self.stroke_straighten)
+        self.__glyph_context_menu.addAction(self.stroke_join)
+        self.__glyph_context_menu.addAction(self.stroke_flip_x)
+        self.__glyph_context_menu.addAction(self.stroke_flip_y)
+        self.__glyph_context_menu.addSeparator()
+        self.__glyph_context_menu.addAction(self.stroke_add_vertex)
+        self.__glyph_context_menu.addAction(self.stroke_split_at_point)
+
     def about_cb(self, event):
         reply = QtGui.QMessageBox.information(self, 'About PyTalic Editor', \
             "PyTalic Editor\nby Dale Cieslak\n(c) 2007-2018" + \
@@ -204,3 +231,12 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             stroke_ctrl = self.__parent.get_stroke_controller()
             stroke_ctrl.paste_glyph_from_saved()
             
+    def contextMenuEvent(self, event):
+        if self.__parent.state > 0:
+            event.ignore() 
+            return
+
+        if self.dwg_area.rect().contains(event.pos()) and self.dwg_area.hasFocus():
+            self.__dwg_context_menu.exec_(event.globalPos())
+        elif self.stroke_dwg_area.rect().contains(event.pos()) and self.stroke_dwg_area.hasFocus():
+            self.__glyph_context_menu.exec_(event.globalPos())

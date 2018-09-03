@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.main_view_tabs.setSizePolicy(sizePolicy)
         self.main_view_tabs.setMouseTracking(False)
         self.main_view_tabs.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.main_view_tabs.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
+        self.main_view_tabs.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.main_view_tabs.setTabShape(QtGui.QTabWidget.Rounded)
         self.main_view_tabs.setObjectName(_fromUtf8("main_view_tabs"))
         self.dwg_tab = QtGui.QWidget()
