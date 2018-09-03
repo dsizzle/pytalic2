@@ -366,6 +366,8 @@ class Stroke(object):
 
     def divide_curve_at_point(self, points, t, index):
         true_index = index * 3
+        if len(points) < true_index:
+            true_index /= 3
 
         p3 = points[true_index]
         p2 = points[true_index - 1]
@@ -504,6 +506,7 @@ class Stroke(object):
 
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
+                vertex = -1
                 for i in range(0, self.__curve_path.elementCount()):
                     element = self.__curve_path.elementAt(i)
                     dist = math.sqrt(
@@ -511,7 +514,8 @@ class Stroke(object):
                         math.pow(element.y-test_point.y(), 2)
                     )
                     if dist < self.__handle_size:
-                        return (True, i, None)
+                       vertex = i
+                       break
 
                 if is_inside:
                     # get exact point
@@ -524,12 +528,15 @@ class Stroke(object):
                             break
 
                     if hit_point is not None:
-                        closest_vertex = int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
-                            hit_point))
+                        if vertex < 0:
+                            vertex = int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
+                                hit_point))
 
-                        return (True, closest_vertex, hit_point)
+                        return (True, vertex, hit_point)
                     else:
-                        return (True, -1, None)
+                        return (True, vertex, None)
+                else:
+                    return (True, vertex, None)
 
             elif is_inside:
                 return (True, -1, None)
