@@ -524,8 +524,10 @@ class Stroke(object):
                             break
 
                     if hit_point is not None:
-                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
-                            hit_point)), hit_point)
+                        closest_vertex = int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
+                            hit_point))
+
+                        return (True, closest_vertex, hit_point)
                     else:
                         return (True, -1, None)
 

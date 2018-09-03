@@ -251,11 +251,11 @@ class MouseController(object):
         if len(cur_view_selection.keys()) > 0:
             for sel_stroke in cur_view_selection.keys():
                 inside_info = sel_stroke.is_inside(paper_pos)
-                if inside_info[1] >= 0:
+                if inside_info[1] >= 0 and not inside_info[2]:
                     ctrl_vertex_num = int((inside_info[1]+1) / 3)
                     ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
                     
-                    handle_index = (inside_info[1] + 1) % 3 +1
+                    handle_index = (inside_info[1] + 1) % 3 + 1
                     if not shift_down:
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
