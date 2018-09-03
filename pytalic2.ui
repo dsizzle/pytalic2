@@ -64,6 +64,12 @@
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOn</enum>
         </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+        </property>
+        <property name="tabKeyNavigation">
+         <bool>true</bool>
+        </property>
         <property name="iconSize">
          <size>
           <width>60</width>
@@ -72,6 +78,9 @@
         </property>
         <property name="flow">
          <enum>QListView::LeftToRight</enum>
+        </property>
+        <property name="uniformItemSizes">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -94,11 +103,23 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="tabKeyNavigation">
+           <bool>true</bool>
+          </property>
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::DragOnly</enum>
+          </property>
           <property name="iconSize">
            <size>
             <width>60</width>
             <height>60</height>
            </size>
+          </property>
+          <property name="uniformItemSizes">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -130,7 +151,7 @@
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="contextMenuPolicy">
-            <enum>Qt::PreventContextMenu</enum>
+            <enum>Qt::DefaultContextMenu</enum>
            </property>
            <property name="tabShape">
             <enum>QTabWidget::Rounded</enum>
@@ -144,6 +165,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="acceptDrops">
+             <bool>true</bool>
             </property>
             <attribute name="title">
              <string>Character</string>
@@ -168,6 +192,9 @@
                </property>
                <property name="focusPolicy">
                 <enum>Qt::WheelFocus</enum>
+               </property>
+               <property name="acceptDrops">
+                <bool>true</bool>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Panel</enum>

@@ -100,9 +100,6 @@ class StrokeInstance(Instance):
 
     stroke = property(Instance.get_instanced_object, Instance.set_instanced_object)
 
-    def get_stroke_shape(self):
-        return self.stroke.get_stroke_shape()
-
     def is_inside(self, point):
         if self.__stroke is not None:
             stroke_pos = self.__stroke.pos
