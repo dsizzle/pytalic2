@@ -556,7 +556,8 @@ class EditorController(object):
     def clear_selection(self):
         if self.__current_view_pane in self.__selection:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                sel_stroke.deselect_ctrl_verts()
+                if type(sel_stroke).__name__ != "GlyphInstance":
+                    sel_stroke.deselect_ctrl_verts()
 
                 sel_stroke.selected = False
 
