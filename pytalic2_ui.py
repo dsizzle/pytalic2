@@ -599,6 +599,12 @@ class Ui_MainWindow(object):
         self.glyph_delete = QtGui.QAction(MainWindow)
         self.glyph_delete.setEnabled(False)
         self.glyph_delete.setObjectName(_fromUtf8("glyph_delete"))
+        self.edit_select_all = QtGui.QAction(MainWindow)
+        self.edit_select_all.setEnabled(True)
+        self.edit_select_all.setObjectName(_fromUtf8("edit_select_all"))
+        self.edit_deselect_all = QtGui.QAction(MainWindow)
+        self.edit_deselect_all.setEnabled(False)
+        self.edit_deselect_all.setObjectName(_fromUtf8("edit_deselect_all"))
         self.menuFile.addAction(self.file_new)
         self.menuFile.addAction(self.file_open)
         self.menuFile.addSeparator()
@@ -612,6 +618,9 @@ class Ui_MainWindow(object):
         self.menu_Edit.addAction(self.edit_cut)
         self.menu_Edit.addAction(self.edit_copy)
         self.menu_Edit.addAction(self.edit_paste)
+        self.menu_Edit.addSeparator()
+        self.menu_Edit.addAction(self.edit_select_all)
+        self.menu_Edit.addAction(self.edit_deselect_all)
         self.menu_Snap.addAction(self.view_snap_to_axes)
         self.menu_Snap.addAction(self.view_snap_to_nib_axes)
         self.menu_Snap.addAction(self.view_snap_to_grid)
@@ -791,6 +800,10 @@ class Ui_MainWindow(object):
         self.stroke_load.setText(_translate("MainWindow", "Paste From Saved", None))
         self.stroke_load.setShortcut(_translate("MainWindow", "Ctrl+Shift+V", None))
         self.glyph_delete.setText(_translate("MainWindow", "Delete Saved", None))
+        self.edit_select_all.setText(_translate("MainWindow", "Select &All", None))
+        self.edit_select_all.setShortcut(_translate("MainWindow", "Ctrl+A", None))
+        self.edit_deselect_all.setText(_translate("MainWindow", "&Deselect All", None))
+        self.edit_deselect_all.setShortcut(_translate("MainWindow", "Ctrl+D", None))
 
 from view.paper import DrawingArea, LayoutArea
 from view.widgets_qt import SelectColorButton
