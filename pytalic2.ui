@@ -939,6 +939,9 @@
     <addaction name="edit_cut"/>
     <addaction name="edit_copy"/>
     <addaction name="edit_paste"/>
+    <addaction name="separator"/>
+    <addaction name="edit_select_all"/>
+    <addaction name="edit_deselect_all"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -1462,6 +1465,28 @@
    </property>
    <property name="text">
     <string>Delete Saved</string>
+   </property>
+  </action>
+  <action name="edit_select_all">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select &amp;All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="edit_deselect_all">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Deselect All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>

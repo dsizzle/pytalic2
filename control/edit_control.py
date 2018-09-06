@@ -258,6 +258,7 @@ class EditorController(object):
         self.__ui.stroke_delete.setEnabled(state)
         self.__ui.edit_cut.setEnabled(state)
         self.__ui.edit_copy.setEnabled(state)
+        self.__ui.edit_deselect_all.setEnabled(state)
         self.__ui.stroke_straighten.setEnabled(state)
         self.__ui.stroke_join.setEnabled(state)
         self.__ui.stroke_align_tangents.setEnabled(state)
@@ -591,7 +592,8 @@ class EditorController(object):
     def clear_selection(self):
         if self.__current_view_pane in self.__selection:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                sel_stroke.deselect_ctrl_verts()
+                if type(sel_stroke).__name__ != "GlyphInstance":
+                    sel_stroke.deselect_ctrl_verts()
 
                 sel_stroke.selected = False
 
@@ -599,3 +601,19 @@ class EditorController(object):
 
         self.set_ui_state_selection(False)
 
+    def select_all_strokes_cb(self):
+        if self.__current_view_pane not in self.__selection:
+            self.__selection[self.__current_view_pane] = {}
+
+        for char_stroke in self.__cur_char.children:
+            char_stroke.selected = True
+            if char_stroke not in self.__selection[self.__current_view_pane]:
+                self.__selection[self.__current_view_pane][char_stroke] = {}
+
+        self.set_ui_state_selection(True)
+        self.__ui.repaint()
+
+    def deselect_all_strokes_cb(self):
+        self.clear_selection()
+        self.set_ui_state_selection(False)
+        self.__ui.repaint()

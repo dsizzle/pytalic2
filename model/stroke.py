@@ -366,6 +366,8 @@ class Stroke(object):
 
     def divide_curve_at_point(self, points, t, index):
         true_index = index * 3
+        if len(points) < true_index:
+            true_index /= 3
 
         p3 = points[true_index]
         p2 = points[true_index - 1]
@@ -494,7 +496,7 @@ class Stroke(object):
 
         gc.restore()
 
-    def is_inside(self, point):
+    def is_inside(self, point, get_closest_vert=False):
         test_point = point - self.__pos
         test_box = QtCore.QRectF(test_point.x()-5, test_point.y()-5, 10, 10)
         if self.__curve_path is not None:
@@ -503,35 +505,72 @@ class Stroke(object):
             is_inside = False
 
         if self.__bound_rect.contains(test_point):
-            if self.__is_selected:
+            if self.__is_selected or not self.__is_selected:
+                vertex = -1
                 for i in range(0, self.__curve_path.elementCount()):
-                    element = self.__curve_path.elementAt(i)
+                    element = QtCore.QPointF(self.__curve_path.elementAt(i))
                     dist = math.sqrt(
-                        math.pow(element.x-test_point.x(), 2) +
-                        math.pow(element.y-test_point.y(), 2)
+                        math.pow(element.x()-test_point.x(), 2) +
+                        math.pow(element.y()-test_point.y(), 2)
                     )
                     if dist < self.__handle_size:
-                        return (True, i, None)
+                       vertex = i
+                       break
 
                 if is_inside:
                     # get exact point
                     hit_point = None
-                    for i in range(0, 100):
-                        pct = float(i) / 100.0
+                    for i in range(0, 1000):
+                        pct = float(i) / 1000.0
                         curve_point = self.__curve_path.pointAtPercent(pct)
                         if test_box.contains(int(curve_point.x()), int(curve_point.y())):
                             hit_point = pct
                             break
 
                     if hit_point is not None:
-                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
-                            hit_point)), hit_point)
+                        if vertex < 0 and get_closest_vert:
+                            vertex = int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
+                                hit_point))
+
+                            l = self.__curve_path.length()
+
+                            test_vertex = (vertex-1) * 4
+                            
+                            elem_path = QtGui.QPainterPath()
+                            elem_path.moveTo(QtCore.QPointF(self.__curve_path.elementAt(0)))
+                            elem_path.cubicTo(QtCore.QPointF(self.__curve_path.elementAt(2)), \
+                                QtCore.QPointF(self.__curve_path.elementAt(3)), \
+                                QtCore.QPointF(self.__curve_path.elementAt(1)))
+                            l2 = elem_path.length()
+                            l1 = 0
+
+                            while i < test_vertex:
+                                elem_path = QtGui.QPainterPath()
+                                elem_path.moveTo(QtCore.QPointF(self.__curve_path.elementAt(test_vertex)))
+                                elem_path.cubicTo(QtCore.QPointF(self.__curve_path.elementAt(test_vertex+2)), \
+                                    QtCore.QPointF(self.__curve_path.elementAt(test_vertex+3)), \
+                                    QtCore.QPointF(self.__curve_path.elementAt(test_vertex+1)))
+                                l1 += elem_path.length()
+                                i += 4
+
+                            if i > 0:
+                                l2 = l - l1
+
+                            t2 = (hit_point*l - l1)/l2
+                        else:
+                            t2 = hit_point
+
+                        return (True, vertex, t2)
                     else:
-                        return (True, -1, None)
+                        return (True, vertex, None)
+                else:
+                    return (True, vertex, None)
 
             elif is_inside:
+                print "here1"
                 return (True, -1, None)
 
+        print "here2"
         return (False, -1, None)
 
     def get_bound_rect(self):
