@@ -505,7 +505,7 @@ class Stroke(object):
             is_inside = False
 
         if self.__bound_rect.contains(test_point):
-            if self.__is_selected or not self.__is_selected:
+            if self.__is_selected:
                 vertex = -1
                 for i in range(0, self.__curve_path.elementCount()):
                     element = QtCore.QPointF(self.__curve_path.elementAt(i))
