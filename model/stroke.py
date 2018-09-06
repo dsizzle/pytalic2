@@ -558,7 +558,6 @@ class Stroke(object):
 
                         t2 = (hit_point*l - l1)/l2
 
-                        print t2, hit_point, hit_point * l, l1, l2
                         return (True, vertex, t2)
                     else:
                         return (True, vertex, None)
