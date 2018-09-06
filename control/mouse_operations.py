@@ -222,7 +222,7 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.ADDING_CTRL_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.add_control_point(sel_stroke, inside_info)
                         break
@@ -232,7 +232,7 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.SPLIT_AT_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.split_stroke_at_point(sel_stroke, inside_info)
                         break
@@ -251,7 +251,7 @@ class MouseController(object):
         if len(cur_view_selection.keys()) > 0:
             for sel_stroke in cur_view_selection.keys():
                 inside_info = sel_stroke.is_inside(paper_pos)
-                if inside_info[1] >= 0 and not inside_info[2]:
+                if inside_info[1] >= 0:
                     ctrl_vertex_num = int((inside_info[1]+1) / 3)
                     ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
                     
