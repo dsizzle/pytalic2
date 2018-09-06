@@ -567,10 +567,8 @@ class Stroke(object):
                     return (True, vertex, None)
 
             elif is_inside:
-                print "here1"
                 return (True, -1, None)
 
-        print "here2"
         return (False, -1, None)
 
     def get_bound_rect(self):
