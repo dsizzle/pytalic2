@@ -563,8 +563,10 @@ class Stroke(object):
                         return (True, vertex, t2)
                     else:
                         return (True, vertex, None)
-                else:
+                elif vertex >= 0:
                     return (True, vertex, None)
+                else:
+                    return (False, -1, None)
 
             elif is_inside:
                 return (True, -1, None)
