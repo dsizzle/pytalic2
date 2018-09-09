@@ -8,6 +8,9 @@ from PyQt4 import QtGui, QtCore
 import model.character_set
 import view.shared_qt
 
+START_CHAR_CODE = 32
+END_CHAR_CODE = 128
+
 class FileController(object):
     def __init__(self, parent):
         self.__main_ctrl = parent
@@ -42,8 +45,13 @@ class FileController(object):
 
         ui.stroke_selector_list.clear()
 
-        for idx in range(0, ui.char_selector_list.count()):
-            ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
+        for i in range(START_CHAR_CODE, END_CHAR_CODE):
+            char_item = QtGui.QListWidgetItem()
+            char_item.setText(str(unichr(i)))
+            char_set.new_character(i)
+            char_item.setData(QtCore.Qt.UserRole+1, i)
+            char_item.setIcon(QtGui.QIcon(self.__blank_pixmap))
+            ui.char_selector_list.addItem(char_item)
 
         ui.setUpdatesEnabled(True)
         ui.char_selector_list.setCurrentRow(1)
@@ -130,8 +138,6 @@ class FileController(object):
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_path))
 
-            #self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
-
             ui.stroke_selector_list.clear()
 
             saved_glyph_list = char_set.get_saved_glyphs()
@@ -148,23 +154,16 @@ class FileController(object):
                     i += 1
 
             for idx in range(0, ui.char_selector_list.count()):
-                ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
-
-            idx = 0
-            char_list = char_set.get_char_list()
-
-            for character in char_list.keys():
-                if len(char_list[character].strokes) > 0:
-                    ui.char_selector_list.setCurrentRow(idx)
-                    ui.repaint()
-
-                idx += 1
+                char_item = int(str(ui.char_selector_list.item(idx).data(QtCore.Qt.UserRole+1).toString()))
+                sel_char = char_set.get_char_by_index(char_item)
+                if sel_char and sel_char.children > 0:
+                    bitmap = ui.dwg_area.draw_icon(None, sel_char.children)
+                    ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(bitmap))
+                else:
+                    ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
 
             ui.char_selector_list.setCurrentRow(1)
             ui.char_selector_list.setCurrentRow(0)
-
-            # self.__selection[self.__current_view_pane] = {}
-            # self.__ui.repaint()
 
             cmd_stack.clear()
             cmd_stack.reset_save_count()
