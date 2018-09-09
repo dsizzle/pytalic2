@@ -56,6 +56,10 @@ class CharacterSet(object):
 
         return None
 
+    def get_char_by_index(self, char_index):
+        char_to_get = unichr(char_index)
+        return self.get_char(char_to_get)
+
     def get_char_list(self):
         return self.__characters
 

@@ -1,4 +1,4 @@
-import edit_control
+import file_operations
 from model import commands
 from model import instance
 from model import stroke
@@ -55,7 +55,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             if type(sel_stroke).__name__ == 'Stroke':
@@ -117,7 +117,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
@@ -178,7 +178,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - edit_control.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False
