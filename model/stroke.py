@@ -197,8 +197,8 @@ class Stroke(object):
         verts = self.get_ctrl_vertices_as_list()
         cur_curve = self.__curve_path
 
-        for i in range(0, 1000):
-            pct = float(i) / 1000.0
+        for i in range(0, 100):
+            pct = float(i) / 100.0
             try:
                 angle = int(cur_curve.angleAtPercent(pct))
             except ValueError:
