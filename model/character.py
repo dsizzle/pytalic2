@@ -206,6 +206,7 @@ class Glyph(object):
             for sel_child in self.children:
                 insideInfo = sel_child.is_inside(point)
 
+                insideInfo = sel_child.is_inside(test_point)
                 if insideInfo[0]:
                     return (True, -1, None)
 
@@ -221,7 +222,7 @@ class Glyph(object):
         gc.save()
         gc.translate(self.__pos)
 
-        if not self.__bound_rect:
+        if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
 
         for sel_stroke in self.__strokes:

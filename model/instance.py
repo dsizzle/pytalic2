@@ -138,3 +138,10 @@ class CharacterInstance(Instance):
         Instance.__init__(self, parent)
 
     character = property(Instance.get_instanced_object, Instance.set_instanced_object)
+
+    @property
+    def children(self):
+        if self.character:
+            return self.character.children
+
+        return None
