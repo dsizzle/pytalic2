@@ -212,30 +212,11 @@ class Glyph(object):
         return (False, -1, None)
 
     def calculate_bound_rect(self):
-        top_left = None
-        bot_right = None
+        self.bound_rect = QtCore.QRectF()
 
-        for sel_stroke in self.__strokes:
-            stroke_top_left = sel_stroke.bound_rect.topLeft() + sel_stroke.pos
-            stroke_bot_right = sel_stroke.bound_rect.bottomRight() + sel_stroke.pos
-
-            if top_left is None:
-                top_left = stroke_top_left
-            if bot_right is None:
-                bot_right = stroke_bot_right
-
-            if stroke_top_left.x() < top_left.x():
-                top_left.setX(stroke_top_left.x())
-            if stroke_top_left.y() < top_left.y():
-                top_left.setY(stroke_top_left.y())
-            if stroke_bot_right.x() > bot_right.x():
-                bot_right.setX(stroke_bot_right.x())
-            if stroke_bot_right.y() > bot_right.y():
-                bot_right.setY(stroke_bot_right.y())
-
-        self.__bound_rect = QtCore.QRectF(top_left, \
-            bot_right)
-
+        for sel_child in self.children:
+            self.bound_rect = self.bound_rect.united(sel_child.bound_rect)
+        
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
         gc.translate(self.__pos)
@@ -316,31 +297,6 @@ class Character(Glyph):
         self.__override_spacing = state
 
     override_spacing = property(get_override_spacing, set_override_spacing)
-
-    def calculate_bound_rect(self):
-        top_left = None
-        bot_right = None
-
-        for sel_child in self.children:
-            stroke_top_left = sel_child.bound_rect.topLeft() + sel_child.pos
-            stroke_bot_right = sel_child.bound_rect.bottomRight() + sel_child.pos
-
-            if top_left is None:
-                top_left = stroke_top_left
-            if bot_right is None:
-                bot_right = stroke_bot_right
-
-            if stroke_top_left.x() < top_left.x():
-                top_left.setX(stroke_top_left.x())
-            if stroke_top_left.y() < top_left.y():
-                top_left.setY(stroke_top_left.y())
-            if stroke_bot_right.x() > bot_right.x():
-                bot_right.setX(stroke_bot_right.x())
-            if stroke_bot_right.y() > bot_right.y():
-                bot_right.setY(stroke_bot_right.y())
-
-        if top_left and bot_right:
-            self.bound_rect = QtCore.QRectF(top_left, bot_right)
 
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:
