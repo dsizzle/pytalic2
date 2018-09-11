@@ -454,18 +454,11 @@ class Stroke(object):
             if self.__curve_path is None:
                 self.calc_curve_points()
 
-            draw_nib.draw(gc, self)
+            self.__bound_rect = draw_nib.draw(gc, self)
 
             tmp_bound_rect = self.__curve_path.controlPointRect()
-            bound_rect_width = tmp_bound_rect.width() * 0.55
-            bound_rect_height = tmp_bound_rect.height() * 0.55
-            bound_rect_center = tmp_bound_rect.center()
-            tmp_bound_rect.setBottomRight(QtCore.QPointF(bound_rect_center.x()+bound_rect_width, \
-                bound_rect_center.y()+bound_rect_height))
-            tmp_bound_rect.setTopLeft(QtCore.QPointF(bound_rect_center.x()-bound_rect_width, \
-                bound_rect_center.y()-bound_rect_height))
             
-            self.__bound_rect = tmp_bound_rect
+            self.__bound_rect = self.__bound_rect.united(tmp_bound_rect).adjusted(-5, -5, 5, 5)
 
         if self.__start_serif:
             verts = self.get_ctrl_vertices_as_list()

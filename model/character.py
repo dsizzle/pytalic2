@@ -197,13 +197,17 @@ class Glyph(object):
             print self.__strokes
 
     def is_inside(self, point):
-        test_point = point - self.__pos
 
-        for sel_stroke in self.__strokes:
-            insideInfo = sel_stroke.is_inside(test_point)
+        test_point = point - self.pos
+        if not self.bound_rect:
+            self.calculate_bound_rect()
 
-            if insideInfo[0]:
-                return (True, -1, None)
+        if self.bound_rect and self.bound_rect.contains(test_point):
+            for sel_child in self.children:
+                insideInfo = sel_child.is_inside(point)
+
+                if insideInfo[0]:
+                    return (True, -1, None)
 
         return (False, -1, None)
 
@@ -337,17 +341,6 @@ class Character(Glyph):
 
         if top_left and bot_right:
             self.bound_rect = QtCore.QRectF(top_left, bot_right)
-
-    def is_inside(self, point):
-        test_point = point - self.pos
-
-        for sel_child in self.children:
-            insideInfo = sel_child.is_inside(test_point)
-
-            if insideInfo[0]:
-                return (True, -1, None)
-
-        return (False, -1, None)
 
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:

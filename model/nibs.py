@@ -104,6 +104,16 @@ class Nib(object):
 
         new_curves = stroke.split_curve(self.__angle)
 
+        bound_path1 = QtGui.QPainterPath(stroke.curve_path)
+        bound_path2 = QtGui.QPainterPath(stroke.curve_path).toReversed()
+        bound_path1.translate(self.__nibwidth_x, -self.__nibwidth_y)
+        bound_path2.translate(-self.__nibwidth_x, self.__nibwidth_y)
+
+        bound_path = QtGui.QPainterPath()
+        bound_path.addPath(bound_path1)
+        bound_path.connectPath(bound_path2)
+        bound_rect = bound_path.boundingRect()
+
         for curve in new_curves:
             path1 = QtGui.QPainterPath(curve)
             path2 = QtGui.QPainterPath(curve).toReversed()
@@ -116,6 +126,8 @@ class Nib(object):
             curve_segment.connectPath(path2)
             curve_segment.closeSubpath()
             gc.drawPath(curve_segment)
+
+        return bound_rect
 
     def vert_nib_width_scale(self, gc, x, y, num=2):
         ypos = y
