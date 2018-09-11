@@ -452,7 +452,6 @@ class EditorController(object):
             self.__ui.dwg_area.nib_instance, self.__ui.dwg_area.nib_special, \
             self.__ui.stroke_dwg_area.nib, self.__ui.preview_area.nib])
 
-
     def char_width_changed_cb(self, new_value):
         prev_value = self.__cur_char.width
 
@@ -607,16 +606,16 @@ class EditorController(object):
         self.__ui.repaint()
 
     def deselect_all_strokes_cb(self):
-        children = None
+        children = []
         self.clear_selection()
 
         if self.__current_view_pane == self.__ui.preview_area:
-            children = []
             for item in self.__current_view_pane.layout.object_list:
                 for char_stroke in item.character.children:
                     children.append(char_stroke)
         else:
-            children = self.__current_view_pane.symbol.children
+            if self.__current_view_pane.symbol:
+                children = self.__current_view_pane.symbol.children
 
         for char_stroke in children:
             char_stroke.selected = False
