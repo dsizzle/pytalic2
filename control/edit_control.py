@@ -526,7 +526,8 @@ class EditorController(object):
     def stroke_nib_angle_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) == 1:
             sel_stroke = self.__selection[self.__current_view_pane].keys()[0]
-            if type(sel_stroke).__name__ == "CharacterInstance":
+            if type(sel_stroke).__name__ == "CharacterInstance" or \
+                type(sel_stroke).__name__ == "GlyphInstance":
                 return
             prev_value = sel_stroke.nib_angle
             if prev_value == new_value:
