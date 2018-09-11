@@ -339,15 +339,13 @@ class EditorController(object):
             self.__ui.stroke_save.setEnabled(False)
             self.__ui.stroke_load.setEnabled(False)
             self.__ui.glyph_delete.setEnabled(False)
-            #self.__ui.preview_area.layout.update_layout(self.__char_set, \
-            #    nib_width=self.__ui.dwg_area.nib.width * 2)
         else:
             self.__ui.view_nib_guides.setEnabled(True)
             self.__ui.view_nib_guides.setChecked(self.__current_view_pane.draw_nib_guides)
             self.set_icon()
 
-        if self.__current_view_pane not in self.__selection:
-            self.clear_selection()
+        #if self.__current_view_pane not in self.__selection:
+        self.deselect_all_strokes_cb()
 
         if self.__current_view_pane != self.__ui.preview_area and \
             self.__current_view_pane.symbol:
@@ -528,6 +526,8 @@ class EditorController(object):
     def stroke_nib_angle_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) == 1:
             sel_stroke = self.__selection[self.__current_view_pane].keys()[0]
+            if type(sel_stroke).__name__ == "CharacterInstance":
+                return
             prev_value = sel_stroke.nib_angle
             if prev_value == new_value:
                 return
@@ -583,7 +583,8 @@ class EditorController(object):
     def clear_selection(self):
         if self.__current_view_pane in self.__selection:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                if type(sel_stroke).__name__ != "GlyphInstance":
+                if type(sel_stroke).__name__ != "GlyphInstance" and \
+                    type(sel_stroke).__name__ != "CharacterInstance":
                     sel_stroke.deselect_ctrl_verts()
 
                 sel_stroke.selected = False
@@ -605,6 +606,21 @@ class EditorController(object):
         self.__ui.repaint()
 
     def deselect_all_strokes_cb(self):
+        children = None
         self.clear_selection()
+
+        if self.__current_view_pane == self.__ui.preview_area:
+            children = []
+            for item in self.__current_view_pane.layout.object_list:
+                for char_stroke in item.character.children:
+                    children.append(char_stroke)
+        else:
+            children = self.__current_view_pane.symbol.children
+
+        for char_stroke in children:
+            char_stroke.selected = False
+            if type(char_stroke).__name__ != "GlyphInstance":
+                char_stroke.deselect_ctrl_verts()
+        
         self.set_ui_state_selection(False)
         self.__ui.repaint()
