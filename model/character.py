@@ -199,14 +199,17 @@ class Glyph(object):
     def is_inside(self, point):
 
         test_point = point - self.pos
-        if not self.bound_rect:
+        if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
 
-        if self.bound_rect and self.bound_rect.contains(test_point):
-            for sel_child in self.children:
-                insideInfo = sel_child.is_inside(point)
+        if self.bound_rect.isEmpty():
+            return (False, -1, None)
 
-                insideInfo = sel_child.is_inside(test_point)
+        test_point = self.bound_rect.topLeft() - point
+
+        if self.bound_rect.contains(test_point):
+            for sel_child in self.children:              
+                insideInfo = sel_child.is_inside(point)
                 if insideInfo[0]:
                     return (True, -1, None)
 
@@ -216,7 +219,7 @@ class Glyph(object):
         self.bound_rect = QtCore.QRectF()
 
         for sel_child in self.children:
-            self.bound_rect = self.bound_rect.united(sel_child.bound_rect)
+            self.bound_rect = self.bound_rect.united(sel_child.bound_rect.translated(sel_child.pos))
         
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
