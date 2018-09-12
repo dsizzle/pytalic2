@@ -37,6 +37,7 @@ class Stroke(object):
             self.__pos = QtCore.QPoint(0, 0)
             self.__curve_path = None
             self.__bound_rect = None
+            self.__bound_path = None
             self.__nib_angle = None
             self.__override_nib_angle = False
 
@@ -454,7 +455,7 @@ class Stroke(object):
             if self.__curve_path is None:
                 self.calc_curve_points()
 
-            self.__bound_rect = draw_nib.draw(gc, self)
+            self.__bound_rect, self.__bound_path = draw_nib.draw(gc, self)
 
             tmp_bound_rect = self.__curve_path.controlPointRect()
             
@@ -486,14 +487,13 @@ class Stroke(object):
 
                 gc.drawRect(self.__bound_rect)
 
-
         gc.restore()
 
     def is_inside(self, point, get_closest_vert=False):
         test_point = point - self.__pos
-        test_box = QtCore.QRectF(test_point.x()-5, test_point.y()-5, 10, 10)
-        if self.__curve_path is not None:
-            is_inside = self.__curve_path.intersects(test_box)
+        test_box = QtCore.QRectF(test_point.x()-20, test_point.y()-20, 40, 40)
+        if self.__bound_path:
+            is_inside = self.__bound_path.intersects(test_box)
         else:
             is_inside = False
 

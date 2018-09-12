@@ -127,7 +127,7 @@ class Nib(object):
             curve_segment.closeSubpath()
             gc.drawPath(curve_segment)
 
-        return bound_rect
+        return bound_rect, bound_path
 
     def vert_nib_width_scale(self, gc, x, y, num=2):
         ypos = y

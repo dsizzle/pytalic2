@@ -205,11 +205,9 @@ class Glyph(object):
         if self.bound_rect.isEmpty():
             return (False, -1, None)
 
-        test_point = self.bound_rect.topLeft() - point
-
         if self.bound_rect.contains(test_point):
-            for sel_child in self.children:              
-                insideInfo = sel_child.is_inside(point)
+           for sel_child in self.children:              
+                insideInfo = sel_child.is_inside(test_point)
                 if insideInfo[0]:
                     return (True, -1, None)
 
@@ -225,17 +223,17 @@ class Glyph(object):
         gc.save()
         gc.translate(self.__pos)
 
+        for sel_stroke in self.children:
+            sel_stroke.draw(gc, nib)
+
         if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
-
-        for sel_stroke in self.__strokes:
-            sel_stroke.draw(gc, nib)
 
         if self.__is_selected:
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
             gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
 
-            gc.drawRect(self.__bound_rect)
+            gc.drawRect(self.bound_rect)
 
         gc.restore()
 
@@ -309,12 +307,12 @@ class Character(Glyph):
         gc.save()
         gc.translate(self.pos)
 
-        for glyph in self.__glyphs:
+        for glyph in self.glyphs:
             glyph.draw(gc, nib_glyph)
 
         for stroke in self.strokes:
             stroke.draw(gc, nib)
-
+           
         if not self.bound_rect:
             self.calculate_bound_rect()
 
