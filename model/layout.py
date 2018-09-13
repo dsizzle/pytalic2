@@ -5,6 +5,7 @@ import model.instance
 class Layout(object):
     def __init__(self):
         self.__object_list = []
+        self.__string = ""
         self.__pos = QtCore.QPoint()
 
     def set_object_list(self, new_object_list):
@@ -31,7 +32,7 @@ class Layout(object):
 
     pos = property(get_pos, set_pos)
 
-    def init_with_string(self, string_to_layout, char_set, nib_width, line_width=9):
+    def init_with_string(self, string_to_layout, char_set, nib_width, line_width=10):
         height = char_set.base_height * nib_width
         cur_char = char_set.get_current_char_index()
 
@@ -40,7 +41,9 @@ class Layout(object):
 
         self.object_list = []
 
-        for char in string_to_layout:
+        self.__string = string_to_layout
+
+        for char in self.__string:
             char_object = char_set.get_char(char)
 
             if char_object is None:
@@ -52,9 +55,10 @@ class Layout(object):
             self.add_object(new_character)
         
         char_set.set_current_char(cur_char)
+
         self.update_layout(char_set, nib_width, line_width)
 
-    def update_layout(self, char_set, nib_width, line_width=9):
+    def update_layout(self, char_set, nib_width, line_width=10):
         layout_total_height = 0
         current_x = 0
         current_y = 0
@@ -64,27 +68,65 @@ class Layout(object):
         max_x = nib_width * line_width * \
             (char_set.width + char_set.left_spacing + char_set.right_spacing)
 
-        for char_object in self.object_list:
-            if char_object.character.override_spacing:
-                width = char_object.character.width
-                left_space = char_object.character.left_spacing
-                right_space = char_object.character.right_spacing
-            else:
-                width = char_set.width
-                left_space = char_set.left_spacing
-                right_space = char_set.right_spacing
+        lines = self.__lay_out_with_wrap(self.__string, 10)
+        print lines
+        char_obj_idx = 0
+            
+        for line in lines:
+            for char in line:
+                char_object = self.__object_list[char_obj_idx]
+                if char_object.character.override_spacing:
+                    width = char_object.character.width
+                    left_space = char_object.character.left_spacing
+                    right_space = char_object.character.right_spacing
+                else:
+                    width = char_set.width
+                    left_space = char_set.left_spacing
+                    right_space = char_set.right_spacing
 
-            current_x += (left_space + width) * nib_width
-            char_object.pos = QtCore.QPoint(current_x, current_y)
+                current_x += (left_space + width) * nib_width
+                char_object.pos = QtCore.QPoint(current_x, current_y)
 
-            delta_x = (prev_right_space) * nib_width 
-            current_x += delta_x
-            prev_right_space = right_space
+                delta_x = (prev_right_space) * nib_width 
+                current_x += delta_x
+                prev_right_space = right_space
+                char_obj_idx += 1
 
-            if current_x > max_x:
-                prev_right_space = 0
-                current_x = 0
-                current_y += (height + gap_height) * nib_width
-                layout_total_height += (height + gap_height) * nib_width
+            prev_right_space = 0
+            current_x = 0
+            current_y += (height + gap_height) * nib_width
+            layout_total_height += (height + gap_height) * nib_width
 
         self.__pos = QtCore.QPoint(-max_x / 2, -layout_total_height / 2)
+
+    def __lay_out_with_wrap(self, string_to_layout, line_width=10):
+        token_list = string_to_layout.split()
+        token_list.reverse() 
+
+        line = []
+        lines = []
+        chars_left = line_width
+        while (len(token_list)):
+            token = token_list.pop()
+            
+            if len(token) > line_width:
+                token_rem = token[line_width:]
+                token_list.append(token_rem)
+                token_list.append(token[:line_width])
+
+            elif len(token) <= chars_left:
+                line.append(token)
+                chars_left -= len(token)
+            
+            else:
+                line_string = ' '.join(line)
+                line = []
+                chars_left = line_width
+
+                lines.append(line_string)
+                token_list.append(token)               
+
+        line_string = ' '.join(line)
+        lines.append(line_string)
+
+        return lines
