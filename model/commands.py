@@ -1,11 +1,14 @@
 class CommandStack(object):
-    def __init__(self):
+    def __init__(self, parent):
         self.__undo_stack = []
         self.__redo_stack = []
         self.__after_save_count = 0
+        self.__parent = parent
 
     def reset_save_count(self):
         self.__after_save_count = 0
+        if self.__parent:
+            self.__parent.set_clean()
 
     def get_save_count(self):
         return self.__after_save_count
@@ -18,6 +21,7 @@ class CommandStack(object):
     def clear(self):
         self.clear_undo()
         self.clear_redo()
+        self.reset_save_count()
 
     def clear_undo(self):
         self.__undo_stack[:] = []
@@ -28,6 +32,9 @@ class CommandStack(object):
     def undo(self):
         if len(self.__undo_stack) > 0:
             self.__after_save_count -= 1
+            if self.__parent and self.__after_save_count == 0:
+                self.__parent.set_clean()
+            
             last_cmd = self.__undo_stack.pop()
 
             self.__redo_stack.append(last_cmd)
@@ -37,6 +44,9 @@ class CommandStack(object):
     def redo(self):
         if len(self.__redo_stack) > 0:
             self.__after_save_count += 1
+            if self.__parent:
+                self.__parent.set_dirty()
+
             last_cmd = self.__redo_stack.pop()
 
             self.__undo_stack.append(last_cmd)
@@ -46,11 +56,17 @@ class CommandStack(object):
     def do_command(self, new_cmd):
         self.add_to_undo(new_cmd)
         self.__after_save_count += 1
+        if self.__parent:
+            self.__parent.set_dirty()
 
         new_cmd.do_it()
 
     def add_to_undo(self, new_cmd):
         self.__undo_stack.append(new_cmd)
+        self.__after_save_count += 1
+        if self.__parent:
+            self.__parent.set_dirty()
+        
         self.clear_redo()
 
     def undo_is_empty(self):

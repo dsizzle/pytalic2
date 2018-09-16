@@ -37,7 +37,7 @@ class EditorController(object):
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__cmd_stack = commands.CommandStack()
+        self.__cmd_stack = commands.CommandStack(self)
         self.__selection = {}
         self.__char_set = None
         self.__cur_char = None
@@ -65,6 +65,24 @@ class EditorController(object):
 
     def get_command_stack(self):
         return self.__cmd_stack
+
+    def set_clean(self):
+        file_path = self.__file_controller.file_path
+        if not file_path:
+            file_path = "Untitled"
+        self.__ui.setWindowTitle(self.__label + " - " + file_path)
+        self.__ui.file_save.setEnabled(False)
+
+    def set_dirty(self):
+        file_path = self.__file_controller.file_path
+        if not file_path:
+            file_path = "Untitled"
+            self.__ui.file_save.setEnabled(False)
+        else:
+            self.__ui.file_save.setEnabled(True)
+            
+        self.__ui.setWindowTitle(self.__label + " - " + file_path + " *")
+        
 
     def get_ui(self):
         return self.__ui
@@ -144,20 +162,15 @@ class EditorController(object):
     def file_new_cb(self, event):
         self.__file_controller.file_new()
 
-        self.name = (self.__label + " - Untitled")
-        self.__ui.setWindowTitle(self.name)
-
         self.__cur_char = self.__char_set.current_char
 
-        self.__cmd_stack = commands.CommandStack()
+        self.__cmd_stack.clear()
 
         self.make_layouts()
 
     def file_save_as_cb(self, event):
         file_path = self.__file_controller.file_save_as()
-        if file_path:
-            self.__ui.setWindowTitle(self.__label + " - " + file_path)
-
+        
     def file_save_cb(self, event):
         self.__file_controller.file_save()
 

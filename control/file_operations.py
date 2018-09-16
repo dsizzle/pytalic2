@@ -20,6 +20,15 @@ class FileController(object):
         self.__blank_pixmap = QtGui.QPixmap(view.shared_qt.ICON_SIZE, view.shared_qt.ICON_SIZE)
         self.__blank_pixmap.fill(QtGui.QColor(240, 240, 240))
 
+    @property
+    def file_path(self):
+        if self.__file_name:
+            file_path = os.path.join(self.__dir_name, self.__file_name)
+        else:
+            file_path = None
+
+        return file_path 
+
     def file_new(self):
         self.__file_name = None
 
@@ -169,7 +178,6 @@ class FileController(object):
 
             cmd_stack.clear()
             cmd_stack.reset_save_count()
-            ui.file_save.setEnabled(True)
             ui.setUpdatesEnabled(True)
 
         return file_path
