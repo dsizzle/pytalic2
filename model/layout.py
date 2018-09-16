@@ -69,12 +69,15 @@ class Layout(object):
             (char_set.width + char_set.left_spacing + char_set.right_spacing)
 
         lines = self.__lay_out_with_wrap(self.__string, 10)
-        print lines
         char_obj_idx = 0
             
         for line in lines:
             for char in line:
                 char_object = self.__object_list[char_obj_idx]
+                if char_object.character.name != char:
+                    char_obj_idx += 1
+                    char_object = self.__object_list[char_obj_idx]
+
                 if char_object.character.override_spacing:
                     width = char_object.character.width
                     left_space = char_object.character.left_spacing

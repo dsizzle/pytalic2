@@ -247,6 +247,7 @@ class Character(Glyph):
         self.__override_spacing = False
 
         self.__glyphs = []
+        self.__name = unichr(0)
 
     def add_glyph(self, glyph_to_add):
         if isinstance(glyph_to_add, model.instance.GlyphInstance):
@@ -300,6 +301,14 @@ class Character(Glyph):
 
     override_spacing = property(get_override_spacing, set_override_spacing)
 
+    def get_name(self):
+        return self.__name
+
+    def set_name(self, new_name):
+        self.__name = new_name
+
+    name = property(get_name, set_name)
+    
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:
             nib_glyph = nib

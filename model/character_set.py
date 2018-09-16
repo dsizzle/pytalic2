@@ -21,6 +21,7 @@ class CharacterSet(object):
     def new_character(self, char_code):
         my_char = model.character.Character()
         self.__characters[unichr(char_code)] = my_char
+        my_char.name = unichr(char_code)
         self.__current_char = char_code
 
     def delete_char(self, char_to_delete):
