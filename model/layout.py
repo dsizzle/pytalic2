@@ -68,7 +68,7 @@ class Layout(object):
         max_x = nib_width * line_width * \
             (char_set.width + char_set.left_spacing + char_set.right_spacing)
 
-        lines = self.__lay_out_with_wrap(self.__string, 10)
+        lines = self.__lay_out_with_wrap(self.__string, line_width)
         char_obj_idx = 0
             
         for line in lines:
