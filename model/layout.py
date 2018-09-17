@@ -72,6 +72,7 @@ class Layout(object):
         char_obj_idx = 0
             
         for line in lines:
+            num_chars = 0
             for char in line:
                 char_object = self.__object_list[char_obj_idx]
                 if char_object.character.name != char:
@@ -94,6 +95,14 @@ class Layout(object):
                 current_x += delta_x
                 prev_right_space = right_space
                 char_obj_idx += 1
+                num_chars += 1
+
+            center_x = current_x / 2
+            start = char_obj_idx - 1
+            end = start - num_chars
+            center_delta = QtCore.QPoint(center_x, 0)
+            for idx in range(start, end, -1):
+                self.__object_list[idx].pos -= center_delta
 
             prev_right_space = 0
             current_x = 0
