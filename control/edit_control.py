@@ -15,7 +15,7 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-from model import character_set, character, commands, instance, layout, stroke
+from model import commands, layout
 from view import edit_ui
 import view.paper
 import view.shared_qt
@@ -48,7 +48,8 @@ class EditorController(object):
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
 
-        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
+        self.__current_view_pane = \
+            self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__selection[self.__current_view_pane] = {}
 
         self.__clipboard_controller = control.clipboard_operations.ClipboardController(self)
@@ -80,9 +81,9 @@ class EditorController(object):
             self.__ui.file_save.setEnabled(False)
         else:
             self.__ui.file_save.setEnabled(True)
-            
+
         self.__ui.setWindowTitle(self.__label + " - " + file_path + " *")
-        
+
     def get_ui(self):
         return self.__ui
 
@@ -168,8 +169,8 @@ class EditorController(object):
         self.make_layouts()
 
     def file_save_as_cb(self, event):
-        file_path = self.__file_controller.file_save_as()
-        
+        self.__file_controller.file_save_as()
+
     def file_save_cb(self, event):
         self.__file_controller.file_save()
 
@@ -180,17 +181,18 @@ class EditorController(object):
             self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
             self.clear_selection()
-        
+
         self.__ui.repaint()
 
         self.make_layouts()
 
     def create_new_stroke_cb(self, event):
         self.__stroke_controller.create_new_stroke()
-        
+
     def save_glyph_cb(self, event):
         self.__stroke_controller.save_glyph()
-        self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+        self.__ui.main_view_tabs.setTabEnabled( \
+            self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
             True)
 
     def add_control_point_cb(self, event):
@@ -284,12 +286,14 @@ class EditorController(object):
         self.__stroke_controller.flip_selected_strokes_y()
 
     def char_selected_cb(self, event):
-        cur_char_idx = int(str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole+1).toString()))
+        cur_char_idx = int(str( \
+            self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole+1).toString() \
+            ))
         self.__char_set.current_char = cur_char_idx
         self.__cur_char = self.__char_set.current_char
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char
-        
+
         self.__ui.left_space_spin.setValue(self.__cur_char.left_spacing)
         self.__ui.right_space_spin.setValue(self.__cur_char.right_spacing)
         self.__ui.char_width_spin.setValue(self.__cur_char.width)
@@ -305,14 +309,17 @@ class EditorController(object):
 
     def stroke_selected_cb(self, event):
         if self.__ui.stroke_selector_list.currentRow() >= 0:
-            sel_saved_glyph = self.__char_set.get_saved_glyph(self.__ui.stroke_selector_list.currentRow())
+            sel_saved_glyph = \
+                self.__char_set.get_saved_glyph(self.__ui.stroke_selector_list.currentRow())
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_glyph
-            self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+            self.__ui.main_view_tabs.setTabEnabled( \
+                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
                 True)
         else:
             self.__ui.stroke_dwg_area.symbol = None
-            self.__ui.main_view_tabs.setTabEnabled(self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+            self.__ui.main_view_tabs.setTabEnabled( \
+                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
                 False)
 
         self.__ui.repaint()
@@ -320,7 +327,8 @@ class EditorController(object):
 
     def view_tab_changed_cb(self, event):
         previous_pane = self.__current_view_pane
-        self.__current_view_pane = self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
+        self.__current_view_pane = \
+            self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
 
         if self.__current_view_pane == self.__ui.dwg_area:
@@ -362,17 +370,12 @@ class EditorController(object):
         if self.__current_view_pane != self.__ui.preview_area and \
             self.__current_view_pane.symbol:
             for sel_item in self.__current_view_pane.symbol.children:
-                if sel_item in self.__selection[self.__current_view_pane]:
-                    sel_item.selected = True
-                else:
-                    sel_item.selected = False
+                sel_item.selected = sel_item in self.__selection[self.__current_view_pane]
 
                 if type(sel_item).__name__ == "GlyphInstance":
                     for sel_stroke in sel_item.strokes:
-                        if sel_stroke in self.__selection[self.__current_view_pane]:
-                            sel_stroke.selected = True
-                        else:
-                            sel_stroke.selected = False
+                        sel_stroke.selected = sel_stroke in \
+                            self.__selection[self.__current_view_pane]
 
         self.__ui.repaint()
 
@@ -494,8 +497,8 @@ class EditorController(object):
         self.__property_controller.char_right_space_changed(prev_value, \
             new_value, ctrl_list)
 
-    def override_char_set_changed_cb(self, newState):
-        if newState == QtCore.Qt.Checked:
+    def override_char_set_changed_cb(self, new_state):
+        if new_state == QtCore.Qt.Checked:
             self.__cur_char.override_spacing = True
             self.__ui.guide_lines.left_spacing = self.__cur_char.left_spacing
             self.__ui.guide_lines.right_spacing = self.__cur_char.right_spacing
@@ -523,15 +526,15 @@ class EditorController(object):
     def break_tangents_cb(self, event):
         self.__vertex_controller.break_tangents()
 
-    def stroke_override_nib_angle_changed_cb(self, newState):
-        if newState == QtCore.Qt.Checked:
+    def stroke_override_nib_angle_changed_cb(self, new_state):
+        if new_state == QtCore.Qt.Checked:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
                 sel_stroke.override_nib_angle = True
                 sel_stroke.nib_angle = self.__ui.stroke_nib_angle_spin.value()
         else:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
                 sel_stroke.override_nib_angle = False
-        
+
         self.__ui.repaint()
 
     def stroke_nib_angle_changed_cb(self, new_value):
@@ -546,19 +549,20 @@ class EditorController(object):
 
             self.__property_controller.stroke_nib_angle_changed(prev_value, \
                 new_value, [sel_stroke])
-        
 
     def position_x_changed_cb(self, new_value):
-        if len(self.__selection[self.__current_view_pane].keys()) and self.__state != DRAWING_NEW_STROKE:
+        if len(self.__selection[self.__current_view_pane].keys()) and \
+            self.__state != DRAWING_NEW_STROKE:
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.x()
             if prev_value == new_value:
                 return
 
             self.__stroke_controller.selection_position_changed_x(prev_value, \
                 new_value)
-     
+
     def position_y_changed_cb(self, new_value):
-        if len(self.__selection[self.__current_view_pane].keys()) and self.__state != DRAWING_NEW_STROKE:
+        if len(self.__selection[self.__current_view_pane].keys()) and \
+            self.__state != DRAWING_NEW_STROKE:
             prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.y()
             if prev_value == new_value:
                 return
@@ -633,6 +637,6 @@ class EditorController(object):
             char_stroke.selected = False
             if type(char_stroke).__name__ != "GlyphInstance":
                 char_stroke.deselect_ctrl_verts()
-        
+
         self.set_ui_state_selection(False)
         self.__ui.repaint()
