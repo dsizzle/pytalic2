@@ -83,7 +83,6 @@ class EditorController(object):
             
         self.__ui.setWindowTitle(self.__label + " - " + file_path + " *")
         
-
     def get_ui(self):
         return self.__ui
 
