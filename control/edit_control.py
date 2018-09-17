@@ -160,6 +160,16 @@ class EditorController(object):
         self.__ui.repaint()
 
     def file_new_cb(self, event):
+        if self.__cmd_stack.save_count:
+            reply = self.__ui.message_dialog.question(self.__ui, \
+                'New Character Set', \
+                "You have unsaved changes. Are you sure you want to create a new character set?", \
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
+                QtGui.QMessageBox.No)
+
+            if reply == QtGui.QMessageBox.No:
+                return
+    
         self.__file_controller.file_new()
 
         self.__cur_char = self.__char_set.current_char
@@ -175,6 +185,16 @@ class EditorController(object):
         self.__file_controller.file_save()
 
     def file_open_cb(self):
+        if self.__cmd_stack.save_count:
+            reply = self.__ui.message_dialog.question(self.__ui, \
+                'Open File', \
+                "You have unsaved changes. Are you sure you want to open a file?", \
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
+                QtGui.QMessageBox.No)
+
+            if reply == QtGui.QMessageBox.No:
+                return
+
         file_path = self.__file_controller.file_open()
 
         if file_path:
