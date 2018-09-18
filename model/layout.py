@@ -75,9 +75,14 @@ class Layout(object):
             num_chars = 0
             for char in line:
                 char_object = self.__object_list[char_obj_idx]
-                if char_object.character.name != char:
+                while char_object.character.name != char:
+                    start_char_idx = char_obj_idx
                     char_obj_idx += 1
-                    char_object = self.__object_list[char_obj_idx]
+                    try:
+                            char_object = self.__object_list[char_obj_idx]
+                    except IndexError:
+                            char_obj_idx = start_char_idx
+                            break
 
                 if char_object.character.override_spacing:
                     width = char_object.character.width
