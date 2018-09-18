@@ -853,7 +853,8 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            sel_stroke.flip_x()
+            if type(sel_stroke).__name__ == "Stroke": 
+                sel_stroke.flip_x()
 
     def flip_selected_strokes_y(self):
         current_view = self.__main_ctrl.get_current_view()
@@ -890,7 +891,8 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            sel_stroke.flip_y()
+            if type(sel_stroke).__name__ == "Stroke": 
+                sel_stroke.flip_y()
 
     def move_selected(self, args):
         if 'strokes' in args:
