@@ -146,6 +146,7 @@ class Glyph(object):
 
         self.__strokes.append(new_stroke)
 
+        self.calculate_bound_rect()
         return new_stroke
 
     def new_stroke_instance(self, args):
@@ -196,6 +197,8 @@ class Glyph(object):
             print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
             print self.__strokes
 
+        self.calculate_bound_rect()
+
     def is_inside(self, point):
 
         test_point = point - self.pos
@@ -217,7 +220,8 @@ class Glyph(object):
         self.bound_rect = QtCore.QRectF()
 
         for sel_child in self.children:
-            self.bound_rect = self.bound_rect.united(sel_child.bound_rect.translated(sel_child.pos))
+            if sel_child.bound_rect:
+                self.bound_rect = self.bound_rect.united(sel_child.bound_rect.translated(sel_child.pos))
         
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
@@ -253,10 +257,12 @@ class Character(Glyph):
         if isinstance(glyph_to_add, model.instance.GlyphInstance):
             self.__glyphs.append(glyph_to_add)
             glyph_to_add.parent = self
+            self.calculate_bound_rect()
 
     def remove_glyph(self, glyph_to_remove):
         self.__glyphs.remove(glyph_to_remove)
         glyph_to_remove.parent = None
+        self.calculate_bound_rect()
 
     @property
     def glyphs(self):
