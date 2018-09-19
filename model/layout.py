@@ -79,10 +79,10 @@ class Layout(object):
                     start_char_idx = char_obj_idx
                     char_obj_idx += 1
                     try:
-                            char_object = self.__object_list[char_obj_idx]
+                        char_object = self.__object_list[char_obj_idx]
                     except IndexError:
-                            char_obj_idx = start_char_idx
-                            break
+                        char_obj_idx = start_char_idx
+                        break
 
                 if char_object.character.override_spacing:
                     width = char_object.character.width
