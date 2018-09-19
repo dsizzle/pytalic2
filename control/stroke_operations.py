@@ -255,6 +255,7 @@ class StrokeController(object):
 
         cur_char.add_glyph(glyph_instance)
         cur_view_selection[glyph_instance] = {}
+        glyph_instance.selected = True
 
         ui.dwg_area.repaint()
         self.__main_ctrl.set_icon()
