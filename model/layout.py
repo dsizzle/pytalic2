@@ -62,7 +62,6 @@ class Layout(object):
         layout_total_height = 0
         current_x = 0
         current_y = 0
-        prev_right_space = 0
         gap_height = char_set.gap_height
         height = char_set.height
         max_x = nib_width * line_width * \
@@ -96,9 +95,8 @@ class Layout(object):
                 current_x += (left_space + width) * nib_width
                 char_object.pos = QtCore.QPoint(current_x, current_y)
 
-                delta_x = (prev_right_space) * nib_width 
+                delta_x = right_space * nib_width 
                 current_x += delta_x
-                prev_right_space = right_space
                 char_obj_idx += 1
                 num_chars += 1
 
@@ -109,7 +107,6 @@ class Layout(object):
             for idx in range(start, end, -1):
                 self.__object_list[idx].pos -= center_delta
 
-            prev_right_space = 0
             current_x = 0
             current_y += (height + gap_height) * nib_width
             layout_total_height += (height + gap_height) * nib_width
