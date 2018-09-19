@@ -296,7 +296,6 @@ class MouseController(object):
             if current_view != ui.preview_area:
                 for sel_stroke in current_view.symbol.children:
                     inside_info = sel_stroke.is_inside(paper_pos)
-                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
                     if inside_info[0] and (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
