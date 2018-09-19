@@ -32,7 +32,7 @@ class Layout(object):
 
     pos = property(get_pos, set_pos)
 
-    def init_with_string(self, string_to_layout, char_set, nib_width, line_width=10):
+    def init_with_string(self, string_to_layout, char_set, nib_width, line_width=13):
         height = char_set.base_height * nib_width
         cur_char = char_set.get_current_char_index()
 
@@ -58,7 +58,7 @@ class Layout(object):
 
         self.update_layout(char_set, nib_width, line_width)
 
-    def update_layout(self, char_set, nib_width, line_width=10):
+    def update_layout(self, char_set, nib_width, line_width=13):
         layout_total_height = 0
         current_x = 0
         current_y = 0
@@ -113,7 +113,7 @@ class Layout(object):
 
         self.__pos = QtCore.QPoint(-max_x / 2, -layout_total_height / 2)
 
-    def __lay_out_with_wrap(self, string_to_layout, line_width=10):
+    def __lay_out_with_wrap(self, string_to_layout, line_width=13):
         token_list = string_to_layout.split()
         token_list.reverse() 
 
