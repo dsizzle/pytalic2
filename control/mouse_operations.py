@@ -277,6 +277,7 @@ class MouseController(object):
 
             elif not shift_down:
                 self.__main_ctrl.deselect_all_strokes_cb()
+                cur_view_selection = selection[current_view]
 
             vert_list = cur_view_selection.values()
             behavior_list = []
@@ -296,6 +297,7 @@ class MouseController(object):
                 for sel_stroke in current_view.symbol.children:
                     inside_info = sel_stroke.is_inside(paper_pos)
                     if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                    if inside_info[0] and (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
                             if type(sel_stroke).__name__ == 'Stroke':
