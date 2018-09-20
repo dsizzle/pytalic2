@@ -346,6 +346,15 @@ class LayoutArea(Canvas):
 
     layout = property(Canvas.get_subject, Canvas.set_subject)
 
+    def frame_layout(self):
+         max_dim = max(self.frameRect().width(), self.frameRect().height())
+         layout_bound = self.layout.bound_rect
+         max_layout_dim = max(layout_bound.width(), layout_bound.height())
+         if max_layout_dim:
+            self.scale = max_dim / max_layout_dim  
+
+            self.origin_delta = QtCore.QPoint(self.origin.x() - self.layout.pos.x() - layout_bound.width() / 2, 0)
+            
     def paintEvent(self, event):
         dc = QtGui.QPainter()
 

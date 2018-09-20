@@ -601,6 +601,11 @@ class EditorController(object):
 
         self.__ui.repaint()
 
+    def layout_frame_cb(self):
+        self.__ui.preview_area.frame_layout()
+
+        self.__ui.repaint()
+
     def make_layouts(self):
         num_layouts = self.__ui.layout_combo.count()
         self.__layouts = []

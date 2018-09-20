@@ -123,6 +123,10 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             QtCore.SIGNAL("currentIndexChanged(int)"), \
             self.__parent.layout_changed_cb)
 
+        QtCore.QObject.connect(self.frame_layout_button, \
+            QtCore.SIGNAL("clicked()"), \
+            self.__parent.layout_frame_cb)
+        
         self.create_menu()
 
         self.stroke_dwg_area.set_origin_delta(QtCore.QPoint())
