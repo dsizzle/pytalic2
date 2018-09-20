@@ -79,26 +79,6 @@ class Glyph(object):
 
     selected = property(get_select_state, set_select_state)
 
-    def new_stroke(self, points, add=True):
-        my_stroke = model.stroke.Stroke()
-
-        start_x, start_y = points[0]
-
-        my_stroke.set_ctrl_vertices_from_list(points)
-        my_stroke.pos = QtCore.QPoint(start_x, start_y)
-
-        my_stroke.calc_curve_points()
-        num_points = len(points)
-        if num_points == 2:
-            my_stroke.straighten()
-
-        if add:
-            self.__strokes.append(my_stroke)
-
-        my_stroke.set_parent(self)
-
-        return my_stroke
-
     def new_freehand_stroke(self, points):
         my_stroke = model.stroke.Stroke()
         raw_cv = []
@@ -148,22 +128,6 @@ class Glyph(object):
 
         self.calculate_bound_rect()
         return new_stroke
-
-    def new_stroke_instance(self, args):
-        if STROKE in args:
-            stroke_to_add = args[STROKE]
-        else:
-            return
-
-        new_stroke_inst = model.stroke.StrokeInstance()
-        if not isinstance(stroke_to_add, model.stroke.Stroke):
-            stroke_to_add = stroke_to_add.stroke
-
-        new_stroke_inst.stroke = stroke_to_add
-        self.__strokes.append(new_stroke_inst)
-        new_stroke_inst.set_parent(self)
-
-        return new_stroke_inst
 
     def add_stroke_instance(self, inst):
         if not isinstance(inst, model.stroke.Stroke):
