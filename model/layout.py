@@ -7,6 +7,7 @@ class Layout(object):
         self.__object_list = []
         self.__string = ""
         self.__pos = QtCore.QPoint()
+        self.__bound_rect = QtCore.QRectF()
 
     def set_object_list(self, new_object_list):
         self.__object_list = new_object_list
@@ -31,6 +32,10 @@ class Layout(object):
         return self.__pos
 
     pos = property(get_pos, set_pos)
+
+    @property
+    def bound_rect(self):
+        return self.__bound_rect
 
     def init_with_string(self, string_to_layout, char_set, nib_width, line_width=13):
         height = char_set.base_height * nib_width
@@ -70,6 +75,8 @@ class Layout(object):
         lines = self.__lay_out_with_wrap(self.__string, line_width)
         char_obj_idx = 0
             
+        self.__bound_rect = QtCore.QRectF()
+
         for line in lines:
             num_chars = 0
             for char in line:
@@ -94,6 +101,8 @@ class Layout(object):
 
                 current_x += (left_space + width) * nib_width
                 char_object.pos = QtCore.QPoint(current_x, current_y)
+                if char_object.bound_rect:
+                    self.__bound_rect = self.bound_rect.united(char_object.bound_rect.translated(char_object.pos))
 
                 delta_x = right_space * nib_width 
                 current_x += delta_x
