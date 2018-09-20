@@ -37,7 +37,8 @@ class MouseController(object):
             
             paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
             paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
-            zoom_pos = (paper_pos - current_view.origin) * scale_change
+            norm_paper_pos = current_view.get_normalized_position(paper_pos)
+            zoom_pos = norm_paper_pos * scale_change
 
             current_view.origin_delta -= zoom_pos
             self.__saved_mouse_pos_paper[current_view] = paper_pos
