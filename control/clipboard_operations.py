@@ -193,6 +193,7 @@ class ClipboardController(object):
             else:
                 new_glyph = instance.GlyphInstance()
                 new_glyph.glyph = sel_stroke.glyph
+                new_glyph.pos = sel_stroke.pos
                 current_view.symbol.add_glyph(new_glyph)
 
         self.__main_ctrl.set_ui_state_selection(True)

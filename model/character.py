@@ -43,7 +43,7 @@ class Glyph(object):
     bound_rect = property(get_bound_rect, set_bound_rect)
 
     def set_pos(self, point):
-        self.__pos = point
+        self.__pos = QtCore.QPoint(point)
 
     def get_pos(self):
         return self.__pos

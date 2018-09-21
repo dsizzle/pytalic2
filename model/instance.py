@@ -14,7 +14,7 @@ class Instance(object):
             self.__instanced_object.remove_instance(self)
 
     def set_pos(self, point):
-        self.__pos = point
+        self.__pos = QtCore.QPoint(point)
 
     def get_pos(self):
         return self.__pos
