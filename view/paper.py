@@ -11,7 +11,7 @@ Canvas base class
 class Canvas(QtGui.QFrame):
     def __init__(self, parent):
         QtGui.QFrame.__init__(self, parent)
-        self.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.setFocusPolicy(QtCore.Qt.WheelFocus)
         self.setMouseTracking(True)
 
         self.__origin = None
@@ -25,9 +25,6 @@ class Canvas(QtGui.QFrame):
         self.__draw_nib_guides = True
         
         self.__subject = None
-        
-        self.__old_view_pos = None
-        self.__move_view = False
 
         self.__bitmap = None
         self.__bitmap_size = 40
@@ -366,6 +363,10 @@ class LayoutArea(Canvas):
         dc.save()
         dc.translate(self.origin + self.origin_delta)
         dc.scale(self.scale, self.scale)
+
+        dc.setPen(view.shared_qt.PEN_LT_GRAY)
+        dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+        dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10) 
 
         if self.draw_guidelines and self.guide_lines:
             self.guide_lines.draw(dc, self.size(), self.origin + self.origin_delta)
