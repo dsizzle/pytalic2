@@ -34,4 +34,6 @@ PEN_LT_GRAY_2 = PEN(COLOR_LT_GRAY, 2)
 PEN_MD_GRAY = PEN(COLOR_MD_GRAY)
 PEN_MD_GRAY_DOT = PEN(COLOR_MD_GRAY, 1, QtCore.Qt.DotLine)
 PEN_MD_GRAY_DOT_2 = PEN(COLOR_MD_GRAY, 2, QtCore.Qt.DotLine)
+# 0 width means it's constant 1px no matter the zoom level
+PEN_DK_GRAY_DASH_0 = PEN(COLOR_DK_GRAY, 0, QtCore.Qt.DashLine)
 PEN_DK_GRAY_DASH_2 = PEN(COLOR_DK_GRAY, 2, QtCore.Qt.DashLine)

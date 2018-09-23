@@ -87,7 +87,7 @@ class Instance(object):
 
             gc.translate(self.__pos)
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
-            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT_2)
+            gc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_0)
 
             gc.drawRect(bound_rect)
 
