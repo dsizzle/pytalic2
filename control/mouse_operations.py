@@ -309,8 +309,9 @@ class MouseController(object):
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
             else:
+                layout_pos = ui.preview_area.layout.pos
                 for sel_symbol in ui.preview_area.layout.object_list:
-                    inside_info = sel_symbol.is_inside(paper_pos)
+                    inside_info = sel_symbol.is_inside(paper_pos - layout_pos)
                     if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_symbol not in cur_view_selection:
                             cur_view_selection[sel_symbol] = {}     
