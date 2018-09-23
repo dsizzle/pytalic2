@@ -930,7 +930,7 @@
      <height>15</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -960,6 +960,17 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="view_reset_origin"/>
+    <addaction name="view_reset_zoom"/>
+    <addaction name="separator"/>
+    <addaction name="view_guides"/>
+    <addaction name="view_nib_guides"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_Transform">
+    <property name="title">
+     <string>&amp;Transform</string>
+    </property>
     <widget class="QMenu" name="menu_Snap">
      <property name="title">
       <string>&amp;Snap</string>
@@ -970,13 +981,10 @@
      <addaction name="view_snap_to_ctrl_pts"/>
      <addaction name="action_To_Strokes"/>
     </widget>
-    <addaction name="view_reset_origin"/>
-    <addaction name="view_reset_zoom"/>
-    <addaction name="separator"/>
-    <addaction name="view_guides"/>
-    <addaction name="view_nib_guides"/>
-    <addaction name="separator"/>
     <addaction name="menu_Snap"/>
+    <addaction name="separator"/>
+    <addaction name="action_constrain_to_x_axis"/>
+    <addaction name="action_constrain_to_y_axis"/>
    </widget>
    <widget class="QMenu" name="menu_Stroke">
     <property name="title">
@@ -1010,9 +1018,10 @@
     </property>
     <addaction name="help_about"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_View"/>
+   <addaction name="menu_Transform"/>
    <addaction name="menu_Stroke"/>
    <addaction name="menu_Glyph"/>
    <addaction name="menu_Help"/>
@@ -1500,6 +1509,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="action_constrain_to_x_axis">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="pytalic2.qrc">
+     <normaloff>:/icons/arrow_right.png</normaloff>:/icons/arrow_right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Constrain to X-Axis</string>
+   </property>
+  </action>
+  <action name="action_constrain_to_y_axis">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="pytalic2.qrc">
+     <normaloff>:/icons/arrow_down.png</normaloff>:/icons/arrow_down.png</iconset>
+   </property>
+   <property name="text">
+    <string>Constrain to Y-Axis</string>
    </property>
   </action>
  </widget>

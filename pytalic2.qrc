@@ -1,5 +1,7 @@
 <RCC>
   <qresource>
+    <file>icons/arrow_down.png</file>
+    <file>icons/arrow_right.png</file>
     <file>icons/zoom_actual.png</file>
     <file>icons/script_save.png</file>
     <file>icons/cross_promotion_selling.png</file>
