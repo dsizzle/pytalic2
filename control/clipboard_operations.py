@@ -185,7 +185,7 @@ class ClipboardController(object):
 
         self.__main_ctrl.clear_selection()
         cur_view_selection = selection[current_view]
-        print cur_view_selection
+        
         for sel_stroke in strokes_to_paste:
             
             added_item = None
