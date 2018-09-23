@@ -132,9 +132,6 @@ class Canvas(QtGui.QFrame):
         norm_position = norm_position - self.__origin - self.__origin_delta
         norm_position = norm_position / self.__scale
 
-        if self.subject:
-            norm_position = norm_position - self.subject.pos
-
         return norm_position
 
     def set_subject(self, subject):
