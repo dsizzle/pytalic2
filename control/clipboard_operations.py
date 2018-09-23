@@ -183,18 +183,24 @@ class ClipboardController(object):
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False
 
-        cur_view_selection = {}
-
+        self.__main_ctrl.clear_selection()
+        cur_view_selection = selection[current_view]
+        print cur_view_selection
         for sel_stroke in strokes_to_paste:
-            cur_view_selection[sel_stroke] = {}
-            sel_stroke.selected = True
+            
+            added_item = None
+
             if type(sel_stroke).__name__ == 'Stroke':
-                current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
+                added_item = current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             else:
                 new_glyph = instance.GlyphInstance()
                 new_glyph.glyph = sel_stroke.glyph
                 new_glyph.pos = sel_stroke.pos
                 current_view.symbol.add_glyph(new_glyph)
+                added_item = new_glyph
+
+            cur_view_selection[added_item] = {}
+            added_item.selected = True
 
         self.__main_ctrl.set_ui_state_selection(True)
         ui.repaint()
