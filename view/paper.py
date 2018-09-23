@@ -11,9 +11,7 @@ Canvas base class
 class Canvas(QtGui.QFrame):
     def __init__(self, parent):
         QtGui.QFrame.__init__(self, parent)
-        self.setFocusPolicy(QtCore.Qt.WheelFocus)
-        self.setMouseTracking(True)
-
+        
         self.__origin = None
         self.__origin_delta = QtCore.QPoint(0, 0)
         self.__scale = 1.0
