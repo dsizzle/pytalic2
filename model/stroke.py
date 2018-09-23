@@ -119,16 +119,10 @@ class Stroke(object):
     def flip_x(self):
         temp_ctrl_verts = []
         ctrl_verts = self.get_ctrl_vertices_as_list()
-        num_verts = len(ctrl_verts)
-
-        temp_ctrl_verts.append([ctrl_verts[0][0] + self.__pos.x(), \
-            ctrl_verts[0][1] + self.__pos.y()])
-        index = 1
-
-        while index < num_verts:
-            temp_ctrl_verts.append([self.__pos.x() - ctrl_verts[index][0], \
-                ctrl_verts[index][1] + self.__pos.y()]) 
-            index += 1
+        
+        for vert in ctrl_verts:
+            temp_ctrl_verts.append([self.__pos.x() - vert[0], \
+                vert[1] + self.__pos.y()]) 
 
         self.set_ctrl_vertices_from_list(temp_ctrl_verts)
         self.calc_curve_points()
@@ -136,16 +130,10 @@ class Stroke(object):
     def flip_y(self):
         temp_ctrl_verts = []
         ctrl_verts = self.get_ctrl_vertices_as_list()
-        num_verts = len(ctrl_verts)
 
-        temp_ctrl_verts.append([ctrl_verts[0][0] + self.__pos.x(), \
-            ctrl_verts[0][1] + self.__pos.y()])
-        index = 1
-
-        while index < num_verts:
-            temp_ctrl_verts.append([ctrl_verts[index][0] + self.__pos.x(), \
-                self.__pos.y() - ctrl_verts[index][1]]) 
-            index += 1
+        for vert in ctrl_verts:
+            temp_ctrl_verts.append([vert[0] + self.__pos.x(), \
+                self.__pos.y() - vert[1]]) 
 
         self.set_ctrl_vertices_from_list(temp_ctrl_verts)
         self.calc_curve_points()
