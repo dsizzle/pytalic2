@@ -833,7 +833,9 @@ class Ui_MainWindow(object):
         self.edit_deselect_all.setText(_translate("MainWindow", "&Deselect All", None))
         self.edit_deselect_all.setShortcut(_translate("MainWindow", "Ctrl+D", None))
         self.action_constrain_to_x_axis.setText(_translate("MainWindow", "Constrain to X-Axis", None))
+        self.action_constrain_to_x_axis.setShortcut(_translate("MainWindow", "Alt+X", None))
         self.action_constrain_to_y_axis.setText(_translate("MainWindow", "Constrain to Y-Axis", None))
+        self.action_constrain_to_y_axis.setShortcut(_translate("MainWindow", "Alt+Y", None))
 
 from view.paper import DrawingArea, LayoutArea
 from view.widgets_qt import SelectColorButton

@@ -1522,6 +1522,9 @@
    <property name="text">
     <string>Constrain to X-Axis</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+X</string>
+   </property>
   </action>
   <action name="action_constrain_to_y_axis">
    <property name="enabled">
@@ -1533,6 +1536,9 @@
    </property>
    <property name="text">
     <string>Constrain to Y-Axis</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Y</string>
    </property>
   </action>
  </widget>
