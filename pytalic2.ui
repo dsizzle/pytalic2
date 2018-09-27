@@ -1518,6 +1518,9 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="pytalic2.qrc">
      <normaloff>:/icons/arrow_right.png</normaloff>:/icons/arrow_right.png</iconset>
@@ -1532,6 +1535,9 @@
   <action name="action_constrain_to_y_axis">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="pytalic2.qrc">

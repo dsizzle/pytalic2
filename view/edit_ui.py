@@ -162,6 +162,8 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.view_snap_to_nib_axes.triggered.connect(self.__parent.view_toggle_snap_to_nib_axes_cb)
         self.view_snap_to_grid.triggered.connect(self.__parent.view_toggle_snap_to_grid_cb)
         self.view_snap_to_ctrl_pts.triggered.connect(self.__parent.view_toggle_snap_to_ctrl_pts_cb)
+        self.action_constrain_to_x_axis.triggered.connect(self.__parent.action_toggle_constrain_x_cb)
+        self.action_constrain_to_y_axis.triggered.connect(self.__parent.action_toggle_constrain_y_cb)
         
         self.stroke_new.triggered.connect(self.__parent.create_new_stroke_cb)
         self.stroke_delete.triggered.connect(self.__parent.delete_strokes_cb)

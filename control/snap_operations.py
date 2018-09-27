@@ -7,6 +7,9 @@ SNAP_TO_AXES        = 0x0002
 SNAP_TO_NIB_AXES    = 0x0004
 SNAP_TO_CTRL_PTS    = 0x0008
 SNAP_TO_STROKES     = 0x0010
+CONSTRAIN_X         = 0x0020
+CONSTRAIN_Y         = 0x0040
+
 
 class SnapController(object):
     def __init__(self, parent):
@@ -24,6 +27,18 @@ class SnapController(object):
 
     def toggle_snap_to_ctrl_pts(self):
         self.__snap ^= SNAP_TO_CTRL_PTS
+
+    def toggle_constrain_x(self):
+        self.__snap ^= CONSTRAIN_X
+
+    def toggle_constrain_y(self):
+        self.__snap ^= CONSTRAIN_Y
+
+    def is_constrained_x(self):
+        return self.__snap & CONSTRAIN_X
+
+    def is_constrained_y(self):
+        return self.__snap & CONSTRAIN_Y
 
     def get_snap(self):
         return self.__snap

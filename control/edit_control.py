@@ -266,6 +266,12 @@ class EditorController(object):
     def view_toggle_snap_to_ctrl_pts_cb(self, event):
         self.__snap_controller.toggle_snap_to_ctrl_pts()
 
+    def action_toggle_constrain_x_cb(self, event):
+        self.__snap_controller.toggle_constrain_x()
+
+    def action_toggle_constrain_y_cb(self, event):
+        self.__snap_controller.toggle_constrain_y()        
+
     def view_toggle_guidelines_cb(self, event):
         self.__current_view_pane.draw_guidelines = not self.__current_view_pane.draw_guidelines
         self.__ui.repaint()

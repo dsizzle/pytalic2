@@ -122,6 +122,12 @@ class MouseController(object):
                 current_view.snap_points = []
                     
             delta = (paper_pos - self.__saved_mouse_pos_paper[current_view]) / current_view.scale
+            if snap_ctrl.is_constrained_x():
+                delta.setY(0)
+                
+            if snap_ctrl.is_constrained_y():
+                delta.setX(0)
+                
             self.__move_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             args = {
