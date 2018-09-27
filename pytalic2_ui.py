@@ -702,6 +702,9 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.stroke_new)
         self.toolBar.addAction(self.stroke_delete)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.action_constrain_to_x_axis)
+        self.toolBar.addAction(self.action_constrain_to_y_axis)
 
         self.retranslateUi(MainWindow)
         self.main_view_tabs.setCurrentIndex(0)
@@ -832,9 +835,9 @@ class Ui_MainWindow(object):
         self.edit_select_all.setShortcut(_translate("MainWindow", "Ctrl+A", None))
         self.edit_deselect_all.setText(_translate("MainWindow", "&Deselect All", None))
         self.edit_deselect_all.setShortcut(_translate("MainWindow", "Ctrl+D", None))
-        self.action_constrain_to_x_axis.setText(_translate("MainWindow", "Constrain to X-Axis", None))
+        self.action_constrain_to_x_axis.setText(_translate("MainWindow", "Constrain X", None))
         self.action_constrain_to_x_axis.setShortcut(_translate("MainWindow", "Alt+X", None))
-        self.action_constrain_to_y_axis.setText(_translate("MainWindow", "Constrain to Y-Axis", None))
+        self.action_constrain_to_y_axis.setText(_translate("MainWindow", "Constrain Y", None))
         self.action_constrain_to_y_axis.setShortcut(_translate("MainWindow", "Alt+Y", None))
 
 from view.paper import DrawingArea, LayoutArea

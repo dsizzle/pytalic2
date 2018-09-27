@@ -1074,6 +1074,9 @@
    <addaction name="separator"/>
    <addaction name="stroke_new"/>
    <addaction name="stroke_delete"/>
+   <addaction name="separator"/>
+   <addaction name="action_constrain_to_x_axis"/>
+   <addaction name="action_constrain_to_y_axis"/>
   </widget>
   <action name="file_new">
    <property name="icon">
@@ -1520,7 +1523,7 @@
      <normaloff>:/icons/arrow_right.png</normaloff>:/icons/arrow_right.png</iconset>
    </property>
    <property name="text">
-    <string>Constrain to X-Axis</string>
+    <string>Constrain X</string>
    </property>
    <property name="shortcut">
     <string>Alt+X</string>
@@ -1535,7 +1538,7 @@
      <normaloff>:/icons/arrow_down.png</normaloff>:/icons/arrow_down.png</iconset>
    </property>
    <property name="text">
-    <string>Constrain to Y-Axis</string>
+    <string>Constrain Y</string>
    </property>
    <property name="shortcut">
     <string>Alt+Y</string>

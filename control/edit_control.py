@@ -298,6 +298,8 @@ class EditorController(object):
         self.__ui.stroke_sharpen_tangents.setEnabled(state)
         self.__ui.stroke_flip_x.setEnabled(state)
         self.__ui.stroke_flip_y.setEnabled(state)
+        self.__ui.action_constrain_to_x_axis.setEnabled(state)
+        self.__ui.action_constrain_to_y_axis.setEnabled(state)         
 
     def straighten_stroke_cb(self, event):
         self.__stroke_controller.straighten_stroke()
