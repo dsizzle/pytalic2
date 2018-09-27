@@ -399,7 +399,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="stroke_prop_tab">
             <attribute name="title">
@@ -564,6 +564,9 @@
              </item>
              <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="char_width_spin">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="wrapping">
                 <bool>true</bool>
                </property>
@@ -586,6 +589,9 @@
              </item>
              <item row="3" column="1">
               <widget class="QDoubleSpinBox" name="left_space_spin">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="wrapping">
                 <bool>true</bool>
                </property>
@@ -605,6 +611,9 @@
              </item>
              <item row="4" column="1">
               <widget class="QDoubleSpinBox" name="right_space_spin">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="wrapping">
                 <bool>true</bool>
                </property>
@@ -1515,11 +1524,11 @@
    </property>
   </action>
   <action name="action_constrain_to_x_axis">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="pytalic2.qrc">
@@ -1533,11 +1542,11 @@
    </property>
   </action>
   <action name="action_constrain_to_y_axis">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="pytalic2.qrc">
