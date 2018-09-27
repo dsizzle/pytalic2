@@ -26,6 +26,7 @@ DRAWING_NEW_STROKE = 2
 DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
+SELECT_DRAGGING = 6
 
 class EditorController(object):
     """

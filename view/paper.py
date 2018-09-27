@@ -29,6 +29,7 @@ class Canvas(QtGui.QFrame):
 
         self.initial_nib_width = self.width() / 5
         self.__nib = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(125, 25, 25))
+        self.__select_rect = None
         
     def resizeEvent(self, event):
         if self.__guide_lines:
@@ -142,6 +143,14 @@ class Canvas(QtGui.QFrame):
 
     subject = property(get_subject, set_subject)
 
+    def get_select_rect(self):
+        return self.__select_rect
+
+    def set_select_rect(self, new_select_rect):
+        self.__select_rect = new_select_rect
+
+    select_rect = property(get_select_rect, set_select_rect)
+
     def paintEvent(self, event):
         dc = QtGui.QPainter()
 
@@ -161,6 +170,10 @@ class Canvas(QtGui.QFrame):
             self.subject.draw(gc)
 
             dc.restore()
+
+        if self.__select_rect:
+            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.drawRect(self.__select_rect)
 
         dc.restore()
         dc.end()
@@ -324,6 +337,11 @@ class DrawingArea(Canvas):
                 dc.drawLine(self.__snap_points[1], self.__snap_points[1] - delta)
             else:
                 dc.drawEllipse(self.__snap_points[0], 20, 20)
+
+        if self.select_rect:
+            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setBrush(view.shared_qt.BRUSH_MD_GRAY_25)
+            dc.drawRect(self.select_rect)
 
         dc.restore()
         dc.end()

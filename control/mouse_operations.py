@@ -105,13 +105,13 @@ class MouseController(object):
 
         paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
         paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
-        
+        norm_paper_pos = current_view.get_normalized_position(paper_pos)
+
         if self.__main_ctrl.state == edit_control.MOVING_PAPER:
             delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
             current_view.origin_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
         elif self.__main_ctrl.state == edit_control.DRAGGING:
-            norm_paper_pos = current_view.get_normalized_position(paper_pos)
             delta_pos = paper_pos - norm_paper_pos
             
             snap_ctrl = self.__main_ctrl.get_snap_controller()
@@ -146,6 +146,13 @@ class MouseController(object):
             self.__main_ctrl.state = edit_control.DRAGGING
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             self.__move_delta = QtCore.QPoint(0, 0)
+        elif self.__main_ctrl.state == edit_control.SELECT_DRAGGING:
+            top_left = QtCore.QPoint( min(self.__saved_mouse_pos_paper[current_view].x(), norm_paper_pos.x()), \
+                min(self.__saved_mouse_pos_paper[current_view].y(), norm_paper_pos.y()))
+            bot_right = QtCore.QPoint( max(self.__saved_mouse_pos_paper[current_view].x(), norm_paper_pos.x()), \
+                max(self.__saved_mouse_pos_paper[current_view].y(), norm_paper_pos.y()))
+
+            current_view.select_rect = QtCore.QRect(top_left, bot_right)
 
         ui.repaint()
         if current_view != ui.preview_area:
@@ -178,6 +185,9 @@ class MouseController(object):
 
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.state == edit_control.DRAGGING
+        else:
+            self.__saved_mouse_pos_paper[current_view] = paper_pos
+            self.__main_ctrl.state = edit_control.SELECT_DRAGGING
 
     def __on_l_button_up_paper(self, pos, shift_down):
         current_view = self.__main_ctrl.get_current_view()
@@ -246,6 +256,9 @@ class MouseController(object):
 
             self.__main_ctrl.state = edit_control.IDLE
             QtGui.qApp.restoreOverrideCursor()
+        elif self.__main_ctrl.state == edit_control.SELECT_DRAGGING:
+            self.__main_ctrl.state = edit_control.IDLE
+            current_view.select_rect = None
 
     def update_selection(self, paper_pos, shift_down):
         current_view = self.__main_ctrl.get_current_view()
