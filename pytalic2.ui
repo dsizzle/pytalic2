@@ -399,7 +399,7 @@
             </sizepolicy>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="stroke_prop_tab">
             <attribute name="title">
@@ -509,6 +509,9 @@
              </item>
              <item row="5" column="1">
               <widget class="QSpinBox" name="stroke_nib_angle_spin">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="wrapping">
                 <bool>true</bool>
                </property>

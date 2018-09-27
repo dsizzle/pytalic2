@@ -583,9 +583,14 @@ class EditorController(object):
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
                 sel_stroke.override_nib_angle = True
                 sel_stroke.nib_angle = self.__ui.stroke_nib_angle_spin.value()
+
+            self.__ui.stroke_nib_angle_spin.setValue(self.__char_set.nib_angle)
+            self.__ui.stroke_nib_angle_spin.setEnabled(True)
         else:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
                 sel_stroke.override_nib_angle = False
+
+            self.__ui.stroke_nib_angle_spin.setEnabled(False)
 
         self.__ui.repaint()
 

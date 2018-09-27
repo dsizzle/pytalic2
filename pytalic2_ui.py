@@ -255,6 +255,7 @@ class Ui_MainWindow(object):
         self.label_21.setObjectName(_fromUtf8("label_21"))
         self.formLayout_3.setWidget(5, QtGui.QFormLayout.LabelRole, self.label_21)
         self.stroke_nib_angle_spin = QtGui.QSpinBox(self.stroke_prop_tab)
+        self.stroke_nib_angle_spin.setEnabled(False)
         self.stroke_nib_angle_spin.setWrapping(True)
         self.stroke_nib_angle_spin.setMaximum(90)
         self.stroke_nib_angle_spin.setProperty("value", 40)
@@ -713,7 +714,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.main_view_tabs.setCurrentIndex(0)
-        self.property_tabs.setCurrentIndex(1)
+        self.property_tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
