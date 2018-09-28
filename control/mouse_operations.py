@@ -258,9 +258,10 @@ class MouseController(object):
             QtGui.qApp.restoreOverrideCursor()
         elif self.__main_ctrl.state == edit_control.SELECT_DRAGGING:
             self.__main_ctrl.state = edit_control.IDLE
+            self.update_selection(paper_pos, shift_down, current_view.select_rect)
             current_view.select_rect = None
 
-    def update_selection(self, paper_pos, shift_down):
+    def update_selection(self, paper_pos, shift_down, select_rect=None):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
@@ -312,18 +313,29 @@ class MouseController(object):
             else:
                 ui.behavior_combo.setCurrentIndex(0)
 
-        if len(cur_view_selection.keys()) == 0 or shift_down:
+        if len(cur_view_selection.keys()) == 0 or shift_down or select_rect:
             if current_view != ui.preview_area:
                 for sel_stroke in current_view.symbol.children:
-                    inside_info = sel_stroke.is_inside(paper_pos)
-                    if inside_info[0] and (len(cur_view_selection.keys()) == 0 or shift_down):
+                    inside_rect = False
+                    inside_info = [False]
+                    if select_rect:
+                        for vert in sel_stroke.get_ctrl_vertices_as_list():
+                            if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos):
+                                inside_rect = True
+                                break
+                    else:
+                        inside_info = sel_stroke.is_inside(paper_pos)
+                    
+                    if inside_info[0] or inside_rect \
+                        and (len(cur_view_selection.keys()) == 0 or \
+                            shift_down or select_rect):
                         if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
                             if type(sel_stroke).__name__ == 'Stroke':
                                 sel_stroke.deselect_ctrl_verts()
 
                         sel_stroke.selected = True  
-                    elif not shift_down:
+                    elif not shift_down and not inside_rect:
                         sel_stroke.selected = False
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
@@ -331,7 +343,7 @@ class MouseController(object):
                 layout_pos = ui.preview_area.layout.pos
                 for sel_symbol in ui.preview_area.layout.object_list:
                     inside_info = sel_symbol.is_inside(paper_pos - layout_pos)
-                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                        (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_symbol not in cur_view_selection:
                             cur_view_selection[sel_symbol] = {}     
                         sel_symbol.selected = True  
