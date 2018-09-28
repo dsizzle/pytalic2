@@ -319,10 +319,20 @@ class MouseController(object):
                     inside_rect = False
                     inside_info = [False]
                     if select_rect:
-                        for vert in sel_stroke.get_ctrl_vertices_as_list():
-                            if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos):
-                                inside_rect = True
-                                break
+                        if type(sel_stroke).__name__ == "Stroke":
+                            for vert in sel_stroke.get_ctrl_vertices_as_list():
+                                if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos):
+                                    inside_rect = True
+                                    break
+                        else:
+                            for strok in sel_stroke.glyph.strokes:
+                                if inside_rect:
+                                    break
+                                for vert in strok.get_ctrl_vertices_as_list():
+                                    if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos+strok.pos):
+                                        inside_rect = True
+                                        break
+                        
                     else:
                         inside_info = sel_stroke.is_inside(paper_pos)
                     
@@ -343,6 +353,7 @@ class MouseController(object):
                 layout_pos = ui.preview_area.layout.pos
                 for sel_symbol in ui.preview_area.layout.object_list:
                     inside_info = sel_symbol.is_inside(paper_pos - layout_pos)
+                    if inside_info[0] == True and \
                         (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_symbol not in cur_view_selection:
                             cur_view_selection[sel_symbol] = {}     
