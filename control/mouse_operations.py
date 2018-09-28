@@ -152,7 +152,7 @@ class MouseController(object):
             bot_right = QtCore.QPoint( max(self.__saved_mouse_pos_paper[current_view].x(), norm_paper_pos.x()), \
                 max(self.__saved_mouse_pos_paper[current_view].y(), norm_paper_pos.y()))
 
-            current_view.select_rect = QtCore.QRect(top_left, bot_right)
+            current_view.select_rect = QtCore.QRectF(top_left, bot_right)
 
         ui.repaint()
         if current_view != ui.preview_area:
@@ -319,20 +319,7 @@ class MouseController(object):
                     inside_rect = False
                     inside_info = [False]
                     if select_rect:
-                        if type(sel_stroke).__name__ == "Stroke":
-                            for vert in sel_stroke.get_ctrl_vertices_as_list():
-                                if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos):
-                                    inside_rect = True
-                                    break
-                        else:
-                            for strok in sel_stroke.glyph.strokes:
-                                if inside_rect:
-                                    break
-                                for vert in strok.get_ctrl_vertices_as_list():
-                                    if select_rect.contains(QtCore.QPoint(vert[0], vert[1])+sel_stroke.pos+strok.pos):
-                                        inside_rect = True
-                                        break
-                        
+                        inside_rect = sel_stroke.is_contained(select_rect)
                     else:
                         inside_info = sel_stroke.is_inside(paper_pos)
                     

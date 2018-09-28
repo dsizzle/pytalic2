@@ -180,6 +180,22 @@ class Glyph(object):
 
         return (False, -1, None)
 
+    def is_contained(self, rect):
+        if not self.bound_rect or self.bound_rect.isEmpty():
+            self.calculate_bound_rect()
+
+        if self.bound_rect.isEmpty():
+            return False
+
+        if rect.contains(self.bound_rect):
+            return True
+
+        for sel_child in self.children:
+            if sel_child.is_contained(rect):
+                return True
+
+        return False
+
     def calculate_bound_rect(self):
         self.bound_rect = QtCore.QRectF()
 

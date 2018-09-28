@@ -61,6 +61,12 @@ class Instance(object):
 
         return is_inside
 
+    def is_contained(self, rect):
+        if self.__instanced_object is not None:
+            return self.__instanced_object.is_contained(rect)
+        
+        return False
+
     @property
     def bound_rect(self):
         if self.__instanced_object:

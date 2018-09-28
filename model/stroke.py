@@ -477,6 +477,21 @@ class Stroke(object):
 
         gc.restore()
 
+    def is_contained(self, rect):
+        if rect.contains(self.__bound_rect):
+            return True
+
+        for i in range(0, self.__curve_path.elementCount()):
+            element = QtCore.QPointF(self.__curve_path.elementAt(i))
+            if rect.contains(element):
+                return True
+
+        for vert in self.get_ctrl_vertices_as_list():
+            if rect.contains(vert[0]+self.pos.x(), vert[1]+self.pos.y()):
+                return True
+
+        return False
+
     def is_inside(self, point, get_closest_vert=False):
         test_point = point - self.__pos
         test_box = QtCore.QRectF(test_point.x()-20, test_point.y()-20, 40, 40)
