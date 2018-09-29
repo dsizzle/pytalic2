@@ -36,12 +36,14 @@ class StrokeController(object):
 
         self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
-
+        
+        ui.setUpdatesEnabled(False)
         dwg_tab = ui.main_view_tabs.indexOf(current_view)
 
         for idx in range(0, ui.main_view_tabs.count()):
             if idx != dwg_tab:
                 ui.main_view_tabs.setTabEnabled(idx, False)
+        ui.setUpdatesEnabled(True)        
 
         self.__stroke_pts = []
         self.__tmp_stroke = stroke.Stroke()
@@ -256,6 +258,7 @@ class StrokeController(object):
 
         cur_char.add_glyph(glyph_instance)
         cur_view_selection[glyph_instance] = {}
+        glyph_instance.selected = True
 
         ui.dwg_area.repaint()
         self.__main_ctrl.set_icon()
@@ -770,6 +773,16 @@ class StrokeController(object):
             self.__stroke_pts = []
             current_view.strokes = []
             ui.repaint()
+
+            ui.setUpdatesEnabled(False)
+            for idx in range(0, ui.main_view_tabs.count()):
+                ui.main_view_tabs.setTabEnabled(idx, True)
+
+            if len(char_set.get_saved_glyphs()) == 0:
+                ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
+                False)
+            ui.setUpdatesEnabled(True)
+
             return
 
         self.__main_ctrl.state = control.edit_control.IDLE
@@ -800,12 +813,14 @@ class StrokeController(object):
 
         self.__main_ctrl.set_ui_state_selection(True)
 
+        ui.setUpdatesEnabled(False)
         for idx in range(0, ui.main_view_tabs.count()):
             ui.main_view_tabs.setTabEnabled(idx, True)
 
         if len(char_set.glyphs) == 0:
             ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
                 False)
+        ui.setUpdatesEnabled(True)
 
         ui.repaint()
 
@@ -844,7 +859,8 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            sel_stroke.flip_x()
+            if type(sel_stroke).__name__ == "Stroke": 
+                sel_stroke.flip_x()
 
     def flip_selected_strokes_y(self):
         current_view = self.__main_ctrl.get_current_view()
@@ -881,7 +897,8 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            sel_stroke.flip_y()
+            if type(sel_stroke).__name__ == "Stroke": 
+                sel_stroke.flip_y()
 
     def move_selected(self, args):
         if 'strokes' in args:

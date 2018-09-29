@@ -34,12 +34,16 @@ class Glyph(object):
     def instances(self):
         return self.__instances
 
-    @property
-    def bound_rect(self):
+    def get_bound_rect(self):
         return self.__bound_rect
 
+    def set_bound_rect(self, new_bound_rect):
+        self.__bound_rect = new_bound_rect
+
+    bound_rect = property(get_bound_rect, set_bound_rect)
+
     def set_pos(self, point):
-        self.__pos = point
+        self.__pos = QtCore.QPoint(point)
 
     def get_pos(self):
         return self.__pos
@@ -74,26 +78,6 @@ class Glyph(object):
         self.__is_selected = new_state
 
     selected = property(get_select_state, set_select_state)
-
-    def new_stroke(self, points, add=True):
-        my_stroke = model.stroke.Stroke()
-
-        start_x, start_y = points[0]
-
-        my_stroke.set_ctrl_vertices_from_list(points)
-        my_stroke.pos = QtCore.QPoint(start_x, start_y)
-
-        my_stroke.calc_curve_points()
-        num_points = len(points)
-        if num_points == 2:
-            my_stroke.straighten()
-
-        if add:
-            self.__strokes.append(my_stroke)
-
-        my_stroke.set_parent(self)
-
-        return my_stroke
 
     def new_freehand_stroke(self, points):
         my_stroke = model.stroke.Stroke()
@@ -142,23 +126,8 @@ class Glyph(object):
 
         self.__strokes.append(new_stroke)
 
+        self.calculate_bound_rect()
         return new_stroke
-
-    def new_stroke_instance(self, args):
-        if STROKE in args:
-            stroke_to_add = args[STROKE]
-        else:
-            return
-
-        new_stroke_inst = model.stroke.StrokeInstance()
-        if not isinstance(stroke_to_add, model.stroke.Stroke):
-            stroke_to_add = stroke_to_add.stroke
-
-        new_stroke_inst.stroke = stroke_to_add
-        self.__strokes.append(new_stroke_inst)
-        new_stroke_inst.set_parent(self)
-
-        return new_stroke_inst
 
     def add_stroke_instance(self, inst):
         if not isinstance(inst, model.stroke.Stroke):
@@ -192,57 +161,63 @@ class Glyph(object):
             print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
             print self.__strokes
 
+        self.calculate_bound_rect()
+
     def is_inside(self, point):
-        test_point = point - self.__pos
 
-        for sel_stroke in self.__strokes:
-            insideInfo = sel_stroke.is_inside(test_point)
+        test_point = point - self.pos
+        if not self.bound_rect or self.bound_rect.isEmpty():
+            self.calculate_bound_rect()
 
-            if insideInfo[0]:
-                return (True, -1, None)
+        if self.bound_rect.isEmpty():
+            return (False, -1, None)
+
+        if self.bound_rect.contains(test_point):
+           for sel_child in self.children:              
+                insideInfo = sel_child.is_inside(test_point)
+                if insideInfo[0]:
+                    return (True, -1, None)
 
         return (False, -1, None)
 
+    def is_contained(self, rect):
+        if not self.bound_rect or self.bound_rect.isEmpty():
+            self.calculate_bound_rect()
+
+        if self.bound_rect.isEmpty():
+            return False
+
+        if rect.contains(self.bound_rect):
+            return True
+
+        for sel_child in self.children:
+            if sel_child.is_contained(rect):
+                return True
+
+        return False
+
     def calculate_bound_rect(self):
-        top_left = None
-        bot_right = None
+        self.bound_rect = QtCore.QRectF()
 
-        for sel_stroke in self.__strokes:
-            stroke_top_left = sel_stroke.bound_rect.topLeft() + sel_stroke.pos
-            stroke_bot_right = sel_stroke.bound_rect.bottomRight() + sel_stroke.pos
-
-            if top_left is None:
-                top_left = stroke_top_left
-            if bot_right is None:
-                bot_right = stroke_bot_right
-
-            if stroke_top_left.x() < top_left.x():
-                top_left.setX(stroke_top_left.x())
-            if stroke_top_left.y() < top_left.y():
-                top_left.setY(stroke_top_left.y())
-            if stroke_bot_right.x() > bot_right.x():
-                bot_right.setX(stroke_bot_right.x())
-            if stroke_bot_right.y() > bot_right.y():
-                bot_right.setY(stroke_bot_right.y())
-
-        self.__bound_rect = QtCore.QRectF(top_left, \
-            bot_right)
-
+        for sel_child in self.children:
+            if sel_child.bound_rect:
+                self.bound_rect = self.bound_rect.united(sel_child.bound_rect.translated(sel_child.pos))
+        
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
         gc.translate(self.__pos)
 
-        if not self.__bound_rect:
-            self.calculate_bound_rect()
-
-        for sel_stroke in self.__strokes:
+        for sel_stroke in self.children:
             sel_stroke.draw(gc, nib)
+
+        if not self.bound_rect or self.bound_rect.isEmpty():
+            self.calculate_bound_rect()
 
         if self.__is_selected:
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
             gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
 
-            gc.drawRect(self.__bound_rect)
+            gc.drawRect(self.bound_rect)
 
         gc.restore()
 
@@ -257,6 +232,7 @@ class Character(Glyph):
         self.__override_spacing = False
 
         self.__glyphs = []
+        self.__name = unichr(0)
 
     def get_unicode_character(self):
         return self.__unicode_character
@@ -270,10 +246,12 @@ class Character(Glyph):
         if isinstance(glyph_to_add, model.instance.GlyphInstance):
             self.__glyphs.append(glyph_to_add)
             glyph_to_add.parent = self
+            self.calculate_bound_rect()
 
     def remove_glyph(self, glyph_to_remove):
         self.__glyphs.remove(glyph_to_remove)
         glyph_to_remove.parent = None
+        self.calculate_bound_rect()
 
     @property
     def glyphs(self):
@@ -318,6 +296,14 @@ class Character(Glyph):
 
     override_spacing = property(get_override_spacing, set_override_spacing)
 
+    def get_name(self):
+        return self.__name
+
+    def set_name(self, new_name):
+        self.__name = new_name
+
+    name = property(get_name, set_name)
+    
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:
             nib_glyph = nib
@@ -325,11 +311,20 @@ class Character(Glyph):
         gc.save()
         gc.translate(self.pos)
 
-        for glyph in self.__glyphs:
+        for glyph in self.glyphs:
             glyph.draw(gc, nib_glyph)
 
         for stroke in self.strokes:
             stroke.draw(gc, nib)
+           
+        if not self.bound_rect:
+            self.calculate_bound_rect()
+
+        if self.selected:
+            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
+
+            gc.drawRect(self.bound_rect)
 
         gc.restore()
 

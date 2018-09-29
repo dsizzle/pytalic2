@@ -1,3 +1,5 @@
+import file_operations
+
 from model import commands
 from model import instance
 from model import stroke
@@ -27,7 +29,6 @@ class ClipboardController(object):
         undo_args = {
             'strokes' : cur_view_selection.copy(),
             'char_index' : char_index,
-            'copy' : False,
         }
 
         cut_strokes_cmd.set_do_args(do_args)
@@ -56,7 +57,8 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
+
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
             if type(sel_stroke).__name__ == 'Stroke':
@@ -81,7 +83,7 @@ class ClipboardController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = char_index = ui.char_selector_list.currentRow()
+        char_index = char_set.get_current_char_index()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -89,19 +91,21 @@ class ClipboardController(object):
         }
 
         undo_args = {
-            'strokes' : cur_view_selection.copy(),
-            'char_index' : char_index,
+            
         }
 
         copy_strokes_cmd.set_do_args(do_args)
         copy_strokes_cmd.set_undo_args(undo_args)
         copy_strokes_cmd.set_do_function(self.copy_clipboard)
-        copy_strokes_cmd.set_undo_function(self.paste_clipboard)
+        copy_strokes_cmd.set_undo_function(self.clear_clipboard)
 
         cmd_stack.do_command(copy_strokes_cmd)
         ui.edit_undo.setEnabled(True)
 
         ui.repaint()
+
+    def clear_clipboard(self, args):
+        self.__clipboard = []
 
     def copy_clipboard(self, args):
         ui = self.__main_ctrl.get_ui()
@@ -117,6 +121,7 @@ class ClipboardController(object):
             return
 
         ui.char_selector_list.setCurrentRow(char_index)
+
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
@@ -132,15 +137,21 @@ class ClipboardController(object):
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
         char_index = ui.char_selector_list.currentRow()
 
+        paste_strokes = []
+        for sel_stroke in self.__clipboard:
+            if type(sel_stroke).__name__ == 'Stroke':
+                paste_strokes.append(stroke.Stroke(from_stroke=sel_stroke))
+            else:
+                paste_strokes.append(sel_stroke)
+
         do_args = {
-            'strokes' : self.__clipboard[:],
+            'strokes' : paste_strokes,
             'char_index' : char_index,
         }
 
         undo_args = {
-            'strokes' : self.__clipboard[:],
+            'strokes' : paste_strokes,
             'char_index' : char_index,
-            'copy' : True,
         }
 
         paste_strokes_cmd.set_do_args(do_args)
@@ -176,27 +187,30 @@ class ClipboardController(object):
         else:
             copy_strokes = True
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
+
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False
 
-        cur_view_selection = {}
-
+        self.__main_ctrl.clear_selection()
+        cur_view_selection = selection[current_view]
+        
         for sel_stroke in strokes_to_paste:
-            if copy_strokes and type(sel_stroke).__name__ == 'Stroke':
-                paste_stroke = stroke.Stroke(from_stroke=sel_stroke)
-            else:
-                paste_stroke = sel_stroke
+            
+            added_item = None
 
-            cur_view_selection[paste_stroke] = {}
-            paste_stroke.selected = True
-            if type(paste_stroke).__name__ == 'Stroke':
-                current_view.symbol.add_stroke({'stroke' : paste_stroke, 'copy_stroke' : False})
+            if type(sel_stroke).__name__ == 'Stroke':
+                added_item = current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             else:
                 new_glyph = instance.GlyphInstance()
-                new_glyph.glyph = paste_stroke.glyph
+                new_glyph.glyph = sel_stroke.glyph
+                new_glyph.pos = sel_stroke.pos
                 current_view.symbol.add_glyph(new_glyph)
+                added_item = new_glyph
+
+            cur_view_selection[added_item] = {}
+            added_item.selected = True
 
         self.__main_ctrl.set_ui_state_selection(True)
         ui.repaint()

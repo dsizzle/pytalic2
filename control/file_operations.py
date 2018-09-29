@@ -20,13 +20,31 @@ class FileController(object):
         self.__blank_pixmap = QtGui.QPixmap(view.shared_qt.ICON_SIZE, view.shared_qt.ICON_SIZE)
         self.__blank_pixmap.fill(QtGui.QColor(240, 240, 240))
 
+    @property
+    def file_path(self):
+        if self.__file_name:
+            file_path = os.path.join(self.__dir_name, self.__file_name)
+        else:
+            file_path = None
+
+        return file_path 
+
     def file_new(self):
         self.__file_name = None
 
-        self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
-        char_set = self.__main_ctrl.get_character_set()
         ui = self.__main_ctrl.get_ui()
 
+        ui.setUpdatesEnabled(False)
+        self.__main_ctrl.clear_selection()
+        ui.dwg_area.strokes = []
+        ui.dwg_area.subject = None
+        ui.stroke_dwg_area.strokes = []
+        ui.stroke_dwg_area.subject = None
+        ui.preview_area.subject = None
+
+        self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
+        char_set = self.__main_ctrl.get_character_set()
+        
         ui.base_height_spin.setValue(char_set.base_height)
         ui.cap_height_spin.setValue(char_set.cap_height)
         ui.cap_height_spin.setMaximum(char_set.ascent_height)
@@ -39,23 +57,31 @@ class FileController(object):
         for i in range(START_CHAR_CODE, END_CHAR_CODE):
             char_item = QtGui.QListWidgetItem()
             char_item.setText(str(unichr(i)))
+
             char_id = char_set.new_character(i)
             char_item.setData(QtCore.Qt.UserRole, char_id)
+
             char_item.setData(QtCore.Qt.UserRole+1, i)
             char_item.setIcon(QtGui.QIcon(self.__blank_pixmap))
             ui.char_selector_list.addItem(char_item)
 
+        ui.setUpdatesEnabled(True)
+        ui.char_selector_list.setCurrentRow(1)
+        ui.repaint()
         ui.char_selector_list.setCurrentRow(0)
-
+        
         ui.edit_undo.setEnabled(False)
         ui.edit_redo.setEnabled(False)
         ui.file_save.setEnabled(False)
-        
+
+        ui.repaint()
 
     def file_save_as(self):
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
+        file_path = None
+        
         file_name = ui.file_save_dialog.getSaveFileName(ui, \
              "Save Character Set", self.__dir_name, \
              "Character Set Files (*.cs)")
@@ -73,7 +99,7 @@ class FileController(object):
             ui.file_save.setEnabled(True)
             cmd_stack.reset_save_count()
 
-            return file_path
+        return file_path
             
     def file_save(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
@@ -99,6 +125,7 @@ class FileController(object):
              "Character Set Files (*.cs)")
 
         if file_path:
+            ui.setUpdatesEnabled(False)
             self.load(file_path)
             char_set = self.__main_ctrl.get_character_set()
         
@@ -117,13 +144,13 @@ class FileController(object):
             ui.guide_lines.nib_angle = char_set.nib_angle
             ui.dwg_area.nib.angle = char_set.nib_angle
             ui.dwg_area.nib_instance.angle = char_set.nib_angle
+            ui.dwg_area.nib_special.angle = char_set.nib_angle
             ui.stroke_dwg_area.nib.angle = char_set.nib_angle
+            ui.preview_area.nib.angle = char_set.nib_angle
             ui.nominal_width_spin.setValue(char_set.width)
             ui.guide_lines.width = char_set.width
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_path))
-
-            #self.__ui.setWindowTitle(self.__label + " - " + self.__file_name)
 
             ui.stroke_selector_list.clear()
 
@@ -141,29 +168,22 @@ class FileController(object):
                     i += 1
 
             for idx in range(0, ui.char_selector_list.count()):
-                ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
-
-            idx = 0
-            char_list = char_set.get_char_list()
-
-            for character in char_list.keys():
-                if len(char_list[character].strokes) > 0:
-                    ui.char_selector_list.setCurrentRow(idx)
-                    ui.repaint()
-
-                idx += 1
+                char_item = int(str(ui.char_selector_list.item(idx).data(QtCore.Qt.UserRole+1).toString()))
+                sel_char = char_set.get_char_by_index(char_item)
+                if sel_char and sel_char.children > 0:
+                    bitmap = ui.dwg_area.draw_icon(None, sel_char.children)
+                    ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(bitmap))
+                else:
+                    ui.char_selector_list.item(idx).setIcon(QtGui.QIcon(self.__blank_pixmap))
 
             ui.char_selector_list.setCurrentRow(1)
             ui.char_selector_list.setCurrentRow(0)
 
-            # self.__selection[self.__current_view_pane] = {}
-            # self.__ui.repaint()
-
             cmd_stack.clear()
             cmd_stack.reset_save_count()
-            ui.file_save.setEnabled(True)
+            ui.setUpdatesEnabled(True)
 
-            return file_path
+        return file_path
 
     def save(self, file_name):
         char_set = self.__main_ctrl.get_character_set()

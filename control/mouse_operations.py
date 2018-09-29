@@ -37,7 +37,8 @@ class MouseController(object):
             
             paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
             paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
-            zoom_pos = (paper_pos - current_view.origin) * scale_change
+            norm_paper_pos = current_view.get_normalized_position(paper_pos)
+            zoom_pos = norm_paper_pos * scale_change
 
             current_view.origin_delta -= zoom_pos
             self.__saved_mouse_pos_paper[current_view] = paper_pos
@@ -59,6 +60,9 @@ class MouseController(object):
 
         paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
         paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
+
+        if self.__main_ctrl.state == edit_control.IDLE and left_down:
+            self.__on_l_button_down_paper(event.pos(), shift_down)
 
     def mouse_release_event_paper(self, event):
         current_view = self.__main_ctrl.get_current_view()
@@ -101,13 +105,13 @@ class MouseController(object):
 
         paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
         paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
-        
+        norm_paper_pos = current_view.get_normalized_position(paper_pos)
+
         if self.__main_ctrl.state == edit_control.MOVING_PAPER:
             delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
             current_view.origin_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
         elif self.__main_ctrl.state == edit_control.DRAGGING:
-            norm_paper_pos = current_view.get_normalized_position(paper_pos)
             delta_pos = paper_pos - norm_paper_pos
             
             snap_ctrl = self.__main_ctrl.get_snap_controller()
@@ -118,6 +122,12 @@ class MouseController(object):
                 current_view.snap_points = []
                     
             delta = (paper_pos - self.__saved_mouse_pos_paper[current_view]) / current_view.scale
+            if snap_ctrl.is_constrained_x():
+                delta.setY(0)
+                
+            if snap_ctrl.is_constrained_y():
+                delta.setX(0)
+                
             self.__move_delta += delta
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             args = {
@@ -136,6 +146,13 @@ class MouseController(object):
             self.__main_ctrl.state = edit_control.DRAGGING
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             self.__move_delta = QtCore.QPoint(0, 0)
+        elif self.__main_ctrl.state == edit_control.SELECT_DRAGGING:
+            top_left = QtCore.QPoint( min(self.__saved_mouse_pos_paper[current_view].x(), norm_paper_pos.x()), \
+                min(self.__saved_mouse_pos_paper[current_view].y(), norm_paper_pos.y()))
+            bot_right = QtCore.QPoint( max(self.__saved_mouse_pos_paper[current_view].x(), norm_paper_pos.x()), \
+                max(self.__saved_mouse_pos_paper[current_view].y(), norm_paper_pos.y()))
+
+            current_view.select_rect = QtCore.QRectF(top_left, bot_right)
 
         ui.repaint()
         if current_view != ui.preview_area:
@@ -152,6 +169,25 @@ class MouseController(object):
             stroke_ctrl = self.__main_ctrl.get_stroke_controller()
             stroke_ctrl.add_new_stroke()
             QtGui.qApp.restoreOverrideCursor()
+
+    def __on_l_button_down_paper(self, pos, shift_down):
+        ui = self.__main_ctrl.get_ui()
+        current_view = self.__main_ctrl.get_current_view()
+        adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
+        adjusted_pos.setY(adjusted_pos.y() - ui.main_view_tabs.tabBar().height())
+
+        paper_pos = current_view.get_normalized_position(adjusted_pos)
+
+        self.update_selection(paper_pos, shift_down)
+        
+        selection = self.__main_ctrl.get_selection()
+        cur_view_selection = selection[current_view]
+
+        if len(cur_view_selection.keys()) > 0:
+            self.__main_ctrl.state == edit_control.DRAGGING
+        else:
+            self.__saved_mouse_pos_paper[current_view] = paper_pos
+            self.__main_ctrl.state = edit_control.SELECT_DRAGGING
 
     def __on_l_button_up_paper(self, pos, shift_down):
         current_view = self.__main_ctrl.get_current_view()
@@ -203,7 +239,7 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.ADDING_CTRL_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.add_control_point(sel_stroke, inside_info)
                         break
@@ -213,17 +249,19 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.SPLIT_AT_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos)
+                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.split_stroke_at_point(sel_stroke, inside_info)
                         break
 
             self.__main_ctrl.state = edit_control.IDLE
             QtGui.qApp.restoreOverrideCursor()
-        else:
-            self.update_selection(paper_pos, shift_down)
+        elif self.__main_ctrl.state == edit_control.SELECT_DRAGGING:
+            self.__main_ctrl.state = edit_control.IDLE
+            self.update_selection(paper_pos, shift_down, current_view.select_rect)
+            current_view.select_rect = None
 
-    def update_selection(self, paper_pos, shift_down):
+    def update_selection(self, paper_pos, shift_down, select_rect=None):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
@@ -231,41 +269,36 @@ class MouseController(object):
 
         ui = self.__main_ctrl.get_ui()
         
+        inside_strokes = {}
         if len(cur_view_selection.keys()) > 0:
             for sel_stroke in cur_view_selection.keys():
                 inside_info = sel_stroke.is_inside(paper_pos)
-                if inside_info[1] >= 0:
-                    ctrl_vertex_num = int((inside_info[1]+1) / 3)
-                    ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
-                    
-                    handle_index = (inside_info[1] + 1) % 3 +1
-                    if not shift_down:
-                        if type(sel_stroke).__name__ == 'Stroke':
-                            sel_stroke.deselect_ctrl_verts()
-                        cur_view_selection[sel_stroke] = {}
 
-                    cur_view_selection[sel_stroke][ctrl_vert] = handle_index
+                if inside_info[0]:
+                    inside_strokes[sel_stroke] = inside_info
 
-                    for ctrl_vert in cur_view_selection[sel_stroke].keys():
-                        ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
+            if len(inside_strokes):
+                for sel_stroke in inside_strokes:
+                    inside_info = inside_strokes[sel_stroke]
 
-                    sel_stroke.selected = True
-                    
-                else:
-                    if shift_down:
-                        if sel_stroke not in cur_view_selection:
-                            cur_view_selection[sel_stroke] = {}
+                    if inside_info[1] >= 0:
+                        ctrl_vertex_num = int((inside_info[1]+1) / 3)
+                        ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
+                        
+                        handle_index = (inside_info[1] + 1) % 3 + 1
+                        if not shift_down:
                             if type(sel_stroke).__name__ == 'Stroke':
                                 sel_stroke.deselect_ctrl_verts()
+                            cur_view_selection[sel_stroke] = {}
 
-                        sel_stroke.selected = True
-                    else:
-                        if sel_stroke in cur_view_selection:
-                            del cur_view_selection[sel_stroke]
+                        cur_view_selection[sel_stroke][ctrl_vert] = handle_index
 
-                        sel_stroke.selected = False
-                        if type(sel_stroke).__name__ == 'Stroke':
-                            sel_stroke.deselect_ctrl_verts()
+                        for ctrl_vert in cur_view_selection[sel_stroke].keys():
+                            ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
+
+            elif not shift_down:
+                self.__main_ctrl.deselect_all_strokes_cb()
+                cur_view_selection = selection[current_view]
 
             vert_list = cur_view_selection.values()
             behavior_list = []
@@ -280,28 +313,66 @@ class MouseController(object):
             else:
                 ui.behavior_combo.setCurrentIndex(0)
 
-        if len(cur_view_selection.keys()) == 0 or shift_down:
+        if len(cur_view_selection.keys()) == 0 or shift_down or select_rect:
             if current_view != ui.preview_area:
                 for sel_stroke in current_view.symbol.children:
-                    inside_info = sel_stroke.is_inside(paper_pos)
-                    if inside_info[0] == True and (len(cur_view_selection.keys()) == 0 or shift_down):
+                    inside_rect = False
+                    inside_info = [False]
+                    if select_rect:
+                        inside_rect = sel_stroke.is_contained(select_rect)
+                    else:
+                        inside_info = sel_stroke.is_inside(paper_pos)
+                    
+                    if inside_info[0] or inside_rect \
+                        and (len(cur_view_selection.keys()) == 0 or \
+                            shift_down or select_rect):
                         if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
                             if type(sel_stroke).__name__ == 'Stroke':
                                 sel_stroke.deselect_ctrl_verts()
 
                         sel_stroke.selected = True  
-                    elif not shift_down:
+                    elif not shift_down and not inside_rect:
                         sel_stroke.selected = False
                         if type(sel_stroke).__name__ == 'Stroke':
                             sel_stroke.deselect_ctrl_verts()
-
+            else:
+                layout_pos = ui.preview_area.layout.pos
+                for sel_symbol in ui.preview_area.layout.object_list:
+                    inside_info = sel_symbol.is_inside(paper_pos - layout_pos)
+                    if inside_info[0] == True and \
+                        (len(cur_view_selection.keys()) == 0 or shift_down):
+                        if sel_symbol not in cur_view_selection:
+                            cur_view_selection[sel_symbol] = {}     
+                        sel_symbol.selected = True  
+                    elif not shift_down:
+                        sel_symbol.selected = False
+                        
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.set_ui_state_selection(True)
+            check_state = QtCore.Qt.Unchecked
+            nib_angle_override = None
+            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
+                type(cur_view_selection.keys()[0]).__name__ != 'CharacterInstance' and \
+                cur_view_selection.keys()[0].override_nib_angle:
+                check_state = QtCore.Qt.Checked
+                nib_angle_override = cur_view_selection.keys()[0].nib_angle
+
+            ui.stroke_override_nib_angle.setCheckState(check_state)
+
             ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
             ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
+            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
+                type(cur_view_selection.keys()[0]).__name__ != 'CharacterInstance' and \
+                nib_angle_override:
+                ui.stroke_nib_angle_spin.setValue(nib_angle_override)
+            else:
+                ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
+            
         else:
             self.__main_ctrl.set_ui_state_selection(False)
             ui.behavior_combo.setCurrentIndex(0)
             ui.position_x_spin.setValue(0)
             ui.position_y_spin.setValue(0)
+            ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
+            ui.stroke_override_nib_angle.setCheckState(QtCore.Qt.Unchecked)

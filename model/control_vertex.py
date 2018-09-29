@@ -99,7 +99,7 @@ class ControlVertex(object):
             elif self.__handle_pos[RIGHT_HANDLE]:
                 self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] - old_l_delta
 
-        self.__handle_pos[handle] = point
+        self.__handle_pos[handle] = QtCore.QPoint(point)
 
     def get_handle_pos_as_list(self):
         knot = [self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y()]

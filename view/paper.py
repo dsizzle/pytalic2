@@ -11,9 +11,7 @@ Canvas base class
 class Canvas(QtGui.QFrame):
     def __init__(self, parent):
         QtGui.QFrame.__init__(self, parent)
-        self.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.setMouseTracking(True)
-
+        
         self.__origin = None
         self.__origin_delta = QtCore.QPoint(0, 0)
         self.__scale = 1.0
@@ -25,15 +23,13 @@ class Canvas(QtGui.QFrame):
         self.__draw_nib_guides = True
         
         self.__subject = None
-        
-        self.__old_view_pos = None
-        self.__move_view = False
 
         self.__bitmap = None
         self.__bitmap_size = 40
 
         self.initial_nib_width = self.width() / 5
         self.__nib = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(125, 25, 25))
+        self.__select_rect = None
         
     def resizeEvent(self, event):
         if self.__guide_lines:
@@ -137,8 +133,6 @@ class Canvas(QtGui.QFrame):
         norm_position = norm_position - self.__origin - self.__origin_delta
         norm_position = norm_position / self.__scale
 
-        norm_position = norm_position - self.subject.pos
-
         return norm_position
 
     def set_subject(self, subject):
@@ -148,6 +142,14 @@ class Canvas(QtGui.QFrame):
         return self.__subject
 
     subject = property(get_subject, set_subject)
+
+    def get_select_rect(self):
+        return self.__select_rect
+
+    def set_select_rect(self, new_select_rect):
+        self.__select_rect = new_select_rect
+
+    select_rect = property(get_select_rect, set_select_rect)
 
     def paintEvent(self, event):
         dc = QtGui.QPainter()
@@ -168,6 +170,10 @@ class Canvas(QtGui.QFrame):
             self.subject.draw(gc)
 
             dc.restore()
+
+        if self.__select_rect:
+            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.drawRect(self.__select_rect)
 
         dc.restore()
         dc.end()
@@ -210,6 +216,14 @@ class DrawingArea(Canvas):
 
     nib_instance = property(get_nib_instance, set_nib_instance)
 
+    def get_nib_special(self):
+        return self.__nib_special
+
+    def set_nib_special(self, new_nib_special):
+        self.__nib_special = new_nib_special
+
+    nib_special = property(get_nib_special, set_nib_special)
+    
     def draw_icon(self, dc, strokes_to_draw):
         pixmap = QtGui.QPixmap(self.width(), self.height())
 
@@ -324,6 +338,11 @@ class DrawingArea(Canvas):
             else:
                 dc.drawEllipse(self.__snap_points[0], 20, 20)
 
+        if self.select_rect:
+            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setBrush(view.shared_qt.BRUSH_MD_GRAY_25)
+            dc.drawRect(self.select_rect)
+
         dc.restore()
         dc.end()
         QtGui.QFrame.paintEvent(self, event)
@@ -337,6 +356,15 @@ class LayoutArea(Canvas):
 
     layout = property(Canvas.get_subject, Canvas.set_subject)
 
+    def frame_layout(self):
+         max_dim = max(self.frameRect().width(), self.frameRect().height())
+         layout_bound = self.layout.bound_rect
+         max_layout_dim = max(layout_bound.width(), layout_bound.height())
+         if max_layout_dim:
+            self.scale = max_dim / max_layout_dim  
+
+            self.origin_delta = QtCore.QPoint(self.origin.x() - self.layout.pos.x() - layout_bound.width() / 2, 0)
+            
     def paintEvent(self, event):
         dc = QtGui.QPainter()
 
@@ -348,6 +376,10 @@ class LayoutArea(Canvas):
         dc.save()
         dc.translate(self.origin + self.origin_delta)
         dc.scale(self.scale, self.scale)
+
+        dc.setPen(view.shared_qt.PEN_LT_GRAY)
+        dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+        dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10) 
 
         if self.draw_guidelines and self.guide_lines:
             self.guide_lines.draw(dc, self.size(), self.origin + self.origin_delta)

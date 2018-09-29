@@ -24,6 +24,8 @@ class PytalicEditorApp(QtGui.QApplication):
 
 def main(args=None):
     """the main entry point"""
+    # bump up stack depth due to pickle failure
+    sys.setrecursionlimit(10000)
     my_qt_app = PytalicEditorApp(args)
     my_qt_ctrl = edit_control.EditorController(1024, 768, "Pytalic Character Editor")
 

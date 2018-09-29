@@ -112,6 +112,13 @@ class CharacterSet(object):
     def characters(self):
         return self.__objects[self.__char_type]
 
+    def get_char_by_index(self, char_index):
+        char_to_get = unichr(char_index)
+        return self.get_char(char_to_get)
+
+    def get_char_list(self):
+        return self.__objects[self.__char_type]
+
     @property
     def glyphs(self):
         return self.__objects[self.__glyph_type]
@@ -210,6 +217,11 @@ class CharacterSet(object):
 
     gap_height = property(get_gap_height, set_gap_height)
 
+    @property
+    def height(self):
+        return self.__base_height_nibs + self.__descent_height_nibs + \
+            self.__ascent_height_nibs
+             
     def set_guide_angle(self, new_angle):
         self.__guide_angle = new_angle
 

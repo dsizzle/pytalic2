@@ -26,7 +26,6 @@ class Stroke(object):
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
             self.update_ctrl_vertices()
             self.__pos = QtCore.QPoint(from_stroke.pos)
-            self.__stroke_shape = from_stroke.stroke_shape
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
@@ -36,9 +35,9 @@ class Stroke(object):
             self.__end_serif = None
             self.__stroke_ctrl_verts = []
             self.__pos = QtCore.QPoint(0, 0)
-            self.__stroke_shape = None
             self.__curve_path = None
             self.__bound_rect = None
+            self.__bound_path = None
             self.__nib_angle = None
             self.__override_nib_angle = False
 
@@ -53,7 +52,6 @@ class Stroke(object):
     def __getstate__(self):
         save_dict = self.__dict__.copy()
 
-        save_dict["_Stroke__stroke_shape"] = None
         save_dict["_Stroke__curve_path"] = None
 
         return save_dict
@@ -89,7 +87,7 @@ class Stroke(object):
         return self.__instances.keys()
 
     def set_pos(self, point):
-        self.__pos = point
+        self.__pos = QtCore.QPoint(point)
 
     def get_pos(self):
         return self.__pos
@@ -121,16 +119,10 @@ class Stroke(object):
     def flip_x(self):
         temp_ctrl_verts = []
         ctrl_verts = self.get_ctrl_vertices_as_list()
-        num_verts = len(ctrl_verts)
-
-        temp_ctrl_verts.append([ctrl_verts[0][0] + self.__pos.x(), \
-            ctrl_verts[0][1] + self.__pos.y()])
-        index = 1
-
-        while index < num_verts:
-            temp_ctrl_verts.append([self.__pos.x() - ctrl_verts[index][0], \
-                ctrl_verts[index][1] + self.__pos.y()]) 
-            index += 1
+        
+        for vert in ctrl_verts:
+            temp_ctrl_verts.append([self.__pos.x() - vert[0], \
+                vert[1] + self.__pos.y()]) 
 
         self.set_ctrl_vertices_from_list(temp_ctrl_verts)
         self.calc_curve_points()
@@ -138,16 +130,10 @@ class Stroke(object):
     def flip_y(self):
         temp_ctrl_verts = []
         ctrl_verts = self.get_ctrl_vertices_as_list()
-        num_verts = len(ctrl_verts)
 
-        temp_ctrl_verts.append([ctrl_verts[0][0] + self.__pos.x(), \
-            ctrl_verts[0][1] + self.__pos.y()])
-        index = 1
-
-        while index < num_verts:
-            temp_ctrl_verts.append([ctrl_verts[index][0] + self.__pos.x(), \
-                self.__pos.y() - ctrl_verts[index][1]]) 
-            index += 1
+        for vert in ctrl_verts:
+            temp_ctrl_verts.append([vert[0] + self.__pos.x(), \
+                self.__pos.y() - vert[1]]) 
 
         self.set_ctrl_vertices_from_list(temp_ctrl_verts)
         self.calc_curve_points()
@@ -200,8 +186,8 @@ class Stroke(object):
         verts = self.get_ctrl_vertices_as_list()
         cur_curve = self.__curve_path
 
-        for i in range(0, 1000):
-            pct = float(i) / 1000.0
+        for i in range(0, 100):
+            pct = float(i) / 100.0
             try:
                 angle = int(cur_curve.angleAtPercent(pct))
             except ValueError:
@@ -369,6 +355,8 @@ class Stroke(object):
 
     def divide_curve_at_point(self, points, t, index):
         true_index = index * 3
+        if len(points) < true_index:
+            true_index /= 3
 
         p3 = points[true_index]
         p2 = points[true_index - 1]
@@ -452,29 +440,14 @@ class Stroke(object):
 
         verts = self.get_ctrl_vertices_as_list()
         if len(verts) > 0:
-            self.__stroke_shape = QtGui.QPainterPath()
             if self.__curve_path is None:
                 self.calc_curve_points()
 
-            draw_nib.draw(gc, self)
+            self.__bound_rect, self.__bound_path = draw_nib.draw(gc, self)
 
-            path1 = QtGui.QPainterPath(self.__curve_path)
-            path2 = QtGui.QPainterPath(self.__curve_path).toReversed()
-
-            dist_x, dist_y = nib.get_actual_widths()
-
-            path1.translate(dist_x, -dist_y)
-            path2.translate(-dist_x, dist_y)
-
-            self.__stroke_shape.addPath(path1)
-            self.__stroke_shape.connectPath(path2)
-            self.__stroke_shape.closeSubpath()
-
-            #self.__stroke_shape.setFillRule(QtCore.Qt.WindingFill)
-
-            #gc.drawPath(self.__stroke_shape)
-
-            self.__bound_rect = self.__stroke_shape.controlPointRect()
+            tmp_bound_rect = self.__curve_path.controlPointRect()
+            
+            self.__bound_rect = self.__bound_rect.united(tmp_bound_rect).adjusted(-5, -5, 5, 5)
 
         if self.__start_serif:
             verts = self.get_ctrl_vertices_as_list()
@@ -502,43 +475,94 @@ class Stroke(object):
 
                 gc.drawRect(self.__bound_rect)
 
-
         gc.restore()
 
-    def is_inside(self, point):
+    def is_contained(self, rect):
+        if rect.contains(self.__bound_rect):
+            return True
+
+        for i in range(0, self.__curve_path.elementCount()):
+            element = QtCore.QPointF(self.__curve_path.elementAt(i))
+            if rect.contains(element):
+                return True
+
+        for vert in self.get_ctrl_vertices_as_list():
+            if rect.contains(vert[0]+self.pos.x(), vert[1]+self.pos.y()):
+                return True
+
+        return False
+
+    def is_inside(self, point, get_closest_vert=False):
         test_point = point - self.__pos
-        if self.__stroke_shape is not None:
-            is_inside = self.__stroke_shape.contains(test_point)
+        test_box = QtCore.QRectF(test_point.x()-20, test_point.y()-20, 40, 40)
+        if self.__bound_path:
+            is_inside = self.__bound_path.intersects(test_box)
         else:
             is_inside = False
 
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
+                vertex = -1
                 for i in range(0, self.__curve_path.elementCount()):
-                    element = self.__curve_path.elementAt(i)
+                    element = QtCore.QPointF(self.__curve_path.elementAt(i))
                     dist = math.sqrt(
-                        math.pow(element.x-test_point.x(), 2) +
-                        math.pow(element.y-test_point.y(), 2)
+                        math.pow(element.x()-test_point.x(), 2) +
+                        math.pow(element.y()-test_point.y(), 2)
                     )
                     if dist < self.__handle_size:
-                        return (True, i, None)
+                       vertex = i
+                       break
 
                 if is_inside:
                     # get exact point
                     hit_point = None
-                    test_box = QtCore.QRect(test_point.x()-2, test_point.y()-2, 10, 10)
-                    for i in range(0, 100):
-                        pct = float(i) / 100.0
+                    for i in range(0, 1000):
+                        pct = float(i) / 1000.0
                         curve_point = self.__curve_path.pointAtPercent(pct)
                         if test_box.contains(int(curve_point.x()), int(curve_point.y())):
                             hit_point = pct
                             break
 
                     if hit_point is not None:
-                        return (True, int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
-                            hit_point)), hit_point)
+                        if vertex < 0 and get_closest_vert:
+                            vertex = int(math.ceil((len(self.__stroke_ctrl_verts) - 1) * \
+                                hit_point))
+
+                            l = self.__curve_path.length()
+
+                            test_vertex = (vertex-1) * 4
+                            
+                            elem_path = QtGui.QPainterPath()
+                            elem_path.moveTo(QtCore.QPointF(self.__curve_path.elementAt(0)))
+                            elem_path.cubicTo(QtCore.QPointF(self.__curve_path.elementAt(2)), \
+                                QtCore.QPointF(self.__curve_path.elementAt(3)), \
+                                QtCore.QPointF(self.__curve_path.elementAt(1)))
+                            l2 = elem_path.length()
+                            l1 = 0
+
+                            while i < test_vertex:
+                                elem_path = QtGui.QPainterPath()
+                                elem_path.moveTo(QtCore.QPointF(self.__curve_path.elementAt(test_vertex)))
+                                elem_path.cubicTo(QtCore.QPointF(self.__curve_path.elementAt(test_vertex+2)), \
+                                    QtCore.QPointF(self.__curve_path.elementAt(test_vertex+3)), \
+                                    QtCore.QPointF(self.__curve_path.elementAt(test_vertex+1)))
+                                l1 += elem_path.length()
+                                i += 4
+
+                            if i > 0:
+                                l2 = l - l1
+
+                            t2 = (hit_point*l - l1)/l2
+                        else:
+                            t2 = hit_point
+
+                        return (True, vertex, t2)
                     else:
-                        return (True, -1, None)
+                        return (True, vertex, None)
+                elif vertex >= 0:
+                    return (True, vertex, None)
+                else:
+                    return (False, -1, None)
 
             elif is_inside:
                 return (True, -1, None)
@@ -565,14 +589,6 @@ class Stroke(object):
     def deselect_ctrl_verts(self):
         for vert in self.__stroke_ctrl_verts:
             vert.select_handle(None)
-
-    def get_stroke_shape(self):
-        return self.__stroke_shape
-
-    def set_stroke_shape(self, new_stroke_shape):
-        self.__stroke_shape = new_stroke_shape
-
-    stroke_shape = property(get_stroke_shape, set_stroke_shape)
 
     def get_curve_path(self):
         return self.__curve_path

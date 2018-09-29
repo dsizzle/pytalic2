@@ -18,7 +18,7 @@ class Instance(object):
         #    self.__instanced_object.remove_instance(self)
 
     def set_pos(self, point):
-        self.__pos = point
+        self.__pos = QtCore.QPoint(point)
 
     def get_pos(self):
         return self.__pos
@@ -81,6 +81,17 @@ class Instance(object):
 
         return is_inside
 
+    def is_contained(self, rect):
+        if self.__instanced_object is not None:
+            return self.__instanced_object.is_contained(rect)
+        
+        return False
+
+    @property
+    def bound_rect(self):
+        if self.__instanced_object:
+            return self.__instanced_object.bound_rect
+            
     def draw(self, gc, nib=None):
         if self.__instanced_object is None:
             return
@@ -105,7 +116,7 @@ class Instance(object):
 
             gc.translate(self.__pos)
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
-            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT_2)
+            gc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_0)
 
             gc.drawRect(bound_rect)
 
@@ -165,3 +176,10 @@ class CharacterInstance(Instance):
         self.obj_type = "Character"
 
     character = property(Instance.get_instanced_object, Instance.set_instanced_object)
+
+    @property
+    def children(self):
+        if self.character:
+            return self.character.children
+
+        return None

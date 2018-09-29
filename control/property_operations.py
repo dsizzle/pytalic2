@@ -10,6 +10,7 @@ class PropertyController(object):
 
         cmd_stack = self.__main_ctrl.get_command_stack()
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         do_args = {
             'value' : new_value,
@@ -35,6 +36,8 @@ class PropertyController(object):
         cmd_stack.do_command(change_cmd)
         ui.edit_undo.setEnabled(True)
 
+        ui.preview_area.layout.update_layout(char_set, \
+                nib_width=ui.dwg_area.nib.width*2)
         ui.repaint()
 
     def change_property_control(self, args):
@@ -105,8 +108,8 @@ class PropertyController(object):
         self.__prop_change(prev_value, new_value, objects, ['right_spacing'], ['char_set_right_space_spin'])
         
     def char_set_nib_angle_changed(self, prev_value, new_value, objects):
-        self.__prop_change(prev_value, new_value, objects, ['nib_angle', 'angle', 'angle', 'angle'], \
-            ['char_set_nib_angle_spin'])
+        self.__prop_change(prev_value, new_value, objects, \
+            ['nib_angle', 'angle', 'angle', 'angle', 'angle', 'angle'], ['char_set_nib_angle_spin'])
 
     def char_width_changed(self, prev_value, new_value, objects):
         self.__prop_change(prev_value, new_value, objects, ['width'], ['char_width_spin'])
