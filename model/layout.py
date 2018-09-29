@@ -83,9 +83,10 @@ class Layout(object):
                 try:
                     char_object = self.object_list[char_obj_idx]
                 except IndexError:
+                    print char_obj_idx
                     break
-                    
-                while char_object.character.name != char:
+
+                while unichr(char_object.character.unicode_character) != char:
                     start_char_idx = char_obj_idx
                     char_obj_idx += 1
                     try:
