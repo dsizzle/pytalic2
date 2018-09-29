@@ -80,12 +80,16 @@ class Layout(object):
         for line in lines:
             num_chars = 0
             for char in line:
-                char_object = self.__object_list[char_obj_idx]
+                try:
+                    char_object = self.object_list[char_obj_idx]
+                except IndexError:
+                    break
+                    
                 while char_object.character.name != char:
                     start_char_idx = char_obj_idx
                     char_obj_idx += 1
                     try:
-                        char_object = self.__object_list[char_obj_idx]
+                        char_object = self.object_list[char_obj_idx]
                     except IndexError:
                         char_obj_idx = start_char_idx
                         break
