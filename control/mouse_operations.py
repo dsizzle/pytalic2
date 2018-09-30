@@ -62,7 +62,7 @@ class MouseController(object):
         paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
 
         if self.__main_ctrl.state == edit_control.IDLE and left_down:
-            self.__on_l_button_down_paper(event.pos(), shift_down)
+            self.__on_l_button_down_paper(event.pos(), shift_down, alt_down)
 
     def mouse_release_event_paper(self, event):
         current_view = self.__main_ctrl.get_current_view()
@@ -170,7 +170,7 @@ class MouseController(object):
             stroke_ctrl.add_new_stroke()
             QtGui.qApp.restoreOverrideCursor()
 
-    def __on_l_button_down_paper(self, pos, shift_down):
+    def __on_l_button_down_paper(self, pos, shift_down, alt_down):
         ui = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
@@ -185,7 +185,7 @@ class MouseController(object):
 
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.state == edit_control.DRAGGING
-        else:
+        elif not alt_down:
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             self.__main_ctrl.state = edit_control.SELECT_DRAGGING
 
