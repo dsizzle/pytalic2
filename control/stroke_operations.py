@@ -131,7 +131,7 @@ class StrokeController(object):
         bitmap = ui.dwg_area.draw_icon(None, saved_selection)
         glyph_item = QtGui.QListWidgetItem()
         glyph_item.setText(str(first_item))
-        glyph_item.setData(QtCore.Qt.UserRole, glyph_instance.glyph)
+        glyph_item.setData(QtCore.Qt.UserRole, glyph_instance.instanced_object)
         glyph_item.setIcon(QtGui.QIcon(bitmap))
         ui.stroke_selector_list.addItem(glyph_item)
         ui.stroke_selector_list.setCurrentRow(first_item)

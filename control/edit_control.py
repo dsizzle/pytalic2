@@ -355,7 +355,6 @@ class EditorController(object):
         if self.__ui.stroke_selector_list.currentRow() >= 0:
             cur_item = self.__ui.stroke_selector_list.currentItem()
             glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
-
             sel_saved_glyph = self.__char_set.get_saved_glyph(glyph_id)
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_glyph
