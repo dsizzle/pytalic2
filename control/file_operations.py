@@ -154,17 +154,23 @@ class FileController(object):
 
             ui.stroke_selector_list.clear()
 
-            saved_glyph_list = char_set.get_saved_glyphs()
+            saved_glyph_list = char_set.glyphs
             if len(saved_glyph_list) > 0:
                 i = 0
                 ui.stroke_load.setEnabled(True)
                 ui.glyph_delete.setEnabled(True)
-                for sel_stroke in saved_glyph_list:
+                
+                for glyph_id in saved_glyph_list.keys():
+                    sel_stroke = saved_glyph_list[glyph_id]
                     bitmap = ui.dwg_area.draw_icon(None, sel_stroke.strokes)
-                    ui.stroke_selector_list.addItem(str(i))
-                    cur_item = ui.stroke_selector_list.item(i)
+
+                    glyph_item = QtGui.QListWidgetItem()
+                    glyph_item.setText(str(i))
+                    glyph_item.setData(QtCore.Qt.UserRole, glyph_id)
+                    glyph_item.setIcon(QtGui.QIcon(bitmap))
+                    ui.stroke_selector_list.addItem(glyph_item)
                     ui.stroke_selector_list.setCurrentRow(i)
-                    cur_item.setIcon(QtGui.QIcon(bitmap))
+
                     i += 1
 
             for idx in range(0, ui.char_selector_list.count()):
