@@ -93,13 +93,10 @@ class Instance(object):
             return self.actual_object.bound_rect
             
     def draw(self, gc, nib=None):
-        if self.__instanced_object is None:
+        if self.instanced_object is None:
             return
 
-        if self.__char_set is None:
-            return
-
-        object_to_draw = self.actual_object
+        object_to_draw = self.instanced_object
         object_pos = object_to_draw.pos
 
         gc.save()
