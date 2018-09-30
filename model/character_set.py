@@ -30,10 +30,7 @@ class CharacterSet(object):
         self.__objects[self.__stroke_inst_type] = {}
         self.__objects[self.__glyph_inst_type] = {}
         
-        #self.__characters = {}
         self.__character_xref = {}
-        #self.__saved_glyphs = {}
-        #self.__strokes = {}
 
         self.__char_id = 0
         self.__glyph_id = 0
