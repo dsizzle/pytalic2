@@ -200,7 +200,7 @@ class ClipboardController(object):
                 added_item = current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             else:
                 new_glyph = instance.GlyphInstance()
-                new_glyph.glyph = sel_stroke.glyph
+                new_glyph.instanced_object = sel_stroke.glyph
                 new_glyph.pos = sel_stroke.pos
                 current_view.symbol.add_glyph(new_glyph)
                 added_item = new_glyph

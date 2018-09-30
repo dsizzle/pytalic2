@@ -49,14 +49,14 @@ class Layout(object):
         self.__string = string_to_layout
 
         for char in self.__string:
-            char_object = char_set.get_char(char)
+            char_object = char_set.get_char_index(char)
 
             if char_object is None:
                 char_set.new_character(ord(char))
                 char_object = char_set.get_current_char()
 
-            new_character = model.instance.CharacterInstance()
-            new_character.character = char_object
+            new_character = model.instance.CharacterInstance(self, char_set)
+            new_character.instanced_object = char_object
             self.add_object(new_character)
         
         #char_set.set_current_char(unichr(cur_char))

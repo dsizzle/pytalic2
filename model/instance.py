@@ -49,12 +49,13 @@ class Instance(object):
 
     instanced_object = property(get_instanced_object, set_instanced_object)
 
-    @property
-    def actual_object(self):
+    def get_actual_object(self):
         if self.__char_set:
             return self.__char_set.objects[self.obj_type][self.__instanced_object]
 
         return None
+
+    actual_object = property(get_actual_object)
 
     def set_parent(self, parent):
         self.__parent = parent
@@ -93,10 +94,10 @@ class Instance(object):
             return self.actual_object.bound_rect
             
     def draw(self, gc, nib=None):
-        if self.instanced_object is None:
+        if self.actual_object is None:
             return
 
-        object_to_draw = self.instanced_object
+        object_to_draw = self.actual_object
         object_pos = object_to_draw.pos
 
         gc.save()
@@ -157,26 +158,25 @@ class GlyphInstance(Instance):
         Instance.__init__(self, parent, char_set)
         self.obj_type = "Glyph"
 
-    glyph = property(Instance.get_instanced_object, Instance.set_instanced_object)
+    glyph = property(Instance.get_actual_object)
 
     @property
     def strokes(self):
-        if self.actual_object:
-            return self.actual_object.strokes
+        if self.glyph:
+            return self.glyph.strokes
 
-        return None
-
+        return []
 
 class CharacterInstance(Instance):
     def __init__(self, parent=None, char_set=None):
         Instance.__init__(self, parent, char_set)
         self.obj_type = "Character"
 
-    character = property(Instance.get_instanced_object, Instance.set_instanced_object)
+    character = property(Instance.get_actual_object)
 
     @property
     def children(self):
         if self.character:
             return self.character.children
 
-        return None
+        return []
