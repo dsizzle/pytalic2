@@ -98,6 +98,9 @@ class CharacterSet(object):
         return self.__current_char
 
     def get_char(self, char_to_get):
+        if char_to_get in self.__objects[self.__char_type]:
+            return self.__objects[self.__char_type][char_to_get]
+            
         if char_to_get in self.__character_xref:
             char_id = self.__character_xref[char_to_get]
             return self.__objects[self.__char_type][char_id]

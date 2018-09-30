@@ -89,8 +89,8 @@ class Instance(object):
 
     @property
     def bound_rect(self):
-        if self.__instanced_object:
-            return self.__instanced_object.bound_rect
+        if self.actual_object:
+            return self.actual_object.bound_rect
             
     def draw(self, gc, nib=None):
         if self.__instanced_object is None:

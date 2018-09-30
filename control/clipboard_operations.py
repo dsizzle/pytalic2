@@ -1,9 +1,6 @@
-import file_operations
-
 from model import commands
 from model import instance
 from model import stroke
-
 
 class ClipboardController(object):
     def __init__(self, parent):
@@ -57,7 +54,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
+        ui.char_selector_list.setCurrentRow(char_index)
 
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
@@ -83,7 +80,7 @@ class ClipboardController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = char_set.get_current_char_index()
+        char_index = ui.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -187,8 +184,7 @@ class ClipboardController(object):
         else:
             copy_strokes = True
 
-        ui.char_selector_list.setCurrentRow(char_index - file_operations.START_CHAR_CODE)
-
+        ui.char_selector_list.setCurrentRow(char_index)
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke.selected = False
