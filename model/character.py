@@ -8,7 +8,7 @@ import view.shared_qt
 STROKE = 'stroke'
 
 class Glyph(object):
-    def __init__(self):
+    def __init__(self, char_set):
         self.__strokes = []
         self.__bitmap_preview = None
 
@@ -16,6 +16,7 @@ class Glyph(object):
         self.__pos = QtCore.QPoint(0, 0)
         self.__bound_rect = None
         self.__instances = {}
+        self.__char_set = char_set
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()
@@ -78,6 +79,10 @@ class Glyph(object):
         self.__is_selected = new_state
 
     selected = property(get_select_state, set_select_state)
+
+    @property
+    def char_set(self):
+        return self.__char_set
 
     def new_freehand_stroke(self, points):
         my_stroke = model.stroke.Stroke()
@@ -200,8 +205,10 @@ class Glyph(object):
         self.bound_rect = QtCore.QRectF()
 
         for sel_child in self.children:
-            if sel_child.bound_rect:
-                self.bound_rect = self.bound_rect.united(sel_child.bound_rect.translated(sel_child.pos))
+            sel_child_item = self.char_set.get_item_by_index(sel_child)
+
+            if sel_child_item and sel_child_item.bound_rect:
+                self.bound_rect = self.bound_rect.united(sel_child_item.bound_rect.translated(sel_child_item.pos))
         
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
@@ -223,8 +230,8 @@ class Glyph(object):
 
 
 class Character(Glyph):
-    def __init__(self):
-        Glyph.__init__(self)
+    def __init__(self, char_set):
+        Glyph.__init__(self, char_set)
         self.__unicode_character = -1
         self.__width = 4
         self.__left_spacing = 1.0
@@ -242,14 +249,15 @@ class Character(Glyph):
     unicode_character = property(get_unicode_character, set_unicode_character)
 
     def add_glyph(self, glyph_to_add):
-        if isinstance(glyph_to_add, model.instance.GlyphInstance):
-            self.__glyphs.append(glyph_to_add)
-            glyph_to_add.parent = self
-            self.calculate_bound_rect()
+        self.__glyphs.append(glyph_to_add)
+        glyph = self.char_set.get_saved_glyph_instance(glyph_to_add)
+        glyph.parent = self
+        self.calculate_bound_rect()
 
     def remove_glyph(self, glyph_to_remove):
         self.__glyphs.remove(glyph_to_remove)
-        glyph_to_remove.parent = None
+        glyph = char_set.get_saved_glyph_instance(glyph_to_remove)
+        glyph.parent = None
         self.calculate_bound_rect()
 
     @property
@@ -303,7 +311,9 @@ class Character(Glyph):
         gc.translate(self.pos)
 
         for glyph in self.glyphs:
-            glyph.draw(gc, nib_glyph)
+            print glyph
+            glyph_to_draw = self.char_set.get_saved_glyph(glyph)
+            glyph_to_draw.draw(gc, nib_glyph)
 
         for stroke in self.strokes:
             stroke.draw(gc, nib)

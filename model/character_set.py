@@ -17,11 +17,11 @@ class CharacterSet(object):
 
         self.__current_char = None
 
-        self.__char_type = type(model.character.Character()).__name__
+        self.__char_type = type(model.character.Character(self)).__name__
         self.__stroke_type = type(model.stroke.Stroke()).__name__
-        self.__glyph_type = type(model.character.Glyph()).__name__
+        self.__glyph_type = type(model.character.Glyph(self)).__name__
         self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
-        self.__glyph_inst_type = type(model.instance.GlyphInstance()).__name__
+        self.__glyph_inst_type = type(model.instance.GlyphInstance(self)).__name__
 
         self.__objects = {}
         self.__objects[self.__char_type] = {}
@@ -54,7 +54,7 @@ class CharacterSet(object):
         return "X" + '{:010d}'.format(self.__glyph_inst_id)
 
     def new_character(self, char_code):
-        new_char = model.character.Character()
+        new_char = model.character.Character(self)
         new_char_id = self.__get_next_char_id()
         
         self.__objects[self.__char_type][new_char_id] = new_char
@@ -181,7 +181,27 @@ class CharacterSet(object):
             return self.__objects[self.__glyph_inst_type][glyph_id]
 
         return None
-        
+
+    def get_item_by_index(self, item_id):
+        item_type = None
+
+        if type(item_id).__name__ == 'Stroke':
+            return None
+            
+        if item_id[0] == 'S':
+            item_type = self.__stroke_type
+        elif item_id[0] == 'G':
+            item_type = self.__glyph_type
+        elif item_id[0] == 'X':
+            item_type = self.__glyph_inst_type
+        elif item_id[0] == 'C':
+            item_type = self.__char_type
+
+        if item_type and item_id in self.__objects[item_type]:
+            return self.__objects[item_type][item_id]
+
+        return None    
+
     # attributes
 
     def set_nominal_width(self, new_width):

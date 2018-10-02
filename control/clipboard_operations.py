@@ -202,7 +202,7 @@ class ClipboardController(object):
                 new_glyph_inst_id = char_set.new_glyph_instance(sel_stroke.instanced_object)
                 new_glyph = char_set.get_saved_glyph_instance(new_glyph_inst_id)
                 new_glyph.pos = sel_stroke.pos
-                current_view.symbol.add_glyph(new_glyph)
+                current_view.symbol.add_glyph(new_glyph_inst_id)
                 added_item = new_glyph
 
             cur_view_selection[added_item] = {}
