@@ -69,8 +69,8 @@ class StrokeController(object):
         new_glyph = character.Glyph()
         new_glyph.strokes = selected_strokes
         glyph_id = char_set.save_glyph(new_glyph)
-        glyph_instance = instance.GlyphInstance(char_set=char_set)
-        glyph_instance.instanced_object = glyph_id
+        glyph_instance_id = char_set.new_glyph_instance(glyph_id)
+        glyph_instance = char_set.get_saved_glyph_instance(glyph_instance_id)
 
         item_num = ui.stroke_selector_list.count()
 
@@ -212,9 +212,9 @@ class StrokeController(object):
         char_index = ui.char_selector_list.currentRow()
         glyph_item = ui.stroke_selector_list.currentItem()
         glyph_index = str(glyph_item.data(QtCore.Qt.UserRole).toString())
-        new_glyph = instance.GlyphInstance(char_set=char_set) 
-        new_glyph.instanced_object = glyph_index
-
+        new_glyph_inst_id = char_set.new_glyph_instance(glyph_index)
+        new_glyph = char_set.get_saved_glyph_instance(new_glyph_inst_id)
+        
         paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
         do_args = {

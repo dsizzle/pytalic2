@@ -35,18 +35,23 @@ class CharacterSet(object):
         self.__char_id = 0
         self.__glyph_id = 0
         self.__stroke_id = 0
+        self.__glyph_inst_id = 0
 
     def __get_next_char_id(self):
         self.__char_id += 1
-        return "C" + str(self.__char_id)
+        return "C" + '{:010d}'.format(self.__char_id)
 
     def __get_next_glyph_id(self):
         self.__glyph_id += 1
-        return "G" + str(self.__glyph_id)
+        return "G" + '{:010d}'.format(self.__glyph_id)
 
     def __get_next_stroke_id(self):
         self.__stroke_id += 1
-        return "S" + str(self.__stroke_id)
+        return "S" + '{:010d}'.format(self.__stroke_id)
+
+    def __get_next_glyph_inst_id(self):
+        self.__glyph_inst_id += 1
+        return "X" + '{:010d}'.format(self.__glyph_inst_id)
 
     def new_character(self, char_code):
         new_char = model.character.Character()
@@ -158,6 +163,26 @@ class CharacterSet(object):
             print "ERROR: saved glyph to remove doesn't exist!"
 
     saved_glyph = property(get_saved_glyph, set_saved_glyph)
+
+    def new_glyph_instance(self, glyph):
+        new_inst = model.instance.GlyphInstance(char_set=self)
+
+        new_inst_id = self.__get_next_glyph_inst_id()
+        
+        self.__objects[self.__glyph_inst_type][new_inst_id] = new_inst
+
+        if glyph:
+            new_inst.instanced_object = glyph
+        
+        return new_inst_id
+
+    def get_saved_glyph_instance(self, glyph_id):
+        if glyph_id in self.__objects[self.__glyph_inst_type]:
+            return self.__objects[self.__glyph_inst_type][glyph_id]
+
+        return None
+        
+    # attributes
 
     def set_nominal_width(self, new_width):
         self.__nominal_width_nibs = new_width
