@@ -51,7 +51,10 @@ class EditorController(object):
         self.__ui.create_ui()
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
-
+        self.__ui.dwg_area.char_set = self.__char_set
+        self.__ui.stroke_dwg_area.char_set = self.__char_set
+        self.__ui.preview_area.char_set = self.__char_set
+        
         self.__current_view_pane = \
             self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__selection[self.__current_view_pane] = {}
@@ -599,7 +602,9 @@ class EditorController(object):
 
     def stroke_nib_angle_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) == 1:
-            sel_stroke = self.__selection[self.__current_view_pane].keys()[0]
+            sel_stroke = self.__char_set.get_item_by_index( \
+                self.__selection[self.__current_view_pane].keys()[0] \
+                )
             if type(sel_stroke).__name__ == "CharacterInstance" or \
                 type(sel_stroke).__name__ == "GlyphInstance":
                 return
@@ -613,7 +618,11 @@ class EditorController(object):
     def position_x_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) and \
             self.__state != DRAWING_NEW_STROKE:
-            prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.x()
+            first_item = \
+                self.__char_set.get_item_by_index( \
+                    self.__selection[self.__current_view_pane].keys()[0] \
+                    )
+            prev_value = first_item.pos.x()
             if prev_value == new_value:
                 return
 
@@ -623,7 +632,11 @@ class EditorController(object):
     def position_y_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) and \
             self.__state != DRAWING_NEW_STROKE:
-            prev_value = self.__selection[self.__current_view_pane].keys()[0].pos.y()
+            first_item = \
+                self.__char_set.get_item_by_index( \
+                    self.__selection[self.__current_view_pane].keys()[0] \
+                    )
+            prev_value = first_item.pos.y()
             if prev_value == new_value:
                 return
 
@@ -664,11 +677,12 @@ class EditorController(object):
     def clear_selection(self):
         if self.__current_view_pane in self.__selection:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                if type(sel_stroke).__name__ != "GlyphInstance" and \
-                    type(sel_stroke).__name__ != "CharacterInstance":
-                    sel_stroke.deselect_ctrl_verts()
+                sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
+                if type(sel_stroke_item).__name__ != "GlyphInstance" and \
+                    type(sel_stroke_item).__name__ != "CharacterInstance":
+                    sel_stroke_item.deselect_ctrl_verts()
 
-                sel_stroke.selected = False
+                sel_stroke_item.selected = False
 
         self.__selection[self.__current_view_pane] = {}
 
@@ -699,9 +713,10 @@ class EditorController(object):
                 children = self.__current_view_pane.symbol.children
 
         for char_stroke in children:
-            char_stroke.selected = False
-            if type(char_stroke).__name__ != "GlyphInstance":
-                char_stroke.deselect_ctrl_verts()
+            char_stroke_item = self.__char_set.get_item_by_index(char_stroke)
+            char_stroke_item.selected = False
+            if type(char_stroke_item).__name__ != "GlyphInstance":
+                char_stroke_item.deselect_ctrl_verts()
 
         self.set_ui_state_selection(False)
         self.__ui.repaint()

@@ -266,16 +266,19 @@ class MouseController(object):
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         cur_char = self.__main_ctrl.get_current_char()
+        char_set = self.__main_ctrl.get_character_set()
 
         ui = self.__main_ctrl.get_ui()
         
         inside_strokes = {}
         if len(cur_view_selection.keys()) > 0:
             for sel_stroke in cur_view_selection.keys():
-                inside_info = sel_stroke.is_inside(paper_pos)
+                print sel_stroke
+                sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+                inside_info = sel_stroke_item.is_inside(paper_pos)
 
                 if inside_info[0]:
-                    inside_strokes[sel_stroke] = inside_info
+                    inside_strokes[sel_stroke_item] = inside_info
 
             if len(inside_strokes):
                 for sel_stroke in inside_strokes:
@@ -316,26 +319,27 @@ class MouseController(object):
         if len(cur_view_selection.keys()) == 0 or shift_down or select_rect:
             if current_view != ui.preview_area:
                 for sel_stroke in current_view.symbol.children:
+                    sel_stroke_item = char_set.get_item_by_index(sel_stroke)
                     inside_rect = False
                     inside_info = [False]
                     if select_rect:
-                        inside_rect = sel_stroke.is_contained(select_rect)
+                        inside_rect = sel_stroke_item.is_contained(select_rect)
                     else:
-                        inside_info = sel_stroke.is_inside(paper_pos)
+                        inside_info = sel_stroke_item.is_inside(paper_pos)
                     
                     if inside_info[0] or inside_rect \
                         and (len(cur_view_selection.keys()) == 0 or \
                             shift_down or select_rect):
                         if sel_stroke not in cur_view_selection:
                             cur_view_selection[sel_stroke] = {} 
-                            if type(sel_stroke).__name__ == 'Stroke':
-                                sel_stroke.deselect_ctrl_verts()
+                            if type(sel_stroke_item).__name__ == 'Stroke':
+                                sel_stroke_item.deselect_ctrl_verts()
 
-                        sel_stroke.selected = True  
+                        sel_stroke_item.selected = True  
                     elif not shift_down and not inside_rect:
-                        sel_stroke.selected = False
-                        if type(sel_stroke).__name__ == 'Stroke':
-                            sel_stroke.deselect_ctrl_verts()
+                        sel_stroke_item.selected = False
+                        if type(sel_stroke_item).__name__ == 'Stroke':
+                            sel_stroke_item.deselect_ctrl_verts()
             else:
                 layout_pos = ui.preview_area.layout.pos
                 for sel_symbol in ui.preview_area.layout.object_list:
@@ -352,18 +356,19 @@ class MouseController(object):
             self.__main_ctrl.set_ui_state_selection(True)
             check_state = QtCore.Qt.Unchecked
             nib_angle_override = None
-            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
-                type(cur_view_selection.keys()[0]).__name__ != 'CharacterInstance' and \
-                cur_view_selection.keys()[0].override_nib_angle:
+            first_item = char_set.get_item_by_index(cur_view_selection.keys()[0])
+            if type(first_item).__name__ != 'GlyphInstance' and \
+                type(first_item).__name__ != 'CharacterInstance' and \
+                first_item.override_nib_angle:
                 check_state = QtCore.Qt.Checked
-                nib_angle_override = cur_view_selection.keys()[0].nib_angle
+                nib_angle_override = first_item.nib_angle
 
             ui.stroke_override_nib_angle.setCheckState(check_state)
 
-            ui.position_x_spin.setValue(cur_view_selection.keys()[0].pos.x())
-            ui.position_y_spin.setValue(cur_view_selection.keys()[0].pos.y())
-            if type(cur_view_selection.keys()[0]).__name__ != 'GlyphInstance' and \
-                type(cur_view_selection.keys()[0]).__name__ != 'CharacterInstance' and \
+            ui.position_x_spin.setValue(first_item.pos.x())
+            ui.position_y_spin.setValue(first_item.pos.y())
+            if type(first_item).__name__ != 'GlyphInstance' and \
+                type(first_item).__name__ != 'CharacterInstance' and \
                 nib_angle_override:
                 ui.stroke_nib_angle_spin.setValue(nib_angle_override)
             else:

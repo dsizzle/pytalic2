@@ -30,6 +30,8 @@ class Canvas(QtGui.QFrame):
         self.initial_nib_width = self.width() / 5
         self.__nib = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(125, 25, 25))
         self.__select_rect = None
+
+        self.__char_set = None
         
     def resizeEvent(self, event):
         if self.__guide_lines:
@@ -151,6 +153,14 @@ class Canvas(QtGui.QFrame):
 
     select_rect = property(get_select_rect, set_select_rect)
 
+    def get_char_set(self):
+        return self.__char_set
+
+    def set_char_set(self, new_char_set):
+        self.__char_set = new_char_set
+
+    char_set = property(get_char_set, set_char_set)
+
     def paintEvent(self, event):
         dc = QtGui.QPainter()
 
@@ -243,7 +253,10 @@ class DrawingArea(Canvas):
 
             while len(tmp_strokes):
                 stroke = tmp_strokes.pop()
-                stroke.draw(dc, nib=self.__nib_special) 
+                
+                stroke_item = self.char_set.get_item_by_index(stroke)
+                if stroke_item:
+                    stroke_item.draw(dc, nib=self.__nib_special) 
 
         dc.end()
 

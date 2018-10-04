@@ -178,8 +178,9 @@ class Glyph(object):
             return (False, -1, None)
 
         if self.bound_rect.contains(test_point):
-           for sel_child in self.children:              
-                insideInfo = sel_child.is_inside(test_point)
+           for sel_child in self.children:   
+                sel_child_item = self.char_set.get_item_by_index(sel_child)           
+                insideInfo = sel_child_item.is_inside(test_point)
                 if insideInfo[0]:
                     return (True, -1, None)
 
@@ -196,7 +197,8 @@ class Glyph(object):
             return True
 
         for sel_child in self.children:
-            if sel_child.is_contained(rect):
+            sel_child_item = self.char_set.get_item_by_index(sel_child)
+            if sel_child_item and sel_child_item.is_contained(rect):
                 return True
 
         return False
@@ -214,8 +216,9 @@ class Glyph(object):
         gc.save()
         gc.translate(self.__pos)
 
-        for sel_stroke in self.children:
-            sel_stroke.draw(gc, nib)
+        for sel_child in self.children:
+            sel_child_item = self.char_set.get_item_by_index(sel_child)
+            sel_child_item.draw(gc, nib)
 
         if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
@@ -311,12 +314,12 @@ class Character(Glyph):
         gc.translate(self.pos)
 
         for glyph in self.glyphs:
-            print glyph
-            glyph_to_draw = self.char_set.get_saved_glyph(glyph)
+            glyph_to_draw = self.char_set.get_item_by_index(glyph)
             glyph_to_draw.draw(gc, nib_glyph)
 
         for stroke in self.strokes:
-            stroke.draw(gc, nib)
+            stroke_to_draw = self.char_set.get_item_by_index(stroke)
+            stroke_to_draw.draw(gc, nib)
            
         if not self.bound_rect:
             self.calculate_bound_rect()

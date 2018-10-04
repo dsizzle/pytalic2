@@ -71,10 +71,12 @@ class CharacterSet(object):
         if char_to_delete in self.__objects[self.__char_type]:
             char_code = self.__objects[self.__char_type][char_to_delete].unicode_character
             self.__objects[self.__char_type][char_to_delete] = None
+            del self.__objects[self.__char_type][char_to_delete]
             del self.__character_xref[unichr(char_code)]
         elif char_to_delete in self.__character_xref:
             char = self.__character_xref[char_to_delete]
             self.__objects[self.__char_type][char] = None
+            del self.__objects[self.__char_type][char]
             del self.__character_xref[char_to_delete]
 
     def get_current_char(self):
@@ -182,12 +184,25 @@ class CharacterSet(object):
 
         return None
 
+    def new_stroke(self, stroke):
+        new_stroke = model.stroke.Stroke(from_stroke=stroke)
+        new_stroke_id = self.__get_next_stroke_id()
+        
+        self.__objects[self.__stroke_type][new_stroke_id] = new_stroke
+
+        return new_stroke_id
+
+    def delete_stroke(self, stroke_to_delete):
+        if stroke_to_delete in self.__objects[self.__stroke_type]:
+            self.__objects[self.__stroke_type][stroke_to_delete] = None
+            del self.__objects[self.__stroke_type][stroke_to_delete]
+
     def get_item_by_index(self, item_id):
         item_type = None
 
         if type(item_id).__name__ == 'Stroke':
             return None
-            
+
         if item_id[0] == 'S':
             item_type = self.__stroke_type
         elif item_id[0] == 'G':

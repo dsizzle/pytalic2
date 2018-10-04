@@ -792,14 +792,16 @@ class StrokeController(object):
         self.__main_ctrl.state = control.edit_control.IDLE
         self.__stroke_pts = []
 
+        new_stroke_id = char_set.new_stroke(self.__tmp_stroke)
+
         add_stroke_cmd = commands.Command('add_stroke_cmd')
         do_args = {
-            'stroke' : self.__tmp_stroke,
+            'stroke' : new_stroke_id,
             'copy_stroke' : False,
         }
 
         undo_args = {
-            'stroke' : self.__tmp_stroke,
+            'stroke' : new_stroke_id,
         }
 
         add_stroke_cmd.set_do_args(do_args)
@@ -810,7 +812,7 @@ class StrokeController(object):
         cmd_stack.do_command(add_stroke_cmd)
         ui.edit_undo.setEnabled(True)
 
-        cur_view_selection[self.__tmp_stroke] = {}
+        cur_view_selection[new_stroke_id] = {}
         self.__tmp_stroke.selected = True
         current_view.strokes = []
         self.__tmp_stroke = None
@@ -905,6 +907,7 @@ class StrokeController(object):
                 sel_stroke.flip_y()
 
     def move_selected(self, args):
+        char_set = self.__main_ctrl.get_character_set()
         if 'strokes' in args:
             selection = args['strokes']
         else:
@@ -928,15 +931,17 @@ class StrokeController(object):
                     else:
                         stroke_pt.selected_handle_pos = stroke_pt.selected_handle_pos + delta
             else:
-                sel_stroke.pos += delta
+                sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+                sel_stroke_item.pos += delta
 
-            if type(sel_stroke).__name__ == 'Stroke':
-                sel_stroke.calc_curve_points()
+            if type(sel_stroke_item).__name__ == 'Stroke':
+                sel_stroke_item.calc_curve_points()
 
         if len(selection.keys()):
-            ui = self.__main_ctrl.get_ui()        
-            ui.position_x_spin.setValue(selection.keys()[0].pos.x())
-            ui.position_y_spin.setValue(selection.keys()[0].pos.y())
+            ui = self.__main_ctrl.get_ui()  
+            first_item = char_set.get_item_by_index(selection.keys()[0])      
+            ui.position_x_spin.setValue(first_item.pos.x())
+            ui.position_y_spin.setValue(first_item.pos.y())
 
     def selection_position_changed_x(self, prev_value, new_value):
         delta = QtCore.QPoint(new_value - prev_value, 0)
