@@ -43,7 +43,7 @@ class EditorController(object):
         self.__cmd_stack = commands.CommandStack(self)
         self.__selection = {}
 
-        self.__char_set = character_set.CharacterSet()
+        self.__char_set = None
         self.__cur_char = None
 
         self.__state = 0
@@ -51,9 +51,6 @@ class EditorController(object):
         self.__ui.create_ui()
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
-        self.__ui.dwg_area.char_set = self.__char_set
-        self.__ui.stroke_dwg_area.char_set = self.__char_set
-        self.__ui.preview_area.char_set = self.__char_set
         
         self.__current_view_pane = \
             self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
@@ -70,6 +67,10 @@ class EditorController(object):
         self.__layouts = []
 
         self.file_new_cb(None)
+
+        self.__ui.dwg_area.char_set = self.__char_set
+        self.__ui.stroke_dwg_area.char_set = self.__char_set
+        self.__ui.preview_area.char_set = self.__char_set
 
     def get_command_stack(self):
         return self.__cmd_stack
