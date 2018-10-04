@@ -53,11 +53,12 @@ class SnapController(object):
 
         if len(cur_view_selection.keys()) == 1:
             sel_stroke = cur_view_selection.keys()[0]
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
             if len(cur_view_selection[sel_stroke].keys()) == 1:
                 sel_point = cur_view_selection[sel_stroke].keys()[0]
 
-                ctrl_verts = sel_stroke.get_ctrl_vertices(make_copy=False)
+                ctrl_verts = sel_stroke_item.get_ctrl_vertices(make_copy=False)
 
                 vert_index = ctrl_verts.index(sel_point)
 
@@ -68,7 +69,7 @@ class SnapController(object):
                         vert_index -= 1
 
                 vpos = ctrl_verts[vert_index].get_handle_pos(2)
-                stroke_pos = sel_stroke.pos
+                stroke_pos = sel_stroke_item.pos
 
                 if self.__snap & SNAP_TO_GRID:
                     snap_point = self.closest_grid_point(pos)
@@ -132,15 +133,17 @@ class SnapController(object):
 
     def snap_to_ctrl_point(self, pos, sel_point, tolerance=10):
         snap_point = QtCore.QPoint(-1, -1)
+        char_set = self.__main_ctrl.get_character_set()
 
         test_rect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, \
             tolerance, tolerance)
         cur_char = self.__main_ctrl.get_current_char()
 
         for char_stroke in cur_char.strokes:
-            for ctrl_vert in char_stroke.get_ctrl_vertices(False):
+            char_stroke_item = char_set.get_item_by_index(char_stroke)
+            for ctrl_vert in char_stroke_item.get_ctrl_vertices(False):
                 if sel_point is not ctrl_vert:
-                    test_point = ctrl_vert.get_handle_pos(2) + char_stroke.pos
+                    test_point = ctrl_vert.get_handle_pos(2) + char_stroke_item.pos
 
                     if test_point in test_rect:
                         snap_point = test_point

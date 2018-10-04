@@ -277,20 +277,21 @@ class MouseController(object):
                 inside_info = sel_stroke_item.is_inside(paper_pos)
 
                 if inside_info[0]:
-                    inside_strokes[sel_stroke_item] = inside_info
+                    inside_strokes[sel_stroke] = inside_info
 
             if len(inside_strokes):
                 for sel_stroke in inside_strokes:
+                    sel_stroke_item = char_set.get_item_by_index(sel_stroke)
                     inside_info = inside_strokes[sel_stroke]
 
                     if inside_info[1] >= 0:
                         ctrl_vertex_num = int((inside_info[1]+1) / 3)
-                        ctrl_vert = sel_stroke.get_ctrl_vertex(ctrl_vertex_num)
+                        ctrl_vert = sel_stroke_item.get_ctrl_vertex(ctrl_vertex_num)
                         
                         handle_index = (inside_info[1] + 1) % 3 + 1
                         if not shift_down:
-                            if type(sel_stroke).__name__ == 'Stroke':
-                                sel_stroke.deselect_ctrl_verts()
+                            if type(sel_stroke_item).__name__ == 'Stroke':
+                                sel_stroke_item.deselect_ctrl_verts()
                             cur_view_selection[sel_stroke] = {}
 
                         cur_view_selection[sel_stroke][ctrl_vert] = handle_index
