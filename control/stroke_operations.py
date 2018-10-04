@@ -60,13 +60,14 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
 
         for sel_stroke in cur_view_selection.keys():
-            if type(sel_stroke).__name__ == 'Stroke':
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            if type(sel_stroke_item).__name__ == 'Stroke':
                 selected_strokes.append(sel_stroke)
 
         if len(selected_strokes) == 0:
             return
 
-        new_glyph = character.Glyph(self)
+        new_glyph = character.Glyph(char_set)
         new_glyph.strokes = selected_strokes
         glyph_id = char_set.save_glyph(new_glyph)
         glyph_instance_id = char_set.new_glyph_instance(glyph_id)
@@ -140,11 +141,12 @@ class StrokeController(object):
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
             
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             if sel_stroke not in cur_view_selection:
                 cur_view_selection = {}
-                sel_stroke.deselect_ctrl_verts()
+                sel_stroke_item.deselect_ctrl_verts()
 
-            sel_stroke.selected = True
+            sel_stroke_item.selected = True
             
         # should just add the id! 
         cur_char.add_glyph(glyph_instance_id)
@@ -153,7 +155,8 @@ class StrokeController(object):
             if sel_stroke in cur_view_selection:
                 del cur_view_selection[sel_stroke]
 
-            sel_stroke.selected = False
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.selected = False
 
         ui.stroke_load.setEnabled(True)
         ui.glyph_delete.setEnabled(True)
