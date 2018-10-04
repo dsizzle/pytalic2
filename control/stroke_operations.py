@@ -816,7 +816,8 @@ class StrokeController(object):
         ui.edit_undo.setEnabled(True)
 
         cur_view_selection[new_stroke_id] = {}
-        self.__tmp_stroke.selected = True
+        new_stroke_item = char_set.get_item_by_index(new_stroke_id)
+        new_stroke_item.selected = True
         current_view.strokes = []
         self.__tmp_stroke = None
 
