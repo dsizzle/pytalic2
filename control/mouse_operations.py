@@ -273,7 +273,6 @@ class MouseController(object):
         inside_strokes = {}
         if len(cur_view_selection.keys()) > 0:
             for sel_stroke in cur_view_selection.keys():
-                print sel_stroke
                 sel_stroke_item = char_set.get_item_by_index(sel_stroke)
                 inside_info = sel_stroke_item.is_inside(paper_pos)
 

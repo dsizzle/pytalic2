@@ -418,11 +418,13 @@ class EditorController(object):
         if self.__current_view_pane != self.__ui.preview_area and \
             self.__current_view_pane.symbol:
             for sel_item in self.__current_view_pane.symbol.children:
-                sel_item.selected = sel_item in self.__selection[self.__current_view_pane]
+                sel_item_actual = self.__char_set.get_item_by_index(sel_item)
+                sel_item_actual.selected = sel_item in self.__selection[self.__current_view_pane]
 
-                if type(sel_item).__name__ == "GlyphInstance":
-                    for sel_stroke in sel_item.strokes:
-                        sel_stroke.selected = sel_stroke in \
+                if type(sel_item_actual).__name__ == "GlyphInstance":
+                    for sel_stroke in sel_item_actual.strokes:
+                        sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
+                        sel_stroke_item.selected = sel_stroke in \
                             self.__selection[self.__current_view_pane]
 
         self.__ui.repaint()

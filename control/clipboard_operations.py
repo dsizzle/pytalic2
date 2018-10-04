@@ -43,6 +43,7 @@ class ClipboardController(object):
         selection = self.__main_ctrl.get_selection()
         current_view = self.__main_ctrl.get_current_view()
         cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
         
         if 'char_index' in args:
             char_index = args['char_index']
@@ -58,7 +59,8 @@ class ClipboardController(object):
 
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
-            if type(sel_stroke).__name__ == 'Stroke':
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            if type(sel_stroke_item).__name__ == 'Stroke':
                 current_view.symbol.delete_stroke({'stroke' : sel_stroke})
             else:
                 current_view.symbol.remove_glyph(sel_stroke)
@@ -66,7 +68,7 @@ class ClipboardController(object):
             self.__clipboard.append(sel_stroke)
             if sel_stroke in cur_view_selection:
                 del cur_view_selection[sel_stroke]
-            sel_stroke.selected = False
+            sel_stroke_item.selected = False
 
         ui.edit_paste.setEnabled(True)
         ui.repaint()
@@ -136,8 +138,9 @@ class ClipboardController(object):
 
         paste_strokes = []
         for sel_stroke in self.__clipboard:
-            if type(sel_stroke).__name__ == 'Stroke':
-                paste_strokes.append(stroke.Stroke(from_stroke=sel_stroke))
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            if type(sel_stroke_item).__name__ == 'Stroke':
+                paste_strokes.append(char_set.new_stroke(sel_stroke_item))
             else:
                 paste_strokes.append(sel_stroke)
 
@@ -187,26 +190,28 @@ class ClipboardController(object):
         ui.char_selector_list.setCurrentRow(char_index)
 
         for sel_stroke in cur_view_selection.keys():
-            sel_stroke.selected = False
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.selected = False
 
         self.__main_ctrl.clear_selection()
         cur_view_selection = selection[current_view]
         
         for sel_stroke in strokes_to_paste:
-            
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             added_item = None
 
-            if type(sel_stroke).__name__ == 'Stroke':
+            if type(sel_stroke_item).__name__ == 'Stroke':
                 added_item = current_view.symbol.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             else:
-                new_glyph_inst_id = char_set.new_glyph_instance(sel_stroke.instanced_object)
+                new_glyph_inst_id = char_set.new_glyph_instance(sel_stroke_item.instanced_object)
                 new_glyph = char_set.get_saved_glyph_instance(new_glyph_inst_id)
-                new_glyph.pos = sel_stroke.pos
+                new_glyph.pos = sel_stroke_item.pos
                 current_view.symbol.add_glyph(new_glyph_inst_id)
                 added_item = new_glyph
 
             cur_view_selection[added_item] = {}
-            added_item.selected = True
+            added_item_actual = char_set.get_item_by_index(added_item)
+            added_item_actual.selected = True
 
         self.__main_ctrl.set_ui_state_selection(True)
         ui.repaint()
