@@ -259,7 +259,7 @@ class Character(Glyph):
 
     def remove_glyph(self, glyph_to_remove):
         self.__glyphs.remove(glyph_to_remove)
-        glyph = char_set.get_saved_glyph_instance(glyph_to_remove)
+        glyph = self.char_set.get_saved_glyph_instance(glyph_to_remove)
         glyph.parent = None
         self.calculate_bound_rect()
 

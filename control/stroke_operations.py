@@ -196,11 +196,12 @@ class StrokeController(object):
         ui.stroke_selector_list.takeItem(first_item)
             
         for sel_stroke in added_strokes:
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             if sel_stroke not in cur_view_selection:
                 cur_view_selection[sel_stroke] = {}
-                sel_stroke.deselect_ctrl_verts()
+                sel_stroke_item.deselect_ctrl_verts()
 
-            sel_stroke.selected = True
+            sel_stroke_item.selected = True
 
         self.__main_ctrl.set_ui_state_selection(True)
 
@@ -263,7 +264,7 @@ class StrokeController(object):
         ui.char_selector_list.setCurrentRow(char_index)
 
         cur_char.add_glyph(glyph_instance_id)
-        cur_view_selection[glyph_instance] = {}
+        cur_view_selection[glyph_instance_id] = {}
         glyph_instance.selected = True
 
         ui.dwg_area.repaint()
@@ -382,7 +383,6 @@ class StrokeController(object):
         glyph_item.setIcon(QtGui.QIcon(bitmap))
 
         ui.stroke_selector_list.insertItem(glyph_index, glyph_item)
-
 
     def straighten_stroke(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
