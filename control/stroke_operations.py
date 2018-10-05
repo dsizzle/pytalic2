@@ -271,6 +271,8 @@ class StrokeController(object):
         self.__main_ctrl.set_icon()
 
     def delete_glyph(self, args):
+        char_set = self.__main_ctrl.get_character_set()
+        
         if 'char_index' in args:
             char_index = args['char_index']
         else:
@@ -290,7 +292,7 @@ class StrokeController(object):
 
         cur_char.remove_glyph(glyph_instance_id)
         if glyph_instance in cur_view_selection:
-            del cur_view_selection[glyph_instance]
+            del cur_view_selection[glyph_instance_id]
 
         ui.dwg_area.repaint()
 
