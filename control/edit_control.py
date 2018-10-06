@@ -696,7 +696,8 @@ class EditorController(object):
             self.__selection[self.__current_view_pane] = {}
 
         for char_stroke in self.__cur_char.children:
-            char_stroke.selected = True
+            char_stroke_item = self.__char_set.get_item_by_index(char_stroke)
+            char_stroke_item.selected = True
             if char_stroke not in self.__selection[self.__current_view_pane]:
                 self.__selection[self.__current_view_pane][char_stroke] = {}
 
