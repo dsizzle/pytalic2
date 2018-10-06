@@ -323,7 +323,7 @@ class MouseController(object):
                     else:
                         inside_info = sel_stroke.is_inside(paper_pos)
                     
-                    if inside_info[0] or inside_rect \
+                    if (inside_info[0] or inside_rect) \
                         and (len(cur_view_selection.keys()) == 0 or \
                             shift_down or select_rect):
                         if sel_stroke not in cur_view_selection:
