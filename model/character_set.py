@@ -132,9 +132,6 @@ class CharacterSet(object):
         char_to_get = unichr(char_index)
         return self.get_char(char_to_get)
 
-    def get_char_list(self):
-        return self.__objects[self.__char_type]
-
     @property
     def glyphs(self):
         return self.__objects[self.__glyph_type]

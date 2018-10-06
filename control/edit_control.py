@@ -110,9 +110,7 @@ class EditorController(object):
     def set_character_set(self, new_char_set):
         self.__char_set = new_char_set
 
-        char_list = self.__char_set.get_char_list()
-
-        for char in char_list:
+        for char in self.__char_set.characters:
             char_object = self.__char_set.get_char(char)
             char_object.calculate_bound_rect()
 
