@@ -150,6 +150,8 @@ class StrokeController(object):
             
         # should just add the id! 
         cur_char.add_glyph(glyph_instance_id)
+        glyph_instance.selected = True
+        cur_view_selection[glyph_instance_id] = {}
 
         for sel_stroke in deleted_strokes:
             if sel_stroke in cur_view_selection:
