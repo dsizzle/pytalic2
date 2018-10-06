@@ -327,7 +327,7 @@ class MouseController(object):
                     else:
                         inside_info = sel_stroke_item.is_inside(paper_pos)
                     
-                    if inside_info[0] or inside_rect \
+                    if (inside_info[0] or inside_rect) \
                         and (len(cur_view_selection.keys()) == 0 or \
                             shift_down or select_rect):
                         if sel_stroke not in cur_view_selection:
@@ -338,6 +338,8 @@ class MouseController(object):
                         sel_stroke_item.selected = True  
                     elif not shift_down and not inside_rect:
                         sel_stroke_item.selected = False
+                        if sel_stroke in cur_view_selection:
+                            del cur_view_selection[sel_stroke]
                         if type(sel_stroke_item).__name__ == 'Stroke':
                             sel_stroke_item.deselect_ctrl_verts()
             else:
