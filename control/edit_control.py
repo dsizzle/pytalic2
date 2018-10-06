@@ -185,9 +185,10 @@ class EditorController(object):
                 return
     
         self.__file_controller.file_new()
-
-        self.__cur_char = self.__char_set.current_char
-
+        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
+        self.__char_set.set_current_char_by_index(cur_char_idx)
+        self.__cur_char = self.__char_set.get_current_char()
+        
         self.__cmd_stack.clear()
 
         self.make_layouts()
@@ -329,7 +330,8 @@ class EditorController(object):
 
     def char_selected_cb(self, event):
         cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
-        self.__cur_char = self.__char_set.characters[cur_char_idx]
+        self.__char_set.set_current_char_by_index(cur_char_idx)
+        self.__cur_char = self.__char_set.get_current_char()
 
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char

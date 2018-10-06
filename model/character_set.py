@@ -90,9 +90,12 @@ class CharacterSet(object):
         if unicode_char in self.__character_xref:
             self.__current_char = self.__character_xref[unicode_char]
         else:
-            self.new_character(char)
+            self.__current_char = self.new_character(char)
 
     current_char = property(get_current_char, set_current_char)
+
+    def set_current_char_by_index(self, char_index):
+        self.__current_char = char_index
 
     def get_current_char_name(self):
         current_char_object = self.__objects[self.__char_type][self.__current_char]
