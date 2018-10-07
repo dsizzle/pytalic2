@@ -17,13 +17,13 @@ class Layout(object):
 
     object_list = property(get_object_list, set_object_list)
 
-    def add_object(self, object_to_add):
+    def add_object(self, object_to_add, char_set):
         self.__object_list.append(object_to_add)
-        object_to_add.parent = self
+        #object_to_add.parent = self
 
     def remove_object(self, object_to_remove):
         self.__object_list.remove(object_to_remove)
-        object_to_remove.parent = None
+        #object_to_remove.parent = None
 
     def set_pos(self, point):
         self.__pos = QtCore.QPoint(point)
@@ -55,12 +55,10 @@ class Layout(object):
                 char_set.new_character(ord(char))
                 char_object = char_set.get_current_char()
 
-            new_character = model.instance.CharacterInstance(self, char_set)
-            new_character.instanced_object = char_object
-            self.add_object(new_character)
+            new_character = char_set.new_character_instance(char_object)
+            new_char_inst_actual = char_set.get_item_by_index(new_character)
+            self.add_object(new_character, char_set)
         
-        #char_set.set_current_char(unichr(cur_char))
-
         self.update_layout(char_set, nib_width, line_width)
 
     def update_layout(self, char_set, nib_width, line_width=13):
@@ -86,28 +84,33 @@ class Layout(object):
                     print char_obj_idx
                     break
 
-                while unichr(char_object.character.unicode_character) != char:
+                char_object_actual = char_set.get_item_by_index(char_object)
+
+                while unichr(char_object_actual.character.unicode_character) != char:
                     start_char_idx = char_obj_idx
                     char_obj_idx += 1
                     try:
                         char_object = self.object_list[char_obj_idx]
+                        char_object_actual = char_set.get_item_by_index(char_object)
                     except IndexError:
                         char_obj_idx = start_char_idx
                         break
 
-                if char_object.character.override_spacing:
-                    width = char_object.character.width
-                    left_space = char_object.character.left_spacing
-                    right_space = char_object.character.right_spacing
+                if char_object_actual.character.override_spacing:
+                    width = char_object_actual.character.width
+                    left_space = char_object_actual.character.left_spacing
+                    right_space = char_object_actual.character.right_spacing
                 else:
                     width = char_set.width
                     left_space = char_set.left_spacing
                     right_space = char_set.right_spacing
 
                 current_x += (left_space + width) * nib_width
-                char_object.pos = QtCore.QPoint(current_x, current_y)
-                if char_object.bound_rect:
-                    self.__bound_rect = self.bound_rect.united(char_object.bound_rect.translated(char_object.pos))
+                char_object_actual.pos = QtCore.QPoint(current_x, current_y)
+                if char_object_actual.bound_rect:
+                    self.__bound_rect = self.bound_rect.united( \
+                        char_object_actual.bound_rect.translated(char_object_actual.pos) \
+                        )
 
                 delta_x = right_space * nib_width 
                 current_x += delta_x
@@ -119,7 +122,8 @@ class Layout(object):
             end = start - num_chars
             center_delta = QtCore.QPoint(center_x, 0)
             for idx in range(start, end, -1):
-                self.__object_list[idx].pos -= center_delta
+                actual_obj = char_set.get_item_by_index(self.__object_list[idx])
+                actual_obj.pos -= center_delta
 
             current_x = 0
             current_y += (height + gap_height) * nib_width

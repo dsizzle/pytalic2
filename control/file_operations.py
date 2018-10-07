@@ -126,9 +126,12 @@ class FileController(object):
 
         if file_path:
             ui.setUpdatesEnabled(False)
+            char_set = self.__main_ctrl.get_character_set()
+            char_set.reset()
+
             self.load(file_path)
             char_set = self.__main_ctrl.get_character_set()
-        
+            
             ui.base_height_spin.setValue(char_set.base_height)
             ui.guide_lines.base_height = char_set.base_height
             ui.cap_height_spin.setValue(char_set.cap_height)

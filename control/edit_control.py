@@ -210,6 +210,10 @@ class EditorController(object):
 
         file_path = self.__file_controller.file_open()
 
+        self.__ui.dwg_area.char_set = self.__char_set
+        self.__ui.stroke_dwg_area.char_set = self.__char_set
+        self.__ui.preview_area.char_set = self.__char_set
+        
         if file_path:
             self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
@@ -710,7 +714,8 @@ class EditorController(object):
 
         if self.__current_view_pane == self.__ui.preview_area:
             for item in self.__current_view_pane.layout.object_list:
-                for char_stroke in item.character.children:
+                actual_item = self.__char_set.get_item_by_index(item)
+                for char_stroke in actual_item.character.children:
                     children.append(char_stroke)
         else:
             if self.__current_view_pane.symbol:

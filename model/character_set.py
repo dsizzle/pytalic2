@@ -4,6 +4,24 @@ import model.stroke
 
 class CharacterSet(object):
     def __init__(self):
+        self.__char_type = type(model.character.Character(self)).__name__
+        self.__stroke_type = type(model.stroke.Stroke()).__name__
+        self.__glyph_type = type(model.character.Glyph(self)).__name__
+        self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
+        self.__glyph_inst_type = type(model.instance.GlyphInstance(self)).__name__
+        self.__char_inst_type = type(model.instance.CharacterInstance(self)).__name__
+
+        self.__type_map = {
+            'S': self.__stroke_type,
+            'G': self.__glyph_type,
+            'X': self.__glyph_inst_type,
+            'C': self.__char_type,
+            'D': self.__char_inst_type
+        }
+
+        self.reset()
+
+    def reset(self):
         self.__nominal_width_nibs = 4.0
         self.__left_spacing = 1.0
         self.__right_spacing = 1.0
@@ -17,16 +35,11 @@ class CharacterSet(object):
 
         self.__current_char = None
 
-        self.__char_type = type(model.character.Character(self)).__name__
-        self.__stroke_type = type(model.stroke.Stroke()).__name__
-        self.__glyph_type = type(model.character.Glyph(self)).__name__
-        self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
-        self.__glyph_inst_type = type(model.instance.GlyphInstance(self)).__name__
-
         self.__objects = {}
         self.__objects[self.__char_type] = {}
         self.__objects[self.__stroke_type] = {}
         self.__objects[self.__glyph_type] = {}
+        self.__objects[self.__char_inst_type] = {}
         self.__objects[self.__stroke_inst_type] = {}
         self.__objects[self.__glyph_inst_type] = {}
         
@@ -35,6 +48,7 @@ class CharacterSet(object):
         self.__char_id = 0
         self.__glyph_id = 0
         self.__stroke_id = 0
+        self.__char_inst_id = 0
         self.__glyph_inst_id = 0
 
     def __get_next_char_id(self):
@@ -52,6 +66,24 @@ class CharacterSet(object):
     def __get_next_glyph_inst_id(self):
         self.__glyph_inst_id += 1
         return "X" + '{:010d}'.format(self.__glyph_inst_id)
+
+    def __get_next_char_inst_id(self):
+        self.__char_inst_id += 1
+        return "D" + '{:010d}'.format(self.__char_inst_id)
+
+    def new_character_instance(self, char_index):
+        new_char_inst = model.instance.CharacterInstance(char_set=self)
+        new_char_inst.set_instanced_object(char_index)
+        new_char_inst_id = self.__get_next_char_inst_id()
+
+        self.__objects[self.__char_inst_type][new_char_inst_id] = new_char_inst
+
+        return new_char_inst_id
+
+    def delete_character_instance(self, char_inst_to_delete):
+        if char_inst_to_delete in self.__objects[self.__char_inst_type]:
+            self.__objects[self.__char_inst_type][char_inst_to_delete] = None
+            del self.__objects[self.__char_inst_type][char_inst_to_delete]
 
     def new_character(self, char_code):
         new_char = model.character.Character(self)
@@ -128,6 +160,10 @@ class CharacterSet(object):
     def characters(self):
         return self.__objects[self.__char_type]
 
+    @property
+    def strokes(self):
+        return self.__objects[self.__stroke_type]
+
     def get_char_by_index(self, char_index):
         char_to_get = unichr(char_index)
         return self.get_char(char_to_get)
@@ -203,17 +239,11 @@ class CharacterSet(object):
         if type(item_id).__name__ == 'Stroke':
             return None
 
-        if item_id[0] == 'S':
-            item_type = self.__stroke_type
-        elif item_id[0] == 'G':
-            item_type = self.__glyph_type
-        elif item_id[0] == 'X':
-            item_type = self.__glyph_inst_type
-        elif item_id[0] == 'C':
-            item_type = self.__char_type
-
-        if item_type and item_id in self.__objects[item_type]:
-            return self.__objects[item_type][item_id]
+        if item_id[0] in self.__type_map:
+            item_type = self.__type_map[item_id[0]]
+                    
+            if item_id in self.__objects[item_type]:
+                return self.__objects[item_type][item_id]
 
         return None    
 

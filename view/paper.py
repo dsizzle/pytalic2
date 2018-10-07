@@ -402,7 +402,9 @@ class LayoutArea(Canvas):
             dc.translate(self.layout.pos)
 
             for symbol in self.layout.object_list:
-                symbol.draw(dc, self.nib)
+                symbol_item = self.char_set.get_item_by_index(symbol)
+                if symbol_item:
+                    symbol_item.draw(dc, self.nib)
 
             dc.restore()
 
