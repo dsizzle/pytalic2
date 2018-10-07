@@ -131,7 +131,10 @@ class FileController(object):
 
             self.load(file_path)
             char_set = self.__main_ctrl.get_character_set()
-            
+            ui.dwg_area.char_set = char_set
+            ui.stroke_dwg_area.char_set = char_set
+            ui.preview_area.char_set = char_set
+
             ui.base_height_spin.setValue(char_set.base_height)
             ui.guide_lines.base_height = char_set.base_height
             ui.cap_height_spin.setValue(char_set.cap_height)

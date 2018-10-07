@@ -210,10 +210,6 @@ class EditorController(object):
 
         file_path = self.__file_controller.file_open()
 
-        self.__ui.dwg_area.char_set = self.__char_set
-        self.__ui.stroke_dwg_area.char_set = self.__char_set
-        self.__ui.preview_area.char_set = self.__char_set
-        
         if file_path:
             self.__ui.setWindowTitle(self.__label + " - " + file_path)
 
