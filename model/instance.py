@@ -12,6 +12,8 @@ class Instance(object):
         self.__is_selected = False
         self.__obj_type = None
 
+        self.__scale = 1
+
     def __del__(self):
         pass
         #if self.__instanced_object:
@@ -75,7 +77,7 @@ class Instance(object):
 
     def is_inside(self, point):
         if self.__instanced_object and self.__char_set:
-            test_point = point - self.__pos
+            test_point = (point / self.__scale) - self.__pos
             is_inside =  self.actual_object.is_inside(test_point)
         else:
             is_inside = (False, -1, None)
@@ -101,6 +103,7 @@ class Instance(object):
         object_pos = object_to_draw.pos
 
         gc.save()
+        gc.scale(self.__scale, self.__scale)
         gc.translate(-object_pos)
         gc.translate(self.__pos)
 
@@ -111,7 +114,7 @@ class Instance(object):
 
         if self.__is_selected:
             gc.save()
-
+            gc.scale(self.__scale, self.__scale)
             gc.translate(self.__pos)
             gc.setBrush(view.shared_qt.BRUSH_CLEAR)
             gc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_0)
