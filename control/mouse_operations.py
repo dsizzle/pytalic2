@@ -345,14 +345,15 @@ class MouseController(object):
             else:
                 layout_pos = ui.preview_area.layout.pos
                 for sel_symbol in ui.preview_area.layout.object_list:
-                    inside_info = sel_symbol.is_inside(paper_pos - layout_pos)
+                    sel_symbol_item = char_set.get_item_by_index(sel_symbol)
+                    inside_info = sel_symbol_item.is_inside(paper_pos - layout_pos)
                     if inside_info[0] == True and \
                         (len(cur_view_selection.keys()) == 0 or shift_down):
                         if sel_symbol not in cur_view_selection:
                             cur_view_selection[sel_symbol] = {}     
-                        sel_symbol.selected = True  
+                        sel_symbol_item.selected = True  
                     elif not shift_down:
-                        sel_symbol.selected = False
+                        sel_symbol_item.selected = False
                         
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.set_ui_state_selection(True)
