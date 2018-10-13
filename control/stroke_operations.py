@@ -616,6 +616,7 @@ class StrokeController(object):
 
     def set_stroke_control_vertices_from_list(self, args):
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
             sel_stroke_list = args['strokes']
@@ -632,8 +633,9 @@ class StrokeController(object):
 
         for i in range(0, len(sel_stroke_list)):
             sel_stroke = sel_stroke_list[i]
-            sel_stroke.set_ctrl_vertices_from_list(ctrl_vert_list[i], False)
-            sel_stroke.calc_curve_points()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], False)
+            sel_stroke_item.calc_curve_points()
 
         ui.repaint()
 
@@ -664,6 +666,7 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
+        char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
             sel_stroke = args['strokes']
@@ -680,8 +683,9 @@ class StrokeController(object):
         else:
             return
 
-        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts, False)
-        sel_stroke.calc_curve_points()
+        sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
+        sel_stroke_item.calc_curve_points()
 
         cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
         ui.repaint()
@@ -690,6 +694,7 @@ class StrokeController(object):
         ui = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
+        char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
             sel_stroke = args['strokes']
@@ -706,27 +711,30 @@ class StrokeController(object):
         else:
             return
 
-        sel_stroke.set_ctrl_vertices_from_list(ctrl_verts, False)
-        sel_stroke.calc_curve_points()
+        sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
+        sel_stroke_item.calc_curve_points()
         cur_char.delete_stroke({'stroke': del_stroke})
         ui.repaint()
 
     def add_control_point(self, sel_stroke, inside_info):
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
-
+        char_set = self.__main_ctrl.get_character_set()
+        sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+         
         add_vertex_cmd = commands.Command('add_vertex_cmd')
 
         undo_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [sel_stroke.get_ctrl_vertices_as_list()]
+            'ctrl_verts' : [sel_stroke_item.get_ctrl_vertices_as_list()]
         }
 
-        sel_stroke.add_ctrl_vertex(inside_info[2], inside_info[1])
+        sel_stroke_item.add_ctrl_vertex(inside_info[2], inside_info[1])
 
         do_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [sel_stroke.get_ctrl_vertices_as_list()]
+            'ctrl_verts' : [sel_stroke_item.get_ctrl_vertices_as_list()]
         }
 
         add_vertex_cmd.set_do_args(do_args)
@@ -741,15 +749,18 @@ class StrokeController(object):
     def split_stroke_at_point(self, sel_stroke, inside_info):
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
+        char_set = self.__main_ctrl.get_character_set()
+        sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
         split_at_cmd = commands.Command('split_at_cmd')
-        verts_before = sel_stroke.get_ctrl_vertices_as_list()
+        verts_before = sel_stroke_item.get_ctrl_vertices_as_list()
 
-        new_verts = sel_stroke.split_at_point(inside_info[2], inside_info[1])
-        verts_after = sel_stroke.get_ctrl_vertices_as_list()
+        new_verts = sel_stroke_item.split_at_point(inside_info[2], inside_info[1])
+        verts_after = sel_stroke_item.get_ctrl_vertices_as_list()
 
-        new_stroke = stroke.Stroke()
-        new_stroke.set_ctrl_vertices_from_list(new_verts, True)
+        new_stroke = char_set.new_stroke()
+        new_stroke_item = char_set.get_item_by_index(new_stroke)
+        new_stroke_item.set_ctrl_vertices_from_list(new_verts, True)
 
         undo_args = {
             'strokes' : sel_stroke,

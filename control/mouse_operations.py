@@ -194,7 +194,8 @@ class MouseController(object):
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         cur_char = self.__main_ctrl.get_current_char()
-
+        char_set = self.__main_ctrl.get_character_set()
+        
         ui = self.__main_ctrl.get_ui()
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
         cmd_stack = self.__main_ctrl.get_command_stack()
@@ -239,7 +240,8 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.ADDING_CTRL_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
+                    sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+                    inside_info = sel_stroke_item.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.add_control_point(sel_stroke, inside_info)
                         break
@@ -249,7 +251,8 @@ class MouseController(object):
         elif self.__main_ctrl.state == edit_control.SPLIT_AT_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
-                    inside_info = sel_stroke.is_inside(paper_pos, get_closest_vert=True)
+                    sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+                    inside_info = sel_stroke_item.is_inside(paper_pos, get_closest_vert=True)
                     if inside_info[1] >= 0:
                         stroke_ctrl.split_stroke_at_point(sel_stroke, inside_info)
                         break
