@@ -3,26 +3,55 @@ import model.instance
 import model.stroke
 import model.control_vertex
 
+CHAR_TYPE = type(model.character.Character(None)).__name__
+STROKE_TYPE = type(model.stroke.Stroke(None)).__name__
+GLYPH_TYPE = type(model.character.Glyph(None)).__name__
+STROKE_INST_TYPE = type(model.instance.StrokeInstance()).__name__
+GLYPH_INST_TYPE = type(model.instance.GlyphInstance(None)).__name__
+CHAR_INST_TYPE = type(model.instance.CharacterInstance(None)).__name__
+VERTEX_TYPE = type(model.control_vertex.ControlVertex(None)).__name__
+
+TYPE_MAP = {
+    'S': STROKE_TYPE,
+    'G': GLYPH_TYPE,
+    'X': GLYPH_INST_TYPE,
+    'C': CHAR_TYPE,
+    'D': CHAR_INST_TYPE,
+    'V': VERTEX_TYPE
+}
+
 class CharacterSet(object):
     def __init__(self):
-        self.__char_type = type(model.character.Character(self)).__name__
-        self.__stroke_type = type(model.stroke.Stroke(self)).__name__
-        self.__glyph_type = type(model.character.Glyph(self)).__name__
-        self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
-        self.__glyph_inst_type = type(model.instance.GlyphInstance(self)).__name__
-        self.__char_inst_type = type(model.instance.CharacterInstance(self)).__name__
-        self.__vertex_type = type(model.control_vertex.ControlVertex(self)).__name__
+        self.__nominal_width_nibs = 4.0
+        self.__left_spacing = 1.0
+        self.__right_spacing = 1.0
+        self.__base_height_nibs = 5.0
+        self.__ascent_height_nibs = 3.0
+        self.__descent_height_nibs = 3.0
+        self.__cap_height_nibs = 2.0
+        self.__gap_height_nibs = 1.0
+        self.__guide_angle = 5
+        self.__nib_angle = 40
 
-        self.__type_map = {
-            'S': self.__stroke_type,
-            'G': self.__glyph_type,
-            'X': self.__glyph_inst_type,
-            'C': self.__char_type,
-            'D': self.__char_inst_type,
-            'V': self.__vertex_type
-        }
+        self.__current_char = None
 
-        self.reset()
+        self.__objects = {}
+        self.__objects[CHAR_TYPE] = {}
+        self.__objects[STROKE_TYPE] = {}
+        self.__objects[GLYPH_TYPE] = {}
+        self.__objects[CHAR_INST_TYPE] = {}
+        self.__objects[STROKE_INST_TYPE] = {}
+        self.__objects[GLYPH_INST_TYPE] = {}
+        self.__objects[VERTEX_TYPE] = {}
+        
+        self.__character_xref = {}
+
+        self.__char_id = 0
+        self.__glyph_id = 0
+        self.__stroke_id = 0
+        self.__char_inst_id = 0
+        self.__glyph_inst_id = 0
+        self.__control_vertex_id = 0
 
     def reset(self):
         self.__nominal_width_nibs = 4.0
@@ -39,13 +68,13 @@ class CharacterSet(object):
         self.__current_char = None
 
         self.__objects = {}
-        self.__objects[self.__char_type] = {}
-        self.__objects[self.__stroke_type] = {}
-        self.__objects[self.__glyph_type] = {}
-        self.__objects[self.__char_inst_type] = {}
-        self.__objects[self.__stroke_inst_type] = {}
-        self.__objects[self.__glyph_inst_type] = {}
-        self.__objects[self.__vertex_type] = {}
+        self.__objects[CHAR_TYPE] = {}
+        self.__objects[STROKE_TYPE] = {}
+        self.__objects[GLYPH_TYPE] = {}
+        self.__objects[CHAR_INST_TYPE] = {}
+        self.__objects[STROKE_INST_TYPE] = {}
+        self.__objects[GLYPH_INST_TYPE] = {}
+        self.__objects[VERTEX_TYPE] = {}
         
         self.__character_xref = {}
 
@@ -83,35 +112,35 @@ class CharacterSet(object):
     def new_control_vertex(self, left, center, right):
         new_ctrl_vertex = model.control_vertex.ControlVertex(left, center, right)
         new_ctrl_vertex_id = self.__get_next_vertex_id()
-        self.__objects[self.__vertex_type][new_ctrl_vertex_id] = new_ctrl_vertex
+        self.__objects[VERTEX_TYPE][new_ctrl_vertex_id] = new_ctrl_vertex
 
         return new_ctrl_vertex_id
 
     def delete_control_vertex(self, vertex_id):
-        if vertex_id in self.__objects[self.__vertex_type]:
-            self.__objects[self.__vertex_type][vertex_id] = None
+        if vertex_id in self.__objects[VERTEX_TYPE]:
+            self.__objects[VERTEX_TYPE][vertex_id] = None
 
-            del self.__objects[self.__vertex_type][vertex_id]
+            del self.__objects[VERTEX_TYPE][vertex_id]
 
     def new_character_instance(self, char_index):
         new_char_inst = model.instance.CharacterInstance(char_set=self)
         new_char_inst.set_instanced_object(char_index)
         new_char_inst_id = self.__get_next_char_inst_id()
 
-        self.__objects[self.__char_inst_type][new_char_inst_id] = new_char_inst
+        self.__objects[CHAR_INST_TYPE][new_char_inst_id] = new_char_inst
 
         return new_char_inst_id
 
     def delete_character_instance(self, char_inst_to_delete):
-        if char_inst_to_delete in self.__objects[self.__char_inst_type]:
-            self.__objects[self.__char_inst_type][char_inst_to_delete] = None
-            del self.__objects[self.__char_inst_type][char_inst_to_delete]
+        if char_inst_to_delete in self.__objects[CHAR_INST_TYPE]:
+            self.__objects[CHAR_INST_TYPE][char_inst_to_delete] = None
+            del self.__objects[CHAR_INST_TYPE][char_inst_to_delete]
 
     def new_character(self, char_code):
         new_char = model.character.Character(self)
         new_char_id = self.__get_next_char_id()
         
-        self.__objects[self.__char_type][new_char_id] = new_char
+        self.__objects[CHAR_TYPE][new_char_id] = new_char
 
         if char_code:
             new_char.unicode_character = char_code
@@ -122,20 +151,20 @@ class CharacterSet(object):
         return new_char_id
 
     def delete_char(self, char_to_delete):
-        if char_to_delete in self.__objects[self.__char_type]:
-            char_code = self.__objects[self.__char_type][char_to_delete].unicode_character
-            self.__objects[self.__char_type][char_to_delete] = None
-            del self.__objects[self.__char_type][char_to_delete]
+        if char_to_delete in self.__objects[CHAR_TYPE]:
+            char_code = self.__objects[CHAR_TYPE][char_to_delete].unicode_character
+            self.__objects[CHAR_TYPE][char_to_delete] = None
+            del self.__objects[CHAR_TYPE][char_to_delete]
             del self.__character_xref[unichr(char_code)]
         elif char_to_delete in self.__character_xref:
             char = self.__character_xref[char_to_delete]
-            self.__objects[self.__char_type][char] = None
-            del self.__objects[self.__char_type][char]
+            self.__objects[CHAR_TYPE][char] = None
+            del self.__objects[CHAR_TYPE][char]
             del self.__character_xref[char_to_delete]
 
     def get_current_char(self):
         if self.__current_char is not None:
-            return self.__objects[self.__char_type][self.__current_char]
+            return self.__objects[CHAR_TYPE][self.__current_char]
 
         return None
 
@@ -152,19 +181,19 @@ class CharacterSet(object):
         self.__current_char = char_index
 
     def get_current_char_name(self):
-        current_char_object = self.__objects[self.__char_type][self.__current_char]
+        current_char_object = self.__objects[CHAR_TYPE][self.__current_char]
         return unichr(current_char_object.unicode_character)
 
     def get_current_char_index(self):
         return self.__current_char
 
     def get_char(self, char_to_get):
-        if char_to_get in self.__objects[self.__char_type]:
-            return self.__objects[self.__char_type][char_to_get]
+        if char_to_get in self.__objects[CHAR_TYPE]:
+            return self.__objects[CHAR_TYPE][char_to_get]
 
         if char_to_get in self.__character_xref:
             char_id = self.__character_xref[char_to_get]
-            return self.__objects[self.__char_type][char_id]
+            return self.__objects[CHAR_TYPE][char_id]
 
         return None
 
@@ -180,11 +209,11 @@ class CharacterSet(object):
 
     @property
     def characters(self):
-        return self.__objects[self.__char_type]
+        return self.__objects[CHAR_TYPE]
 
     @property
     def strokes(self):
-        return self.__objects[self.__stroke_type]
+        return self.__objects[STROKE_TYPE]
 
     def get_char_by_index(self, char_index):
         char_to_get = unichr(char_index)
@@ -192,33 +221,33 @@ class CharacterSet(object):
 
     @property
     def glyphs(self):
-        return self.__objects[self.__glyph_type]
+        return self.__objects[GLYPH_TYPE]
 
     def save_glyph(self, item):
         glyph_id = self.__get_next_glyph_id()
-        self.__objects[self.__glyph_type][glyph_id] = item
+        self.__objects[GLYPH_TYPE][glyph_id] = item
         return glyph_id
 
     def insert_glyph(self, glyph_id, item):
-        self.__objects[self.__glyph_type][glyph_id] = item
+        self.__objects[GLYPH_TYPE][glyph_id] = item
         
     def get_saved_glyph(self, glyph_id):
-        if glyph_id in self.__objects[self.__glyph_type]:
-            return self.__objects[self.__glyph_type][glyph_id]
+        if glyph_id in self.__objects[GLYPH_TYPE]:
+            return self.__objects[GLYPH_TYPE][glyph_id]
 
         return None
 
     def set_saved_glyph(self, glyph_id, stroke):
-        if glyph_id not in self.__objects[self.__glyph_type]:
+        if glyph_id not in self.__objects[GLYPH_TYPE]:
             return
 
-        tmp_stroke = self.__objects[self.__glyph_type][glyph_id]
-        self.__objects[self.__glyph_type][glyph_id] = stroke
+        tmp_stroke = self.__objects[GLYPH_TYPE][glyph_id]
+        self.__objects[GLYPH_TYPE][glyph_id] = stroke
         del tmp_stroke
 
     def remove_saved_glyph(self, glyph_id):
         try:
-            del self.__objects[self.__glyph_type][glyph_id]
+            del self.__objects[GLYPH_TYPE][glyph_id]
         except IndexError:
             print "ERROR: saved glyph to remove doesn't exist!"
 
@@ -229,7 +258,7 @@ class CharacterSet(object):
 
         new_inst_id = self.__get_next_glyph_inst_id()
         
-        self.__objects[self.__glyph_inst_type][new_inst_id] = new_inst
+        self.__objects[GLYPH_INST_TYPE][new_inst_id] = new_inst
 
         if glyph:
             new_inst.instanced_object = glyph
@@ -237,8 +266,8 @@ class CharacterSet(object):
         return new_inst_id
 
     def get_saved_glyph_instance(self, glyph_id):
-        if glyph_id in self.__objects[self.__glyph_inst_type]:
-            return self.__objects[self.__glyph_inst_type][glyph_id]
+        if glyph_id in self.__objects[GLYPH_INST_TYPE]:
+            return self.__objects[GLYPH_INST_TYPE][glyph_id]
 
         return None
 
@@ -246,14 +275,14 @@ class CharacterSet(object):
         new_stroke = model.stroke.Stroke(char_set=self, from_stroke=stroke)
         new_stroke_id = self.__get_next_stroke_id()
         
-        self.__objects[self.__stroke_type][new_stroke_id] = new_stroke
+        self.__objects[STROKE_TYPE][new_stroke_id] = new_stroke
 
         return new_stroke_id
 
     def delete_stroke(self, stroke_to_delete):
-        if stroke_to_delete in self.__objects[self.__stroke_type]:
-            self.__objects[self.__stroke_type][stroke_to_delete] = None
-            del self.__objects[self.__stroke_type][stroke_to_delete]
+        if stroke_to_delete in self.__objects[STROKE_TYPE]:
+            self.__objects[STROKE_TYPE][stroke_to_delete] = None
+            del self.__objects[STROKE_TYPE][stroke_to_delete]
 
     def get_item_by_index(self, item_id):
         item_type = None
@@ -261,8 +290,8 @@ class CharacterSet(object):
         if type(item_id).__name__ == 'Stroke':
             return None
 
-        if item_id[0] in self.__type_map:
-            item_type = self.__type_map[item_id[0]]
+        if item_id[0] in TYPE_MAP:
+            item_type = TYPE_MAP[item_id[0]]
                     
             if item_id in self.__objects[item_type]:
                 return self.__objects[item_type][item_id]
