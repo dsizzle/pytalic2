@@ -221,8 +221,16 @@ class Stroke(object):
         return new_curves
 
     def get_ctrl_vertices(self, make_copy=True):
+        verts = []
         if make_copy:
-            verts = copy.deepcopy(self.__stroke_ctrl_verts)
+            for vert in self.__stroke_ctrl_verts:
+                vert_item = self.__char_set.get_item_by_index(vert)
+
+                left = vert_item.get_handle_pos(1)
+                center = vert_item.get_handle_pos(2)
+                right = vert_item.get_handle_pos(3)
+
+                verts.append(self.__char_set.new_control_vertex(left, center, right))
         else:
             verts = self.__stroke_ctrl_verts
 
