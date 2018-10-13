@@ -226,11 +226,15 @@ class Stroke(object):
             for vert in self.__stroke_ctrl_verts:
                 vert_item = self.__char_set.get_item_by_index(vert)
 
-                left = vert_item.get_handle_pos(1)
-                center = vert_item.get_handle_pos(2)
-                right = vert_item.get_handle_pos(3)
+                handle = []
+                for i in range(1, 4):
+                    pos = vert_item.get_handle_pos(i)
+                    if pos:
+                        pos = QtCore.QPoint(pos)
 
-                verts.append(self.__char_set.new_control_vertex(left, center, right))
+                    handle.append(pos)
+
+                verts.append(self.__char_set.new_control_vertex(handle[0], handle[1], handle[2]))
         else:
             verts = self.__stroke_ctrl_verts
 
