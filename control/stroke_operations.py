@@ -33,6 +33,7 @@ class StrokeController(object):
 
         current_view = self.__main_ctrl.get_current_view()
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
@@ -46,7 +47,7 @@ class StrokeController(object):
         ui.setUpdatesEnabled(True)        
 
         self.__stroke_pts = []
-        self.__tmp_stroke = stroke.Stroke()
+        self.__tmp_stroke = stroke.Stroke(char_set)
         current_view.strokes.append(self.__tmp_stroke)
         self.__tmp_stroke.selected = True
 
@@ -467,6 +468,7 @@ class StrokeController(object):
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
 
         stroke_list = strokes.keys()
         cur_stroke = stroke_list.pop(0)
@@ -505,13 +507,14 @@ class StrokeController(object):
 
             vert_list.extend(cur_verts[1:])
 
-        new_stroke = stroke.Stroke()
-        new_stroke.set_ctrl_vertices_from_list(vert_list, False)
-        new_stroke.calc_curve_points()
+        new_stroke = char_set.create_new_stroke()
+        new_stroke_item = char_set.get_item_by_index(new_stroke)
+        new_stroke_item.set_ctrl_vertices_from_list(vert_list, False)
+        new_stroke_item.calc_curve_points()
         cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
 
         cur_view_selection[new_stroke] = {}
-        new_stroke.selected = True
+        new_stroke_item.selected = True
 
         return new_stroke
 
@@ -934,11 +937,12 @@ class StrokeController(object):
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             if len(selection[sel_stroke].keys()) > 0:
                 for stroke_pt in selection[sel_stroke].keys():
-                    stroke_pt.select_handle(selection[sel_stroke][stroke_pt])
+                    stroke_pt_item = char_set.get_item_by_index(stroke_pt)
+                    stroke_pt_item.select_handle(selection[sel_stroke][stroke_pt])
                     if snap_point:
-                        stroke_pt.selected_handle_pos = snap_point - sel_stroke_item.pos
+                        stroke_pt_item.selected_handle_pos = snap_point - sel_stroke_item.pos
                     else:
-                        stroke_pt.selected_handle_pos = stroke_pt.selected_handle_pos + delta
+                        stroke_pt_item.selected_handle_pos = stroke_pt_item.selected_handle_pos + delta
             else:
                 sel_stroke_item.pos += delta
 

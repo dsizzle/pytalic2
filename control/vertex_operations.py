@@ -10,6 +10,7 @@ class VertexController(object):
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
+        char_set = self.__main_ctrl.get_character_set()
 
         if len(cur_view_selection.values()) > 0:
             vert_list = cur_view_selection.values()
@@ -23,7 +24,8 @@ class VertexController(object):
 
             for vert_dict in vert_list:
                 for vert in vert_dict.keys():
-                    behavior_list.append(vert.behavior)
+                    vert_item = char_set.get_item_by_index(vert)
+                    behavior_list.append(vert_item.behavior)
 
             undo_args = {
                 'verts' : vert_list,
@@ -53,7 +55,8 @@ class VertexController(object):
 
     def set_ctrl_vertex_behavior(self, args):
         ui = self.__main_ctrl.get_ui()
-
+        char_set = self.__main_ctrl.get_character_set()
+        
         if 'verts' in args:
             vert_list = args['verts']
         else:
@@ -71,9 +74,11 @@ class VertexController(object):
 
         for vert_dict in vert_list:
             for i in range(0, len(vert_dict.keys())):
+                vert = vert_dict.keys()[i]
+                vert_item = char_set.get_item_by_index(vert)
                 if use_same_behavior:
-                    vert_dict.keys()[i].behavior = behavior_list[0]
+                    vert_item.behavior = behavior_list[0]
                     ui.behavior_combo.setCurrentIndex(behavior_list[0])
                 else:
-                    vert_dict.keys()[i].behavior = behavior_list[i]
+                    vert_item.behavior = behavior_list[i]
                     ui.behavior_combo.setCurrentIndex(0)

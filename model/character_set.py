@@ -1,22 +1,25 @@
 import model.character
 import model.instance
 import model.stroke
+import model.control_vertex
 
 class CharacterSet(object):
     def __init__(self):
         self.__char_type = type(model.character.Character(self)).__name__
-        self.__stroke_type = type(model.stroke.Stroke()).__name__
+        self.__stroke_type = type(model.stroke.Stroke(self)).__name__
         self.__glyph_type = type(model.character.Glyph(self)).__name__
         self.__stroke_inst_type = type(model.instance.StrokeInstance()).__name__
         self.__glyph_inst_type = type(model.instance.GlyphInstance(self)).__name__
         self.__char_inst_type = type(model.instance.CharacterInstance(self)).__name__
+        self.__vertex_type = type(model.control_vertex.ControlVertex(self)).__name__
 
         self.__type_map = {
             'S': self.__stroke_type,
             'G': self.__glyph_type,
             'X': self.__glyph_inst_type,
             'C': self.__char_type,
-            'D': self.__char_inst_type
+            'D': self.__char_inst_type,
+            'V': self.__vertex_type
         }
 
         self.reset()
@@ -42,6 +45,7 @@ class CharacterSet(object):
         self.__objects[self.__char_inst_type] = {}
         self.__objects[self.__stroke_inst_type] = {}
         self.__objects[self.__glyph_inst_type] = {}
+        self.__objects[self.__vertex_type] = {}
         
         self.__character_xref = {}
 
@@ -50,6 +54,7 @@ class CharacterSet(object):
         self.__stroke_id = 0
         self.__char_inst_id = 0
         self.__glyph_inst_id = 0
+        self.__control_vertex_id = 0
 
     def __get_next_char_id(self):
         self.__char_id += 1
@@ -70,6 +75,23 @@ class CharacterSet(object):
     def __get_next_char_inst_id(self):
         self.__char_inst_id += 1
         return "D" + '{:010d}'.format(self.__char_inst_id)
+
+    def __get_next_vertex_id(self):
+        self.__control_vertex_id += 1
+        return "V" + '{:010d}'.format(self.__control_vertex_id)
+
+    def new_control_vertex(self, left, center, right):
+        new_ctrl_vertex = model.control_vertex.ControlVertex(left, center, right)
+        new_ctrl_vertex_id = self.__get_next_vertex_id()
+        self.__objects[self.__vertex_type][new_ctrl_vertex_id] = new_ctrl_vertex
+
+        return new_ctrl_vertex_id
+
+    def delete_control_vertex(self, vertex_id):
+        if vertex_id in self.__objects[self.__vertex_type]:
+            self.__objects[self.__vertex_type][vertex_id] = None
+
+            del self.__objects[self.__vertex_type][vertex_id]
 
     def new_character_instance(self, char_index):
         new_char_inst = model.instance.CharacterInstance(char_set=self)
@@ -220,8 +242,8 @@ class CharacterSet(object):
 
         return None
 
-    def new_stroke(self, stroke):
-        new_stroke = model.stroke.Stroke(from_stroke=stroke)
+    def new_stroke(self, stroke=None):
+        new_stroke = model.stroke.Stroke(char_set=self, from_stroke=stroke)
         new_stroke_id = self.__get_next_stroke_id()
         
         self.__objects[self.__stroke_type][new_stroke_id] = new_stroke

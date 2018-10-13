@@ -11,7 +11,6 @@ import random
 
 from PyQt4 import QtCore, QtGui
 
-import model.control_vertex
 import nibs
 #import serif
 from view import shared_qt
@@ -19,7 +18,8 @@ from view import shared_qt
 DEBUG_BBOXES = False
 
 class Stroke(object):
-    def __init__(self, from_stroke=None, parent=None):
+    def __init__(self, char_set, from_stroke=None, parent=None):
+        self.__char_set = char_set
         if from_stroke is not None:
             self.__start_serif = from_stroke.get_start_serif()
             self.__end_serif = from_stroke.get_end_serif()
@@ -237,7 +237,8 @@ class Stroke(object):
     def get_ctrl_vertices_as_list(self):
         points = []
         for vert in self.__stroke_ctrl_verts:
-            points.extend(vert.get_handle_pos_as_list())
+            vert_item = self.__char_set.get_item_by_index(vert)
+            points.extend(vert_item.get_handle_pos_as_list())
 
         return points
 
@@ -261,7 +262,7 @@ class Stroke(object):
                 point = tmp_points.pop(0)
                 right = QtCore.QPoint(point[0], point[1]) - offset
 
-            self.__stroke_ctrl_verts.append(model.control_vertex.ControlVertex(left, center, right))
+            self.__stroke_ctrl_verts.append(self.__char_set.new_control_vertex(left, center, right))
 
             right = None
             if len(tmp_points):
@@ -467,7 +468,8 @@ class Stroke(object):
             gc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)
 
             for vert in self.__stroke_ctrl_verts:
-                vert.draw(gc)
+                vert_item = self.__char_set.get_item_by_index(vert)
+                vert_item.draw(gc)
 
             if self.__bound_rect is not None:
                 gc.setBrush(shared_qt.BRUSH_CLEAR)
@@ -588,7 +590,8 @@ class Stroke(object):
 
     def deselect_ctrl_verts(self):
         for vert in self.__stroke_ctrl_verts:
-            vert.select_handle(None)
+            vert_item = self.__char_set.get_item_by_index(vert)
+            vert_item.select_handle(None)
 
     def get_curve_path(self):
         return self.__curve_path

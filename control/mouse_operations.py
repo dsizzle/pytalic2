@@ -297,7 +297,8 @@ class MouseController(object):
                         cur_view_selection[sel_stroke][ctrl_vert] = handle_index
 
                         for ctrl_vert in cur_view_selection[sel_stroke].keys():
-                            ctrl_vert.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
+                            ctrl_vert_item = char_set.get_item_by_index(ctrl_vert)
+                            ctrl_vert_item.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
 
             elif not shift_down:
                 self.__main_ctrl.deselect_all_strokes_cb()
@@ -308,7 +309,8 @@ class MouseController(object):
             
             for vert_dict in vert_list:
                 for vert in vert_dict.keys():
-                    behavior_list.append(vert.behavior)
+                    vert_item = char_set.get_item_by_index(vert)
+                    behavior_list.append(vert_item.behavior)
 
             behavior_list = list(set(behavior_list))
             if len(behavior_list) == 1:

@@ -62,13 +62,15 @@ class SnapController(object):
 
                 vert_index = ctrl_verts.index(sel_point)
 
-                if sel_point.is_knot_selected():
+                sel_point_item = char_set.get_item_by_index(sel_point)
+                if sel_point_item.is_knot_selected():
                     if vert_index == 0:
                         vert_index += 1
                     else:
                         vert_index -= 1
 
-                vpos = ctrl_verts[vert_index].get_handle_pos(2)
+                vert_item = char_set.get_item_by_index(ctrl_verts[vert_index])
+                vpos = vert_item.get_handle_pos(2)
                 stroke_pos = sel_stroke_item.pos
 
                 if self.__snap & SNAP_TO_GRID:
