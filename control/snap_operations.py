@@ -145,7 +145,8 @@ class SnapController(object):
             char_stroke_item = char_set.get_item_by_index(char_stroke)
             for ctrl_vert in char_stroke_item.get_ctrl_vertices(False):
                 if sel_point is not ctrl_vert:
-                    test_point = ctrl_vert.get_handle_pos(2) + char_stroke_item.pos
+                    ctrl_vert_item = char_set.get_item_by_index(ctrl_vert)
+                    test_point = ctrl_vert_item.get_handle_pos(2) + char_stroke_item.pos
 
                     if test_point in test_rect:
                         snap_point = test_point
