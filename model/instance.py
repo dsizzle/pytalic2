@@ -1,6 +1,5 @@
 from PyQt4 import QtCore
 
-import model.character_set
 import view.shared_qt
 
 class Instance(object):
