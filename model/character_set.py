@@ -139,8 +139,9 @@ class CharacterSet(object):
 
     def new_character_instance(self, char_index):
         new_char_inst = CharacterInstance(char_set=self)
-        new_char_inst.set_instanced_object(char_index)
+        new_char_inst.instanced_object = char_index
         new_char_inst_id = self.__get_next_char_inst_id()
+        new_char_inst.actual_object.add_instance(new_char_inst_id)
 
         self.__objects[CHAR_INST_TYPE][new_char_inst_id] = new_char_inst
 
@@ -277,6 +278,7 @@ class CharacterSet(object):
 
         if glyph:
             new_inst.instanced_object = glyph
+            new_inst.actual_object.add_instance(new_inst_id)
         
         return new_inst_id
 

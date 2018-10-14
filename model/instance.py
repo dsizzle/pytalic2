@@ -65,8 +65,6 @@ class Instance(object):
         if self.__char_set:    
             self.__pos = QtCore.QPoint(self.actual_object.get_pos())
         
-            self.actual_object.add_instance(self)
-
     def get_instanced_object(self):
         return self.__instanced_object
 

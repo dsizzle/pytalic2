@@ -360,7 +360,8 @@ class StrokeController(object):
         instance_list = glyph.instances.keys()
 
         for glyph_instance in instance_list:
-            char = glyph_instance.parent
+            glyph_instance_item = char_set.get_item_by_index(glyph_instance)
+            char = glyph_instance_item.parent
             char.remove_glyph(glyph_instance)
 
     def add_saved_glyph(self, args):
