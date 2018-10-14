@@ -27,7 +27,10 @@ class Glyph(object):
             data += struct.pack("<11s", strok)
 
         data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
-        # instances?
+        num_instances = len(self.__instances.keys())
+        data += struct.pack("<I", num_instances)
+        for inst in self.__instances.keys():
+            data += struct.pack("<11s", inst)
 
         return data
 
@@ -44,6 +47,16 @@ class Glyph(object):
 
         (x, y) = struct.unpack_from("<dd", data, offset)
         self.__pos = QtCore.QPoint(x, y)
+        offset += struct.calcsize("<dd")
+        
+        num_instances = struct.unpack_from("<I", data, offset)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_instances):
+            instance = struct.unpack_from("<11s", data, offset)
+            offset += struct.calcsize("<11s")
+
+            self.__instances[instance] = 1
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()
@@ -282,7 +295,10 @@ class Character(Glyph):
             data += struct.pack("<11s", glyf)
 
         data += struct.pack("<dd", self.pos.x(), self.pos.y())
-        # instances?
+        num_instances = len(self.instances.keys())
+        data += struct.pack("<I", num_instances)
+        for inst in self.instances.keys():
+            data += struct.pack("<11s", inst)
 
         data += struct.pack("<i", self.__unicode_character)
         data += struct.pack("<fff", self.__width, \
@@ -313,6 +329,15 @@ class Character(Glyph):
 
         (x, y) = struct.unpack_from("<dd", data, offset)
         self.pos = QtCore.QPoint(x, y)
+
+        num_instances = struct.unpack_from("<I", data, offset)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_instances):
+            instance = struct.unpack_from("<11s", data, offset)
+            offset += struct.calcsize("<11s")
+
+            self.instances[instance] = 1
 
         self.__unicode_character = struct.unpack_from("<i", data, offset)[0]
         offset += struct.calcsize("<i")
