@@ -421,10 +421,11 @@ class CharacterSet(object):
                     fd.write(struct.pack("<L", len(data)))
                     fd.write(data)
                 except IOError:
-                    raise IOError("ERROR: Couldn't write file")
+                    raise
                 except Exception as err:
                     print "ERROR: Couldn't serialize", item_id
                     print err
+                    raise
 
     def load(self, fd):
         if not fd:
@@ -459,11 +460,11 @@ class CharacterSet(object):
                     self.__objects[item_type][item_id] = item_object    
 
             except IOError:
-                raise IOError("Couldn't read file")
+                raise
             except EOFError:
-                raise EOFError("Unexpected End-Of-File")
-            except Exception as err:
-                raise Exception(err)
+                raise
+            except Exception:
+                raise
                 
         for char_id in self.__objects[CHAR_TYPE].keys():
             char_item = self.get_item_by_index(char_id)
