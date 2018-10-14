@@ -33,6 +33,7 @@ class Instance(object):
         offset += struct.calcsize("<dd")
         self.__pos = QtCore.QPoint(x, y)
         (self.__obj_type, self.__scale) = struct.unpack_from("<15sf", data, offset)
+        self.__obj_type = self.__obj_type.strip('\0')
 
     def __del__(self):
         pass
