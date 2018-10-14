@@ -50,7 +50,7 @@ class ControlVertex(object):
             self.__behavior)
         
         for i in range(1, 4):
-            if self.__handle_pos[i]:
+            if self.__handle_pos[i] is not None:
                 data += struct.pack("<dd", self.__handle_pos[i].x(), \
                     self.__handle_pos[i].y())
             else:
