@@ -129,7 +129,10 @@ class FileController(object):
             char_set = self.__main_ctrl.get_character_set()
             char_set.reset()
 
-            self.load(file_path)
+            status = self.load(file_path)
+            if status:
+                return None
+
             char_set = self.__main_ctrl.get_character_set()
             ui.dwg_area.char_set = char_set
             ui.stroke_dwg_area.char_set = char_set
@@ -218,6 +221,8 @@ class FileController(object):
         if data_file_fd:
             data_file_fd.close()
 
+        return 0
+
     def load(self, file_name):
         char_set = self.__main_ctrl.get_character_set()
         char_set.reset()
@@ -237,6 +242,14 @@ class FileController(object):
                 data_file_fd.close()
 
             return 1
+        except EOFError as eof_error:
+            print "ERROR: ", eof_error
+            return 1
+        except Exception as other_error:
+            print "ERROR: Problem reading file", other_error
+            return 1
 
         if data_file_fd:
             data_file_fd.close()
+
+        return 0
