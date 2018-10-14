@@ -284,7 +284,7 @@ class Character(Glyph):
         data += struct.pack("<dd", self.pos.x(), self.pos.y())
         # instances?
 
-        data += struct.pack("<l", self.__unicode_character)
+        data += struct.pack("<i", self.__unicode_character)
         data += struct.pack("<fff", self.__width, \
             self.__left_spacing, self.__right_spacing)
         data += struct.pack("<b", self.__override_spacing)
@@ -314,8 +314,8 @@ class Character(Glyph):
         (x, y) = struct.unpack_from("<dd", data, offset)
         self.pos = QtCore.QPoint(x, y)
 
-        self.__unicode_character = struct.unpack_from("<l", data, offset)
-        offset += struct.calcsize("<l")
+        self.__unicode_character = struct.unpack_from("<i", data, offset)[0]
+        offset += struct.calcsize("<i")
         (self.__width, self.__left_spacing, self.__right_spacing) = \
             struct.unpack_from("<fff", data, offset)
         offset += struct.calcsize("<fff")
