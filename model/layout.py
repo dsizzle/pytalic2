@@ -53,7 +53,7 @@ class Layout(object):
 
             if char_object is None:
                 char_set.new_character(ord(char))
-                char_object = char_set.get_current_char()
+                char_object = char_set.get_current_char_index()
 
             new_character = char_set.new_character_instance(char_object)
             new_char_inst_actual = char_set.get_item_by_index(new_character)
