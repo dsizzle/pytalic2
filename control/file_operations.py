@@ -205,12 +205,14 @@ class FileController(object):
         except IOError:
             print "ERROR: Couldn't open %s for writing." % (file_name)
             return 1
-
+            
         try:
-            data_pickler = pickle.Pickler(data_file_fd, pickle.HIGHEST_PROTOCOL)
-            data_pickler.dump(char_set)
-        except pickle.PicklingError:
-            print "ERROR: Couldn't serialize data"
+            char_set.save(data_file_fd)
+        except IOError:
+            print "ERROR: Couldn't save file"
+            if data_file_fd:
+                data_file_fd.close()
+
             return 1
 
         if data_file_fd:
@@ -229,8 +231,8 @@ class FileController(object):
         except pickle.UnpicklingError:
             print "ERROR: Couldn't unserialize data"
             return 1
-        except Exception:
-            print "ERROR: OTHER"
+        except Exception as err:
+            print "ERROR: OTHER", err
             return 1
 
         self.__main_ctrl.set_character_set(char_set)

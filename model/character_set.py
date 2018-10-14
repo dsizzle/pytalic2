@@ -1,3 +1,5 @@
+import struct
+
 import model.character
 import model.instance
 import model.stroke
@@ -19,6 +21,8 @@ TYPE_MAP = {
     'D': CHAR_INST_TYPE,
     'V': VERTEX_TYPE
 }
+
+VERSION = 1.0
 
 class CharacterSet(object):
     def __init__(self):
@@ -384,3 +388,25 @@ class CharacterSet(object):
         return self.__nib_angle
 
     nib_angle = property(get_nib_angle, set_nib_angle)
+
+    def save(self, fd):
+        if not fd:
+            return
+
+        fd.write(struct.pack("<4sd", "PTCS", VERSION))
+        fd.write(struct.pack("<cL", 'V', self.__control_vertex_id))
+
+        for item_type in self.__objects:
+            num_items = len(self.__objects[item_type].keys())
+            fd.write(struct.pack("<cL", item_type[0], num_items))
+
+            for item_id in self.__objects[item_type]:
+                fd.write(struct.pack("<11s", item_id))
+
+                item = self.__objects[item_type][item_id]
+                try:
+                    data = item.serialize()
+                    fd.write(data)
+                except Exception as err:
+                    print "ERROR: Couldn't serialize", item_id
+                    print err

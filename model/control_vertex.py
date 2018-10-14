@@ -1,5 +1,6 @@
 
 import math
+import struct
 
 from PyQt4 import QtCore, QtGui
 
@@ -34,13 +35,30 @@ SYMMETRIC_HANDLE_PATH.lineTo(0, 0)
 
 KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 
+MAGIC_NONE = 987654321
+
 class ControlVertex(object):
     def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint()):
         self.__pressure = 1.0
         self.__behavior = SMOOTH
         self.__handle_pos = [0, left, knot, right]
-        self.__handle_scale = 1
+        self.__handle_scale = 1.0
         self.__selected = None
+
+    def serialize(self):
+        data = struct.pack("<fH", self.__pressure, \
+            self.__behavior)
+        
+        for i in range(1, 4):
+            if self.__handle_pos[i]:
+                data += struct.pack("<dd", self.__handle_pos[i].x(), \
+                    self.__handle_pos[i].y())
+            else:
+                data += struct.pack("<dd", MAGIC_NONE, MAGIC_NONE)
+
+        data += struct.pack("<f", self.__handle_scale)
+        
+        return data
 
     def set_pos(self, point):
         self.set_handle_pos(point, KNOT)

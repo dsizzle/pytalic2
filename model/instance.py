@@ -1,3 +1,5 @@
+import struct
+
 from PyQt4 import QtCore
 
 import view.shared_qt
@@ -12,6 +14,16 @@ class Instance(object):
         self.__obj_type = None
 
         self.__scale = 1
+
+    def serialize(self):
+        data = struct.pack("<11s", self.__instanced_object)
+
+        data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
+        # instances?
+        data += struct.pack("<15s", self.__obj_type)
+        data += struct.pack("<f", self.__scale)
+
+        return data
 
     def __del__(self):
         pass

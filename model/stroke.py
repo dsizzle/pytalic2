@@ -8,6 +8,7 @@ import copy
 import math
 import time
 import random
+import struct
 
 from PyQt4 import QtCore, QtGui
 
@@ -47,7 +48,26 @@ class Stroke(object):
 
         self.__is_selected = False
 
-        self.seed = time.localtime()
+        self.seed = time.time()
+
+    def serialize(self):
+        data = struct.pack("<I", len(self.__stroke_ctrl_verts))
+
+        for vert in self.__stroke_ctrl_verts:
+            data += struct.pack("<11s", vert)
+
+        data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
+        if self.__nib_angle:
+            data += struct.pack("<I", self.__nib_angle)
+        else:
+            data += struct.pack("<I", 360)
+        data += struct.pack("<b", self.__override_nib_angle)        
+        data += struct.pack("<I", self.__handle_size)
+        # instances?
+
+        data += struct.pack("<d", self.seed)
+
+        return data
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()

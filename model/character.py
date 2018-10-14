@@ -1,5 +1,7 @@
 from PyQt4 import QtCore
 
+import struct
+
 import model.instance
 import model.stroke
 import thirdparty.dp
@@ -17,6 +19,17 @@ class Glyph(object):
         self.__bound_rect = None
         self.__instances = {}
         self.__char_set = char_set
+
+    def serialize(self):
+        data = struct.pack("<I", len(self.__strokes))
+
+        for strok in self.__strokes:
+            data += struct.pack("<11s", strok)
+
+        data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
+        # instances?
+
+        return data
 
     def __getstate__(self):
         save_dict = self.__dict__.copy()
@@ -242,6 +255,25 @@ class Character(Glyph):
         self.__override_spacing = False
 
         self.__glyphs = []
+
+    def serialize(self):
+        data = struct.pack("<I", len(self.strokes))
+
+        for strok in self.strokes:
+            data += struct.pack("<11s", strok)
+
+        for glyf in self.__glyphs:
+            data += struct.pack("<11s", glyf)
+
+        data += struct.pack("<dd", self.pos.x(), self.pos.y())
+        # instances?
+
+        data += struct.pack("<l", self.__unicode_character)
+        data += struct.pack("<fff", self.__width, \
+            self.__left_spacing, self.__right_spacing)
+        data += struct.pack("<b", self.__override_spacing)
+
+        return data
 
     def get_unicode_character(self):
         return self.__unicode_character
