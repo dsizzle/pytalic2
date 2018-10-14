@@ -329,6 +329,7 @@ class Character(Glyph):
 
         (x, y) = struct.unpack_from("<dd", data, offset)
         self.pos = QtCore.QPoint(x, y)
+        offset += struct.calcsize("<dd")
 
         num_instances = struct.unpack_from("<I", data, offset)[0]
         offset += struct.calcsize("<I")
