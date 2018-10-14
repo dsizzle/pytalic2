@@ -465,3 +465,7 @@ class CharacterSet(object):
                 print "ERROR: Problem reading file: ", err
                 return
 
+        for char_id in self.__objects[CHAR_TYPE].keys():
+            char_item = self.get_item_by_index(char_id)
+            if char_item.unicode_character >= 0:
+                self.__character_xref[unichr(char_item.unicode_character)] = char_id
