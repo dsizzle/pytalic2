@@ -1,25 +1,36 @@
 import struct
 
-import model.character
-import model.instance
-import model.stroke
-import model.control_vertex
+from model.character import Character, Glyph
+from model.instance import CharacterInstance, GlyphInstance, StrokeInstance
+from model.stroke import Stroke
+from model.control_vertex import ControlVertex
 
-CHAR_TYPE = type(model.character.Character(None)).__name__
-STROKE_TYPE = type(model.stroke.Stroke(None)).__name__
-GLYPH_TYPE = type(model.character.Glyph(None)).__name__
-STROKE_INST_TYPE = type(model.instance.StrokeInstance()).__name__
-GLYPH_INST_TYPE = type(model.instance.GlyphInstance(None)).__name__
-CHAR_INST_TYPE = type(model.instance.CharacterInstance(None)).__name__
-VERTEX_TYPE = type(model.control_vertex.ControlVertex(None)).__name__
+CHAR_TYPE = type(Character(None)).__name__
+STROKE_TYPE = type(Stroke(None)).__name__
+GLYPH_TYPE = type(Glyph(None)).__name__
+STROKE_INST_TYPE = type(StrokeInstance()).__name__
+GLYPH_INST_TYPE = type(GlyphInstance(None)).__name__
+CHAR_INST_TYPE = type(CharacterInstance(None)).__name__
+VERTEX_TYPE = type(ControlVertex(None)).__name__
 
 TYPE_MAP = {
-    'S': STROKE_TYPE,
-    'G': GLYPH_TYPE,
-    'X': GLYPH_INST_TYPE,
-    'C': CHAR_TYPE,
-    'D': CHAR_INST_TYPE,
-    'V': VERTEX_TYPE
+    'S' : STROKE_TYPE,
+    'G' : GLYPH_TYPE,
+    'X' : GLYPH_INST_TYPE,
+    'C' : CHAR_TYPE,
+    'D' : CHAR_INST_TYPE,
+    'V' : VERTEX_TYPE,
+    'Z' : STROKE_INST_TYPE
+}
+
+INV_TYPE_MAP = {
+    STROKE_TYPE : 'S',
+    GLYPH_TYPE : 'G',
+    GLYPH_INST_TYPE : 'X',
+    CHAR_TYPE : 'C',
+    CHAR_INST_TYPE : 'D',
+    VERTEX_TYPE : 'V',
+    STROKE_INST_TYPE : 'Z'
 }
 
 VERSION = 1.0
@@ -114,7 +125,7 @@ class CharacterSet(object):
         return "V" + '{:010d}'.format(self.__control_vertex_id)
 
     def new_control_vertex(self, left, center, right):
-        new_ctrl_vertex = model.control_vertex.ControlVertex(left, center, right)
+        new_ctrl_vertex = ControlVertex(left, center, right)
         new_ctrl_vertex_id = self.__get_next_vertex_id()
         self.__objects[VERTEX_TYPE][new_ctrl_vertex_id] = new_ctrl_vertex
 
@@ -127,7 +138,7 @@ class CharacterSet(object):
             del self.__objects[VERTEX_TYPE][vertex_id]
 
     def new_character_instance(self, char_index):
-        new_char_inst = model.instance.CharacterInstance(char_set=self)
+        new_char_inst = CharacterInstance(char_set=self)
         new_char_inst.set_instanced_object(char_index)
         new_char_inst_id = self.__get_next_char_inst_id()
 
@@ -141,7 +152,7 @@ class CharacterSet(object):
             del self.__objects[CHAR_INST_TYPE][char_inst_to_delete]
 
     def new_character(self, char_code):
-        new_char = model.character.Character(self)
+        new_char = Character(self)
         new_char_id = self.__get_next_char_id()
         
         self.__objects[CHAR_TYPE][new_char_id] = new_char
@@ -258,7 +269,7 @@ class CharacterSet(object):
     saved_glyph = property(get_saved_glyph, set_saved_glyph)
 
     def new_glyph_instance(self, glyph):
-        new_inst = model.instance.GlyphInstance(char_set=self)
+        new_inst = GlyphInstance(char_set=self)
 
         new_inst_id = self.__get_next_glyph_inst_id()
         
@@ -276,7 +287,7 @@ class CharacterSet(object):
         return None
 
     def new_stroke(self, stroke=None):
-        new_stroke = model.stroke.Stroke(char_set=self, from_stroke=stroke)
+        new_stroke = Stroke(char_set=self, from_stroke=stroke)
         new_stroke_id = self.__get_next_stroke_id()
         
         self.__objects[STROKE_TYPE][new_stroke_id] = new_stroke
@@ -394,11 +405,10 @@ class CharacterSet(object):
             return
 
         fd.write(struct.pack("<4sd", "PTCS", VERSION))
-        fd.write(struct.pack("<cL", 'V', self.__control_vertex_id))
-
+        
         for item_type in self.__objects:
             num_items = len(self.__objects[item_type].keys())
-            fd.write(struct.pack("<cL", item_type[0], num_items))
+            fd.write(struct.pack("<cL", INV_TYPE_MAP[item_type], num_items))
 
             for item_id in self.__objects[item_type]:
                 fd.write(struct.pack("<11s", item_id))
@@ -406,7 +416,50 @@ class CharacterSet(object):
                 item = self.__objects[item_type][item_id]
                 try:
                     data = item.serialize()
+                    fd.write(struct.pack("<L", len(data)))
                     fd.write(data)
                 except Exception as err:
                     print "ERROR: Couldn't serialize", item_id
                     print err
+
+    def load(self, fd):
+        if not fd:
+            return
+        
+        magic = ""
+        version_check = 0
+
+        magic, version_check = struct.unpack("<4sd", fd.read(struct.calcsize("<4sd")))
+        
+        if magic != "PTCS" and version_check != VERSION:
+            return
+
+        while True:
+            try:
+                num_items_raw = fd.read(struct.calcsize("<cL"))
+                if len(num_items_raw) == 0:
+                    break
+
+                (item_type_key, num_items) = struct.unpack("<cL", num_items_raw)
+                item_type = TYPE_MAP[item_type_key]
+                
+                for i in range(0, num_items):
+                    item_id = struct.unpack("<11s", fd.read(struct.calcsize("<11s")))[0]
+                    
+                    data_size = struct.unpack("<L", fd.read(struct.calcsize("<L")))[0]
+                    data_blob = fd.read(data_size)
+
+                    item_object = eval(item_type)(self)
+                    
+                    item_object.unserialize(data_blob)
+                    self.__objects[item_type][item_id] = item_object    
+
+            except IOError:
+                print "ERROR: Problem reading file"
+                return
+            except EOFError:
+                return
+            except Exception as err:
+                print "ERROR: Problem reading file: ", err
+                return
+

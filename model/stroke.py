@@ -69,6 +69,33 @@ class Stroke(object):
 
         return data
 
+    def unserialize(self, data):
+        offset = 0
+        num_verts = struct.unpack_from("<I", data)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_verts):
+            vert_id = struct.unpack_from("<11s", data, offset)[0]
+            offset += struct.calcsize("<11s")
+
+            self.__stroke_ctrl_verts.append(vert_id)
+
+        (x, y) = struct.unpack_from("<dd", data, offset)
+        offset += struct.calcsize("<dd")
+        
+        self.__pos = QtCore.QPoint(x, y)
+        self.__nib_angle = struct.unpack_from("<I", data, offset)[0]
+        offset += struct.calcsize("<I")
+
+        if self.__nib_angle == 360:
+            self.__nib_angle = None
+
+        self.__override_nib_angle = struct.unpack_from("<b", data, offset)[0]
+        offset += struct.calcsize("<b")
+        self.__handle_size = struct.unpack_from("<I", data, offset)[0]
+        offset += struct.calcsize("<I")
+        self.seed = struct.unpack_from("<d", data, offset)[0]
+
     def __getstate__(self):
         save_dict = self.__dict__.copy()
 

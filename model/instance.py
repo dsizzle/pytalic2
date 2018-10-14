@@ -5,7 +5,7 @@ from PyQt4 import QtCore
 import view.shared_qt
 
 class Instance(object):
-    def __init__(self, parent=None, char_set=None):
+    def __init__(self, char_set=None, parent=None):
         self.__instanced_object = None
         self.__pos = QtCore.QPoint()
         self.__parent = parent
@@ -24,6 +24,15 @@ class Instance(object):
         data += struct.pack("<f", self.__scale)
 
         return data
+
+    def unserialize(self, data):
+        offset = 0
+        self.__instanced_object = struct.unpack_from("<11s", data)[0]
+        offset += struct.calcsize("<11s")
+        (x, y) = struct.unpack_from("<dd", data, offset)
+        offset += struct.calcsize("<dd")
+        self.__pos = QtCore.QPoint(x, y)
+        (self.__obj_type, self.__scale) = struct.unpack_from("<15sf", data, offset)
 
     def __del__(self):
         pass
@@ -136,8 +145,8 @@ class Instance(object):
 
 
 class StrokeInstance(Instance):
-    def __init__(self, parent=None, char_set=None):
-        Instance.__init__(self, parent, char_set)
+    def __init__(self, char_set=None, parent=None):
+        Instance.__init__(self, char_set, parent)
         self.obj_type = "Stroke"
 
     stroke = property(Instance.get_instanced_object, Instance.set_instanced_object)
@@ -168,8 +177,8 @@ class StrokeInstance(Instance):
 
 
 class GlyphInstance(Instance):
-    def __init__(self, parent=None, char_set=None):
-        Instance.__init__(self, parent, char_set)
+    def __init__(self, char_set=None, parent=None):
+        Instance.__init__(self, char_set, parent)
         self.obj_type = "Glyph"
 
     glyph = property(Instance.get_actual_object)
@@ -182,8 +191,8 @@ class GlyphInstance(Instance):
         return []
 
 class CharacterInstance(Instance):
-    def __init__(self, parent=None, char_set=None):
-        Instance.__init__(self, parent, char_set)
+    def __init__(self, char_set=None, parent=None):
+        Instance.__init__(self, char_set, parent)
         self.obj_type = "Character"
 
     character = property(Instance.get_actual_object)

@@ -205,7 +205,7 @@ class FileController(object):
         except IOError:
             print "ERROR: Couldn't open %s for writing." % (file_name)
             return 1
-            
+
         try:
             char_set.save(data_file_fd)
         except IOError:
@@ -219,6 +219,9 @@ class FileController(object):
             data_file_fd.close()
 
     def load(self, file_name):
+        char_set = self.__main_ctrl.get_character_set()
+        char_set.reset()
+
         try:
             data_file_fd = open(file_name, 'rb')
         except IOError:
@@ -226,16 +229,14 @@ class FileController(object):
             return 1
 
         try:
-            data_pickler = pickle.Unpickler(data_file_fd)
-            char_set = data_pickler.load()
-        except pickle.UnpicklingError:
-            print "ERROR: Couldn't unserialize data"
-            return 1
-        except Exception as err:
-            print "ERROR: OTHER", err
-            return 1
+            char_set.load(data_file_fd)
+        except IOError:            
+            print "ERROR: Couldn't load file"
+            
+            if data_file_fd:
+                data_file_fd.close()
 
-        self.__main_ctrl.set_character_set(char_set)
+            return 1
 
         if data_file_fd:
             data_file_fd.close()

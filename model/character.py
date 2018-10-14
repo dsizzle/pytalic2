@@ -31,6 +31,20 @@ class Glyph(object):
 
         return data
 
+    def unserialize(self, data):
+        offset = 0
+        num_strokes = struct.unpack_from("<I", data)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_strokes):
+            stroke_id = struct.unpack_from("<11s", data, offset)[0]
+            offset += struct.calcsize("<11s")
+
+            self.__strokes.append(stroke_id)
+
+        (x, y) = struct.unpack_from("<dd", data, offset)
+        self.__pos = QtCore.QPoint(x, y)
+
     def __getstate__(self):
         save_dict = self.__dict__.copy()
 
@@ -262,6 +276,8 @@ class Character(Glyph):
         for strok in self.strokes:
             data += struct.pack("<11s", strok)
 
+        data += struct.pack("<I", len(self.glyphs))
+
         for glyf in self.__glyphs:
             data += struct.pack("<11s", glyf)
 
@@ -274,6 +290,37 @@ class Character(Glyph):
         data += struct.pack("<b", self.__override_spacing)
 
         return data
+
+    def unserialize(self, data):
+        offset = 0
+        num_strokes = struct.unpack_from("<I", data)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_strokes):
+            stroke_id = struct.unpack_from("<11s", data, offset)[0]
+            offset += struct.calcsize("<11s")
+
+            self.strokes.append(stroke_id)
+
+        num_glyphs = struct.unpack_from("<I", data, offset)[0]
+        offset += struct.calcsize("<I")
+
+        for i in range(0, num_glyphs):
+            glyph_id = struct.unpack_from("<11s", data, offset)[0]
+            offset += struct.calcsize("<11s")
+
+            self.glyphs.append(glyph_id)
+
+        (x, y) = struct.unpack_from("<dd", data, offset)
+        self.pos = QtCore.QPoint(x, y)
+
+        self.__unicode_character = struct.unpack_from("<l", data, offset)
+        offset += struct.calcsize("<l")
+        (self.__width, self.__left_spacing, self.__right_spacing) = \
+            struct.unpack_from("<fff", data, offset)
+        offset += struct.calcsize("<fff")
+
+        self.__override_spacing = struct.unpack_from("<b", data, offset)[0]
 
     def get_unicode_character(self):
         return self.__unicode_character

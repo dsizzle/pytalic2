@@ -60,6 +60,21 @@ class ControlVertex(object):
         
         return data
 
+    def unserialize(self, data):
+        offset = 0
+        (self.__pressure, self.__behavior) = struct.unpack_from("<fH", data)
+        offset += struct.calcsize("<fH")
+        for i in range(1, 4):
+            (x, y) = struct.unpack_from("<dd", data, offset)
+            offset += struct.calcsize("<dd")
+            if x == MAGIC_NONE and y == MAGIC_NONE:
+                self.__handle_pos[i] = None
+            else:
+                self.__handle_pos[i] = QtCore.QPoint(x, y)
+
+        self.__handle_scale = struct.unpack_from("<f", data, offset)[0]
+        self.__selected = None
+        
     def set_pos(self, point):
         self.set_handle_pos(point, KNOT)
 
