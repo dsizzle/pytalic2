@@ -589,19 +589,23 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
 
         verts_before_list = []
         verts_after_list = []
 
         for sel_stroke in cur_view_selection.keys():
-            verts_before = sel_stroke.get_ctrl_vertices_as_list()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            verts_before = sel_stroke_item.get_ctrl_vertices_as_list()
 
             for vert_to_delete in cur_view_selection[sel_stroke]:
-                sel_stroke.delete_ctrl_vertex(vert_to_delete)
-
+                sel_stroke_item.delete_ctrl_vertex(vert_to_delete)
+                vert_to_delete_item = char_set.get_item_by_index(vert_to_delete)
+                vert_to_delete_item.select_handle(None)
+        
             cur_view_selection[sel_stroke] = {}
 
-            verts_after = sel_stroke.get_ctrl_vertices_as_list()
+            verts_after = sel_stroke_item.get_ctrl_vertices_as_list()
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)

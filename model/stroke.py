@@ -408,7 +408,6 @@ class Stroke(object):
         self.calc_curve_points()
 
     def delete_ctrl_vertex(self, vert):
-        vert.select_handle(None)
         self.__stroke_ctrl_verts.remove(vert)
         self.update_ctrl_vertices()
         self.calc_curve_points()
