@@ -475,19 +475,23 @@ class StrokeController(object):
 
         stroke_list = strokes.keys()
         cur_stroke = stroke_list.pop(0)
-        vert_list = cur_stroke.get_ctrl_vertices_as_list()
+        cur_stroke_item = char_set.get_item_by_index(cur_stroke)
+        vert_list = cur_stroke_item.get_ctrl_vertices_as_list()
         cur_char.delete_stroke({'stroke': cur_stroke})
         if cur_stroke in cur_view_selection:
+            cur_stroke_item = char_set.get_item_by_index(cur_stroke)
             del cur_view_selection[cur_stroke]
-            cur_stroke.selected = False
+            cur_stroke_item.selected = False
 
         while len(stroke_list):
             cur_stroke = stroke_list.pop(0)
-            cur_verts = cur_stroke.get_ctrl_vertices_as_list()
+            cur_stroke_item = char_set.get_item_by_index(cur_stroke)
+            cur_verts = cur_stroke_item.get_ctrl_vertices_as_list()
             cur_char.delete_stroke({'stroke': cur_stroke})
             if cur_stroke in cur_view_selection:
+                cur_stroke_item = char_set.get_item_by_index(cur_stroke)
                 del cur_view_selection[cur_stroke]
-                cur_stroke.selected = False
+                cur_stroke_item.selected = False
 
             dist1 = dist_between_pts(cur_verts[0], vert_list[0])
             dist2 = dist_between_pts(cur_verts[-1], vert_list[0])
@@ -510,7 +514,7 @@ class StrokeController(object):
 
             vert_list.extend(cur_verts[1:])
 
-        new_stroke = char_set.create_new_stroke()
+        new_stroke = char_set.new_stroke()
         new_stroke_item = char_set.get_item_by_index(new_stroke)
         new_stroke_item.set_ctrl_vertices_from_list(vert_list, False)
         new_stroke_item.calc_curve_points()
@@ -536,16 +540,19 @@ class StrokeController(object):
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
 
         cur_char.delete_stroke({'stroke': joined_stroke})
-        joined_stroke.selected = False
+        joined_stroke_item = char_set.get_item_by_index(joined_stroke)
+        joined_stroke_item.selected = False
         if joined_stroke in cur_view_selection:
             del cur_view_selection[joined_stroke]
 
         for sel_stroke in strokes.keys():
             cur_char.add_stroke({'stroke': sel_stroke, 'copy_stroke': False})
             cur_view_selection[sel_stroke] = {}
-            sel_stroke.selected = True
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.selected = True
 
     def join_all_strokes(self, args):
         if 'strokes' in args:
@@ -562,16 +569,19 @@ class StrokeController(object):
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
+        char_set = self.__main_ctrl.get_character_set()
 
         cur_char.add_stroke({'stroke': joined_stroke, 'copy_stroke': False})
-        joined_stroke.selected = True
+        joined_stroke_item = char_set.get_item_by_index(joined_stroke)
+        joined_stroke_item.selected = True
         cur_view_selection[joined_stroke] = {}
 
         for sel_stroke in strokes.keys():
             cur_char.delete_stroke({'stroke': sel_stroke})
             if sel_stroke in cur_view_selection:
                 del cur_view_selection[sel_stroke]
-            sel_stroke.selected = False
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.selected = False
 
     def delete_control_vertices(self):
         ui = self.__main_ctrl.get_ui()
