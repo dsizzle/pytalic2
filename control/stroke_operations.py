@@ -396,16 +396,18 @@ class StrokeController(object):
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         verts_before_list = []
         verts_after_list = []
 
         for sel_stroke in cur_view_selection.keys():
-            verts_before = sel_stroke.get_ctrl_vertices()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            verts_before = sel_stroke_item.get_ctrl_vertices()
 
-            sel_stroke.straighten()
+            sel_stroke_item.straighten()
 
-            verts_after = sel_stroke.get_ctrl_vertices()
+            verts_after = sel_stroke_item.get_ctrl_vertices()
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)
@@ -642,6 +644,7 @@ class StrokeController(object):
 
     def set_stroke_control_vertices(self, args):
         ui = self.__main_ctrl.get_ui()
+        char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
             sel_stroke_list = args['strokes']
@@ -658,8 +661,9 @@ class StrokeController(object):
 
         for i in range(0, len(sel_stroke_list)):
             sel_stroke = sel_stroke_list[i]
-            sel_stroke.set_ctrl_vertices(ctrl_vert_list[i])
-            sel_stroke.calc_curve_points()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.set_ctrl_vertices(ctrl_vert_list[i])
+            sel_stroke_item.calc_curve_points()
 
         ui.repaint()    
 
