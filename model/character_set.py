@@ -59,14 +59,16 @@ class CharacterSet(object):
         self.__objects[GLYPH_INST_TYPE] = {}
         self.__objects[VERTEX_TYPE] = {}
         
-        self.__character_xref = {}
+        self.__ids = {}
+        self.__ids[CHAR_TYPE] = 0
+        self.__ids[STROKE_TYPE] = 0
+        self.__ids[GLYPH_TYPE] = 0
+        self.__ids[CHAR_INST_TYPE] = 0
+        self.__ids[STROKE_INST_TYPE] = 0
+        self.__ids[GLYPH_INST_TYPE] = 0
+        self.__ids[VERTEX_TYPE] = 0
 
-        self.__char_id = 0
-        self.__glyph_id = 0
-        self.__stroke_id = 0
-        self.__char_inst_id = 0
-        self.__glyph_inst_id = 0
-        self.__control_vertex_id = 0
+        self.__character_xref = {}
 
     def reset(self):
         self.__nominal_width_nibs = 4.0
@@ -82,7 +84,6 @@ class CharacterSet(object):
 
         self.__current_char = None
 
-        self.__objects = {}
         self.__objects[CHAR_TYPE] = {}
         self.__objects[STROKE_TYPE] = {}
         self.__objects[GLYPH_TYPE] = {}
@@ -93,40 +94,23 @@ class CharacterSet(object):
         
         self.__character_xref = {}
 
-        self.__char_id = 0
-        self.__glyph_id = 0
-        self.__stroke_id = 0
-        self.__char_inst_id = 0
-        self.__glyph_inst_id = 0
-        self.__control_vertex_id = 0
+        self.__ids[CHAR_TYPE] = 0
+        self.__ids[STROKE_TYPE] = 0
+        self.__ids[GLYPH_TYPE] = 0
+        self.__ids[CHAR_INST_TYPE] = 0
+        self.__ids[STROKE_INST_TYPE] = 0
+        self.__ids[GLYPH_INST_TYPE] = 0
+        self.__ids[VERTEX_TYPE] = 0
 
-    def __get_next_char_id(self):
-        self.__char_id += 1
-        return "C" + '{:010d}'.format(self.__char_id)
+    def __get_next_id(self, item_type):
+        if item_type in self.__ids:
+            self.__ids[item_type] += 1
 
-    def __get_next_glyph_id(self):
-        self.__glyph_id += 1
-        return "G" + '{:010d}'.format(self.__glyph_id)
-
-    def __get_next_stroke_id(self):
-        self.__stroke_id += 1
-        return "S" + '{:010d}'.format(self.__stroke_id)
-
-    def __get_next_glyph_inst_id(self):
-        self.__glyph_inst_id += 1
-        return "X" + '{:010d}'.format(self.__glyph_inst_id)
-
-    def __get_next_char_inst_id(self):
-        self.__char_inst_id += 1
-        return "D" + '{:010d}'.format(self.__char_inst_id)
-
-    def __get_next_vertex_id(self):
-        self.__control_vertex_id += 1
-        return "V" + '{:010d}'.format(self.__control_vertex_id)
+            return INV_TYPE_MAP[item_type] + '{:010d}'.format(self.__ids[item_type])
 
     def new_control_vertex(self, left, center, right):
         new_ctrl_vertex = ControlVertex(left, center, right)
-        new_ctrl_vertex_id = self.__get_next_vertex_id()
+        new_ctrl_vertex_id = self.__get_next_id(VERTEX_TYPE)
         self.__objects[VERTEX_TYPE][new_ctrl_vertex_id] = new_ctrl_vertex
 
         return new_ctrl_vertex_id
@@ -140,7 +124,7 @@ class CharacterSet(object):
     def new_character_instance(self, char_index):
         new_char_inst = CharacterInstance(char_set=self)
         new_char_inst.instanced_object = char_index
-        new_char_inst_id = self.__get_next_char_inst_id()
+        new_char_inst_id = self.__get_next_id(CHAR_INST_TYPE)
         new_char_inst.actual_object.add_instance(new_char_inst_id)
 
         self.__objects[CHAR_INST_TYPE][new_char_inst_id] = new_char_inst
@@ -154,7 +138,7 @@ class CharacterSet(object):
 
     def new_character(self, char_code):
         new_char = Character(self)
-        new_char_id = self.__get_next_char_id()
+        new_char_id = self.__get_next_id(CHAR_TYPE)
         
         self.__objects[CHAR_TYPE][new_char_id] = new_char
 
@@ -240,7 +224,7 @@ class CharacterSet(object):
         return self.__objects[GLYPH_TYPE]
 
     def save_glyph(self, item):
-        glyph_id = self.__get_next_glyph_id()
+        glyph_id = self.__get_next_id(GLYPH_TYPE)
         self.__objects[GLYPH_TYPE][glyph_id] = item
         return glyph_id
 
@@ -272,7 +256,7 @@ class CharacterSet(object):
     def new_glyph_instance(self, glyph):
         new_inst = GlyphInstance(char_set=self)
 
-        new_inst_id = self.__get_next_glyph_inst_id()
+        new_inst_id = self.__get_next_id(GLYPH_INST_TYPE)
         
         self.__objects[GLYPH_INST_TYPE][new_inst_id] = new_inst
 
@@ -290,7 +274,7 @@ class CharacterSet(object):
 
     def new_stroke(self, stroke=None):
         new_stroke = Stroke(char_set=self, from_stroke=stroke)
-        new_stroke_id = self.__get_next_stroke_id()
+        new_stroke_id = self.__get_next_id(STROKE_TYPE)
         
         self.__objects[STROKE_TYPE][new_stroke_id] = new_stroke
 
