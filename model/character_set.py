@@ -391,9 +391,23 @@ class CharacterSet(object):
             return
 
         fd.write(struct.pack("<4sd", "PTCS", VERSION))
-        
+
+        char_set_metadata = struct.pack("<ffffffffII", \
+            self.__nominal_width_nibs, \
+            self.__left_spacing, self.__right_spacing, \
+            self.__base_height_nibs, \
+            self.__ascent_height_nibs, \
+            self.__descent_height_nibs, \
+            self.__cap_height_nibs, \
+            self.__gap_height_nibs, \
+            self.__guide_angle, \
+            self.__nib_angle \
+            )
+
+        fd.write(char_set_metadata)
+
         for item_type in self.__objects:
-            num_items = len(self.__objects[item_type].keys())
+            num_items = self.__ids[item_type]
             fd.write(struct.pack("<cL", INV_TYPE_MAP[item_type], num_items))
 
             for item_id in self.__objects[item_type]:
@@ -423,6 +437,18 @@ class CharacterSet(object):
         if magic != "PTCS" and version_check != VERSION:
             return
 
+        char_set_metadata = fd.read(struct.calcsize("<ffffffffII"))
+
+        (self.__nominal_width_nibs, \
+            self.__left_spacing, self.__right_spacing, \
+            self.__base_height_nibs, \
+            self.__ascent_height_nibs, \
+            self.__descent_height_nibs, \
+            self.__cap_height_nibs, \
+            self.__gap_height_nibs, \
+            self.__guide_angle, \
+            self.__nib_angle) = struct.unpack("<ffffffffII", char_set_metadata)
+
         while True:
             try:
                 num_items_raw = fd.read(struct.calcsize("<cL"))
@@ -431,7 +457,8 @@ class CharacterSet(object):
 
                 (item_type_key, num_items) = struct.unpack("<cL", num_items_raw)
                 item_type = TYPE_MAP[item_type_key]
-                
+                self.__ids[item_type] = num_items
+
                 for i in range(0, num_items):
                     item_id = struct.unpack("<11s", fd.read(struct.calcsize("<11s")))[0]
                     
