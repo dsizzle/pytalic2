@@ -80,13 +80,13 @@ class EditorController(object):
         if not file_path:
             file_path = "Untitled"
         self.__ui.setWindowTitle(self.__label + " - " + file_path)
-        self.__ui.file_save.setEnabled(False)
+        self.__ui.file_save.setEnabled(True)
 
     def set_dirty(self):
         file_path = self.__file_controller.file_path
         if not file_path:
             file_path = "Untitled"
-            self.__ui.file_save.setEnabled(False)
+            self.__ui.file_save.setEnabled(True)
         else:
             self.__ui.file_save.setEnabled(True)
 
