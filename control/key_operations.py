@@ -1,6 +1,6 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore
 
-import edit_control
+import control.edit_control
 from model import commands
 
 class KeyboardController(object):
@@ -8,7 +8,7 @@ class KeyboardController(object):
         self.__main_ctrl = parent
         self.__move_x = QtCore.QPoint(2, 0)
         self.__move_y = QtCore.QPoint(0, 2)
-        
+
     def key_event(self, event):
         current_view = self.__main_ctrl.get_current_view()
         ui = self.__main_ctrl.get_ui()
@@ -38,7 +38,7 @@ class KeyboardController(object):
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        if self.__main_ctrl.state == edit_control.IDLE:
+        if self.__main_ctrl.state == control.edit_control.IDLE:
             if event.key() == QtCore.Qt.Key_Left:
                 move_delta = QtCore.QPoint() - self.__move_x
             elif event.key() == QtCore.Qt.Key_Right:
@@ -57,11 +57,11 @@ class KeyboardController(object):
 
             if move_delta != QtCore.QPoint() and \
                 len(cur_view_selection.keys()) > 0:
-                
+
                 move_cmd = commands.Command('move_stroke_cmd')
                 selection_copy = cur_view_selection.copy()
                 do_args = {
-                    'strokes' : selection_copy, 
+                    'strokes' : selection_copy,
                     'delta' : move_delta,
                 }
 
@@ -74,10 +74,9 @@ class KeyboardController(object):
                 move_cmd.set_undo_args(undo_args)
                 move_cmd.set_do_function(stroke_ctrl.move_selected)
                 move_cmd.set_undo_function(stroke_ctrl.move_selected)
-            
+
                 cmd_stack.do_command(move_cmd)
                 cmd_stack.save_count += 1
                 ui.edit_undo.setEnabled(True)
-                
+
                 ui.repaint()
-           
