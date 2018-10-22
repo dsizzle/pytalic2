@@ -1,7 +1,5 @@
-
 import os
 import os.path
-import pickle
 
 from PyQt4 import QtGui, QtCore
 
@@ -27,7 +25,7 @@ class FileController(object):
         else:
             file_path = None
 
-        return file_path 
+        return file_path
 
     def file_new(self):
         self.__file_name = None
@@ -44,7 +42,7 @@ class FileController(object):
 
         self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
         char_set = self.__main_ctrl.get_character_set()
-        
+
         ui.base_height_spin.setValue(char_set.base_height)
         ui.cap_height_spin.setValue(char_set.cap_height)
         ui.cap_height_spin.setMaximum(char_set.ascent_height)
@@ -69,7 +67,7 @@ class FileController(object):
         ui.char_selector_list.setCurrentRow(1)
         ui.repaint()
         ui.char_selector_list.setCurrentRow(0)
-        
+
         ui.edit_undo.setEnabled(False)
         ui.edit_redo.setEnabled(False)
         ui.file_save.setEnabled(False)
@@ -81,14 +79,14 @@ class FileController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         file_path = None
-        
+
         file_name = ui.file_save_dialog.getSaveFileName(ui, \
              "Save Character Set", self.__dir_name, \
              "Character Set Files (*.cs)")
 
         if file_name:
             (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
-            (name, ext) = os.path.splitext(self.__file_name)
+            (__, ext) = os.path.splitext(self.__file_name)
 
             if ext != ".cs":
                 self.__file_name += ".cs"
@@ -100,7 +98,7 @@ class FileController(object):
             cmd_stack.reset_save_count()
 
         return file_path
-            
+
     def file_save(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
         if self.__file_name:
@@ -168,7 +166,7 @@ class FileController(object):
                 i = 0
                 ui.stroke_load.setEnabled(True)
                 ui.glyph_delete.setEnabled(True)
-                
+
                 for glyph_id in saved_glyph_list.keys():
                     sel_stroke = saved_glyph_list[glyph_id]
                     bitmap = ui.dwg_area.draw_icon(None, sel_stroke.strokes)
@@ -235,9 +233,9 @@ class FileController(object):
 
         try:
             char_set.load(data_file_fd)
-        except IOError:            
+        except IOError:
             print "ERROR: Couldn't load file"
-            
+
             if data_file_fd:
                 data_file_fd.close()
 
