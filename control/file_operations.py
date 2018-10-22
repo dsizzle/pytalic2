@@ -132,30 +132,7 @@ class FileController(object):
                 return None
 
             char_set = self.__main_ctrl.get_character_set()
-            ui.dwg_area.char_set = char_set
-            ui.stroke_dwg_area.char_set = char_set
-            ui.preview_area.char_set = char_set
-
-            ui.base_height_spin.setValue(char_set.base_height)
-            ui.guide_lines.base_height = char_set.base_height
-            ui.cap_height_spin.setValue(char_set.cap_height)
-            ui.guide_lines.cap_height = char_set.cap_height
-            ui.cap_height_spin.setMaximum(char_set.ascent_height)
-            ui.ascent_height_spin.setValue(char_set.ascent_height)
-            ui.guide_lines.ascent_height = char_set.ascent_height
-            ui.descent_height_spin.setValue(char_set.descent_height)
-            ui.guide_lines.descent_height = char_set.descent_height
-            ui.angle_spin.setValue(char_set.guide_angle)
-            ui.guide_lines.guide_angle = char_set.guide_angle
-            ui.char_set_nib_angle_spin.setValue(char_set.nib_angle)
-            ui.guide_lines.nib_angle = char_set.nib_angle
-            ui.dwg_area.nib.angle = char_set.nib_angle
-            ui.dwg_area.nib_instance.angle = char_set.nib_angle
-            ui.dwg_area.nib_special.angle = char_set.nib_angle
-            ui.stroke_dwg_area.nib.angle = char_set.nib_angle
-            ui.preview_area.nib.angle = char_set.nib_angle
-            ui.nominal_width_spin.setValue(char_set.width)
-            ui.guide_lines.width = char_set.width
+            __update_controls(ui, char_set)
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_path))
 
@@ -251,3 +228,30 @@ class FileController(object):
             data_file_fd.close()
 
         return 0
+
+
+def __update_controls(ui, char_set):
+    ui.dwg_area.char_set = char_set
+    ui.stroke_dwg_area.char_set = char_set
+    ui.preview_area.char_set = char_set
+
+    ui.base_height_spin.setValue(char_set.base_height)
+    ui.guide_lines.base_height = char_set.base_height
+    ui.cap_height_spin.setValue(char_set.cap_height)
+    ui.guide_lines.cap_height = char_set.cap_height
+    ui.cap_height_spin.setMaximum(char_set.ascent_height)
+    ui.ascent_height_spin.setValue(char_set.ascent_height)
+    ui.guide_lines.ascent_height = char_set.ascent_height
+    ui.descent_height_spin.setValue(char_set.descent_height)
+    ui.guide_lines.descent_height = char_set.descent_height
+    ui.angle_spin.setValue(char_set.guide_angle)
+    ui.guide_lines.guide_angle = char_set.guide_angle
+    ui.char_set_nib_angle_spin.setValue(char_set.nib_angle)
+    ui.guide_lines.nib_angle = char_set.nib_angle
+    ui.dwg_area.nib.angle = char_set.nib_angle
+    ui.dwg_area.nib_instance.angle = char_set.nib_angle
+    ui.dwg_area.nib_special.angle = char_set.nib_angle
+    ui.stroke_dwg_area.nib.angle = char_set.nib_angle
+    ui.preview_area.nib.angle = char_set.nib_angle
+    ui.nominal_width_spin.setValue(char_set.width)
+    ui.guide_lines.width = char_set.width
