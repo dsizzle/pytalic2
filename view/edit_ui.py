@@ -233,6 +233,9 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
     def wheelEvent(self, event):
         self.__parent.wheel_event(event)
 
+    def keyReleaseEvent(self, event):
+        self.__parent.key_event(event)
+
     def paintEvent(self, event):
         QtGui.QMainWindow.paintEvent(self, event)
 

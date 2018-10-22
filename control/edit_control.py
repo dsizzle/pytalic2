@@ -10,6 +10,7 @@ from PyQt4 import QtGui, QtCore
 
 import control.clipboard_operations
 import control.file_operations
+import control.key_operations
 import control.mouse_operations
 import control.property_operations
 import control.snap_operations
@@ -60,6 +61,7 @@ class EditorController(object):
         self.__file_controller = control.file_operations.FileController(self)
         self.__property_controller = control.property_operations.PropertyController(self)
         self.__mouse_controller = control.mouse_operations.MouseController(self)
+        self.__key_controller = control.key_operations.KeyboardController(self)
         self.__snap_controller = control.snap_operations.SnapController(self)
         self.__stroke_controller = control.stroke_operations.StrokeController(self)
         self.__vertex_controller = control.vertex_operations.VertexController(self)
@@ -138,6 +140,9 @@ class EditorController(object):
 
     def wheel_event(self, event):
         self.__mouse_controller.wheel_event(event)
+
+    def key_event(self, event):
+        self.__key_controller.key_event(event)
 
     def quit_cb(self, event):
         close = False
