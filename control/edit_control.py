@@ -17,7 +17,7 @@ import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
 
-from model import character_set, commands, layout
+from model import commands, layout
 from view import edit_ui
 import view.paper
 import view.shared_qt
@@ -52,7 +52,7 @@ class EditorController(object):
         self.__ui.create_ui()
 
         self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
-        
+
         self.__current_view_pane = \
             self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
         self.__selection[self.__current_view_pane] = {}
@@ -186,12 +186,12 @@ class EditorController(object):
 
             if reply == QtGui.QMessageBox.No:
                 return
-    
+
         self.__file_controller.file_new()
         cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
         self.__char_set.set_current_char_by_index(cur_char_idx)
         self.__cur_char = self.__char_set.get_current_char()
-        
+
         self.__cmd_stack.clear()
 
         self.make_layouts()
@@ -282,7 +282,7 @@ class EditorController(object):
         self.__snap_controller.toggle_constrain_x()
 
     def action_toggle_constrain_y_cb(self, event):
-        self.__snap_controller.toggle_constrain_y()        
+        self.__snap_controller.toggle_constrain_y()
 
     def view_toggle_guidelines_cb(self, event):
         self.__current_view_pane.draw_guidelines = not self.__current_view_pane.draw_guidelines
@@ -317,7 +317,7 @@ class EditorController(object):
         self.__ui.stroke_flip_x.setEnabled(state)
         self.__ui.stroke_flip_y.setEnabled(state)
         self.__ui.action_constrain_to_x_axis.setEnabled(state)
-        self.__ui.action_constrain_to_y_axis.setEnabled(state)         
+        self.__ui.action_constrain_to_y_axis.setEnabled(state)
 
     def straighten_stroke_cb(self, event):
         self.__stroke_controller.straighten_stroke()
