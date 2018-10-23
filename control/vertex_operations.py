@@ -8,7 +8,7 @@ class VertexController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
@@ -40,9 +40,9 @@ class VertexController(object):
             align_tangents_cmd.set_undo_function(self.set_ctrl_vertex_behavior)
 
             cmd_stack.do_command(align_tangents_cmd)
-            ui.edit_undo.setEnabled(True)
+            ui_ref.edit_undo.setEnabled(True)
 
-            ui.repaint()
+            ui_ref.repaint()
 
     def align_tangents_symmetrical(self):
         self.align_tangents(control_vertex.SYMMETRIC)
@@ -54,9 +54,9 @@ class VertexController(object):
         self.align_tangents(control_vertex.SHARP)
 
     def set_ctrl_vertex_behavior(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
-        
+
         if 'verts' in args:
             vert_list = args['verts']
         else:
@@ -67,10 +67,7 @@ class VertexController(object):
         else:
             return
 
-        if len(behavior_list) == 1:
-            use_same_behavior = True
-        else:
-            use_same_behavior = False
+        use_same_behavior = (len(behavior_list) == 1)
 
         for vert_dict in vert_list:
             for i in range(0, len(vert_dict.keys())):
@@ -78,7 +75,7 @@ class VertexController(object):
                 vert_item = char_set.get_item_by_index(vert)
                 if use_same_behavior:
                     vert_item.behavior = behavior_list[0]
-                    ui.behavior_combo.setCurrentIndex(behavior_list[0])
+                    ui_ref.behavior_combo.setCurrentIndex(behavior_list[0])
                 else:
                     vert_item.behavior = behavior_list[i]
-                    ui.behavior_combo.setCurrentIndex(0)
+                    ui_ref.behavior_combo.setCurrentIndex(0)
