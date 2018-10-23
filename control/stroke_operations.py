@@ -3,7 +3,7 @@ import math
 from PyQt4 import QtCore, QtGui
 
 import control.edit_control
-from model import character, commands, stroke, instance
+from model import character, commands, stroke
 
 class StrokeController(object):
     def __init__(self, parent):
@@ -32,19 +32,19 @@ class StrokeController(object):
             return
 
         current_view = self.__main_ctrl.get_current_view()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
         self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
-        
-        ui.setUpdatesEnabled(False)
-        dwg_tab = ui.main_view_tabs.indexOf(current_view)
 
-        for idx in range(0, ui.main_view_tabs.count()):
+        ui_ref.setUpdatesEnabled(False)
+        dwg_tab = ui_ref.main_view_tabs.indexOf(current_view)
+
+        for idx in range(0, ui_ref.main_view_tabs.count()):
             if idx != dwg_tab:
-                ui.main_view_tabs.setTabEnabled(idx, False)
-        ui.setUpdatesEnabled(True)        
+                ui_ref.main_view_tabs.setTabEnabled(idx, False)
+        ui_ref.setUpdatesEnabled(True)
 
         self.__stroke_pts = []
         self.__tmp_stroke = stroke.Stroke(char_set)
@@ -56,7 +56,7 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
@@ -73,7 +73,7 @@ class StrokeController(object):
         glyph_id = char_set.save_glyph(new_glyph)
         glyph_instance_id = char_set.new_glyph_instance(glyph_id)
 
-        item_num = ui.stroke_selector_list.count()
+        item_num = ui_ref.stroke_selector_list.count()
 
         save_glyph_cmd = commands.Command('save_glyph_cmd')
 
@@ -96,9 +96,9 @@ class StrokeController(object):
         save_glyph_cmd.set_undo_function(self.unsave_glyphs)
 
         cmd_stack.do_command(save_glyph_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def save_glyphs(self, args):
         deleted_strokes = []
@@ -128,28 +128,28 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        bitmap = ui.dwg_area.draw_icon(None, saved_selection)
+        bitmap = ui_ref.dwg_area.draw_icon(None, saved_selection)
         glyph_item = QtGui.QListWidgetItem()
         glyph_item.setText(str(first_item))
         glyph_item.setData(QtCore.Qt.UserRole, glyph_instance.instanced_object)
         glyph_item.setIcon(QtGui.QIcon(bitmap))
-        ui.stroke_selector_list.addItem(glyph_item)
-        ui.stroke_selector_list.setCurrentRow(first_item)
+        ui_ref.stroke_selector_list.addItem(glyph_item)
+        ui_ref.stroke_selector_list.setCurrentRow(first_item)
 
-        for sel_stroke in saved_selection: 
+        for sel_stroke in saved_selection:
             deleted_strokes.append(sel_stroke)
             cur_char.delete_stroke({'stroke' : sel_stroke})
-            
+
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             if sel_stroke not in cur_view_selection:
                 cur_view_selection = {}
                 sel_stroke_item.deselect_ctrl_verts()
 
             sel_stroke_item.selected = True
-            
-        # should just add the id! 
+
+        # should just add the id!
         cur_char.add_glyph(glyph_instance_id)
         glyph_instance.selected = True
         cur_view_selection[glyph_instance_id] = {}
@@ -161,14 +161,14 @@ class StrokeController(object):
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             sel_stroke_item.selected = False
 
-        ui.stroke_load.setEnabled(True)
-        ui.glyph_delete.setEnabled(True)
+        ui_ref.stroke_load.setEnabled(True)
+        ui_ref.glyph_delete.setEnabled(True)
         self.__main_ctrl.set_ui_state_selection(True)
 
     def unsave_glyphs(self, args):
         added_strokes = []
         char_set = self.__main_ctrl.get_character_set()
-        
+
         if 'glyph' in args:
             glyph_instance_id = args['glyph']
             glyph_instance = char_set.get_saved_glyph_instance(glyph_instance_id)
@@ -188,7 +188,7 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         cur_char.remove_glyph(glyph_instance_id)
 
@@ -196,8 +196,8 @@ class StrokeController(object):
             cur_char.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
             added_strokes.append(sel_stroke)
 
-        ui.stroke_selector_list.takeItem(first_item)
-            
+        ui_ref.stroke_selector_list.takeItem(first_item)
+
         for sel_stroke in added_strokes:
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             if sel_stroke not in cur_view_selection:
@@ -208,20 +208,20 @@ class StrokeController(object):
 
         self.__main_ctrl.set_ui_state_selection(True)
 
-        if ui.stroke_selector_list.count() == 0:
-            ui.stroke_load.setEnabled(False)
-            ui.glyph_delete.setEnabled(False)
+        if ui_ref.stroke_selector_list.count() == 0:
+            ui_ref.stroke_load.setEnabled(False)
+            ui_ref.glyph_delete.setEnabled(False)
 
     def paste_glyph_from_saved(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        char_index = ui.char_selector_list.currentRow()
-        glyph_item = ui.stroke_selector_list.currentItem()
+        char_index = ui_ref.char_selector_list.currentRow()
+        glyph_item = ui_ref.stroke_selector_list.currentItem()
         glyph_index = str(glyph_item.data(QtCore.Qt.UserRole).toString())
         new_glyph_inst_id = char_set.new_glyph_instance(glyph_index)
-        
+
         paste_glyph_saved_cmd = commands.Command('paste_glyph_saved_cmd')
 
         do_args = {
@@ -240,9 +240,9 @@ class StrokeController(object):
         paste_glyph_saved_cmd.set_undo_function(self.delete_glyph)
 
         cmd_stack.do_command(paste_glyph_saved_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def paste_glyph(self, args):
         char_set = self.__main_ctrl.get_character_set()
@@ -262,24 +262,19 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui_ref.char_selector_list.setCurrentRow(char_index)
 
         cur_char.add_glyph(glyph_instance_id)
         cur_view_selection[glyph_instance_id] = {}
         glyph_instance.selected = True
 
-        ui.dwg_area.repaint()
+        ui_ref.dwg_area.repaint()
         self.__main_ctrl.set_icon()
 
     def delete_glyph(self, args):
         char_set = self.__main_ctrl.get_character_set()
-        
-        if 'char_index' in args:
-            char_index = args['char_index']
-        else:
-            return
 
         if 'strokes' in args:
             glyph_instance_id = args['strokes']
@@ -291,22 +286,21 @@ class StrokeController(object):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         cur_char.remove_glyph(glyph_instance_id)
         if glyph_instance in cur_view_selection:
             del cur_view_selection[glyph_instance_id]
 
-        ui.dwg_area.repaint()
+        ui_ref.dwg_area.repaint()
 
     def delete_saved_glyph(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
-        ui = self.__main_ctrl.get_ui()
-        char_set = self.__main_ctrl.get_character_set()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        glyph_index = ui.stroke_selector_list.currentRow()
+        glyph_index = ui_ref.stroke_selector_list.currentRow()
 
-        cur_item = ui.stroke_selector_list.currentItem()
+        cur_item = ui_ref.stroke_selector_list.currentItem()
         cur_item_icon = cur_item.icon()
         glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
 
@@ -329,33 +323,26 @@ class StrokeController(object):
         delete_saved_glyph_cmd.set_undo_function(self.add_saved_glyph)
 
         cmd_stack.do_command(delete_saved_glyph_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        if ui.stroke_selector_list.count() == 0:
-            ui.stroke_load.setEnabled(False)
-            ui.glyph_delete.setEnabled(False)
+        if ui_ref.stroke_selector_list.count() == 0:
+            ui_ref.stroke_load.setEnabled(False)
+            ui_ref.glyph_delete.setEnabled(False)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def remove_saved_glyph(self, args):
-        if 'glyph_index' in args:
-            glyph_index = args['glyph_index']
+        if 'glyph_id' in args:
+            glyph_id = args['glyph_id']
         else:
             return
 
-        if 'glyph_id' in args:
-             glyph_id = args['glyph_id']
-        else:
-             return
-
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
-        
-        glyph_item = ui.stroke_selector_list.takeItem(glyph_index)
-        
+
         glyph = char_set.glyphs[glyph_id]
 
-        # should we save these to restore once you 
+        # should we save these to restore once you
         # undelete saved glyph?
         instance_list = glyph.instances.keys()
 
@@ -364,6 +351,8 @@ class StrokeController(object):
             char = glyph_instance_item.parent
             char.remove_glyph(glyph_instance)
 
+        ui_ref.repaint()
+
     def add_saved_glyph(self, args):
         if 'glyph_index' in args:
             glyph_index = args['glyph_index']
@@ -371,31 +360,30 @@ class StrokeController(object):
             return
 
         if 'glyph_id' in args:
-             glyph_id = args['glyph_id']
+            glyph_id = args['glyph_id']
         else:
-             return
+            return
 
         if 'bitmap' in args:
             bitmap = args['bitmap']
         else:
             return
 
-        ui = self.__main_ctrl.get_ui()
-        char_set = self.__main_ctrl.get_character_set()
+        ui_ref = self.__main_ctrl.get_ui()
 
         glyph_item = QtGui.QListWidgetItem()
         glyph_item.setText(str(glyph_index))
         glyph_item.setData(QtCore.Qt.UserRole, glyph_id)
         glyph_item.setIcon(QtGui.QIcon(bitmap))
 
-        ui.stroke_selector_list.insertItem(glyph_index, glyph_item)
+        ui_ref.stroke_selector_list.insertItem(glyph_index, glyph_item)
 
     def straighten_stroke(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
         verts_before_list = []
@@ -431,14 +419,14 @@ class StrokeController(object):
 
         cmd_stack.add_to_undo(stroke_straighten_cmd)
         cmd_stack.save_count += 1
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
     def join_selected_strokes(self):
         cmd_stack = self.__main_ctrl.get_command_stack()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         if len(cur_view_selection.keys()) > 1:
             stroke_join_cmd = commands.Command("stroke_join_cmd")
@@ -463,8 +451,8 @@ class StrokeController(object):
 
             cmd_stack.add_to_undo(stroke_join_cmd)
             cmd_stack.save_count += 1
-            ui.edit_undo.setEnabled(True)
-            ui.repaint()
+            ui_ref.edit_undo.setEnabled(True)
+            ui_ref.repaint()
 
     def join_strokes(self, strokes):
         current_view = self.__main_ctrl.get_current_view()
@@ -584,7 +572,7 @@ class StrokeController(object):
             sel_stroke_item.selected = False
 
     def delete_control_vertices(self):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
@@ -602,7 +590,7 @@ class StrokeController(object):
                 sel_stroke_item.delete_ctrl_vertex(vert_to_delete)
                 vert_to_delete_item = char_set.get_item_by_index(vert_to_delete)
                 vert_to_delete_item.select_handle(None)
-        
+
             cur_view_selection[sel_stroke] = {}
 
             verts_after = sel_stroke_item.get_ctrl_vertices_as_list()
@@ -628,11 +616,11 @@ class StrokeController(object):
 
         cmd_stack.add_to_undo(vert_delete_cmd)
         cmd_stack.save_count += 1
-        ui.edit_undo.setEnabled(True)
-        ui.repaint()
+        ui_ref.edit_undo.setEnabled(True)
+        ui_ref.repaint()
 
     def set_stroke_control_vertices_from_list(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
@@ -654,10 +642,10 @@ class StrokeController(object):
             sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], False)
             sel_stroke_item.calc_curve_points()
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def set_stroke_control_vertices(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
         if 'strokes' in args:
@@ -679,10 +667,10 @@ class StrokeController(object):
             sel_stroke_item.set_ctrl_vertices(ctrl_vert_list[i])
             sel_stroke_item.calc_curve_points()
 
-        ui.repaint()    
+        ui_ref.repaint()
 
     def split_stroke(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         char_set = self.__main_ctrl.get_character_set()
@@ -707,10 +695,10 @@ class StrokeController(object):
         sel_stroke_item.calc_curve_points()
 
         cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
-        ui.repaint()
+        ui_ref.repaint()
 
     def unsplit_stroke(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         char_set = self.__main_ctrl.get_character_set()
@@ -734,14 +722,14 @@ class StrokeController(object):
         sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
         sel_stroke_item.calc_curve_points()
         cur_char.delete_stroke({'stroke': del_stroke})
-        ui.repaint()
+        ui_ref.repaint()
 
     def add_control_point(self, sel_stroke, inside_info):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-         
+
         add_vertex_cmd = commands.Command('add_vertex_cmd')
 
         undo_args = {
@@ -763,10 +751,10 @@ class StrokeController(object):
 
         cmd_stack.add_to_undo(add_vertex_cmd)
         cmd_stack.save_count += 1
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
     def split_stroke_at_point(self, sel_stroke, inside_info):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
@@ -799,14 +787,14 @@ class StrokeController(object):
         split_at_cmd.set_undo_function(self.unsplit_stroke)
 
         cmd_stack.do_command(split_at_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
     def add_new_stroke(self):
         current_view = self.__main_ctrl.get_current_view()
         cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
@@ -816,16 +804,16 @@ class StrokeController(object):
             self.__tmp_stroke = None
             self.__stroke_pts = []
             current_view.strokes = []
-            ui.repaint()
+            ui_ref.repaint()
 
-            ui.setUpdatesEnabled(False)
-            for idx in range(0, ui.main_view_tabs.count()):
-                ui.main_view_tabs.setTabEnabled(idx, True)
+            ui_ref.setUpdatesEnabled(False)
+            for idx in range(0, ui_ref.main_view_tabs.count()):
+                ui_ref.main_view_tabs.setTabEnabled(idx, True)
 
             if len(char_set.glyphs) == 0:
-                ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
+                ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area), \
                 False)
-            ui.setUpdatesEnabled(True)
+            ui_ref.setUpdatesEnabled(True)
 
             return
 
@@ -850,7 +838,7 @@ class StrokeController(object):
         add_stroke_cmd.set_undo_function(cur_char.delete_stroke)
 
         cmd_stack.do_command(add_stroke_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
         cur_view_selection[new_stroke_id] = {}
         new_stroke_item = char_set.get_item_by_index(new_stroke_id)
@@ -860,23 +848,22 @@ class StrokeController(object):
 
         self.__main_ctrl.set_ui_state_selection(True)
 
-        ui.setUpdatesEnabled(False)
-        for idx in range(0, ui.main_view_tabs.count()):
-            ui.main_view_tabs.setTabEnabled(idx, True)
+        ui_ref.setUpdatesEnabled(False)
+        for idx in range(0, ui_ref.main_view_tabs.count()):
+            ui_ref.main_view_tabs.setTabEnabled(idx, True)
 
         if len(char_set.glyphs) == 0:
-            ui.main_view_tabs.setTabEnabled(ui.main_view_tabs.indexOf(ui.stroke_dwg_area), \
+            ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area), \
                 False)
-        ui.setUpdatesEnabled(True)
+        ui_ref.setUpdatesEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def flip_selected_strokes_x(self):
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         flip_strokes_x_cmd = commands.Command("flip_strokes_x_cmd")
@@ -893,11 +880,11 @@ class StrokeController(object):
         flip_strokes_x_cmd.set_undo_args(undo_args)
         flip_strokes_x_cmd.set_do_function(self.flip_strokes_x)
         flip_strokes_x_cmd.set_undo_function(self.flip_strokes_x)
-        
-        cmd_stack.do_command(flip_strokes_x_cmd)
-        ui.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        cmd_stack.do_command(flip_strokes_x_cmd)
+        ui_ref.edit_undo.setEnabled(True)
+
+        ui_ref.repaint()
 
     def flip_strokes_x(self, args):
         if 'strokes' in args:
@@ -906,15 +893,14 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            if type(sel_stroke).__name__ == "Stroke": 
+            if type(sel_stroke).__name__ == "Stroke":
                 sel_stroke.flip_x()
 
     def flip_selected_strokes_y(self):
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         flip_strokes_y_cmd = commands.Command("flip_strokes_y_cmd")
@@ -931,11 +917,11 @@ class StrokeController(object):
         flip_strokes_y_cmd.set_undo_args(undo_args)
         flip_strokes_y_cmd.set_do_function(self.flip_strokes_y)
         flip_strokes_y_cmd.set_undo_function(self.flip_strokes_y)
-        
-        cmd_stack.do_command(flip_strokes_y_cmd)
-        ui.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        cmd_stack.do_command(flip_strokes_y_cmd)
+        ui_ref.edit_undo.setEnabled(True)
+
+        ui_ref.repaint()
 
     def flip_strokes_y(self, args):
         if 'strokes' in args:
@@ -944,7 +930,7 @@ class StrokeController(object):
             return
 
         for sel_stroke in strokes_to_flip:
-            if type(sel_stroke).__name__ == "Stroke": 
+            if type(sel_stroke).__name__ == "Stroke":
                 sel_stroke.flip_y()
 
     def move_selected(self, args):
@@ -972,7 +958,8 @@ class StrokeController(object):
                     if snap_point:
                         stroke_pt_item.selected_handle_pos = snap_point - sel_stroke_item.pos
                     else:
-                        stroke_pt_item.selected_handle_pos = stroke_pt_item.selected_handle_pos + delta
+                        stroke_pt_item.selected_handle_pos = \
+                            stroke_pt_item.selected_handle_pos + delta
             else:
                 sel_stroke_item.pos += delta
 
@@ -980,20 +967,19 @@ class StrokeController(object):
                 sel_stroke_item.calc_curve_points()
 
         if len(selection.keys()):
-            ui = self.__main_ctrl.get_ui()  
-            first_item = char_set.get_item_by_index(selection.keys()[0])      
-            ui.position_x_spin.setValue(first_item.pos.x())
-            ui.position_y_spin.setValue(first_item.pos.y())
+            ui_ref = self.__main_ctrl.get_ui()
+            first_item = char_set.get_item_by_index(selection.keys()[0])
+            ui_ref.position_x_spin.setValue(first_item.pos.x())
+            ui_ref.position_y_spin.setValue(first_item.pos.y())
 
     def selection_position_changed_x(self, prev_value, new_value):
         delta = QtCore.QPoint(new_value - prev_value, 0)
         undelta = QtCore.QPoint(prev_value - new_value, 0)
 
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         do_args = {
@@ -1013,19 +999,18 @@ class StrokeController(object):
         position_x_cmd.set_undo_function(self.move_selected)
 
         cmd_stack.do_command(position_x_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def selection_position_changed_y(self, prev_value, new_value):
         delta = QtCore.QPoint(0, new_value - prev_value)
         undelta = QtCore.QPoint(0, prev_value - new_value)
 
         current_view = self.__main_ctrl.get_current_view()
-        cur_char = current_view.symbol
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         do_args = {
@@ -1045,9 +1030,9 @@ class StrokeController(object):
         position_y_cmd.set_undo_function(self.move_selected)
 
         cmd_stack.do_command(position_y_cmd)
-        ui.edit_undo.setEnabled(True)
-        
-        ui.repaint()
+        ui_ref.edit_undo.setEnabled(True)
+
+        ui_ref.repaint()
 
 
 def dist_between_pts(p0, p1):
