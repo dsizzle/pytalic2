@@ -9,11 +9,11 @@ class ClipboardController(object):
         selection = self.__main_ctrl.get_selection()
         current_view = self.__main_ctrl.get_current_view()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         cut_strokes_cmd = commands.Command('cut_strokes_cmd')
-        char_index = ui.char_selector_list.currentRow()
+        char_index = ui_ref.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -31,12 +31,12 @@ class ClipboardController(object):
         cut_strokes_cmd.set_undo_function(self.paste_clipboard)
 
         cmd_stack.do_command(cut_strokes_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def cut_clipboard(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         selection = self.__main_ctrl.get_selection()
         current_view = self.__main_ctrl.get_current_view()
         cur_view_selection = selection[current_view]
@@ -52,7 +52,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui_ref.char_selector_list.setCurrentRow(char_index)
 
         self.__clipboard = []
         for sel_stroke in strokes_to_cut:
@@ -67,18 +67,18 @@ class ClipboardController(object):
                 del cur_view_selection[sel_stroke]
             sel_stroke_item.selected = False
 
-        ui.edit_paste.setEnabled(True)
-        ui.repaint()
+        ui_ref.edit_paste.setEnabled(True)
+        ui_ref.repaint()
 
     def copy_strokes(self):
         selection = self.__main_ctrl.get_selection()
         current_view = self.__main_ctrl.get_current_view()
         cur_view_selection = selection[current_view]
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         copy_strokes_cmd = commands.Command('copy_strokes_cmd')
-        char_index = ui.char_selector_list.currentRow()
+        char_index = ui_ref.char_selector_list.currentRow()
 
         do_args = {
             'strokes' : cur_view_selection.copy(),
@@ -95,15 +95,15 @@ class ClipboardController(object):
         copy_strokes_cmd.set_undo_function(self.clear_clipboard)
 
         cmd_stack.do_command(copy_strokes_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def clear_clipboard(self, args):
         self.__clipboard = []
 
     def copy_clipboard(self, args):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         if 'char_index' in args:
             char_index = args['char_index']
@@ -115,22 +115,22 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui_ref.char_selector_list.setCurrentRow(char_index)
 
         self.__clipboard = []
         for sel_stroke in strokes_to_copy.keys():
             self.__clipboard.append(sel_stroke)
 
-        ui.edit_paste.setEnabled(True)
-        ui.repaint()
+        ui_ref.edit_paste.setEnabled(True)
+        ui_ref.repaint()
 
     def paste_strokes(self):
         char_set = self.__main_ctrl.get_character_set()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         paste_strokes_cmd = commands.Command('paste_strokes_cmd')
-        char_index = ui.char_selector_list.currentRow()
+        char_index = ui_ref.char_selector_list.currentRow()
 
         paste_strokes = []
         for sel_stroke in self.__clipboard:
@@ -156,16 +156,16 @@ class ClipboardController(object):
         paste_strokes_cmd.set_undo_function(self.cut_clipboard)
 
         cmd_stack.do_command(paste_strokes_cmd)
-        ui.edit_undo.setEnabled(True)
+        ui_ref.edit_undo.setEnabled(True)
 
-        ui.repaint()
+        ui_ref.repaint()
 
     def paste_clipboard(self, args):
         selection = self.__main_ctrl.get_selection()
         current_view = self.__main_ctrl.get_current_view()
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         if 'char_index' in args:
             char_index = args['char_index']
@@ -177,7 +177,7 @@ class ClipboardController(object):
         else:
             return
 
-        ui.char_selector_list.setCurrentRow(char_index)
+        ui_ref.char_selector_list.setCurrentRow(char_index)
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
@@ -205,4 +205,4 @@ class ClipboardController(object):
             added_item_actual.selected = True
 
         self.__main_ctrl.set_ui_state_selection(True)
-        ui.repaint()
+        ui_ref.repaint()

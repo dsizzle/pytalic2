@@ -24,7 +24,7 @@ class MouseController(object):
 
     def wheel_event(self, event):
         current_view = self.__main_ctrl.get_current_view()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         if current_view.underMouse() or current_view.rect().contains(event.pos()):
             scale_change = 0.0
@@ -35,8 +35,8 @@ class MouseController(object):
 
             current_view.scale += scale_change
 
-            paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
-            paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
+            paper_pos = event.pos() - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+            paper_pos.setY(paper_pos.y() - ui_ref.main_view_tabs.tabBar().height())
             norm_paper_pos = current_view.get_normalized_position(paper_pos)
             zoom_pos = norm_paper_pos * scale_change
 
@@ -44,12 +44,12 @@ class MouseController(object):
             self.__saved_mouse_pos_paper[current_view] = paper_pos
 
             event.accept()
-            ui.repaint()
+            ui_ref.repaint()
 
     def mouse_press_event_paper(self, event):
         btn = event.buttons()
         mod = event.modifiers()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
 
         alt_down = mod & QtCore.Qt.AltModifier
@@ -57,8 +57,8 @@ class MouseController(object):
 
         left_down = btn & QtCore.Qt.LeftButton
 
-        paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
-        paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
+        paper_pos = event.pos() - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        paper_pos.setY(paper_pos.y() - ui_ref.main_view_tabs.tabBar().height())
 
         if self.__main_ctrl.state == control.edit_control.IDLE and left_down:
             self.__saved_mouse_pos_paper[current_view] = paper_pos
@@ -69,7 +69,7 @@ class MouseController(object):
 
         btn = event.button()
         mod = event.modifiers()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         shift_down = mod & QtCore.Qt.ShiftModifier
 
@@ -84,14 +84,14 @@ class MouseController(object):
             elif left_up:
                 self.__on_l_button_up_paper(event.pos(), shift_down)
 
-        ui.repaint()
-        if current_view != ui.preview_area:
+        ui_ref.repaint()
+        if current_view != ui_ref.preview_area:
             self.__main_ctrl.set_icon()
 
     def mouse_move_event_paper(self, event):
         btn = event.buttons()
         mod = event.modifiers()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
@@ -100,8 +100,8 @@ class MouseController(object):
 
         alt_down = mod & QtCore.Qt.AltModifier
 
-        paper_pos = event.pos() - ui.main_splitter.pos() - ui.main_widget.pos()
-        paper_pos.setY(paper_pos.y() - ui.main_view_tabs.tabBar().height())
+        paper_pos = event.pos() - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        paper_pos.setY(paper_pos.y() - ui_ref.main_view_tabs.tabBar().height())
         norm_paper_pos = current_view.get_normalized_position(paper_pos)
 
         if self.__main_ctrl.state == control.edit_control.MOVING_PAPER:
@@ -153,8 +153,8 @@ class MouseController(object):
 
             current_view.select_rect = QtCore.QRectF(top_left, bot_right)
 
-        ui.repaint()
-        if current_view != ui.preview_area:
+        ui_ref.repaint()
+        if current_view != ui_ref.preview_area:
             self.__main_ctrl.set_icon()
 
     def __on_r_button_up_paper(self):
@@ -164,10 +164,10 @@ class MouseController(object):
             QtGui.qApp.restoreOverrideCursor()
 
     def __on_l_button_down_paper(self, pos, shift_down, alt_down):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
-        adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
-        adjusted_pos.setY(adjusted_pos.y() - ui.main_view_tabs.tabBar().height())
+        adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
 
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
@@ -188,12 +188,12 @@ class MouseController(object):
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
 
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        adjusted_pos = pos - ui.main_splitter.pos() - ui.main_widget.pos()
-        adjusted_pos.setY(adjusted_pos.y() - ui.main_view_tabs.tabBar().height())
+        adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
 
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
@@ -202,8 +202,8 @@ class MouseController(object):
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
             stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)
             stroke_ctrl.tmp_stroke.update_ctrl_vertices()
-            ui.position_x_spin.setValue(stroke_ctrl.tmp_stroke.pos.x())
-            ui.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
+            ui_ref.position_x_spin.setValue(stroke_ctrl.tmp_stroke.pos.x())
+            ui_ref.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
 
         elif self.__main_ctrl.state == control.edit_control.DRAGGING:
             move_cmd = commands.Command('move_stroke_cmd')
@@ -225,7 +225,7 @@ class MouseController(object):
 
             cmd_stack.add_to_undo(move_cmd)
             cmd_stack.save_count += 1
-            ui.edit_undo.setEnabled(True)
+            ui_ref.edit_undo.setEnabled(True)
 
             self.__main_ctrl.state = control.edit_control.IDLE
             self.__move_delta = QtCore.QPoint(0, 0)
@@ -262,7 +262,7 @@ class MouseController(object):
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
 
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         if len(cur_view_selection.keys()) > 0:
             self.__update_current_selection(paper_pos, shift_down)
@@ -281,31 +281,31 @@ class MouseController(object):
                 check_state = QtCore.Qt.Checked
                 nib_angle_override = first_item.nib_angle
 
-            ui.stroke_override_nib_angle.setCheckState(check_state)
+            ui_ref.stroke_override_nib_angle.setCheckState(check_state)
 
-            ui.position_x_spin.setValue(first_item.pos.x())
-            ui.position_y_spin.setValue(first_item.pos.y())
+            ui_ref.position_x_spin.setValue(first_item.pos.x())
+            ui_ref.position_y_spin.setValue(first_item.pos.y())
             if type(first_item).__name__ != 'GlyphInstance' and \
                 type(first_item).__name__ != 'CharacterInstance' and \
                 nib_angle_override:
-                ui.stroke_nib_angle_spin.setValue(nib_angle_override)
+                ui_ref.stroke_nib_angle_spin.setValue(nib_angle_override)
             else:
-                ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
+                ui_ref.stroke_nib_angle_spin.setValue(ui_ref.char_set_nib_angle_spin.value())
 
         else:
             self.__main_ctrl.set_ui_state_selection(False)
-            ui.behavior_combo.setCurrentIndex(0)
-            ui.position_x_spin.setValue(0)
-            ui.position_y_spin.setValue(0)
-            ui.stroke_nib_angle_spin.setValue(ui.char_set_nib_angle_spin.value())
-            ui.stroke_override_nib_angle.setCheckState(QtCore.Qt.Unchecked)
+            ui_ref.behavior_combo.setCurrentIndex(0)
+            ui_ref.position_x_spin.setValue(0)
+            ui_ref.position_y_spin.setValue(0)
+            ui_ref.stroke_nib_angle_spin.setValue(ui_ref.char_set_nib_angle_spin.value())
+            ui_ref.stroke_override_nib_angle.setCheckState(QtCore.Qt.Unchecked)
 
     def __update_current_selection(self, paper_pos, shift_down):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
         inside_strokes = {}
         for sel_stroke in cur_view_selection.keys():
@@ -349,18 +349,18 @@ class MouseController(object):
 
         behavior_list = list(set(behavior_list))
         if len(behavior_list) == 1:
-            ui.behavior_combo.setCurrentIndex(behavior_list[0])
+            ui_ref.behavior_combo.setCurrentIndex(behavior_list[0])
         else:
-            ui.behavior_combo.setCurrentIndex(0)
+            ui_ref.behavior_combo.setCurrentIndex(0)
 
     def __update_empty_selection(self, paper_pos, shift_down, select_rect):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        if current_view != ui.preview_area:
+        if current_view != ui_ref.preview_area:
             for sel_stroke in current_view.symbol.children:
                 sel_stroke_item = char_set.get_item_by_index(sel_stroke)
                 inside_rect = False
@@ -386,8 +386,8 @@ class MouseController(object):
                     if type(sel_stroke_item).__name__ == 'Stroke':
                         sel_stroke_item.deselect_ctrl_verts()
         else:
-            layout_pos = ui.preview_area.layout.pos
-            for sel_symbol in ui.preview_area.layout.object_list:
+            layout_pos = ui_ref.preview_area.layout.pos
+            for sel_symbol in ui_ref.preview_area.layout.object_list:
                 sel_symbol_item = char_set.get_item_by_index(sel_symbol)
                 inside_info = sel_symbol_item.is_inside(paper_pos - layout_pos)
                 if inside_info[0] and \

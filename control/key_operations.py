@@ -11,11 +11,11 @@ class KeyboardController(object):
 
     def key_event(self, event):
         current_view = self.__main_ctrl.get_current_view()
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
 
-        if ui.dwg_area.hasFocus() or \
-            ui.stroke_dwg_area.hasFocus() or \
-            ui.preview_area.hasFocus() or \
+        if ui_ref.dwg_area.hasFocus() or \
+            ui_ref.stroke_dwg_area.hasFocus() or \
+            ui_ref.preview_area.hasFocus() or \
             current_view.underMouse():
 
             if event.type() == QtCore.QEvent.KeyRelease:
@@ -31,7 +31,7 @@ class KeyboardController(object):
         pass
 
     def __key_release_event_paper(self, event):
-        ui = self.__main_ctrl.get_ui()
+        ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
@@ -77,6 +77,6 @@ class KeyboardController(object):
 
                 cmd_stack.do_command(move_cmd)
                 cmd_stack.save_count += 1
-                ui.edit_undo.setEnabled(True)
+                ui_ref.edit_undo.setEnabled(True)
 
-                ui.repaint()
+                ui_ref.repaint()
