@@ -1,10 +1,9 @@
-from PyQt4 import QtCore
-
 import struct
+
+from PyQt4 import QtCore
 
 import model.instance
 import model.stroke
-import thirdparty.dp
 import view.shared_qt
 
 STROKE = 'stroke'
@@ -48,7 +47,7 @@ class Glyph(object):
         (x, y) = struct.unpack_from("<dd", data, offset)
         self.__pos = QtCore.QPoint(x, y)
         offset += struct.calcsize("<dd")
-        
+
         num_instances = struct.unpack_from("<I", data, offset)[0]
         offset += struct.calcsize("<I")
 
@@ -124,50 +123,13 @@ class Glyph(object):
     def char_set(self):
         return self.__char_set
 
-    def new_freehand_stroke(self, points):
-        my_stroke = model.stroke.Stroke()
-        raw_cv = []
-        temp_cv = []
-
-        new_points = thirdparty.dp.simplify_points(points, 10)
-        start_x, start_y = new_points[0]
-        num_points = len(new_points)
-        while (num_points % 4) != 0:
-            new_points.append(new_points[-1])
-            num_points = num_points + 1
-
-        raw_cv = my_stroke.calc_ctrl_vertices(new_points)
-        for point in raw_cv:
-            temp_cv.append([point[0]-start_x+1, point[1]-start_y+1])
-
-        my_stroke.set_ctrl_vertices_from_list(temp_cv)
-        my_stroke.pos = QtCore.QPoint(start_x, start_y)
-
-        my_stroke.calc_curve_points()
-        if num_points == 2:
-            my_stroke.straighten()
-
-        self.__strokes.append(my_stroke)
-
-        my_stroke.set_parent(self)
-        return my_stroke
-
     def add_stroke(self, args):
-        copy_stroke = True
-
         if STROKE in args:
             stroke_to_add = args[STROKE]
         else:
             return
 
-        if 'copy_stroke' in args:
-            copy_stroke = args['copy_stroke']
-
-        if copy_stroke:
-            new_stroke = self.copy_stroke({STROKE: stroke_to_add})
-            new_stroke.set_parent(self)
-        else:
-            new_stroke = stroke_to_add
+        new_stroke = stroke_to_add
 
         self.__strokes.append(new_stroke)
 
@@ -178,21 +140,6 @@ class Glyph(object):
         if not isinstance(inst, model.stroke.Stroke):
             self.__strokes.append(inst)
             inst.set_parent(self)
-
-    def copy_stroke(self, args):
-        if STROKE in args:
-            stroke_to_copy = args[STROKE]
-        else:
-            return
-
-        if isinstance(stroke_to_copy, model.stroke.Stroke):
-            copied_stroke = model.stroke.Stroke(fromStroke=stroke_to_copy)
-        else:
-            copied_stroke = model.stroke.StrokeInstance()
-            real_stroke_to_copy = stroke_to_copy.getStroke()
-            copied_stroke.setStroke(real_stroke_to_copy)
-
-        return copied_stroke
 
     def delete_stroke(self, args):
         if STROKE in args:
@@ -218,10 +165,10 @@ class Glyph(object):
             return (False, -1, None)
 
         if self.bound_rect.contains(test_point):
-           for sel_child in self.children:   
-                sel_child_item = self.char_set.get_item_by_index(sel_child)           
-                insideInfo = sel_child_item.is_inside(test_point)
-                if insideInfo[0]:
+            for sel_child in self.children:
+                sel_child_item = self.char_set.get_item_by_index(sel_child)
+                inside_info = sel_child_item.is_inside(test_point)
+                if inside_info[0]:
                     return (True, -1, None)
 
         return (False, -1, None)
@@ -251,7 +198,7 @@ class Glyph(object):
 
             if sel_child_item and sel_child_item.bound_rect:
                 self.bound_rect = self.bound_rect.united(sel_child_item.bound_rect.translated(sel_child_item.pos))
-        
+
     def draw(self, gc, nib=None, nib_glyph=None):
         gc.save()
         gc.translate(self.__pos)
@@ -410,7 +357,7 @@ class Character(Glyph):
         self.__override_spacing = state
 
     override_spacing = property(get_override_spacing, set_override_spacing)
-    
+
     def draw(self, gc, nib=None, nib_glyph=None):
         if nib_glyph is None:
             nib_glyph = nib

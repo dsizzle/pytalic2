@@ -193,7 +193,7 @@ class StrokeController(object):
         cur_char.remove_glyph(glyph_instance_id)
 
         for sel_stroke in glyph_instance.strokes:
-            cur_char.add_stroke({'stroke' : sel_stroke, 'copy_stroke' : False})
+            cur_char.add_stroke({'stroke' : sel_stroke})
             added_strokes.append(sel_stroke)
 
         ui_ref.stroke_selector_list.takeItem(first_item)
@@ -506,7 +506,7 @@ class StrokeController(object):
         new_stroke_item = char_set.get_item_by_index(new_stroke)
         new_stroke_item.set_ctrl_vertices_from_list(vert_list, False)
         new_stroke_item.calc_curve_points()
-        cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
+        cur_char.add_stroke({'stroke': new_stroke})
 
         cur_view_selection[new_stroke] = {}
         new_stroke_item.selected = True
@@ -537,7 +537,7 @@ class StrokeController(object):
             del cur_view_selection[joined_stroke]
 
         for sel_stroke in strokes.keys():
-            cur_char.add_stroke({'stroke': sel_stroke, 'copy_stroke': False})
+            cur_char.add_stroke({'stroke': sel_stroke})
             cur_view_selection[sel_stroke] = {}
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             sel_stroke_item.selected = True
@@ -559,7 +559,7 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
 
-        cur_char.add_stroke({'stroke': joined_stroke, 'copy_stroke': False})
+        cur_char.add_stroke({'stroke': joined_stroke})
         joined_stroke_item = char_set.get_item_by_index(joined_stroke)
         joined_stroke_item.selected = True
         cur_view_selection[joined_stroke] = {}
@@ -694,7 +694,7 @@ class StrokeController(object):
         sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
         sel_stroke_item.calc_curve_points()
 
-        cur_char.add_stroke({'stroke': new_stroke, 'copy_stroke': False})
+        cur_char.add_stroke({'stroke': new_stroke})
         ui_ref.repaint()
 
     def unsplit_stroke(self, args):
@@ -825,7 +825,6 @@ class StrokeController(object):
         add_stroke_cmd = commands.Command('add_stroke_cmd')
         do_args = {
             'stroke' : new_stroke_id,
-            'copy_stroke' : False,
         }
 
         undo_args = {
