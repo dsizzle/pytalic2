@@ -132,7 +132,7 @@ class FileController(object):
                 return None
 
             char_set = self.__main_ctrl.get_character_set()
-            __update_controls(ui_ref, char_set)
+            update_controls(ui_ref, char_set)
 
             (self.__dir_name, self.__file_name) = os.path.split(str(file_path))
 
@@ -230,7 +230,7 @@ class FileController(object):
         return 0
 
 
-def __update_controls(ui_ref, char_set):
+def update_controls(ui_ref, char_set):
     ui_ref.dwg_area.char_set = char_set
     ui_ref.stroke_dwg_area.char_set = char_set
     ui_ref.preview_area.char_set = char_set
