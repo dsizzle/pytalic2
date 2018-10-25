@@ -451,6 +451,7 @@ class CharacterSet(object):
 
         while True:
             try:
+                safe_dict = dict([ (k, globals().get(k, None)) for k in INV_TYPE_MAP.keys() ])
                 num_items_raw = fd.read(struct.calcsize("<cL"))
                 if len(num_items_raw) == 0:
                     break
@@ -465,7 +466,7 @@ class CharacterSet(object):
                     data_size = struct.unpack("<L", fd.read(struct.calcsize("<L")))[0]
                     data_blob = fd.read(data_size)
 
-                    item_object = eval(item_type)(self)
+                    item_object = eval(item_type, safe_dict, {})(self)
                     
                     item_object.unserialize(data_blob)
                     self.__objects[item_type][item_id] = item_object    
