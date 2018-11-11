@@ -330,15 +330,18 @@ class Stroke(object):
 
     def generate_ctrl_vertices_from_points(self, points):
         num_points = len(points)
-
-        if num_points < 2:
-            # not sure about this one
-            pass
+        t = 0.6
+        
+        new_points = [] #points[0]]
+        if num_points == 1:
+            new_points = points
         elif num_points == 2:
             delta_x = (points[1][0] - points[0][0]) / 3.
             delta_y = (points[1][1] - points[0][1]) / 3.
-            points = [points[0], [points[0][0] + delta_x, points[0][1] + delta_y], \
-                [points[1][0] - delta_x, points[1][1] - delta_y], points[1]]
+            new_points.append(points[0])
+            new_points.append([points[0][0] + delta_x, points[0][1] + delta_y])
+            new_points.append([points[1][0] - delta_x, points[1][1] - delta_y])
+            new_points.append(points[1])
         elif num_points == 3:
             delta_x1 = (points[1][0] - points[0][0]) / 4.
             delta_y1 = (points[1][1] - points[0][1]) / 4.
@@ -346,46 +349,100 @@ class Stroke(object):
             delta_x2 = (points[2][0] - points[1][0]) / 4.
             delta_y2 = (points[2][1] - points[1][1]) / 4.
 
-            points = [points[0], [points[1][0] - delta_x1, points[1][1] - delta_y1], \
+            new_points = [points[0], [points[1][0] - delta_x1, points[1][1] - delta_y1], \
                 [points[1][0] + delta_x2, points[1][1] + delta_y2], points[2]]
         else:
-            first_points = [points[0], points[1]]
-            last_points = [points[-2], points[-1]]
-            mid_points = []
+            new_points = [points[0]]
+            first = True
+            for i in range(0, num_points - 2):
+                v = [points[i+2][0] - points[i][0], points[i+2][1] - points[i][1]]
+                d01 = math.sqrt(math.pow(points[i][0] - points[i+1][0], 2) + \
+                    math.pow(points[i][1] - points[i+1][1], 2))
+                d12 = math.sqrt(math.pow(points[i+1][0] - points[i+2][0], 2) + \
+                    math.pow(points[i+1][1] - points[i+2][1], 2))
+                d012 = d01 + d12
 
-            for i in range(2, num_points-2):
-                dx_t = (points[i + 1][0] - points[i - 1][0]) / 2.
-                dy_t = (points[i + 1][1] - points[i - 1][1]) / 2.
+                ctrl_pt1 = [points[i+1][0] - v[0] * t * d01 / d012, \
+                    points[i+1][1] - v[1] * t * d01 / d012]
+                ctrl_pt2 = [points[i+1][0] + v[0] * t * d12 / d012, \
+                    points[i+1][1] + v[1] * t * d12 / d012]
+                
+                if first: 
+                    new_points.append([points[0][0] + 1. / 3. * (ctrl_pt1[0] - points[0][0]), \
+                        points[0][1] + 1. / 3. * (ctrl_pt1[1] - points[0][1])])
+                    first = False
+                
+                new_points.append(ctrl_pt1) 
+                new_points.append(points[i+1])
+                new_points.append(ctrl_pt2)
+                
+        if num_points > 2:
+            last_cp = new_points[-1]
+            new_points.append([points[-1][0] + 1. / 3. * (last_cp[0] - points[-1][0]), \
+                        points[-1][1] + 1. / 3. * (last_cp[1] - points[-1][1])])
+            new_points.append(points[-1])
 
-                dx_a = (points[i - 1][0] - points[i][0])
-                dy_a = (points[i - 1][1] - points[i][1])
-                vec_len_a = math.sqrt(float(dx_a) * float(dx_a) + float(dy_a) * \
-                    float(dy_a)) + 0.001
-                dx_b = (points[i + 1][0] - points[i][0])
-                dy_b = (points[i + 1][1] - points[i][1])
-                vec_len_b = math.sqrt(float(dx_b) * float(dx_b) + float(dy_b) * \
-                    float(dy_b)) + 0.001
+        self.set_ctrl_vertices_from_list(new_points)
 
-                if vec_len_a > vec_len_b:
-                    ratio = (vec_len_a / vec_len_b) / 2.
-                    mid_points.append([points[i][0] - dx_t * ratio, points[i][1] - \
-                        dy_t * ratio])
-                    mid_points.append(points[i])
-                    mid_points.append([points[i][0] + (dx_t / 2.), points[i][1] + \
-                        (dy_t / 2.)])
-                else:
-                    ratio = (vec_len_b / vec_len_a) / 2.
-                    mid_points.append([points[i][0] - (dx_t / 2.), points[i][1] - \
-                        (dy_t / 2.)])
-                    mid_points.append(points[i])
-                    mid_points.append([points[i][0] + dx_t * ratio, points[i][1] + \
-                        dy_t * ratio])
 
-            points = first_points
-            points.extend(mid_points)
-            points.extend(last_points)
+    # def generate_ctrl_vertices_from_points(self, points):
+    #     num_points = len(points)
 
-        self.set_ctrl_vertices_from_list(points)
+    #     if num_points < 2:
+    #         # not sure about this one
+    #         pass
+    #     elif num_points == 2:
+    #         delta_x = (points[1][0] - points[0][0]) / 3.
+    #         delta_y = (points[1][1] - points[0][1]) / 3.
+    #         points = [points[0], [points[0][0] + delta_x, points[0][1] + delta_y], \
+    #             [points[1][0] - delta_x, points[1][1] - delta_y], points[1]]
+    #     elif num_points == 3:
+    #         delta_x1 = (points[1][0] - points[0][0]) / 4.
+    #         delta_y1 = (points[1][1] - points[0][1]) / 4.
+
+    #         delta_x2 = (points[2][0] - points[1][0]) / 4.
+    #         delta_y2 = (points[2][1] - points[1][1]) / 4.
+
+    #         points = [points[0], [points[1][0] - delta_x1, points[1][1] - delta_y1], \
+    #             [points[1][0] + delta_x2, points[1][1] + delta_y2], points[2]]
+    #     else:
+    #         first_points = [points[0], points[1]]
+    #         last_points = [points[-2], points[-1]]
+    #         mid_points = []
+
+    #         for i in range(2, num_points-2):
+    #             dx_t = (points[i + 1][0] - points[i - 1][0]) / 2.
+    #             dy_t = (points[i + 1][1] - points[i - 1][1]) / 2.
+
+    #             dx_a = (points[i - 1][0] - points[i][0])
+    #             dy_a = (points[i - 1][1] - points[i][1])
+    #             vec_len_a = math.sqrt(float(dx_a) * float(dx_a) + float(dy_a) * \
+    #                 float(dy_a)) + 0.001
+    #             dx_b = (points[i + 1][0] - points[i][0])
+    #             dy_b = (points[i + 1][1] - points[i][1])
+    #             vec_len_b = math.sqrt(float(dx_b) * float(dx_b) + float(dy_b) * \
+    #                 float(dy_b)) + 0.001
+
+    #             if vec_len_a > vec_len_b:
+    #                 ratio = (vec_len_a / vec_len_b) / 2.
+    #                 mid_points.append([points[i][0] - dx_t * ratio, points[i][1] - \
+    #                     dy_t * ratio])
+    #                 mid_points.append(points[i])
+    #                 mid_points.append([points[i][0] + (dx_t / 2.), points[i][1] + \
+    #                     (dy_t / 2.)])
+    #             else:
+    #                 ratio = (vec_len_b / vec_len_a) / 2.
+    #                 mid_points.append([points[i][0] - (dx_t / 2.), points[i][1] - \
+    #                     (dy_t / 2.)])
+    #                 mid_points.append(points[i])
+    #                 mid_points.append([points[i][0] + dx_t * ratio, points[i][1] + \
+    #                     dy_t * ratio])
+
+    #         points = first_points
+    #         points.extend(mid_points)
+    #         points.extend(last_points)
+
+    #     self.set_ctrl_vertices_from_list(points)
 
     def set_ctrl_vertices(self, ctrl_verts):
         self.__stroke_ctrl_verts = ctrl_verts[:]
