@@ -332,27 +332,18 @@ class Stroke(object):
         num_points = len(points)
         t = 0.6
         
-        new_points = [] #points[0]]
+        new_points = [points[0]]
         if num_points == 1:
             new_points = points
         elif num_points == 2:
             delta_x = (points[1][0] - points[0][0]) / 3.
             delta_y = (points[1][1] - points[0][1]) / 3.
-            new_points.append(points[0])
+            #new_points.append(points[0])
             new_points.append([points[0][0] + delta_x, points[0][1] + delta_y])
             new_points.append([points[1][0] - delta_x, points[1][1] - delta_y])
             new_points.append(points[1])
-        elif num_points == 3:
-            delta_x1 = (points[1][0] - points[0][0]) / 4.
-            delta_y1 = (points[1][1] - points[0][1]) / 4.
-
-            delta_x2 = (points[2][0] - points[1][0]) / 4.
-            delta_y2 = (points[2][1] - points[1][1]) / 4.
-
-            new_points = [points[0], [points[1][0] - delta_x1, points[1][1] - delta_y1], \
-                [points[1][0] + delta_x2, points[1][1] + delta_y2], points[2]]
         else:
-            new_points = [points[0]]
+            #new_points = [points[0]]
             first = True
             for i in range(0, num_points - 2):
                 v = [points[i+2][0] - points[i][0], points[i+2][1] - points[i][1]]
