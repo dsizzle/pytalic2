@@ -143,7 +143,7 @@ class Stroke(object):
 
     def straighten(self):
         temp_ctrl_verts = []
-        ctrl_verts = self.get_ctrl_vertices_as_list()
+        (ctrl_verts, behaviors) = self.get_ctrl_vertices_as_list()
         num_verts = len(ctrl_verts)
 
         start = ctrl_verts[0]
@@ -165,7 +165,7 @@ class Stroke(object):
 
     def flip_x(self):
         temp_ctrl_verts = []
-        ctrl_verts = self.get_ctrl_vertices_as_list()
+        (ctrl_verts, behaviors) = self.get_ctrl_vertices_as_list()
         
         for vert in ctrl_verts:
             temp_ctrl_verts.append([self.__pos.x() - vert[0], \
@@ -176,7 +176,7 @@ class Stroke(object):
 
     def flip_y(self):
         temp_ctrl_verts = []
-        ctrl_verts = self.get_ctrl_vertices_as_list()
+        (ctrl_verts, behaviors) = self.get_ctrl_vertices_as_list()
 
         for vert in ctrl_verts:
             temp_ctrl_verts.append([vert[0] + self.__pos.x(), \
@@ -187,7 +187,7 @@ class Stroke(object):
 
     def add_end_serif(self, distance):
         self.__end_serif = serif.Flick(serif.END)
-        verts = self.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
         self.__end_serif.set_ctrl_vertices(verts)
         self.__end_serif.setLength(distance)
         # if (self.nib):
@@ -201,7 +201,7 @@ class Stroke(object):
 
     def add_start_serif(self, distance):
         self.__start_serif = serif.Flick(serif.START)
-        verts = self.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
         self.__start_serif.set_ctrl_vertices(verts)
         self.__start_serif.setLength(distance)
         # if (self.nib):
@@ -214,7 +214,7 @@ class Stroke(object):
         return self.__start_serif
 
     def calc_curve_points(self):
-        verts = self.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
         self.__curve_path = QtGui.QPainterPath()
         self.__curve_path.moveTo(verts[0][0], verts[0][1])
 
@@ -230,7 +230,7 @@ class Stroke(object):
         opp_test_angle = test_angle + 180
         tolerance = 1
 
-        verts = self.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
         cur_curve = self.__curve_path
 
         for i in range(0, 100):
@@ -295,13 +295,16 @@ class Stroke(object):
 
     def get_ctrl_vertices_as_list(self):
         points = []
+        behaviors = []
+
         for vert in self.__stroke_ctrl_verts:
             vert_item = self.__char_set.get_item_by_index(vert)
             points.extend(vert_item.get_handle_pos_as_list())
+            behaviors.append(vert_item.behavior)
 
-        return points
+        return (points, behaviors)
 
-    def set_ctrl_vertices_from_list(self, points, reset_pos=True):
+    def set_ctrl_vertices_from_list(self, points, behaviors=[], reset_pos=True):
         self.__stroke_ctrl_verts = []
 
         tmp_points = points[:]
@@ -328,10 +331,10 @@ class Stroke(object):
                 point = tmp_points.pop(0)
                 left = QtCore.QPoint(point[0], point[1]) - offset
 
-    def generate_ctrl_vertices_from_points(self, points):
+    def generate_ctrl_vertices_from_points(self, points, behaviors):
         num_points = len(points)
         t = 0.6
-        
+
         new_points = [points[0]]
         if num_points == 1:
             new_points = points
@@ -373,74 +376,14 @@ class Stroke(object):
                         points[-1][1] + 1. / 3. * (last_cp[1] - points[-1][1])])
             new_points.append(points[-1])
 
-        self.set_ctrl_vertices_from_list(new_points)
-
-
-    # def generate_ctrl_vertices_from_points(self, points):
-    #     num_points = len(points)
-
-    #     if num_points < 2:
-    #         # not sure about this one
-    #         pass
-    #     elif num_points == 2:
-    #         delta_x = (points[1][0] - points[0][0]) / 3.
-    #         delta_y = (points[1][1] - points[0][1]) / 3.
-    #         points = [points[0], [points[0][0] + delta_x, points[0][1] + delta_y], \
-    #             [points[1][0] - delta_x, points[1][1] - delta_y], points[1]]
-    #     elif num_points == 3:
-    #         delta_x1 = (points[1][0] - points[0][0]) / 4.
-    #         delta_y1 = (points[1][1] - points[0][1]) / 4.
-
-    #         delta_x2 = (points[2][0] - points[1][0]) / 4.
-    #         delta_y2 = (points[2][1] - points[1][1]) / 4.
-
-    #         points = [points[0], [points[1][0] - delta_x1, points[1][1] - delta_y1], \
-    #             [points[1][0] + delta_x2, points[1][1] + delta_y2], points[2]]
-    #     else:
-    #         first_points = [points[0], points[1]]
-    #         last_points = [points[-2], points[-1]]
-    #         mid_points = []
-
-    #         for i in range(2, num_points-2):
-    #             dx_t = (points[i + 1][0] - points[i - 1][0]) / 2.
-    #             dy_t = (points[i + 1][1] - points[i - 1][1]) / 2.
-
-    #             dx_a = (points[i - 1][0] - points[i][0])
-    #             dy_a = (points[i - 1][1] - points[i][1])
-    #             vec_len_a = math.sqrt(float(dx_a) * float(dx_a) + float(dy_a) * \
-    #                 float(dy_a)) + 0.001
-    #             dx_b = (points[i + 1][0] - points[i][0])
-    #             dy_b = (points[i + 1][1] - points[i][1])
-    #             vec_len_b = math.sqrt(float(dx_b) * float(dx_b) + float(dy_b) * \
-    #                 float(dy_b)) + 0.001
-
-    #             if vec_len_a > vec_len_b:
-    #                 ratio = (vec_len_a / vec_len_b) / 2.
-    #                 mid_points.append([points[i][0] - dx_t * ratio, points[i][1] - \
-    #                     dy_t * ratio])
-    #                 mid_points.append(points[i])
-    #                 mid_points.append([points[i][0] + (dx_t / 2.), points[i][1] + \
-    #                     (dy_t / 2.)])
-    #             else:
-    #                 ratio = (vec_len_b / vec_len_a) / 2.
-    #                 mid_points.append([points[i][0] - (dx_t / 2.), points[i][1] - \
-    #                     (dy_t / 2.)])
-    #                 mid_points.append(points[i])
-    #                 mid_points.append([points[i][0] + dx_t * ratio, points[i][1] + \
-    #                     dy_t * ratio])
-
-    #         points = first_points
-    #         points.extend(mid_points)
-    #         points.extend(last_points)
-
-    #     self.set_ctrl_vertices_from_list(points)
+        self.set_ctrl_vertices_from_list(new_points, behaviors)
 
     def set_ctrl_vertices(self, ctrl_verts):
         self.__stroke_ctrl_verts = ctrl_verts[:]
         self.update_ctrl_vertices()
 
     def update_ctrl_vertices(self):
-        points = self.get_ctrl_vertices_as_list()
+        (points, behaviors) = self.get_ctrl_vertices_as_list()
 
         if len(points) > 3:
             self.calc_curve_points()
@@ -493,7 +436,7 @@ class Stroke(object):
         return (points[:true_index], points[true_index:])
 
     def add_ctrl_vertex(self, t, index):
-        points = self.get_ctrl_vertices_as_list()
+        (points, behaviors) = self.get_ctrl_vertices_as_list()
 
         (points, remainder) = self.divide_curve_at_point(points, t, index)
 
@@ -503,7 +446,7 @@ class Stroke(object):
         self.calc_curve_points()
 
     def split_at_point(self, t, index):
-        points = self.get_ctrl_vertices_as_list()
+        (points, behaviors) = self.get_ctrl_vertices_as_list()
 
         (points, remainder) = self.divide_curve_at_point(points, t, index)
 
@@ -545,7 +488,7 @@ class Stroke(object):
         gc.setPen(draw_nib.pen)
         gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
 
-        verts = self.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
         if len(verts) > 0:
             if self.__curve_path is None:
                 self.calc_curve_points()
@@ -556,17 +499,17 @@ class Stroke(object):
             
             self.__bound_rect = self.__bound_rect.united(tmp_bound_rect).adjusted(-5, -5, 5, 5)
 
-        if self.__start_serif:
-            verts = self.get_ctrl_vertices_as_list()
-            self.__start_serif.set_ctrl_vertices(verts)
-            self.__start_serif.setAngle(nib.getAngle())
-            self.__start_serif.draw(gc, nib)
+        # if self.__start_serif:
+        #     verts = self.get_ctrl_vertices_as_list()
+        #     self.__start_serif.set_ctrl_vertices(verts)
+        #     self.__start_serif.setAngle(nib.getAngle())
+        #     self.__start_serif.draw(gc, nib)
 
-        if self.__end_serif:
-            verts = self.get_ctrl_vertices_as_list()
-            self.__end_serif.set_ctrl_vertices(verts)
-            self.__end_serif.setAngle(nib.getAngle())
-            self.__end_serif.draw(gc, nib)
+        # if self.__end_serif:
+        #     verts = self.get_ctrl_vertices_as_list()
+        #     self.__end_serif.set_ctrl_vertices(verts)
+        #     self.__end_serif.setAngle(nib.getAngle())
+        #     self.__end_serif.draw(gc, nib)
 
         if self.__is_selected:
             gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
@@ -594,7 +537,8 @@ class Stroke(object):
             if rect.contains(element):
                 return True
 
-        for vert in self.get_ctrl_vertices_as_list():
+        (verts, behaviors) = self.get_ctrl_vertices_as_list()
+        for vert in verts:
             if rect.contains(vert[0]+self.pos.x(), vert[1]+self.pos.y()):
                 return True
 

@@ -38,9 +38,9 @@ KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 MAGIC_NONE = 987654321
 
 class ControlVertex(object):
-    def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint()):
+    def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint(), new_behavior=SMOOTH):
         self.__pressure = 1.0
-        self.__behavior = SMOOTH
+        self.__behavior = new_behavior
         self.__handle_pos = [0, left, knot, right]
         self.__handle_scale = 1.0
         self.__selected = None

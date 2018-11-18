@@ -464,7 +464,7 @@ class StrokeController(object):
         stroke_list = strokes.keys()
         cur_stroke = stroke_list.pop(0)
         cur_stroke_item = char_set.get_item_by_index(cur_stroke)
-        vert_list = cur_stroke_item.get_ctrl_vertices_as_list()
+        (vert_list, behaviors) = cur_stroke_item.get_ctrl_vertices_as_list()
         cur_char.delete_stroke({'stroke': cur_stroke})
         if cur_stroke in cur_view_selection:
             cur_stroke_item = char_set.get_item_by_index(cur_stroke)
@@ -474,7 +474,7 @@ class StrokeController(object):
         while len(stroke_list):
             cur_stroke = stroke_list.pop(0)
             cur_stroke_item = char_set.get_item_by_index(cur_stroke)
-            cur_verts = cur_stroke_item.get_ctrl_vertices_as_list()
+            (cur_verts, behaviors) = cur_stroke_item.get_ctrl_vertices_as_list()
             cur_char.delete_stroke({'stroke': cur_stroke})
             if cur_stroke in cur_view_selection:
                 cur_stroke_item = char_set.get_item_by_index(cur_stroke)
@@ -584,7 +584,7 @@ class StrokeController(object):
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            verts_before = sel_stroke_item.get_ctrl_vertices_as_list()
+            (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
 
             for vert_to_delete in cur_view_selection[sel_stroke]:
                 sel_stroke_item.delete_ctrl_vertex(vert_to_delete)
@@ -593,7 +593,7 @@ class StrokeController(object):
 
             cur_view_selection[sel_stroke] = {}
 
-            verts_after = sel_stroke_item.get_ctrl_vertices_as_list()
+            (verts_after, behaviors_after) = sel_stroke_item.get_ctrl_vertices_as_list()
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)
@@ -732,16 +732,18 @@ class StrokeController(object):
 
         add_vertex_cmd = commands.Command('add_vertex_cmd')
 
+        (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
         undo_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [sel_stroke_item.get_ctrl_vertices_as_list()]
+            'ctrl_verts' : [verts_before]
         }
 
         sel_stroke_item.add_ctrl_vertex(inside_info[2], inside_info[1])
+        (verts_after, behaviors_after) = sel_stroke_item.get_ctrl_vertices_as_list()
 
         do_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [sel_stroke_item.get_ctrl_vertices_as_list()]
+            'ctrl_verts' : [verts_after]
         }
 
         add_vertex_cmd.set_do_args(do_args)
@@ -760,10 +762,10 @@ class StrokeController(object):
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
         split_at_cmd = commands.Command('split_at_cmd')
-        verts_before = sel_stroke_item.get_ctrl_vertices_as_list()
+        (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
 
         new_verts = sel_stroke_item.split_at_point(inside_info[2], inside_info[1])
-        verts_after = sel_stroke_item.get_ctrl_vertices_as_list()
+        (verts_after, behaviors_after) = sel_stroke_item.get_ctrl_vertices_as_list()
 
         new_stroke = char_set.new_stroke()
         new_stroke_item = char_set.get_item_by_index(new_stroke)
@@ -798,7 +800,7 @@ class StrokeController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
-        verts = self.__tmp_stroke.get_ctrl_vertices_as_list()
+        (verts, behaviors) = self.__tmp_stroke.get_ctrl_vertices_as_list()
         if len(verts) < 2:
             self.__main_ctrl.state = control.edit_control.IDLE
             self.__tmp_stroke = None
