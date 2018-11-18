@@ -316,6 +316,7 @@ class Stroke(object):
 
         left = QtCore.QPoint()
         right = QtCore.QPoint()
+        i = 0
 
         while tmp_points:
             point = tmp_points.pop(0)
@@ -324,7 +325,12 @@ class Stroke(object):
                 point = tmp_points.pop(0)
                 right = QtCore.QPoint(point[0], point[1]) - offset
 
-            self.__stroke_ctrl_verts.append(self.__char_set.new_control_vertex(left, center, right))
+            behavior = 1
+            if len(behaviors) > i:
+                behavior = behaviors[i]
+                i += 1
+            
+            self.__stroke_ctrl_verts.append(self.__char_set.new_control_vertex(left, center, right, behavior))
 
             right = None
             if len(tmp_points):
@@ -440,9 +446,19 @@ class Stroke(object):
 
         (points, remainder) = self.divide_curve_at_point(points, t, index)
 
-        points.extend(remainder)
+        new_behaviors = [] #behaviors.pop(0)]
+        point_count = 2
 
-        self.set_ctrl_vertices_from_list(points, [], False)
+        for i in range(1, len(points)):
+            point_count += 1
+            if point_count == 3 and len(behaviors):
+                new_behaviors.append(behaviors.pop(0))
+                point_count = 0
+
+        points.extend(remainder)
+        new_behaviors.append(1)
+        new_behaviors.extend(behaviors)        
+        self.set_ctrl_vertices_from_list(points, new_behaviors, False)
         self.calc_curve_points()
 
     def split_at_point(self, t, index):
@@ -452,7 +468,7 @@ class Stroke(object):
 
         points.append(remainder[0])
 
-        self.set_ctrl_vertices_from_list(points, [], False)
+        self.set_ctrl_vertices_from_list(points, behaviors, False)
         self.calc_curve_points()
 
         norm_remainder = []

@@ -108,8 +108,8 @@ class CharacterSet(object):
 
             return INV_TYPE_MAP[item_type] + '{:010d}'.format(self.__ids[item_type])
 
-    def new_control_vertex(self, left, center, right):
-        new_ctrl_vertex = ControlVertex(left, center, right)
+    def new_control_vertex(self, left, center, right, behavior=1):
+        new_ctrl_vertex = ControlVertex(left, center, right, behavior)
         new_ctrl_vertex_id = self.__get_next_id(VERTEX_TYPE)
         self.__objects[VERTEX_TYPE][new_ctrl_vertex_id] = new_ctrl_vertex
 

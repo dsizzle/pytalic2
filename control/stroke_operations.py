@@ -581,6 +581,8 @@ class StrokeController(object):
 
         verts_before_list = []
         verts_after_list = []
+        behaviors_before_list = []
+        behaviors_after_list = []
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
@@ -597,15 +599,19 @@ class StrokeController(object):
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)
+            behaviors_before_list.append(behaviors_before)
+            behaviors_after_list.append(behaviors_after)            
 
         do_args = {
             'strokes' : cur_view_selection.keys(),
-            'ctrl_verts' : verts_after_list
+            'ctrl_verts' : verts_after_list,
+            'behaviors' : behaviors_after_list
         }
 
         undo_args = {
             'strokes' : cur_view_selection.keys(),
-            'ctrl_verts' : verts_before_list
+            'ctrl_verts' : verts_before_list,
+            'behaviors' : behaviors_before_list
         }
 
         vert_delete_cmd = commands.Command("vert_delete_cmd")
@@ -633,13 +639,23 @@ class StrokeController(object):
         else:
             return
 
+        if 'behaviors' in args:
+            behaviors_list = args['behaviors']
+        else:
+            behaviors_list = []
+
         if len(ctrl_vert_list) != len(sel_stroke_list):
             return
 
         for i in range(0, len(sel_stroke_list)):
             sel_stroke = sel_stroke_list[i]
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], [], False)
+            if len(behaviors_list):
+                behaviors = behaviors_list[i]
+            else:
+                behaviors = []
+
+            sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], behaviors, False)
             sel_stroke_item.calc_curve_points()
 
         ui_ref.repaint()
@@ -735,7 +751,8 @@ class StrokeController(object):
         (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
         undo_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [verts_before]
+            'ctrl_verts' : [verts_before],
+            'behaviors' : [behaviors_before]
         }
 
         sel_stroke_item.add_ctrl_vertex(inside_info[2], inside_info[1])
@@ -743,7 +760,8 @@ class StrokeController(object):
 
         do_args = {
             'strokes' : [sel_stroke],
-            'ctrl_verts' : [verts_after]
+            'ctrl_verts' : [verts_after],
+            'behaviors' : [behaviors_after]
         }
 
         add_vertex_cmd.set_do_args(do_args)
