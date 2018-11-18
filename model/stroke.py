@@ -160,7 +160,7 @@ class Stroke(object):
             xpos += delta_x
             ypos += delta_y
 
-        self.set_ctrl_vertices_from_list(temp_ctrl_verts, False)
+        self.set_ctrl_vertices_from_list(temp_ctrl_verts, [], False)
         self.calc_curve_points()
 
     def flip_x(self):
@@ -442,7 +442,7 @@ class Stroke(object):
 
         points.extend(remainder)
 
-        self.set_ctrl_vertices_from_list(points, False)
+        self.set_ctrl_vertices_from_list(points, [], False)
         self.calc_curve_points()
 
     def split_at_point(self, t, index):
@@ -452,7 +452,7 @@ class Stroke(object):
 
         points.append(remainder[0])
 
-        self.set_ctrl_vertices_from_list(points, False)
+        self.set_ctrl_vertices_from_list(points, [], False)
         self.calc_curve_points()
 
         norm_remainder = []

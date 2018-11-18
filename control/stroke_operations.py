@@ -474,7 +474,7 @@ class StrokeController(object):
         while len(stroke_list):
             cur_stroke = stroke_list.pop(0)
             cur_stroke_item = char_set.get_item_by_index(cur_stroke)
-            (cur_verts, behaviors) = cur_stroke_item.get_ctrl_vertices_as_list()
+            (cur_verts, cur_behaviors) = cur_stroke_item.get_ctrl_vertices_as_list()
             cur_char.delete_stroke({'stroke': cur_stroke})
             if cur_stroke in cur_view_selection:
                 cur_stroke_item = char_set.get_item_by_index(cur_stroke)
@@ -504,7 +504,7 @@ class StrokeController(object):
 
         new_stroke = char_set.new_stroke()
         new_stroke_item = char_set.get_item_by_index(new_stroke)
-        new_stroke_item.set_ctrl_vertices_from_list(vert_list, False)
+        new_stroke_item.set_ctrl_vertices_from_list(vert_list, behaviors, False)
         new_stroke_item.calc_curve_points()
         cur_char.add_stroke({'stroke': new_stroke})
 
@@ -639,7 +639,7 @@ class StrokeController(object):
         for i in range(0, len(sel_stroke_list)):
             sel_stroke = sel_stroke_list[i]
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], False)
+            sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], [], False)
             sel_stroke_item.calc_curve_points()
 
         ui_ref.repaint()
@@ -691,7 +691,7 @@ class StrokeController(object):
             return
 
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, [], False)
         sel_stroke_item.calc_curve_points()
 
         cur_char.add_stroke({'stroke': new_stroke})
@@ -719,7 +719,7 @@ class StrokeController(object):
             return
 
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, False)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, [], False)
         sel_stroke_item.calc_curve_points()
         cur_char.delete_stroke({'stroke': del_stroke})
         ui_ref.repaint()
@@ -769,7 +769,7 @@ class StrokeController(object):
 
         new_stroke = char_set.new_stroke()
         new_stroke_item = char_set.get_item_by_index(new_stroke)
-        new_stroke_item.set_ctrl_vertices_from_list(new_verts, True)
+        new_stroke_item.set_ctrl_vertices_from_list(new_verts, [], True)
 
         undo_args = {
             'strokes' : sel_stroke,
