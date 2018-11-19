@@ -687,8 +687,13 @@ class StrokeController(object):
         else:
             return
 
+        if 'behaviors' in args:
+            behaviors_list = args['behaviors']
+        else:
+            behaviors_list = []            
+
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, [], False)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, behaviors_list, False)
         sel_stroke_item.calc_curve_points()
 
         cur_char.add_stroke({'stroke': new_stroke})
@@ -715,8 +720,13 @@ class StrokeController(object):
         else:
             return
 
+        if 'behaviors' in args:
+            behaviors_list = args['behaviors']
+        else:
+            behaviors_list = []
+
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, [], False)
+        sel_stroke_item.set_ctrl_vertices_from_list(ctrl_verts, behaviors_list, False)
         sel_stroke_item.calc_curve_points()
         cur_char.delete_stroke({'stroke': del_stroke})
         ui_ref.repaint()
@@ -763,23 +773,25 @@ class StrokeController(object):
         split_at_cmd = commands.Command('split_at_cmd')
         (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
 
-        new_verts = sel_stroke_item.split_at_point(inside_info[2], inside_info[1])
+        (new_verts, new_behaviors) = sel_stroke_item.split_at_point(inside_info[2], inside_info[1])
         (verts_after, behaviors_after) = sel_stroke_item.get_ctrl_vertices_as_list()
 
         new_stroke = char_set.new_stroke()
         new_stroke_item = char_set.get_item_by_index(new_stroke)
-        new_stroke_item.set_ctrl_vertices_from_list(new_verts, [], True)
+        new_stroke_item.set_ctrl_vertices_from_list(new_verts, new_behaviors, True)
 
         undo_args = {
             'strokes' : sel_stroke,
             'ctrl_verts' : verts_before,
             'stroke_to_delete' : new_stroke,
+            'behaviors' : behaviors_before
         }
 
         do_args = {
             'strokes' : sel_stroke,
             'new_stroke' : new_stroke,
             'ctrl_verts' : verts_after,
+            'behaviors' : behaviors_after
         }
 
         split_at_cmd.set_do_args(do_args)

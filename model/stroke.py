@@ -446,7 +446,7 @@ class Stroke(object):
 
         (points, remainder) = self.divide_curve_at_point(points, t, index)
 
-        new_behaviors = [] #behaviors.pop(0)]
+        new_behaviors = [behaviors.pop(0)]
         point_count = 2
 
         for i in range(1, len(points)):
@@ -457,7 +457,8 @@ class Stroke(object):
 
         points.extend(remainder)
         new_behaviors.append(1)
-        new_behaviors.extend(behaviors)        
+        new_behaviors.extend(behaviors)   
+
         self.set_ctrl_vertices_from_list(points, new_behaviors, False)
         self.calc_curve_points()
 
@@ -468,7 +469,18 @@ class Stroke(object):
 
         points.append(remainder[0])
 
-        self.set_ctrl_vertices_from_list(points, behaviors, False)
+        new_behaviors = [behaviors.pop(0)]
+        point_count = 2
+
+        for i in range(1, len(points)):
+            point_count += 1
+            if point_count == 3 and len(behaviors):
+                new_behaviors.append(behaviors.pop(0))
+                point_count = 0
+        #new_behaviors.append(1)
+        behaviors.insert(0, 1)
+
+        self.set_ctrl_vertices_from_list(points, new_behaviors, False)
         self.calc_curve_points()
 
         norm_remainder = []
@@ -476,7 +488,7 @@ class Stroke(object):
         for point in remainder:
             norm_remainder.append([point[0]+self.__pos.x(), point[1]+self.__pos.y()])
         
-        return norm_remainder
+        return (norm_remainder, behaviors)
 
     def set_parent(self, parent):
         self.__parent = parent
