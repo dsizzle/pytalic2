@@ -388,34 +388,40 @@ class StrokeController(object):
 
         verts_before_list = []
         verts_after_list = []
+        behaviors_before_list = []
+        behaviors_after_list = []
 
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            verts_before = sel_stroke_item.get_ctrl_vertices()
+            (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
 
             sel_stroke_item.straighten()
 
-            verts_after = sel_stroke_item.get_ctrl_vertices()
+            (verts_after, behaviors_after) = sel_stroke_item.get_ctrl_vertices_as_list()
 
             verts_before_list.append(verts_before)
             verts_after_list.append(verts_after)
+            behaviors_before_list.append(behaviors_before)
+            behaviors_after_list.append(behaviors_after)
 
         stroke_straighten_cmd = commands.Command("stroke_straighten_cmd")
 
         undo_args = {
             'strokes' : cur_view_selection.keys(),
-            'ctrl_verts' : verts_before_list
+            'ctrl_verts' : verts_before_list,
+            'behaviors' : behaviors_before_list
         }
 
         do_args = {
             'strokes' : cur_view_selection.keys(),
-            'ctrl_verts' : verts_after_list
+            'ctrl_verts' : verts_after_list,
+            'behaviors' : behaviors_after_list
         }
 
         stroke_straighten_cmd.set_do_args(do_args)
         stroke_straighten_cmd.set_undo_args(undo_args)
-        stroke_straighten_cmd.set_do_function(self.set_stroke_control_vertices)
-        stroke_straighten_cmd.set_undo_function(self.set_stroke_control_vertices)
+        stroke_straighten_cmd.set_do_function(self.set_stroke_control_vertices_from_list)
+        stroke_straighten_cmd.set_undo_function(self.set_stroke_control_vertices_from_list)
 
         cmd_stack.add_to_undo(stroke_straighten_cmd)
         cmd_stack.save_count += 1
@@ -656,31 +662,6 @@ class StrokeController(object):
                 behaviors = []
 
             sel_stroke_item.set_ctrl_vertices_from_list(ctrl_vert_list[i], behaviors, False)
-            sel_stroke_item.calc_curve_points()
-
-        ui_ref.repaint()
-
-    def set_stroke_control_vertices(self, args):
-        ui_ref = self.__main_ctrl.get_ui()
-        char_set = self.__main_ctrl.get_character_set()
-
-        if 'strokes' in args:
-            sel_stroke_list = args['strokes']
-        else:
-            return
-
-        if 'ctrl_verts' in args:
-            ctrl_vert_list = args['ctrl_verts']
-        else:
-            return
-
-        if len(ctrl_vert_list) != len(sel_stroke_list):
-            return
-
-        for i in range(0, len(sel_stroke_list)):
-            sel_stroke = sel_stroke_list[i]
-            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            sel_stroke_item.set_ctrl_vertices(ctrl_vert_list[i])
             sel_stroke_item.calc_curve_points()
 
         ui_ref.repaint()
