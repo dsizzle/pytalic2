@@ -104,7 +104,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             self.__parent.position_y_changed_cb)
 
         QtCore.QObject.connect(self.behavior_combo, \
-            QtCore.SIGNAL("currentIndexChanged(int)"), \
+            QtCore.SIGNAL("activated(int)"), \
             self.__parent.vert_behavior_combo_changed_cb)
 
         QtCore.QObject.connect(self.stroke_override_nib_angle, \

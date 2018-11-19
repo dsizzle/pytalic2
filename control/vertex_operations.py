@@ -15,20 +15,26 @@ class VertexController(object):
         if len(cur_view_selection.values()) > 0:
             vert_list = cur_view_selection.values()
 
-            do_args = {
-                'verts' : vert_list,
-                'behaviors' : [new_behavior]
-            }
-
             behavior_list = []
 
+            verts_to_process = []
             for vert_dict in vert_list:
                 for vert in vert_dict.keys():
                     vert_item = char_set.get_item_by_index(vert)
-                    behavior_list.append(vert_item.behavior)
+                    if vert_item.behavior != new_behavior:
+                        behavior_list.append(vert_item.behavior)
+                        verts_to_process.append(vert_dict)
+
+            if not len(verts_to_process):
+                return
+
+            do_args = {
+                'verts' : verts_to_process,
+                'behaviors' : [new_behavior]
+            }
 
             undo_args = {
-                'verts' : vert_list,
+                'verts' : verts_to_process,
                 'behaviors' : behavior_list
             }
 
@@ -40,6 +46,7 @@ class VertexController(object):
             align_tangents_cmd.set_undo_function(self.set_ctrl_vertex_behavior)
 
             cmd_stack.do_command(align_tangents_cmd)
+            
             ui_ref.edit_undo.setEnabled(True)
 
             ui_ref.repaint()
@@ -79,3 +86,5 @@ class VertexController(object):
                 else:
                     vert_item.behavior = behavior_list[i]
                     ui_ref.behavior_combo.setCurrentIndex(0)
+
+        ui_ref.repaint()
