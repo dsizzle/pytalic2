@@ -95,7 +95,7 @@ class ControlVertex(object):
     def set_handle_pos(self, point, handle):
         if not point:
             return
-            
+
         old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
         old_knot_delta = self.__handle_pos[KNOT] - point
 

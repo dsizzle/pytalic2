@@ -349,50 +349,48 @@ class Stroke(object):
                 point = tmp_points.pop(0)
                 left = QtCore.QPoint(point[0], point[1]) - offset
 
-    def generate_ctrl_vertices_from_points(self, points, behaviors):
-        num_points = len(points)
-        t = 0.6
+    def generate_ctrl_vertices_from_points(self, in_points, behaviors):
+        new_points = []
+        i = 0
+        points = in_points[i:i+4]
 
-        new_points = [points[0]]
-        if num_points == 1:
-            new_points = points
-        elif num_points == 2:
-            delta_x = (points[1][0] - points[0][0]) / 3.
-            delta_y = (points[1][1] - points[0][1]) / 3.
-            #new_points.append(points[0])
-            new_points.append([points[0][0] + delta_x, points[0][1] + delta_y])
-            new_points.append([points[1][0] - delta_x, points[1][1] - delta_y])
-            new_points.append(points[1])
-        else:
-            #new_points = [points[0]]
-            first = True
-            for i in range(0, num_points - 2):
-                v = [points[i+2][0] - points[i][0], points[i+2][1] - points[i][1]]
-                d01 = math.sqrt(math.pow(points[i][0] - points[i+1][0], 2) + \
-                    math.pow(points[i][1] - points[i+1][1], 2))
-                d12 = math.sqrt(math.pow(points[i+1][0] - points[i+2][0], 2) + \
-                    math.pow(points[i+1][1] - points[i+2][1], 2))
-                d012 = d01 + d12
+        while (points):
+            if i and i < len(in_points):
+                points.insert(0, in_points[i-1])
+            elif not i:
+                new_points.append(points[0])
+    
+            num_points = len(points)
+                   
+            if num_points == 2:
+                delta_x = (points[1][0] - points[0][0]) / 3.
+                delta_y = (points[1][1] - points[0][1]) / 3.
+                
+                new_points.append([points[0][0] + delta_x, points[0][1] + delta_y])
+                new_points.append([points[1][0] - delta_x, points[1][1] - delta_y])
+                new_points.append(points[1])
+            elif num_points == 3:
+                delta_x1 = (points[1][0] - points[0][0]) / 3.
+                delta_y1 = (points[1][1] - points[0][1]) / 3.
+                
+                delta_x2 = (points[2][0] - points[1][0]) / 3.
+                delta_y2 = (points[2][1] - points[1][1]) / 3.
+                
+                new_points.append([points[1][0] - delta_x1, points[1][1] - delta_y1])
+                
+                new_points.append([points[1][0] + delta_x2, points[1][1] + delta_y2])
+                new_points.append(points[2])
+            else:
+                new_points.extend(points[1:4])
 
-                ctrl_pt1 = [points[i+1][0] - v[0] * t * d01 / d012, \
-                    points[i+1][1] - v[1] * t * d01 / d012]
-                ctrl_pt2 = [points[i+1][0] + v[0] * t * d12 / d012, \
-                    points[i+1][1] + v[1] * t * d12 / d012]
-                
-                if first: 
-                    new_points.append([points[0][0] + 1. / 3. * (ctrl_pt1[0] - points[0][0]), \
-                        points[0][1] + 1. / 3. * (ctrl_pt1[1] - points[0][1])])
-                    first = False
-                
-                new_points.append(ctrl_pt1) 
-                new_points.append(points[i+1])
-                new_points.append(ctrl_pt2)
-                
-        if num_points > 2:
-            last_cp = new_points[-1]
-            new_points.append([points[-1][0] + 1. / 3. * (last_cp[0] - points[-1][0]), \
-                        points[-1][1] + 1. / 3. * (last_cp[1] - points[-1][1])])
-            new_points.append(points[-1])
+            i += 4
+
+            if i >= len(in_points) and num_points > 4:
+                points = points[3:]
+            elif i < len(in_points):
+                points = in_points[i:i+4]
+            else:
+                points = []
 
         self.set_ctrl_vertices_from_list(new_points, behaviors)
 
