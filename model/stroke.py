@@ -305,6 +305,7 @@ class Stroke(object):
         return (points, behaviors)
 
     def set_ctrl_vertices_from_list(self, points, behaviors=[], reset_pos=True):
+        old_verts = self.__stroke_ctrl_verts[:]
         self.__stroke_ctrl_verts = []
 
         tmp_points = points[:]
@@ -330,7 +331,18 @@ class Stroke(object):
                 behavior = behaviors[i]
                 i += 1
             
-            self.__stroke_ctrl_verts.append(self.__char_set.new_control_vertex(left, center, right, behavior))
+            if len(old_verts):
+                vert_to_use = old_verts.pop(0)
+                vert_item = self.__char_set.get_item_by_index(vert_to_use)
+                vert_item.set_behavior(behavior)
+                vert_item.set_handle_pos(center, 2)
+                vert_item.set_handle_pos(left, 1)
+                vert_item.set_handle_pos(right, 3)
+                vert_item.set_handle_pos(right, 3)
+            else:
+                vert_to_use = self.__char_set.new_control_vertex(left, center, right, behavior)
+
+            self.__stroke_ctrl_verts.append(vert_to_use)
 
             right = None
             if len(tmp_points):

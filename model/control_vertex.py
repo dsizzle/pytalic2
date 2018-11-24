@@ -93,6 +93,9 @@ class ControlVertex(object):
         self.__handle_pos[handle] = QtCore.QPoint(0, 0)
 
     def set_handle_pos(self, point, handle):
+        if not point:
+            return
+            
         old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
         old_knot_delta = self.__handle_pos[KNOT] - point
 
@@ -115,15 +118,15 @@ class ControlVertex(object):
         elif self.__behavior == SMOOTH:
             if handle == RIGHT_HANDLE and self.__handle_pos[LEFT_HANDLE]:
                 if right_len == 0:
-                    right_len = 0.00001
-
-                l_delta = -old_r_delta * left_len / right_len
+                    l_delta = old_l_delta
+                else:
+                    l_delta = -old_r_delta * left_len / right_len
                 self.__handle_pos[LEFT_HANDLE] = self.__handle_pos[KNOT] - l_delta
             elif self.__handle_pos[RIGHT_HANDLE]:
                 if left_len == 0:
-                    left_len = 0.00001
-
-                r_delta = -old_l_delta * right_len / left_len
+                    r_delta = old_r_delta
+                else:
+                    r_delta = -old_l_delta * right_len / left_len
                 self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] + r_delta
 
         elif self.__behavior == SYMMETRIC:
