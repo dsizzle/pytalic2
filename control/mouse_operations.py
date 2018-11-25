@@ -198,11 +198,20 @@ class MouseController(object):
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
         current_view.snap_points = []
-        behaviors = []
+        
         if self.__main_ctrl.state == control.edit_control.DRAWING_NEW_STROKE:
             stroke_ctrl.stroke_pts.append([paper_pos.x(), paper_pos.y()])
-            stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts, behaviors)
+
+            new_points = stroke_ctrl.tmp_stroke.generate_ctrl_vertices_from_points(stroke_ctrl.stroke_pts)
             stroke_ctrl.tmp_stroke.update_ctrl_vertices()
+            if shift_down:
+                verts = stroke_ctrl.tmp_stroke.get_ctrl_vertices(False)
+                last_vert = char_set.get_item_by_index(verts[-1])
+                last_vert.select_knot(True)
+                last_vert.behavior = 2
+                last_vert.select_knot(False)
+                stroke_ctrl.stroke_pts = new_points
+            
             ui_ref.position_x_spin.setValue(stroke_ctrl.tmp_stroke.pos.x())
             ui_ref.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
 

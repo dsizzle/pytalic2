@@ -349,7 +349,7 @@ class Stroke(object):
                 point = tmp_points.pop(0)
                 left = QtCore.QPoint(point[0], point[1]) - offset
 
-    def generate_ctrl_vertices_from_points(self, in_points, behaviors):
+    def generate_ctrl_vertices_from_points(self, in_points):
         new_points = []
         i = 0
         points = in_points[i:i+4]
@@ -392,7 +392,9 @@ class Stroke(object):
             else:
                 points = []
 
-        self.set_ctrl_vertices_from_list(new_points, behaviors)
+        self.set_ctrl_vertices_from_list(new_points)
+
+        return new_points
 
     def set_ctrl_vertices(self, ctrl_verts):
         self.__stroke_ctrl_verts = ctrl_verts[:]
