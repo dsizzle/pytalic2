@@ -595,14 +595,16 @@ class EditorController(object):
     def stroke_override_nib_angle_changed_cb(self, new_state):
         if new_state == QtCore.Qt.Checked:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                sel_stroke.override_nib_angle = True
-                sel_stroke.nib_angle = self.__ui.stroke_nib_angle_spin.value()
+                sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
+                sel_stroke_item.override_nib_angle = True
+                sel_stroke_item.nib_angle = self.__ui.stroke_nib_angle_spin.value()
 
             self.__ui.stroke_nib_angle_spin.setValue(self.__char_set.nib_angle)
             self.__ui.stroke_nib_angle_spin.setEnabled(True)
         else:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
-                sel_stroke.override_nib_angle = False
+                sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
+                sel_stroke_item.override_nib_angle = False
 
             self.__ui.stroke_nib_angle_spin.setEnabled(False)
 
