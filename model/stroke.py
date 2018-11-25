@@ -281,7 +281,7 @@ class Stroke(object):
 
                     handle.append(pos)
 
-                verts.append(self.__char_set.new_control_vertex(handle[0], handle[1], handle[2]))
+                verts.append(self.__char_set.new_control_vertex(handle[0], handle[1], handle[2], vert_item.behavior))
         else:
             verts = self.__stroke_ctrl_verts
 
