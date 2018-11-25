@@ -156,8 +156,16 @@ class PenNib(Nib):
     def __init__(self, width=10, angle=40, color=QtGui.QColor(125, 125, 125)):
         super(PenNib, self).__init__(width, angle, color)
 
+        self.pen.setColor(QtGui.QColor(color.red(), color.green(), \
+            color.blue(), 220))
         self.pen.setWidth(width)
 
+    def from_nib(self, nib):
+        super(PenNib, self).from_nib(nib)
+
+        self.pen.setColor(QtGui.QColor(self.color.red(), self.color.green(), \
+            self.color.blue(), 220))
+    
     def draw(self, gc, stroke):
         bound_path = QtGui.QPainterPath(stroke.curve_path)
         bound_rect = bound_path.boundingRect()
