@@ -153,8 +153,18 @@ class Nib(object):
 
 
 class PenNib(Nib):
+    def __init__(self, width=10, angle=40, color=QtGui.QColor(125, 125, 125)):
+        super(PenNib, self).__init__(width, angle, color)
+
+        self.pen.setWidth(width)
+
     def draw(self, gc, stroke):
-        pass
+        bound_path = QtGui.QPainterPath(stroke.curve_path)
+        bound_rect = bound_path.boundingRect()
+
+        gc.strokePath(bound_path, self.pen)
+
+        return bound_rect, bound_path
 
 class ScrollNib(Nib):
     def __init__(self, width=10, angle=40, split=5, color=QtGui.QColor(125, 25, 25)):
