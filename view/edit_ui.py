@@ -103,6 +103,14 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             QtCore.SIGNAL("valueChanged(double)"), \
             self.__parent.position_y_changed_cb)
 
+        QtCore.QObject.connect(self.vertex_x_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.vertex_x_changed_cb)
+
+        QtCore.QObject.connect(self.vertex_y_spin, \
+            QtCore.SIGNAL("valueChanged(double)"), \
+            self.__parent.vertex_y_changed_cb)
+
         QtCore.QObject.connect(self.behavior_combo, \
             QtCore.SIGNAL("activated(int)"), \
             self.__parent.vert_behavior_combo_changed_cb)

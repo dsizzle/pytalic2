@@ -26,7 +26,7 @@ class Stroke(object):
             self.__end_serif = from_stroke.get_end_serif()
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
             self.update_ctrl_vertices()
-            self.__pos = QtCore.QPoint(from_stroke.pos)
+            self.__pos = QtCore.QPointF(from_stroke.pos)
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
@@ -35,7 +35,7 @@ class Stroke(object):
             self.__start_serif = None
             self.__end_serif = None
             self.__stroke_ctrl_verts = []
-            self.__pos = QtCore.QPoint(0, 0)
+            self.__pos = QtCore.QPointF(0, 0)
             self.__curve_path = None
             self.__bound_rect = None
             self.__bound_path = None
@@ -83,7 +83,7 @@ class Stroke(object):
         (x, y) = struct.unpack_from("<dd", data, offset)
         offset += struct.calcsize("<dd")
         
-        self.__pos = QtCore.QPoint(x, y)
+        self.__pos = QtCore.QPointF(x, y)
         self.__nib_angle = struct.unpack_from("<I", data, offset)[0]
         offset += struct.calcsize("<I")
 
@@ -134,7 +134,7 @@ class Stroke(object):
         return self.__instances.keys()
 
     def set_pos(self, point):
-        self.__pos = QtCore.QPoint(point)
+        self.__pos = QtCore.QPointF(point)
 
     def get_pos(self):
         return self.__pos
@@ -277,7 +277,7 @@ class Stroke(object):
                 for i in range(1, 4):
                     pos = vert_item.get_handle_pos(i)
                     if pos:
-                        pos = QtCore.QPoint(pos)
+                        pos = QtCore.QPointF(pos)
 
                     handle.append(pos)
 
@@ -310,21 +310,21 @@ class Stroke(object):
 
         tmp_points = points[:]
         if reset_pos:
-            self.__pos = QtCore.QPoint(tmp_points[0][0], tmp_points[0][1])
+            self.__pos = QtCore.QPointF(tmp_points[0][0], tmp_points[0][1])
             offset = self.__pos
         else:
-            offset = QtCore.QPoint(0, 0)
+            offset = QtCore.QPointF(0, 0)
 
-        left = QtCore.QPoint()
-        right = QtCore.QPoint()
+        left = QtCore.QPointF()
+        right = QtCore.QPointF()
         i = 0
 
         while tmp_points:
             point = tmp_points.pop(0)
-            center = QtCore.QPoint(point[0], point[1]) - offset
+            center = QtCore.QPointF(point[0], point[1]) - offset
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                right = QtCore.QPoint(point[0], point[1]) - offset
+                right = QtCore.QPointF(point[0], point[1]) - offset
 
             behavior = 1
             if len(behaviors) > i:
@@ -347,7 +347,7 @@ class Stroke(object):
             right = None
             if len(tmp_points):
                 point = tmp_points.pop(0)
-                left = QtCore.QPoint(point[0], point[1]) - offset
+                left = QtCore.QPointF(point[0], point[1]) - offset
 
     def generate_ctrl_vertices_from_points(self, in_points):
         new_points = []
@@ -554,7 +554,7 @@ class Stroke(object):
         if self.__is_selected:
             gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
             gc.setBrush(shared_qt.BRUSH_CLEAR)
-            gc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)
+            gc.drawEllipse(QtCore.QPointF(0, 0), 10, 10)
 
             for vert in self.__stroke_ctrl_verts:
                 vert_item = self.__char_set.get_item_by_index(vert)

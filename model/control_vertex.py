@@ -38,7 +38,7 @@ KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
 MAGIC_NONE = 987654321
 
 class ControlVertex(object):
-    def __init__(self, left=QtCore.QPoint(), knot=QtCore.QPoint(), right=QtCore.QPoint(), new_behavior=SMOOTH):
+    def __init__(self, left=QtCore.QPointF(), knot=QtCore.QPointF(), right=QtCore.QPointF(), new_behavior=SMOOTH):
         self.__pressure = 1.0
         self.__behavior = new_behavior
         self.__handle_pos = [0, left, knot, right]
@@ -70,7 +70,7 @@ class ControlVertex(object):
             if x == MAGIC_NONE and y == MAGIC_NONE:
                 self.__handle_pos[i] = None
             else:
-                self.__handle_pos[i] = QtCore.QPoint(x, y)
+                self.__handle_pos[i] = QtCore.QPointF(x, y)
 
         self.__handle_scale = struct.unpack_from("<f", data, offset)[0]
         self.__selected = None
@@ -90,7 +90,7 @@ class ControlVertex(object):
         return self.__handle_pos[handle]
 
     def clear_handle_pos(self, handle):
-        self.__handle_pos[handle] = QtCore.QPoint(0, 0)
+        self.__handle_pos[handle] = QtCore.QPointF(0, 0)
 
     def set_handle_pos(self, point, handle):
         if not point:
@@ -102,7 +102,7 @@ class ControlVertex(object):
         if self.__handle_pos[RIGHT_HANDLE]:
             old_r_delta = self.__handle_pos[KNOT] - self.__handle_pos[RIGHT_HANDLE]
         else:
-            old_r_delta = QtCore.QPoint(0, 0)
+            old_r_delta = QtCore.QPointF(0, 0)
 
         left_len = math.sqrt(float(old_l_delta.x() * old_l_delta.x()) + \
             float(old_l_delta.y() * old_l_delta.y()))
@@ -135,7 +135,7 @@ class ControlVertex(object):
             elif self.__handle_pos[RIGHT_HANDLE]:
                 self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] - old_l_delta
 
-        self.__handle_pos[handle] = QtCore.QPoint(point)
+        self.__handle_pos[handle] = QtCore.QPointF(point)
 
     def get_handle_pos_as_list(self):
         knot = [self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y()]
