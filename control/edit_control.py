@@ -653,6 +653,40 @@ class EditorController(object):
             self.__stroke_controller.selection_position_changed_y(prev_value, \
                 new_value)
 
+    def vertex_x_changed_cb(self, new_value):
+        if len(self.__selection[self.__current_view_pane].keys()) and \
+            self.__state != DRAWING_NEW_STROKE:
+            first_item = self.__selection[self.__current_view_pane].keys()[0]
+            verts = self.__selection[self.__current_view_pane][first_item]
+            if len(verts):
+                first_vert = verts.keys()[0]
+
+                vert_item = self.__char_set.get_item_by_index(first_vert)
+                prev_value = vert_item.get_pos_of_selected().x()
+
+                if prev_value == new_value:
+                    return
+
+                self.__stroke_controller.selection_position_changed_x(prev_value, \
+                    new_value)
+
+    def vertex_y_changed_cb(self, new_value):
+        if len(self.__selection[self.__current_view_pane].keys()) and \
+            self.__state != DRAWING_NEW_STROKE:
+            first_item = self.__selection[self.__current_view_pane].keys()[0]
+            verts = self.__selection[self.__current_view_pane][first_item]
+            if len(verts):
+                first_vert = verts.keys()[0]
+
+                vert_item = self.__char_set.get_item_by_index(first_vert)
+                prev_value = vert_item.get_pos_of_selected().y()
+
+                if prev_value == new_value:
+                    return
+
+                self.__stroke_controller.selection_position_changed_x(prev_value, \
+                    new_value)
+
     def layout_update_cb(self):
         self.__ui.preview_area.layout.update_layout(self.__char_set, \
             nib_width=self.__ui.dwg_area.nib.width * 2)

@@ -980,9 +980,17 @@ class StrokeController(object):
 
         if len(selection.keys()):
             ui_ref = self.__main_ctrl.get_ui()
-            first_item = char_set.get_item_by_index(selection.keys()[0])
+            first_object = selection.keys()[0]
+            first_item = char_set.get_item_by_index(first_object)
             ui_ref.position_x_spin.setValue(first_item.pos.x())
             ui_ref.position_y_spin.setValue(first_item.pos.y())
+
+            if len(selection[first_object].keys()):
+                first_vert = selection[first_object].keys()[0]
+
+                vert_item = char_set.get_item_by_index(first_vert)
+                ui_ref.vertex_x_spin.setValue(vert_item.get_pos_of_selected().x())
+                ui_ref.vertex_y_spin.setValue(vert_item.get_pos_of_selected().y())
 
     def selection_position_changed_x(self, prev_value, new_value):
         delta = QtCore.QPoint(new_value - prev_value, 0)
