@@ -307,8 +307,9 @@ class MouseController(object):
                 first_vert = cur_view_selection[first_object].keys()[0]
 
                 vert_item = char_set.get_item_by_index(first_vert)
-                ui_ref.vertex_x_spin.setValue(vert_item.get_pos_of_selected().x())
-                ui_ref.vertex_y_spin.setValue(vert_item.get_pos_of_selected().y())
+                if vert_item.get_pos_of_selected():
+                    ui_ref.vertex_x_spin.setValue(vert_item.get_pos_of_selected().x())
+                    ui_ref.vertex_y_spin.setValue(vert_item.get_pos_of_selected().y())
 
         else:
             self.__main_ctrl.set_ui_state_selection(False)
