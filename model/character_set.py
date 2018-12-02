@@ -223,13 +223,14 @@ class CharacterSet(object):
     def glyphs(self):
         return self.__objects[GLYPH_TYPE]
 
-    def save_glyph(self, item):
+    def new_glyph(self, strokes=None):
+        new_glyph = Glyph(char_set=self)
+        if strokes:
+            new_glyph.strokes = strokes
         glyph_id = self.__get_next_id(GLYPH_TYPE)
-        self.__objects[GLYPH_TYPE][glyph_id] = item
-        return glyph_id
+        self.__objects[GLYPH_TYPE][glyph_id] = new_glyph
 
-    def insert_glyph(self, glyph_id, item):
-        self.__objects[GLYPH_TYPE][glyph_id] = item
+        return glyph_id
         
     def get_saved_glyph(self, glyph_id):
         if glyph_id in self.__objects[GLYPH_TYPE]:

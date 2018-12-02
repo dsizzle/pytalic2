@@ -3,7 +3,6 @@ import math
 from PyQt4 import QtCore, QtGui
 
 import control.edit_control
-import model.character
 import model.commands
 import model.stroke
 
@@ -70,9 +69,7 @@ class StrokeController(object):
         if len(selected_strokes) == 0:
             return
 
-        new_glyph = model.character.Glyph(char_set)
-        new_glyph.strokes = selected_strokes
-        glyph_id = char_set.save_glyph(new_glyph)
+        glyph_id = char_set.new_glyph(selected_strokes)
         glyph_instance_id = char_set.new_glyph_instance(glyph_id)
 
         item_num = ui_ref.stroke_selector_list.count()
