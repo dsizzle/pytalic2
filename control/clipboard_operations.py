@@ -1,4 +1,4 @@
-from model import commands
+import model.commands
 
 class ClipboardController(object):
     def __init__(self, parent):
@@ -12,7 +12,7 @@ class ClipboardController(object):
         ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        cut_strokes_cmd = commands.Command('cut_strokes_cmd')
+        cut_strokes_cmd = model.commands.Command('cut_strokes_cmd')
         char_index = ui_ref.char_selector_list.currentRow()
 
         do_args = {
@@ -77,7 +77,7 @@ class ClipboardController(object):
         ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        copy_strokes_cmd = commands.Command('copy_strokes_cmd')
+        copy_strokes_cmd = model.commands.Command('copy_strokes_cmd')
         char_index = ui_ref.char_selector_list.currentRow()
 
         do_args = {
@@ -129,7 +129,7 @@ class ClipboardController(object):
         ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        paste_strokes_cmd = commands.Command('paste_strokes_cmd')
+        paste_strokes_cmd = model.commands.Command('paste_strokes_cmd')
         char_index = ui_ref.char_selector_list.currentRow()
 
         paste_strokes = []
