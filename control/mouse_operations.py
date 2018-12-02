@@ -1,7 +1,7 @@
 from PyQt4 import QtCore, QtGui
 
 import control.edit_control
-from model import commands
+import model.commands
 
 class MouseController(object):
     def __init__(self, parent):
@@ -216,7 +216,7 @@ class MouseController(object):
             ui_ref.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
 
         elif self.__main_ctrl.state == control.edit_control.DRAGGING:
-            move_cmd = commands.Command('move_stroke_cmd')
+            move_cmd = model.commands.Command('move_stroke_cmd')
             selection_copy = cur_view_selection.copy()
             do_args = {
                 'strokes' : selection_copy,

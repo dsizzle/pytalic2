@@ -1,4 +1,5 @@
-from model import commands, control_vertex
+import model.commands
+import model.control_vertex
 
 class VertexController(object):
     def __init__(self, parent):
@@ -38,7 +39,7 @@ class VertexController(object):
                 'behaviors' : behavior_list
             }
 
-            align_tangents_cmd = commands.Command("align_tangents_cmd")
+            align_tangents_cmd = model.commands.Command("align_tangents_cmd")
 
             align_tangents_cmd.set_do_args(do_args)
             align_tangents_cmd.set_undo_args(undo_args)
@@ -52,13 +53,13 @@ class VertexController(object):
             ui_ref.repaint()
 
     def align_tangents_symmetrical(self):
-        self.align_tangents(control_vertex.SYMMETRIC)
+        self.align_tangents(model.control_vertex.SYMMETRIC)
 
     def align_tangents_smooth(self):
-        self.align_tangents(control_vertex.SMOOTH)
+        self.align_tangents(model.control_vertex.SMOOTH)
 
     def break_tangents(self):
-        self.align_tangents(control_vertex.SHARP)
+        self.align_tangents(model.control_vertex.SHARP)
 
     def set_ctrl_vertex_behavior(self, args):
         ui_ref = self.__main_ctrl.get_ui()

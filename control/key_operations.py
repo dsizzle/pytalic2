@@ -1,7 +1,7 @@
 from PyQt4 import QtCore
 
 import control.edit_control
-from model import commands
+import model.commands
 
 class KeyboardController(object):
     def __init__(self, parent):
@@ -58,7 +58,7 @@ class KeyboardController(object):
             if move_delta != QtCore.QPoint() and \
                 len(cur_view_selection.keys()) > 0:
 
-                move_cmd = commands.Command('move_stroke_cmd')
+                move_cmd = model.commands.Command('move_stroke_cmd')
                 selection_copy = cur_view_selection.copy()
                 do_args = {
                     'strokes' : selection_copy,

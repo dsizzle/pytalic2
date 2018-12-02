@@ -1,4 +1,4 @@
-from model import commands
+import model.commands
 
 class PropertyController(object):
     def __init__(self, parent):
@@ -26,7 +26,7 @@ class PropertyController(object):
             'objects' : objects
         }
 
-        change_cmd = commands.Command("change_"+attr_name[0]+"_cmd")
+        change_cmd = model.commands.Command("change_"+attr_name[0]+"_cmd")
 
         change_cmd.set_do_args(do_args)
         change_cmd.set_undo_args(undo_args)

@@ -16,7 +16,6 @@ import control.property_operations
 import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
-
 import model.commands
 import model.layouts
 import view.edit_ui
