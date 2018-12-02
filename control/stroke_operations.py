@@ -262,6 +262,7 @@ class StrokeController(object):
 
         cur_char = self.__main_ctrl.get_current_char()
         current_view = self.__main_ctrl.get_current_view()
+        self.__main_ctrl.clear_selection()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         ui_ref = self.__main_ctrl.get_ui()
