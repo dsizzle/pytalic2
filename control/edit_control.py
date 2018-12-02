@@ -17,8 +17,9 @@ import control.snap_operations
 import control.stroke_operations
 import control.vertex_operations
 
-from model import commands, layout
-from view import edit_ui
+import model.commands
+import model.layouts
+import view.edit_ui
 import view.paper
 import view.shared_qt
 
@@ -37,11 +38,11 @@ class EditorController(object):
     """
     def __init__(self, w, h, label):
         self.__label = label
-        self.__ui = edit_ui.EditInterface(self, w, h, label)
+        self.__ui = view.edit_ui.EditInterface(self, w, h, label)
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__cmd_stack = commands.CommandStack(self)
+        self.__cmd_stack = model.commands.CommandStack(self)
         self.__selection = {}
 
         self.__char_set = None
@@ -710,7 +711,7 @@ class EditorController(object):
         for i in range(0, num_layouts):
             layout_string = str(self.__ui.layout_combo.itemText(i))
 
-            new_layout = layout.Layout()
+            new_layout = model.layouts.Layout()
             new_layout.init_with_string(layout_string, self.__char_set, \
                 nib_width=self.__ui.dwg_area.nib.width * 2)
 
