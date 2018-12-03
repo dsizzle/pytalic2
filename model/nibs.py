@@ -102,30 +102,28 @@ class Nib(object):
         gc.setPen(self.pen)
         gc.setBrush(self.brush)
 
-        new_curves = stroke.split_curve(self.__angle)
+        bound_path = []
+        bound_rect = QtCore.QRectF()
 
-        bound_path1 = QtGui.QPainterPath(stroke.curve_path)
-        bound_path2 = QtGui.QPainterPath(stroke.curve_path).toReversed()
-        bound_path1.translate(self.__nibwidth_x, -self.__nibwidth_y)
-        bound_path2.translate(-self.__nibwidth_x, self.__nibwidth_y)
+        for i in range(0, len(stroke.curve_path)):
+            new_curves = stroke.split_curve(self.__angle, i)
+            
+            for curve in new_curves:
+                path1 = QtGui.QPainterPath(curve)
+                path2 = QtGui.QPainterPath(curve).toReversed()
 
-        bound_path = QtGui.QPainterPath()
-        bound_path.addPath(bound_path1)
-        bound_path.connectPath(bound_path2)
-        bound_rect = bound_path.boundingRect()
+                path1.translate(self.__nibwidth_x, -self.__nibwidth_y)
+                path2.translate(-self.__nibwidth_x, self.__nibwidth_y)
 
-        for curve in new_curves:
-            path1 = QtGui.QPainterPath(curve)
-            path2 = QtGui.QPainterPath(curve).toReversed()
+                curve_segment = QtGui.QPainterPath()
+                curve_segment.addPath(path1)
+                curve_segment.connectPath(path2)
+                curve_segment.closeSubpath()
+                gc.drawPath(curve_segment)
 
-            path1.translate(self.__nibwidth_x, -self.__nibwidth_y)
-            path2.translate(-self.__nibwidth_x, self.__nibwidth_y)
+                bound_path.append(curve_segment)
 
-            curve_segment = QtGui.QPainterPath()
-            curve_segment.addPath(path1)
-            curve_segment.connectPath(path2)
-            curve_segment.closeSubpath()
-            gc.drawPath(curve_segment)
+                bound_rect = bound_rect.united(curve_segment.boundingRect())
 
         return bound_rect, bound_path
 
