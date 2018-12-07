@@ -327,12 +327,17 @@ class MouseController(object):
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
         ui_ref = self.__main_ctrl.get_ui()
+        
+        if current_view == ui_ref.preview_area:
+            layout_pos = ui_ref.preview_area.layout.pos
+            test_pos = paper_pos - layout_pos
+        else:
+            test_pos = paper_pos
 
         inside_strokes = {}
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            inside_info = sel_stroke_item.is_inside(paper_pos)
-
+            inside_info = sel_stroke_item.is_inside(test_pos)
             if inside_info[0]:
                 inside_strokes[sel_stroke] = inside_info
 
@@ -373,48 +378,44 @@ class MouseController(object):
             ui_ref.behavior_combo.setCurrentIndex(behavior_list[0])
         else:
             ui_ref.behavior_combo.setCurrentIndex(0)
-
+        
     def __update_empty_selection(self, paper_pos, shift_down, select_rect):
         current_view = self.__main_ctrl.get_current_view()
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
         ui_ref = self.__main_ctrl.get_ui()
+        test_list = []
 
-        if current_view != ui_ref.preview_area:
-            for sel_stroke in current_view.symbol.children:
-                sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-                inside_rect = False
-                inside_info = [False]
-                if select_rect:
-                    inside_rect = sel_stroke_item.is_contained(select_rect)
-                else:
-                    inside_info = sel_stroke_item.is_inside(paper_pos)
+        if current_view == ui_ref.preview_area:
+            layout_pos = ui_ref.preview_area.layout.pos
+            test_pos = paper_pos - layout_pos
+            test_list = ui_ref.preview_area.layout.object_list
+        else:
+            test_pos = paper_pos
+            test_list = current_view.symbol.children
 
-                if (inside_info[0] or inside_rect) \
-                    and (len(cur_view_selection.keys()) == 0 or \
-                        shift_down or select_rect):
-                    if sel_stroke not in cur_view_selection:
-                        cur_view_selection[sel_stroke] = {}
-                        if type(sel_stroke_item).__name__ == 'Stroke':
-                            sel_stroke_item.deselect_ctrl_verts()
+        for sel_stroke in test_list:
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            inside_rect = False
+            inside_info = [False]
+            if select_rect:
+                inside_rect = sel_stroke_item.is_contained(select_rect)
+            else:
+                inside_info = sel_stroke_item.is_inside(test_pos)
 
-                    sel_stroke_item.selected = True
-                elif not shift_down and not inside_rect:
-                    sel_stroke_item.selected = False
-                    if sel_stroke in cur_view_selection:
-                        del cur_view_selection[sel_stroke]
+            if (inside_info[0] or inside_rect) \
+                and (len(cur_view_selection.keys()) == 0 or \
+                    shift_down or select_rect):
+                if sel_stroke not in cur_view_selection:
+                    cur_view_selection[sel_stroke] = {}
                     if type(sel_stroke_item).__name__ == 'Stroke':
                         sel_stroke_item.deselect_ctrl_verts()
-        else:
-            layout_pos = ui_ref.preview_area.layout.pos
-            for sel_symbol in ui_ref.preview_area.layout.object_list:
-                sel_symbol_item = char_set.get_item_by_index(sel_symbol)
-                inside_info = sel_symbol_item.is_inside(paper_pos - layout_pos)
-                if inside_info[0] and \
-                    (len(cur_view_selection.keys()) == 0 or shift_down):
-                    if sel_symbol not in cur_view_selection:
-                        cur_view_selection[sel_symbol] = {}
-                    sel_symbol_item.selected = True
-                elif not shift_down:
-                    sel_symbol_item.selected = False
+
+                sel_stroke_item.selected = True
+            elif not shift_down and not inside_rect:
+                sel_stroke_item.selected = False
+                if sel_stroke in cur_view_selection:
+                    del cur_view_selection[sel_stroke]
+                if type(sel_stroke_item).__name__ == 'Stroke':
+                    sel_stroke_item.deselect_ctrl_verts()
