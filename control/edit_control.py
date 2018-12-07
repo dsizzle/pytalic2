@@ -18,6 +18,7 @@ import control.stroke_operations
 import control.vertex_operations
 import model.commands
 import model.layouts
+import model.nibs
 import view.edit_ui
 import view.paper
 import view.shared_qt
@@ -67,6 +68,14 @@ class EditorController(object):
         self.__vertex_controller = control.vertex_operations.VertexController(self)
 
         self.__layouts = []
+        
+        self.__italic_nib = model.nibs.Nib(width=20, color=QtGui.QColor(125, 25, 25))
+        self.__round_nib = model.nibs.PenNib(width=2, color=QtGui.QColor(125, 25, 25))
+
+        self.__ui.dwg_area.nib = self.__italic_nib
+        self.__ui.stroke_dwg_area.nib = self.__italic_nib
+        self.__ui.preview_area.nib = self.__italic_nib
+        self.__ui.guide_lines.nib_width = self.__italic_nib.width * 2
 
         self.file_new_cb(None)
 
@@ -129,6 +138,12 @@ class EditorController(object):
 
     def get_stroke_controller(self):
         return self.__stroke_controller
+
+    def get_italic_nib(self):
+        return self.__italic_nib
+
+    def get_round_nib(self):
+        return self.__round_nib
 
     def activate(self):
         self.__ui.show()

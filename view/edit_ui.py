@@ -142,7 +142,6 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.main_view_tabs.currentChanged.connect(self.__parent.view_tab_changed_cb)
 
         self.guide_lines = guides.GuideLines()
-        self.guide_lines.nib_width = self.dwg_area.nib.width * 2
         self.dwg_area.set_guidelines(self.guide_lines)
         self.stroke_dwg_area.set_guidelines(self.guide_lines)
         self.preview_area.set_guidelines(self.guide_lines)

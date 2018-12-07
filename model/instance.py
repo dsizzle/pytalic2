@@ -114,7 +114,7 @@ class Instance(object):
         if self.actual_object:
             return self.actual_object.bound_rect
             
-    def draw(self, gc, nib=None):
+    def draw(self, gc, nib=None, draw_color=None):
         if self.actual_object is None:
             return
 
@@ -126,7 +126,7 @@ class Instance(object):
         gc.translate(-object_pos)
         gc.translate(self.__pos)
 
-        object_to_draw.draw(gc, nib)
+        object_to_draw.draw(gc, nib=nib, draw_color=draw_color)
         gc.restore()
 
         bound_rect = object_to_draw.bound_rect

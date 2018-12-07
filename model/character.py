@@ -199,13 +199,13 @@ class Glyph(object):
             if sel_child_item and sel_child_item.bound_rect:
                 self.bound_rect = self.bound_rect.united(sel_child_item.bound_rect.translated(sel_child_item.pos))
 
-    def draw(self, gc, nib=None, nib_glyph=None):
+    def draw(self, gc, nib=None, nib_glyph=None, draw_color=None, color_glyph=None):
         gc.save()
         gc.translate(self.__pos)
 
         for sel_child in self.children:
             sel_child_item = self.char_set.get_item_by_index(sel_child)
-            sel_child_item.draw(gc, nib)
+            sel_child_item.draw(gc, nib, draw_color)
 
         if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
@@ -358,7 +358,7 @@ class Character(Glyph):
 
     override_spacing = property(get_override_spacing, set_override_spacing)
 
-    def draw(self, gc, nib=None, nib_glyph=None):
+    def draw(self, gc, nib=None, nib_glyph=None, draw_color=None, color_glyph=None):
         if nib_glyph is None:
             nib_glyph = nib
 
@@ -367,11 +367,11 @@ class Character(Glyph):
 
         for glyph in self.glyphs:
             glyph_to_draw = self.char_set.get_item_by_index(glyph)
-            glyph_to_draw.draw(gc, nib_glyph)
+            glyph_to_draw.draw(gc, nib_glyph, color_glyph)
 
         for stroke in self.strokes:
             stroke_to_draw = self.char_set.get_item_by_index(stroke)
-            stroke_to_draw.draw(gc, nib)
+            stroke_to_draw.draw(gc, nib, draw_color)
            
         if not self.bound_rect:
             self.calculate_bound_rect()

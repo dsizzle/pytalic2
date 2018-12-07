@@ -12,7 +12,6 @@ import struct
 
 from PyQt4 import QtCore, QtGui
 
-import nibs
 #import serif
 from view import shared_qt
 
@@ -523,17 +522,21 @@ class Stroke(object):
 
     parent = property(get_parent, set_parent)
 
-    def draw(self, gc, nib=None):
+    def draw(self, gc, nib=None, draw_color=None):
         random.seed(self.seed)
 
         if nib is None:
             print "ERROR: No nib provided to draw stroke\n"
             return
 
-        draw_nib = nibs.Nib()
-        draw_nib.from_nib(nib)
+        draw_nib = nib
+        tmp_angle = draw_nib.angle
+        tmp_color = draw_nib.color
         if self.override_nib_angle:
             draw_nib.angle = self.nib_angle
+
+        if draw_color:
+            draw_nib.color = draw_color
 
         gc.save()
         gc.translate(self.__pos)
@@ -581,6 +584,8 @@ class Stroke(object):
                 gc.drawRect(self.__bound_rect)
 
         gc.restore()
+        draw_nib.angle = tmp_angle
+        draw_nib.color = tmp_color
 
     def is_contained(self, rect):
         if rect.contains(self.__bound_rect):

@@ -27,14 +27,13 @@ class Canvas(QtGui.QFrame):
         self.__bitmap = None
         self.__bitmap_size = 40
 
-        self.initial_nib_width = self.width() / 5
-        self.__nib = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(125, 25, 25))
+        self.__nib = None
         self.__select_rect = None
 
         self.__char_set = None
         
     def resizeEvent(self, event):
-        if self.__guide_lines:
+        if self.__guide_lines and self.__nib:
             x_pos = (self.__guide_lines.width + self.__guide_lines.left_spacing + \
                 self.__guide_lines.right_spacing) * self.__nib.width / 2
             y_pos = (self.__guide_lines.base_height + self.__guide_lines.ascent_height + \
@@ -127,7 +126,7 @@ class Canvas(QtGui.QFrame):
 
     def set_nib(self, new_nib):
         self.__nib = new_nib
-
+        
     nib = property(get_nib, set_nib)
 
     def get_normalized_position(self, raw_position):
@@ -197,8 +196,8 @@ class DrawingArea(Canvas):
         self.__strokes_to_draw = []
         self.__snap_points = []
 
-        self.__nib_instance = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(25, 125, 25))
-        self.__nib_special = nibs.Nib(width=self.initial_nib_width, color=QtGui.QColor(25, 25, 125))
+        self.__color_instance = QtGui.QColor(25, 125, 25)
+        self.__color_special = QtGui.QColor(25, 25, 125)
 
     def set_draw_strokes(self, strokes):
         self.__strokes_to_draw = strokes
@@ -217,23 +216,23 @@ class DrawingArea(Canvas):
         return self.__snap_points
 
     snap_points = property(get_snap_points, set_snap_points)
-
-    def get_nib_instance(self):
-        return self.__nib_instance
-
-    def set_nib_instance(self, new_nib):
-        self.__nib_instance = new_nib
-
-    nib_instance = property(get_nib_instance, set_nib_instance)
-
-    def get_nib_special(self):
-        return self.__nib_special
-
-    def set_nib_special(self, new_nib_special):
-        self.__nib_special = new_nib_special
-
-    nib_special = property(get_nib_special, set_nib_special)
     
+    def set_instance_color(self, new_instance_color):
+        self.__color_instance = new_instance_color
+
+    def get_instance_color(self):
+        return self.__color_instance
+
+    instance_color = property(get_instance_color, set_instance_color)
+
+    def set_special_color(self, new_special_color):
+        self.__color_special = new_special_color
+
+    def get_special_color(self):
+        return self.__color_special
+
+    special_color = property(get_special_color, set_special_color)
+
     def draw_icon(self, dc, strokes_to_draw):
         pixmap = QtGui.QPixmap(self.width(), self.height())
 
@@ -256,7 +255,7 @@ class DrawingArea(Canvas):
                 
                 stroke_item = self.char_set.get_item_by_index(stroke)
                 if stroke_item:
-                    stroke_item.draw(dc, nib=self.__nib_special) 
+                    stroke_item.draw(dc, nib=self.nib, draw_color=self.__color_special) 
 
         dc.end()
 
@@ -264,6 +263,9 @@ class DrawingArea(Canvas):
             QtCore.Qt.KeepAspectRatioByExpanding, 1)
 
     def paintEvent(self, event):
+        if not self.nib:
+            return
+
         nib_pixmap = QtGui.QPixmap(20, 2)
 
         dc = QtGui.QPainter()
@@ -318,7 +320,7 @@ class DrawingArea(Canvas):
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
 
         if self.symbol:
-            self.symbol.draw(dc, self.nib, self.__nib_instance)
+            self.symbol.draw(dc, nib=self.nib, nib_glyph=self.nib, color_glyph=self.__color_instance)
             
         if len(self.__strokes_to_draw) > 0:
             dc.save()
@@ -328,7 +330,7 @@ class DrawingArea(Canvas):
 
             while len(tmp_strokes):
                 strk = tmp_strokes.pop()
-                strk.draw(dc, nib=self.__nib_special)
+                strk.draw(dc, nib=self.nib, draw_color=self.__color_special)
 
             dc.restore()
             
@@ -379,6 +381,9 @@ class LayoutArea(Canvas):
             self.origin_delta = QtCore.QPoint(self.origin.x() - self.layout.pos.x() - layout_bound.width() / 2, 0)
             
     def paintEvent(self, event):
+        if not self.nib:
+            return
+
         dc = QtGui.QPainter()
 
         dc.begin(self)
