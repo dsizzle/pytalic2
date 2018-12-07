@@ -165,10 +165,16 @@ class PenNib(Nib):
             self.color.blue(), 220))
     
     def draw(self, gc, stroke):
-        bound_path = QtGui.QPainterPath(stroke.curve_path)
-        bound_rect = bound_path.boundingRect()
+        bound_path = []
+        bound_rect = QtCore.QRectF()
 
-        gc.strokePath(bound_path, self.pen)
+        for i in range(0, len(stroke.curve_path)):
+            curve_segment = QtGui.QPainterPath(stroke.curve_path[i])
+            bound_path.append(curve_segment)
+
+            bound_rect = bound_rect.united(curve_segment.boundingRect())
+
+            gc.strokePath(curve_segment, self.pen)
 
         return bound_rect, bound_path
 
