@@ -481,6 +481,34 @@
                  </layout>
                 </item>
                 <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <item>
+                   <widget class="QLabel" name="label_23">
+                    <property name="text">
+                     <string>Nib type</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="stroke_nib_combo">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Italic</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Round</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_9">
                   <item>
                    <widget class="QLabel" name="label_21">
@@ -575,7 +603,7 @@
                   <item>
                    <widget class="QLabel" name="label_20">
                     <property name="text">
-                     <string>Vertex Behavior</string>
+                     <string>Vertex behavior</string>
                     </property>
                    </widget>
                   </item>

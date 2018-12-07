@@ -31,6 +31,8 @@ class Stroke(object):
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
+            self.__nib = from_stroke.nib
+            self.__nib_index = from_stroke.nib_index
             self.__override_nib_angle = from_stroke.override_nib_angle
         else:
             self.__start_serif = None
@@ -40,6 +42,8 @@ class Stroke(object):
             self.__bound_rect = None
             self.__bound_path = None
             self.__nib_angle = None
+            self.__nib = None
+            self.__nib_index = 0
             self.__override_nib_angle = False
 
         self.__handle_size = 10
@@ -61,6 +65,7 @@ class Stroke(object):
             data += struct.pack("<I", self.__nib_angle)
         else:
             data += struct.pack("<I", 360)
+        data += struct.pack("<H", self.__nib_index)
         data += struct.pack("<b", self.__override_nib_angle)        
         data += struct.pack("<I", self.__handle_size)
         # instances?
@@ -90,6 +95,8 @@ class Stroke(object):
         if self.__nib_angle == 360:
             self.__nib_angle = None
 
+        self.__nib_index = struct.unpack_from("<H", data, offset)[0]
+        offset += struct.calcsize("<H")
         self.__override_nib_angle = struct.unpack_from("<b", data, offset)[0]
         offset += struct.calcsize("<b")
         self.__handle_size = struct.unpack_from("<I", data, offset)[0]
@@ -140,6 +147,22 @@ class Stroke(object):
         return self.__pos
 
     pos = property(get_pos, set_pos)
+
+    def set_nib(self, new_nib):
+        self.__nib = new_nib
+
+    def get_nib(self):
+        return self.__nib
+
+    nib = property(get_nib, set_nib)
+
+    def set_nib_index(self, new_nib_index):
+        self.__nib_index = new_nib_index
+
+    def get_nib_index(self):
+        return self.__nib_index
+
+    nib_index = property(get_nib_index, set_nib_index)
 
     def straighten(self):
         temp_ctrl_verts = []
@@ -533,7 +556,11 @@ class Stroke(object):
         tmp_angle = draw_nib.angle
         tmp_color = draw_nib.color
         if self.override_nib_angle:
+            if self.nib:
+                draw_nib = self.nib
+
             draw_nib.angle = self.nib_angle
+
 
         if draw_color:
             draw_nib.color = draw_color

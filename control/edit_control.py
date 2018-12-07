@@ -70,7 +70,8 @@ class EditorController(object):
         self.__layouts = []
         
         self.__italic_nib = model.nibs.Nib(width=20, color=QtGui.QColor(125, 25, 25))
-        self.__round_nib = model.nibs.PenNib(width=2, color=QtGui.QColor(125, 25, 25))
+        self.__round_nib = model.nibs.PenNib(width=4, color=QtGui.QColor(125, 25, 25, 220))
+        self.__nibs = [self.__italic_nib, self.__round_nib]
 
         self.__ui.dwg_area.nib = self.__italic_nib
         self.__ui.stroke_dwg_area.nib = self.__italic_nib
@@ -144,6 +145,9 @@ class EditorController(object):
 
     def get_round_nib(self):
         return self.__round_nib
+
+    def get_nib(self, nib_index):
+        return self.__nibs[nib_index]
 
     def activate(self):
         self.__ui.show()
@@ -613,15 +617,28 @@ class EditorController(object):
                 sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
                 sel_stroke_item.override_nib_angle = True
                 sel_stroke_item.nib_angle = self.__ui.stroke_nib_angle_spin.value()
+                self.__ui.stroke_nib_combo.setCurrentIndex(sel_stroke_item.nib_index)
+                sel_stroke_item.nib = self.__nibs[sel_stroke_item.nib_index]
 
             self.__ui.stroke_nib_angle_spin.setValue(self.__char_set.nib_angle)
             self.__ui.stroke_nib_angle_spin.setEnabled(True)
+            self.__ui.stroke_nib_combo.setEnabled(True)
         else:
             for sel_stroke in self.__selection[self.__current_view_pane].keys():
                 sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
                 sel_stroke_item.override_nib_angle = False
+                sel_stroke_item.nib = None
 
             self.__ui.stroke_nib_angle_spin.setEnabled(False)
+            self.__ui.stroke_nib_combo.setEnabled(False)
+
+        self.__ui.repaint()
+
+    def stroke_nib_combo_changed_cb(self, new_value):
+        for sel_stroke in self.__selection[self.__current_view_pane].keys():
+            sel_stroke_item = self.__char_set.get_item_by_index(sel_stroke)
+            sel_stroke_item.nib_index = new_value
+            sel_stroke_item.nib = self.__nibs[sel_stroke_item.nib_index]
 
         self.__ui.repaint()
 

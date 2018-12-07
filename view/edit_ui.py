@@ -115,6 +115,10 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
             QtCore.SIGNAL("activated(int)"), \
             self.__parent.vert_behavior_combo_changed_cb)
 
+        QtCore.QObject.connect(self.stroke_nib_combo, \
+            QtCore.SIGNAL("activated(int)"), \
+            self.__parent.stroke_nib_combo_changed_cb)
+
         QtCore.QObject.connect(self.stroke_override_nib_angle, \
             QtCore.SIGNAL("stateChanged(int)"), \
             self.__parent.stroke_override_nib_angle_changed_cb)
