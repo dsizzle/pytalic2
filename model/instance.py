@@ -105,7 +105,7 @@ class Instance(object):
 
     def is_contained(self, rect):
         if self.__instanced_object is not None:
-            return self.actual_object.is_contained(rect)
+            return self.actual_object.is_contained(rect.translated(-self.pos))
         
         return False
 

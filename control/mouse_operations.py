@@ -386,21 +386,24 @@ class MouseController(object):
         char_set = self.__main_ctrl.get_character_set()
         ui_ref = self.__main_ctrl.get_ui()
         test_list = []
+        test_rect = select_rect
 
         if current_view == ui_ref.preview_area:
             layout_pos = ui_ref.preview_area.layout.pos
             test_pos = paper_pos - layout_pos
             test_list = ui_ref.preview_area.layout.object_list
+            if select_rect:
+                test_rect = select_rect.translated(-layout_pos)
         else:
             test_pos = paper_pos
             test_list = current_view.symbol.children
-
+            
         for sel_stroke in test_list:
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
             inside_rect = False
             inside_info = [False]
             if select_rect:
-                inside_rect = sel_stroke_item.is_contained(select_rect)
+                inside_rect = sel_stroke_item.is_contained(test_rect)
             else:
                 inside_info = sel_stroke_item.is_inside(test_pos)
 

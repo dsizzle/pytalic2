@@ -413,6 +413,11 @@ class LayoutArea(Canvas):
 
             dc.restore()
 
+        if self.select_rect:
+            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setBrush(view.shared_qt.BRUSH_MD_GRAY_25)
+            dc.drawRect(self.select_rect)
+            
         dc.restore()
         dc.end()
         QtGui.QFrame.paintEvent(self, event)
