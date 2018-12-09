@@ -396,7 +396,8 @@ class MouseController(object):
                 test_rect = select_rect.translated(-layout_pos)
         else:
             test_pos = paper_pos
-            test_list = current_view.symbol.children
+            if current_view.symbol:
+                test_list = current_view.symbol.children
             
         for sel_stroke in test_list:
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
