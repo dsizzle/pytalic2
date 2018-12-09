@@ -169,6 +169,9 @@ class MouseController(object):
         adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
 
+        if current_view == ui_ref.preview_area:
+            adjusted_pos.setY(adjusted_pos.y() - ui_ref.frame_layout_button.height())
+
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
         self.update_selection(paper_pos, shift_down)
@@ -194,6 +197,8 @@ class MouseController(object):
 
         adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
+        if current_view == ui_ref.preview_area:
+            adjusted_pos.setY(adjusted_pos.y() - ui_ref.frame_layout_button.height())
 
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
