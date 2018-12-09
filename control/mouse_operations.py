@@ -166,11 +166,9 @@ class MouseController(object):
     def __on_l_button_down_paper(self, pos, shift_down, alt_down):
         ui_ref = self.__main_ctrl.get_ui()
         current_view = self.__main_ctrl.get_current_view()
-        adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        adjusted_pos = pos - ui_ref.main_splitter.pos() - \
+            ui_ref.main_widget.pos() - current_view.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
-
-        if current_view == ui_ref.preview_area:
-            adjusted_pos.setY(adjusted_pos.y() - ui_ref.frame_layout_button.height())
 
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
@@ -195,11 +193,10 @@ class MouseController(object):
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        adjusted_pos = pos - ui_ref.main_splitter.pos() - ui_ref.main_widget.pos()
+        adjusted_pos = pos - ui_ref.main_splitter.pos() - \
+            ui_ref.main_widget.pos() - current_view.pos()
         adjusted_pos.setY(adjusted_pos.y() - ui_ref.main_view_tabs.tabBar().height())
-        if current_view == ui_ref.preview_area:
-            adjusted_pos.setY(adjusted_pos.y() - ui_ref.frame_layout_button.height())
-
+       
         paper_pos = current_view.get_normalized_position(adjusted_pos)
 
         current_view.snap_points = []
