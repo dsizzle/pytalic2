@@ -174,6 +174,14 @@ class PenNib(Nib):
 
     color = property(get_color, set_color)
 
+    def set_alpha(self, alpha):
+        self.pen.setColor(QtGui.QColor(self.__color.red(), self.__color.green(), \
+            self.__color.blue(), ((220.0 / 255.0) * alpha)))
+        
+    def reset_alpha(self):
+        self.pen.setColor(QtGui.QColor(self.__color.red(), self.__color.green(), \
+            self.__color.blue(), 220))
+
     def draw(self, gc, stroke):
         bound_path = []
         bound_rect = QtCore.QRectF()
