@@ -282,7 +282,7 @@ class Character(Glyph):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_instances):
-            instance = struct.unpack_from("<11s", data, offset)
+            instance = struct.unpack_from("<11s", data, offset)[0]
             offset += struct.calcsize("<11s")
 
             self.instances[instance] = 1
