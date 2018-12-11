@@ -248,10 +248,5 @@ def update_controls(ui_ref, char_set):
     ui_ref.guide_lines.guide_angle = char_set.guide_angle
     ui_ref.char_set_nib_angle_spin.setValue(char_set.nib_angle)
     ui_ref.guide_lines.nib_angle = char_set.nib_angle
-    ui_ref.dwg_area.nib.angle = char_set.nib_angle
-    ui_ref.dwg_area.nib_instance.angle = char_set.nib_angle
-    ui_ref.dwg_area.nib_special.angle = char_set.nib_angle
-    ui_ref.stroke_dwg_area.nib.angle = char_set.nib_angle
-    ui_ref.preview_area.nib.angle = char_set.nib_angle
     ui_ref.nominal_width_spin.setValue(char_set.width)
     ui_ref.guide_lines.width = char_set.width
