@@ -38,7 +38,6 @@ class Layout(object):
         return self.__bound_rect
 
     def init_with_string(self, string_to_layout, char_set, nib_width, line_width=13):
-        height = char_set.base_height * nib_width
         cur_char = char_set.get_current_char_index()
 
         for char in self.object_list:
@@ -63,10 +62,12 @@ class Layout(object):
 
     def update_layout(self, char_set, nib_width, line_width=13):
         layout_total_height = 0
-        current_x = 0
-        current_y = 0
+        current_x = 0.
+        current_y = 0.
         gap_height = char_set.gap_height
         height = char_set.height
+        line_height = (gap_height + height) * nib_width
+        
         max_x = nib_width * line_width * \
             (char_set.width + char_set.left_spacing + char_set.right_spacing)
 
@@ -117,7 +118,7 @@ class Layout(object):
                 char_obj_idx += 1
                 num_chars += 1
 
-            center_x = current_x / 2
+            center_x = current_x / 2.
             start = char_obj_idx - 1
             end = start - num_chars
             center_delta = QtCore.QPoint(center_x, 0)
@@ -126,10 +127,14 @@ class Layout(object):
                 actual_obj.pos -= center_delta
 
             current_x = 0
-            current_y += (height + gap_height) * nib_width
-            layout_total_height += (height + gap_height) * nib_width
+            current_y += line_height
+            layout_total_height += line_height
 
-        self.__pos = QtCore.QPoint(-max_x / 2, -layout_total_height / 2)
+        ypos = layout_total_height / 2.
+        if ypos % line_height:
+            ypos += line_height / 2.
+        
+        self.__pos = QtCore.QPoint(-max_x / 2., -ypos)
 
     def __lay_out_with_wrap(self, string_to_layout, line_width=13):
         token_list = string_to_layout.split()
