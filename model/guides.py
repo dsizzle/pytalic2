@@ -15,7 +15,7 @@ class GuideLines(object):
         self.__left_spacing = 1.0
         self.__right_spacing = 1.0
         # nibwidths between rows
-        self.__gap_height_nibs = 1.5
+        self.__gap_height_nibs = 1.0
 
         # internal-only caching of pixel dimensions
         self.__base_height_pixels = 0

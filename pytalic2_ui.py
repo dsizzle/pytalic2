@@ -498,7 +498,7 @@ class Ui_MainWindow(object):
         self.gap_height_spin.setMinimum(0.5)
         self.gap_height_spin.setMaximum(4.0)
         self.gap_height_spin.setSingleStep(0.5)
-        self.gap_height_spin.setProperty("value", 1.5)
+        self.gap_height_spin.setProperty("value", 1.0)
         self.gap_height_spin.setObjectName(_fromUtf8("gap_height_spin"))
         self.horizontalLayout_22.addWidget(self.gap_height_spin)
         self.verticalLayout_7.addLayout(self.horizontalLayout_22)
