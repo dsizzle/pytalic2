@@ -25,7 +25,7 @@ class Canvas(QtGui.QFrame):
         self.__subject = None
 
         self.__bitmap = None
-        self.__bitmap_size = 40
+        self.__bitmap_size = view.shared_qt.ICON_SIZE
 
         self.__nib = None
         self.__select_rect = None
