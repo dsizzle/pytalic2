@@ -108,11 +108,7 @@ class Layout(object):
 
                 current_x += (left_space + width) * nib_width
                 char_object_actual.pos = QtCore.QPoint(current_x, current_y)
-                if char_object_actual.bound_rect:
-                    self.__bound_rect = self.bound_rect.united( \
-                        char_object_actual.bound_rect.translated(char_object_actual.pos) \
-                        )
-
+                
                 delta_x = right_space * nib_width 
                 current_x += delta_x
                 char_obj_idx += 1
@@ -125,6 +121,10 @@ class Layout(object):
             for idx in range(start, end, -1):
                 actual_obj = char_set.get_item_by_index(self.__object_list[idx])
                 actual_obj.pos -= center_delta
+                if actual_obj.bound_rect:
+                    self.__bound_rect = self.bound_rect.united( \
+                        actual_obj.bound_rect.translated(actual_obj.pos) \
+                    )
 
             current_x = 0
             current_y += line_height
