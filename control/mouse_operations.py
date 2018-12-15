@@ -177,11 +177,12 @@ class MouseController(object):
         selection = self.__main_ctrl.get_selection()
         cur_view_selection = selection[current_view]
 
-        if len(cur_view_selection.keys()) > 0:
-            self.__main_ctrl.state = control.edit_control.DRAGGING
-        elif not alt_down:
-            self.__saved_mouse_pos_paper[current_view] = paper_pos
-            self.__main_ctrl.state = control.edit_control.SELECT_DRAGGING
+        if not alt_down:
+            if len(cur_view_selection.keys()) > 0:
+                self.__main_ctrl.state = control.edit_control.DRAGGING
+            else:
+                self.__saved_mouse_pos_paper[current_view] = paper_pos
+                self.__main_ctrl.state = control.edit_control.SELECT_DRAGGING
 
     def __on_l_button_up_paper(self, pos, shift_down):
         current_view = self.__main_ctrl.get_current_view()
