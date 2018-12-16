@@ -337,6 +337,11 @@ class StrokeController(object):
         else:
             return
 
+        if 'glyph_index' in args:
+            glyph_index = args['glyph_index']
+        else:
+            return
+
         ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
@@ -350,6 +355,8 @@ class StrokeController(object):
             glyph_instance_item = char_set.get_item_by_index(glyph_instance)
             char = glyph_instance_item.parent
             char.remove_glyph(glyph_instance)
+
+        ui_ref.stroke_selector_list.takeItem(glyph_index)
 
         ui_ref.repaint()
 
