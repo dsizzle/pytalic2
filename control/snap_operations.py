@@ -133,11 +133,11 @@ class SnapController(object):
 
         return snap_point
 
-    def snap_to_ctrl_point(self, pos, sel_point, tolerance=10):
-        snap_point = QtCore.QPoint(-1, -1)
+    def snap_to_ctrl_point(self, pos, sel_point, tolerance=20):
+        snap_point = QtCore.QPointF(-1, -1)
         char_set = self.__main_ctrl.get_character_set()
 
-        test_rect = QtCore.QRect(pos.x()-tolerance/2, pos.y()-tolerance/2, \
+        test_rect = QtCore.QRectF(pos.x()-tolerance/2, pos.y()-tolerance/2, \
             tolerance, tolerance)
         cur_char = self.__main_ctrl.get_current_char()
 
