@@ -72,8 +72,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>60</width>
-          <height>60</height>
+          <width>40</width>
+          <height>40</height>
          </size>
         </property>
         <property name="flow">
@@ -1006,7 +1006,7 @@
                      <double>0.500000000000000</double>
                     </property>
                     <property name="value">
-                     <double>1.500000000000000</double>
+                     <double>1.000000000000000</double>
                     </property>
                    </widget>
                   </item>

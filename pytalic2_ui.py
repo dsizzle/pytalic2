@@ -52,7 +52,7 @@ class Ui_MainWindow(object):
         self.char_selector_list.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.char_selector_list.setEditTriggers(QtGui.QAbstractItemView.AnyKeyPressed|QtGui.QAbstractItemView.DoubleClicked|QtGui.QAbstractItemView.EditKeyPressed)
         self.char_selector_list.setTabKeyNavigation(True)
-        self.char_selector_list.setIconSize(QtCore.QSize(60, 60))
+        self.char_selector_list.setIconSize(QtCore.QSize(40, 40))
         self.char_selector_list.setFlow(QtGui.QListView.LeftToRight)
         self.char_selector_list.setUniformItemSizes(True)
         self.char_selector_list.setObjectName(_fromUtf8("char_selector_list"))
