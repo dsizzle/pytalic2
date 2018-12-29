@@ -196,6 +196,7 @@ class DrawingArea(Canvas):
         self.__strokes_to_draw = []
         self.__snap_points = []
 
+        self.__color_main = QtGui.QColor(125, 25, 25)
         self.__color_instance = QtGui.QColor(25, 125, 25)
         self.__color_special = QtGui.QColor(25, 25, 125)
 
@@ -217,6 +218,14 @@ class DrawingArea(Canvas):
 
     snap_points = property(get_snap_points, set_snap_points)
     
+    def set_main_color(self, new_main_color):
+        self.__color_main = new_main_color
+
+    def get_main_color(self):
+        return self.__color_main
+
+    main_color = property(get_main_color, set_main_color)
+
     def set_instance_color(self, new_instance_color):
         self.__color_instance = new_instance_color
 
@@ -320,7 +329,8 @@ class DrawingArea(Canvas):
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
 
         if self.symbol:
-            self.symbol.draw(dc, nib=self.nib, nib_glyph=self.nib, color_glyph=self.__color_instance)
+            self.symbol.draw(dc, nib=self.nib, nib_glyph=self.nib, \
+                draw_color=self.__color_main, color_glyph=self.__color_instance)
             
         if len(self.__strokes_to_draw) > 0:
             dc.save()

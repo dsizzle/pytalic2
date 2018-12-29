@@ -21,6 +21,17 @@ class SelectColorButton(QtGui.QPushButton):
     def getColor(self):
         return self.__color
 
+    color = property(getColor, setColor)
+
+    def setValue(self, color_value):
+        self.__color = QtGui.QColor(color_value[0], color_value[1], color_value[2])
+        if len(color_value) > 3:
+            self.__color.setAlpha(color_value[3])
+        self.updateColor()
+
+    def value(self):
+        return [self.__color.red(), self.__color.green(), self.__color.blue(), self.__color.alpha()]
+
     @QtCore.pyqtSlot()
     def updateColor(self):
         self.setStyleSheet("background-color: " + self.__color.name())

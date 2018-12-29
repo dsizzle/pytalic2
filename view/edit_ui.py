@@ -164,6 +164,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.edit_paste.triggered.connect(self.__parent.paste_strokes_cb)
         self.edit_select_all.triggered.connect(self.__parent.select_all_strokes_cb)
         self.edit_deselect_all.triggered.connect(self.__parent.deselect_all_strokes_cb)
+        self.edit_preferences.triggered.connect(self.__parent.preferences_cb)
         
         self.view_reset_origin.triggered.connect(self.__parent.view_reset_origin_cb)
         self.view_reset_zoom.triggered.connect(self.__parent.view_reset_zoom_cb)

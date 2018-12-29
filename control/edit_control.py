@@ -5,6 +5,7 @@ The main controller module for pyTalic Editor.
 
 Contains EditorController class.
 """
+import os
 
 from PyQt4 import QtGui, QtCore
 
@@ -19,8 +20,10 @@ import control.vertex_operations
 import model.commands
 import model.layouts
 import model.nibs
+import model.settings
 import view.edit_ui
 import view.paper
+import view.settings_dialog
 import view.shared_qt
 
 IDLE = 0
@@ -36,9 +39,16 @@ class EditorController(object):
     """
     EditorController is the main Controller for pyTalic Editor
     """
-    def __init__(self, w, h, label):
+    def __init__(self, w, h, label, script_path):
         self.__label = label
         self.__ui = view.edit_ui.EditInterface(self, w, h, label)
+        self.__settings_dialog = view.settings_dialog.UserPreferencesDialog(self)
+
+        self.__settings_file = os.path.join(script_path, "user_settings.json")
+
+        self.__user_preferences = model.settings.UserPreferences(self.__settings_file, \
+            dialog=self.__settings_dialog)
+        self.__user_preferences.load()
 
         self.__color = QtGui.QColor(125, 25, 25)
 
@@ -69,8 +79,8 @@ class EditorController(object):
 
         self.__layouts = []
         
-        self.__italic_nib = model.nibs.Nib(width=20, color=QtGui.QColor(125, 25, 25))
-        self.__round_nib = model.nibs.PenNib(width=4, color=QtGui.QColor(125, 25, 25, 220))
+        self.__italic_nib = model.nibs.Nib(width=20, color=self.__color)
+        self.__round_nib = model.nibs.PenNib(width=4, color=self.__color)
         self.__nibs = [self.__italic_nib, self.__round_nib]
 
         self.__ui.dwg_area.nib = self.__italic_nib
@@ -79,11 +89,13 @@ class EditorController(object):
         self.__ui.guide_lines.nib_width = self.__italic_nib.width * 2
 
         self.file_new_cb(None)
+        self.update_preferences()
+        self.__ui.repaint()
 
         self.__ui.dwg_area.char_set = self.__char_set
         self.__ui.stroke_dwg_area.char_set = self.__char_set
         self.__ui.preview_area.char_set = self.__char_set
-
+        
     def get_command_stack(self):
         return self.__cmd_stack
 
@@ -194,6 +206,37 @@ class EditorController(object):
             self.__ui.edit_redo.setEnabled(False)
         self.__ui.edit_undo.setEnabled(True)
         self.__ui.repaint()
+
+    def preferences_cb(self, event):
+        new_prefs = self.__user_preferences.show_dialog()
+
+        if new_prefs:
+            self.update_preferences()
+            self.__user_preferences.save()
+
+    def update_preferences(self):
+        for ctrl_name in self.__user_preferences.preferences.keys():
+            if hasattr(self.__ui, ctrl_name):
+                ui_control = getattr(self.__ui, ctrl_name)
+                ui_control.setValue(self.__user_preferences.preferences[ctrl_name])
+
+        main_color_list = self.__user_preferences.preferences['stroke_color_button']
+        instance_color_list = self.__user_preferences.preferences['glyph_color_button']
+        special_color_list = self.__user_preferences.preferences['special_color_stroke_button']
+
+        main_color = QtGui.QColor(main_color_list[0], main_color_list[1], main_color_list[2], \
+            main_color_list[3])
+        instance_color = QtGui.QColor(instance_color_list[0], instance_color_list[1], instance_color_list[2], \
+            instance_color_list[3])
+        special_color = QtGui.QColor(special_color_list[0], special_color_list[1], special_color_list[2], \
+            special_color_list[3])
+         
+        self.__ui.dwg_area.main_color = main_color
+        self.__ui.stroke_dwg_area.main_color = main_color
+        self.__ui.dwg_area.instance_color = instance_color
+        self.__ui.stroke_dwg_area.instance_color = instance_color
+        self.__ui.dwg_area.special_color = special_color
+        self.__ui.stroke_dwg_area.special_color = special_color
 
     def file_new_cb(self, event):
         if self.__cmd_stack.save_count:
