@@ -71,7 +71,8 @@ class FileController(object):
         ui_ref.edit_undo.setEnabled(False)
         ui_ref.edit_redo.setEnabled(False)
         ui_ref.file_save.setEnabled(False)
-
+        self.__main_ctrl.get_command_stack().clear()
+        
         ui_ref.repaint()
 
     def file_save_as(self):
