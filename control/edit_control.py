@@ -401,9 +401,6 @@ class EditorController(object):
         self.__ui.dwg_area.strokes = []
         self.__ui.dwg_area.symbol = self.__cur_char
 
-        self.__ui.left_space_spin.setValue(self.__cur_char.left_spacing)
-        self.__ui.right_space_spin.setValue(self.__cur_char.right_spacing)
-        self.__ui.char_width_spin.setValue(self.__cur_char.width)
         check_state = QtCore.Qt.Unchecked
         self.__ui.char_width_spin.setEnabled(False)
         self.__ui.left_space_spin.setEnabled(False)
@@ -414,9 +411,12 @@ class EditorController(object):
             self.__ui.char_width_spin.setEnabled(True)
             self.__ui.left_space_spin.setEnabled(True)
             self.__ui.right_space_spin.setEnabled(True)
-
+        
         self.__ui.override_char_set.setCheckState(check_state)
         self.override_char_set_changed_cb(check_state)
+        self.__ui.left_space_spin.setValue(self.__cur_char.left_spacing)
+        self.__ui.right_space_spin.setValue(self.__cur_char.right_spacing)
+        self.__ui.char_width_spin.setValue(self.__cur_char.width)
 
         self.clear_selection()
         self.__ui.repaint()
