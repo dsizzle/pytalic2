@@ -394,6 +394,7 @@ class EditorController(object):
         self.__stroke_controller.flip_selected_strokes_y()
 
     def char_selected_cb(self, event):
+        self.__ui.setUpdatesEnabled(False)
         cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
         self.__char_set.set_current_char_by_index(cur_char_idx)
         self.__cur_char = self.__char_set.get_current_char()
@@ -412,13 +413,18 @@ class EditorController(object):
             self.__ui.left_space_spin.setEnabled(True)
             self.__ui.right_space_spin.setEnabled(True)
         
+        width = self.__cur_char.width
+        left_spacing = self.__cur_char.left_spacing
+        right_spacing = self.__cur_char.right_spacing
+        
         self.__ui.override_char_set.setCheckState(check_state)
-        self.override_char_set_changed_cb(check_state)
-        self.__ui.left_space_spin.setValue(self.__cur_char.left_spacing)
-        self.__ui.right_space_spin.setValue(self.__cur_char.right_spacing)
-        self.__ui.char_width_spin.setValue(self.__cur_char.width)
+
+        self.__ui.left_space_spin.setValue(left_spacing)
+        self.__ui.right_space_spin.setValue(right_spacing)
+        self.__ui.char_width_spin.setValue(width)
 
         self.clear_selection()
+        self.__ui.setUpdatesEnabled(True)
         self.__ui.repaint()
         self.set_icon()
 
