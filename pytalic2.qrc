@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>icons/pytalic.ico</file>
     <file>icons/arrow_down.png</file>
     <file>icons/arrow_right.png</file>
     <file>icons/zoom_actual.png</file>
