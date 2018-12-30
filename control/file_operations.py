@@ -138,6 +138,10 @@ class FileController(object):
 
             ui_ref.stroke_selector_list.clear()
 
+            for stroke in char_set.strokes:
+                stroke_item = char_set.get_item_by_index(stroke)
+                stroke_item.nib = self.__main_ctrl.get_nib(stroke_item.nib_index)
+
             saved_glyph_list = char_set.glyphs
             if len(saved_glyph_list) > 0:
                 i = 0
