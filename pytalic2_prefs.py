@@ -133,7 +133,7 @@ class Ui_Dialog(object):
         self.nominal_width_spin = QtGui.QDoubleSpinBox(self.metrics_group_box)
         self.nominal_width_spin.setWrapping(True)
         self.nominal_width_spin.setDecimals(1)
-        self.nominal_width_spin.setMinimum(2.0)
+        self.nominal_width_spin.setMinimum(1.0)
         self.nominal_width_spin.setMaximum(10.0)
         self.nominal_width_spin.setSingleStep(0.5)
         self.nominal_width_spin.setProperty("value", 4.0)
