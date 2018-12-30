@@ -561,7 +561,6 @@ class Stroke(object):
 
             draw_nib.angle = self.nib_angle
 
-
         if draw_color:
             draw_nib.color = draw_color
 
