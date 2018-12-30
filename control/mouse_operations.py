@@ -364,6 +364,10 @@ class MouseController(object):
                     for ctrl_vert in cur_view_selection[sel_stroke].keys():
                         ctrl_vert_item = char_set.get_item_by_index(ctrl_vert)
                         ctrl_vert_item.select_handle(cur_view_selection[sel_stroke][ctrl_vert])
+                else:
+                    if type(sel_stroke_item).__name__ == 'Stroke':
+                        sel_stroke_item.deselect_ctrl_verts()
+                        cur_view_selection[sel_stroke] = {}
 
         elif not shift_down:
             self.__main_ctrl.deselect_all_strokes_cb()
