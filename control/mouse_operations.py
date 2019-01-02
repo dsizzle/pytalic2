@@ -279,9 +279,13 @@ class MouseController(object):
 
         if len(cur_view_selection.keys()) > 0:
             self.__update_current_selection(paper_pos, shift_down)
+            selection = self.__main_ctrl.get_selection()
+            cur_view_selection = selection[current_view]
 
         if len(cur_view_selection.keys()) == 0 or shift_down or select_rect:
             self.__update_empty_selection(paper_pos, shift_down, select_rect)
+            selection = self.__main_ctrl.get_selection()
+            cur_view_selection = selection[current_view]
 
         if len(cur_view_selection.keys()) > 0:
             self.__main_ctrl.set_ui_state_selection(True)
