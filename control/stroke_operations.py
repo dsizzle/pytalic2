@@ -884,15 +884,18 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
+        char_set = self.__main_ctrl.get_character_set()
 
         flip_strokes_x_cmd = model.commands.Command("flip_strokes_x_cmd")
 
         do_args = {
-            'strokes' : cur_view_selection.keys()
+            'strokes' : cur_view_selection.keys(),
+            'char_set' : char_set
         }
 
         undo_args = {
-            'strokes' : cur_view_selection.keys()
+            'strokes' : cur_view_selection.keys(),
+            'char_set' : char_set
         }
 
         flip_strokes_x_cmd.set_do_args(do_args)
@@ -911,9 +914,15 @@ class StrokeController(object):
         else:
             return
 
+        if 'char_set' in args:
+            char_set = args['char_set']
+        else:
+            return
+            
         for sel_stroke in strokes_to_flip:
-            if type(sel_stroke).__name__ == "Stroke":
-                sel_stroke.flip_x()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            if type(sel_stroke_item).__name__ == "Stroke":
+                sel_stroke_item.flip_x()
 
     def flip_selected_strokes_y(self):
         current_view = self.__main_ctrl.get_current_view()
@@ -921,15 +930,18 @@ class StrokeController(object):
         cur_view_selection = selection[current_view]
         ui_ref = self.__main_ctrl.get_ui()
         cmd_stack = self.__main_ctrl.get_command_stack()
+        char_set = self.__main_ctrl.get_character_set()
 
         flip_strokes_y_cmd = model.commands.Command("flip_strokes_y_cmd")
 
         do_args = {
-            'strokes' : cur_view_selection.keys()
+            'strokes' : cur_view_selection.keys(),
+            'char_set' : char_set
         }
 
         undo_args = {
-            'strokes' : cur_view_selection.keys()
+            'strokes' : cur_view_selection.keys(),
+            'char_set' : char_set
         }
 
         flip_strokes_y_cmd.set_do_args(do_args)
@@ -948,9 +960,15 @@ class StrokeController(object):
         else:
             return
 
+        if 'char_set' in args:
+            char_set = args['char_set']
+        else:
+            return
+
         for sel_stroke in strokes_to_flip:
-            if type(sel_stroke).__name__ == "Stroke":
-                sel_stroke.flip_y()
+            sel_stroke_item = char_set.get_item_by_index(sel_stroke)
+            if type(sel_stroke_item).__name__ == "Stroke":
+                sel_stroke_item.flip_y()
 
     def move_selected(self, args):
         char_set = self.__main_ctrl.get_character_set()
