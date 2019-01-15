@@ -293,7 +293,8 @@ class Character(Glyph):
             struct.unpack_from("<fff", data, offset)
         offset += struct.calcsize("<fff")
 
-        self.__override_spacing = struct.unpack_from("<b", data, offset)[0]
+        override = struct.unpack_from("<b", data, offset)[0]
+        self.__override_spacing = True if override == 1 else False
 
     def get_unicode_character(self):
         return self.__unicode_character
