@@ -256,6 +256,9 @@ class EditorController(object):
         self.__cur_char = self.__char_set.get_current_char()
 
         self.__cmd_stack.clear()
+        self.__ui.main_view_tabs.setTabEnabled( \
+            self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area.parent()), \
+            False)
 
         self.make_layouts()
 
@@ -293,7 +296,7 @@ class EditorController(object):
     def save_glyph_cb(self, event):
         self.__stroke_controller.save_glyph()
         self.__ui.main_view_tabs.setTabEnabled( \
-            self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+            self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area.parent()), \
             True)
 
     def add_control_point_cb(self, event):
@@ -437,12 +440,12 @@ class EditorController(object):
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_glyph
             self.__ui.main_view_tabs.setTabEnabled( \
-                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area.parent()), \
                 True)
         else:
             self.__ui.stroke_dwg_area.symbol = None
             self.__ui.main_view_tabs.setTabEnabled( \
-                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area), \
+                self.__ui.main_view_tabs.indexOf(self.__ui.stroke_dwg_area.parent()), \
                 False)
 
         self.__ui.repaint()

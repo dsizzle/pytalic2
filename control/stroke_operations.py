@@ -40,7 +40,7 @@ class StrokeController(object):
         QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
         ui_ref.setUpdatesEnabled(False)
-        dwg_tab = ui_ref.main_view_tabs.indexOf(current_view)
+        dwg_tab = ui_ref.main_view_tabs.indexOf(current_view.parent())
 
         for idx in range(0, ui_ref.main_view_tabs.count()):
             if idx != dwg_tab:
@@ -830,8 +830,8 @@ class StrokeController(object):
             for idx in range(0, ui_ref.main_view_tabs.count()):
                 ui_ref.main_view_tabs.setTabEnabled(idx, True)
 
-            if len(char_set.glyphs) == 0:
-                ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area), \
+            if ui_ref.stroke_selector_list.count() <= 0:
+                ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area.parent()), \
                 False)
             ui_ref.setUpdatesEnabled(True)
 
@@ -871,8 +871,8 @@ class StrokeController(object):
         for idx in range(0, ui_ref.main_view_tabs.count()):
             ui_ref.main_view_tabs.setTabEnabled(idx, True)
 
-        if len(char_set.glyphs) == 0:
-            ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area), \
+        if ui_ref.stroke_selector_list.count() <= 0:
+            ui_ref.main_view_tabs.setTabEnabled(ui_ref.main_view_tabs.indexOf(ui_ref.stroke_dwg_area.parent()), \
                 False)
         ui_ref.setUpdatesEnabled(True)
 
