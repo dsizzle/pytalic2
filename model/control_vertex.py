@@ -5,6 +5,7 @@ import struct
 from PyQt4 import QtCore, QtGui
 
 from view import shared_qt
+import view.handle
 
 SMOOTH      = 1
 SHARP       = 2
@@ -14,28 +15,12 @@ LEFT_HANDLE     = 1
 RIGHT_HANDLE    = 3
 KNOT            = 2
 
-HANDLE_SIZE     = 10
-
-SMOOTH_HANDLE_PATH = QtGui.QPainterPath()
-SHARP_HANDLE_PATH = QtGui.QPainterPath()
-SYMMETRIC_HANDLE_PATH = QtGui.QPainterPath()
-KNOT_PATH = QtGui.QPainterPath()
-
-SMOOTH_HANDLE_PATH.addEllipse(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
-
-SHARP_HANDLE_PATH.moveTo(0, HANDLE_SIZE/2)
-SHARP_HANDLE_PATH.lineTo(-HANDLE_SIZE/2, HANDLE_SIZE/2)
-SHARP_HANDLE_PATH.lineTo(0, -HANDLE_SIZE/2)
-SHARP_HANDLE_PATH.lineTo(HANDLE_SIZE/2, HANDLE_SIZE/2)
-SHARP_HANDLE_PATH.lineTo(0, HANDLE_SIZE/2)
-
-SYMMETRIC_HANDLE_PATH.moveTo(0, 0)
-SYMMETRIC_HANDLE_PATH.arcTo(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE, 270, 180)
-SYMMETRIC_HANDLE_PATH.lineTo(0, 0)
-
-KNOT_PATH.addRect(-HANDLE_SIZE/2, -HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE)
-
 MAGIC_NONE = 987654321
+
+KNOT_HANDLE_OBJ      = view.handle.TristateHandle()
+SMOOTH_HANDLE_OBJ    = view.handle.RoundHandle()
+SHARP_HANDLE_OBJ     = view.handle.TriangleHandle()
+SYMMETRIC_HANDLE_OBJ = view.handle.SemicircleHandle()
 
 class ControlVertex(object):
     def __init__(self, left=QtCore.QPointF(), knot=QtCore.QPointF(), right=QtCore.QPointF(), new_behavior=SMOOTH):
@@ -234,31 +219,17 @@ class ControlVertex(object):
 
         gc.setPen(shared_qt.PEN_MD_GRAY)
 
-        if self.__selected is not None:
-            if self.__selected == KNOT:
-                gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-            else:
-                gc.setBrush(shared_qt.BRUSH_YELLOW_SOLID)
-        else:
-            gc.setBrush(shared_qt.BRUSH_MD_GRAY_SOLID)
-
         gc.save()
         gc.translate(vert)
-        gc.scale(self.__handle_scale, self.__handle_scale)
-        gc.drawPath(KNOT_PATH)
+        KNOT_HANDLE_OBJ.draw(gc, self.__selected == KNOT, self.__selected and self.__selected != KNOT)
         gc.restore()
 
         if self.__behavior == SMOOTH:
-            path = QtGui.QPainterPath(SMOOTH_HANDLE_PATH)
+            path = SMOOTH_HANDLE_OBJ
         elif self.__behavior == SHARP:
-            path = QtGui.QPainterPath(SHARP_HANDLE_PATH)
+            path = SHARP_HANDLE_OBJ
         else:
-            path = QtGui.QPainterPath(SYMMETRIC_HANDLE_PATH)
-
-        if (self.__selected is not None) and (self.__selected == LEFT_HANDLE):
-            gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-        else:
-            gc.setBrush(shared_qt.BRUSH_CLEAR)
+            path = SYMMETRIC_HANDLE_OBJ
 
         vert = self.__handle_pos[LEFT_HANDLE]
         if vert:
@@ -268,14 +239,8 @@ class ControlVertex(object):
 
             gc.save()
             gc.translate(vert)
-            gc.scale(self.__handle_scale, self.__handle_scale)
-            gc.drawPath(path)
+            path.draw(gc, self.__selected == LEFT_HANDLE)
             gc.restore()
-
-        if (self.__selected is not None) and (self.__selected == RIGHT_HANDLE):
-            gc.setBrush(shared_qt.BRUSH_GREEN_SOLID)
-        else:
-            gc.setBrush(shared_qt.BRUSH_CLEAR)
 
         vert = self.__handle_pos[RIGHT_HANDLE]
         if vert:
@@ -285,7 +250,5 @@ class ControlVertex(object):
 
             gc.save()
             gc.translate(vert)
-
-            gc.scale(-self.__handle_scale, self.__handle_scale)
-            gc.drawPath(path)
+            path.draw(gc, self.__selected == RIGHT_HANDLE)
             gc.restore()
