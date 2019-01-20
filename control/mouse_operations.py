@@ -298,6 +298,15 @@ class MouseController(object):
                 first_item.override_nib_angle:
                 check_state = QtCore.Qt.Checked
                 nib_angle_override = first_item.nib_angle
+            elif type(first_item).__name__ == 'GlyphInstance':
+                first_glyph = first_item.instanced_object
+
+                for i in range(0, ui_ref.stroke_selector_list.count()):
+                    cur_item = ui_ref.stroke_selector_list.item(i)
+                    glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
+                    if glyph_id == first_glyph:
+                        ui_ref.stroke_selector_list.setCurrentRow(i)
+                        break
 
             ui_ref.stroke_override_nib_angle.setCheckState(check_state)
 
