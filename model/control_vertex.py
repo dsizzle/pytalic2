@@ -4,8 +4,8 @@ import struct
 
 from PyQt4 import QtCore, QtGui
 
-from view import shared_qt
 import view.handle
+import view.shared_qt
 
 SMOOTH      = 1
 SHARP       = 2
@@ -233,9 +233,9 @@ class ControlVertex(object):
 
         vert = self.__handle_pos[LEFT_HANDLE]
         if vert:
-            gc.setPen(shared_qt.PEN_LT_GRAY)
+            gc.setPen(view.shared_qt.PEN_LT_GRAY)
             gc.drawLine(self.__handle_pos[KNOT], vert)
-            gc.setPen(shared_qt.PEN_LT_GRAY_2)
+            gc.setPen(view.shared_qt.PEN_LT_GRAY_2)
 
             gc.save()
             gc.translate(vert)
@@ -244,9 +244,9 @@ class ControlVertex(object):
 
         vert = self.__handle_pos[RIGHT_HANDLE]
         if vert:
-            gc.setPen(shared_qt.PEN_LT_GRAY)
+            gc.setPen(view.shared_qt.PEN_LT_GRAY)
             gc.drawLine(self.__handle_pos[KNOT], vert)
-            gc.setPen(shared_qt.PEN_LT_GRAY_2)
+            gc.setPen(view.shared_qt.PEN_LT_GRAY_2)
 
             gc.save()
             gc.translate(vert)
