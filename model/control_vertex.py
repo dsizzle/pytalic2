@@ -63,7 +63,6 @@ class ControlVertex(object):
         self.__selected = None
 
     def contains(self, test_point):
-        test_rect = QtCore.QRectF(- self.__handle_size / 2, - self.__handle_size/2, \
         handle_size = self.__char_set.user_preferences.preferences['handle_size_spin']
         test_rect = QtCore.QRectF(- handle_size / 2, - handle_size/2, \
                 handle_size, handle_size)
