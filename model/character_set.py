@@ -36,7 +36,7 @@ INV_TYPE_MAP = {
 VERSION = 1.0
 
 class CharacterSet(object):
-    def __init__(self):
+    def __init__(self, user_settings=None):
         self.__nominal_width_nibs = 4.0
         self.__left_spacing = 1.0
         self.__right_spacing = 1.0
@@ -47,6 +47,8 @@ class CharacterSet(object):
         self.__gap_height_nibs = 1.0
         self.__guide_angle = 5
         self.__nib_angle = 40
+
+        self.__user_preferences = user_settings
 
         self.__current_char = None
 
@@ -102,6 +104,14 @@ class CharacterSet(object):
         self.__ids[GLYPH_INST_TYPE] = 0
         self.__ids[VERTEX_TYPE] = 0
 
+    def get_preferences(self):
+        return self.__user_preferences
+
+    def set_preferences(self, new_user_settings):
+        self.__user_preferences = new_user_settings
+
+    user_preferences = property(get_preferences, set_preferences)
+
     def __get_next_id(self, item_type):
         if item_type in self.__ids:
             self.__ids[item_type] += 1
@@ -109,7 +119,7 @@ class CharacterSet(object):
             return INV_TYPE_MAP[item_type] + '{:010d}'.format(self.__ids[item_type])
 
     def new_control_vertex(self, left, center, right, behavior=1):
-        new_ctrl_vertex = ControlVertex(left, center, right, behavior)
+        new_ctrl_vertex = ControlVertex(left, center, right, behavior, char_set=self)
         new_ctrl_vertex_id = self.__get_next_id(VERTEX_TYPE)
         self.__objects[VERTEX_TYPE][new_ctrl_vertex_id] = new_ctrl_vertex
 

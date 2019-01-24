@@ -90,6 +90,7 @@ class EditorController(object):
 
         self.file_new_cb(None)
         self.update_preferences()
+        self.__char_set.user_preferences = self.__user_preferences
         self.__cmd_stack.clear()
         self.__ui.repaint()
 

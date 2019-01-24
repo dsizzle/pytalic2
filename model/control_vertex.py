@@ -24,12 +24,12 @@ SYMMETRIC_HANDLE_OBJ = view.handle.SemicircleHandle()
 
 class ControlVertex(object):
     def __init__(self, left=None, knot=QtCore.QPointF(), right=None, \
-        new_behavior=SMOOTH, handle_size=10):
+        new_behavior=SMOOTH, char_set=None):
         self.__pressure = 1.0
         self.__behavior = new_behavior
         self.__handle_pos = [0, left, knot, right]
         self.__handle_scale = 1.0
-        self.__handle_size = handle_size
+        self.__char_set = char_set
         self.__selected = None
 
     def serialize(self):
@@ -64,7 +64,9 @@ class ControlVertex(object):
 
     def contains(self, test_point):
         test_rect = QtCore.QRectF(- self.__handle_size / 2, - self.__handle_size/2, \
-                self.__handle_size, self.__handle_size)
+        handle_size = self.__char_set.user_preferences.preferences['handle_size_spin']
+        test_rect = QtCore.QRectF(- handle_size / 2, - handle_size/2, \
+                handle_size, handle_size)
         
         for i in range(1, 4):
             pos = self.__handle_pos[i]
@@ -237,6 +239,9 @@ class ControlVertex(object):
     def draw(self, gc):
         vert = self.__handle_pos[KNOT]
 
+        handle_size = self.__char_set.user_preferences.preferences['handle_size_spin']
+        KNOT_HANDLE_OBJ.size = handle_size
+
         gc.setPen(view.shared_qt.PEN_MD_GRAY)
 
         gc.save()
@@ -250,6 +255,8 @@ class ControlVertex(object):
             path = SHARP_HANDLE_OBJ
         else:
             path = SYMMETRIC_HANDLE_OBJ
+
+        path.size = handle_size
 
         vert = self.__handle_pos[LEFT_HANDLE]
         if vert:
