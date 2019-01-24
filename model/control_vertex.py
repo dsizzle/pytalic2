@@ -23,11 +23,13 @@ SHARP_HANDLE_OBJ     = view.handle.TriangleHandle()
 SYMMETRIC_HANDLE_OBJ = view.handle.SemicircleHandle()
 
 class ControlVertex(object):
-    def __init__(self, left=QtCore.QPointF(), knot=QtCore.QPointF(), right=QtCore.QPointF(), new_behavior=SMOOTH):
+    def __init__(self, left=None, knot=QtCore.QPointF(), right=None, \
+        new_behavior=SMOOTH, handle_size=10):
         self.__pressure = 1.0
         self.__behavior = new_behavior
         self.__handle_pos = [0, left, knot, right]
         self.__handle_scale = 1.0
+        self.__handle_size = handle_size
         self.__selected = None
 
     def serialize(self):
@@ -59,7 +61,21 @@ class ControlVertex(object):
 
         self.__handle_scale = struct.unpack_from("<f", data, offset)[0]
         self.__selected = None
+
+    def contains(self, test_point):
+        test_rect = QtCore.QRectF(- self.__handle_size / 2, - self.__handle_size/2, \
+                self.__handle_size, self.__handle_size)
         
+        for i in range(1, 4):
+            pos = self.__handle_pos[i]
+            if pos is None:
+                continue
+
+            if test_rect.contains(test_point-pos):
+                return i
+        
+        return 0
+
     def set_pos(self, point):
         self.set_handle_pos(point, KNOT)
 
@@ -79,11 +95,15 @@ class ControlVertex(object):
 
     def set_handle_pos(self, point, handle):
         if not point:
-            if handle == RIGHT_HANDLE:
+            if handle != KNOT:
                 self.__handle_pos[handle] = None
             return
 
-        old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
+        if self.__handle_pos[LEFT_HANDLE]:
+            old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
+        else:
+            old_l_delta = QtCore.QPointF(0, 0)
+
         old_knot_delta = self.__handle_pos[KNOT] - point
 
         if self.__handle_pos[RIGHT_HANDLE]:
@@ -217,7 +237,7 @@ class ControlVertex(object):
     def draw(self, gc):
         vert = self.__handle_pos[KNOT]
 
-        gc.setPen(shared_qt.PEN_MD_GRAY)
+        gc.setPen(view.shared_qt.PEN_MD_GRAY)
 
         gc.save()
         gc.translate(vert)

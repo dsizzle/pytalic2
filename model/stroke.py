@@ -26,7 +26,6 @@ class Stroke(object):
             self.__start_serif = from_stroke.get_start_serif()
             self.__end_serif = from_stroke.get_end_serif()
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
-            #self.update_ctrl_vertices()
             self.__pos = QtCore.QPointF(from_stroke.pos)
             self.__curve_path = self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
@@ -46,7 +45,6 @@ class Stroke(object):
             self.__nib_index = 0
             self.__override_nib_angle = False
 
-        self.__handle_size = 10
         self.__instances = {}
         self.__parent = parent
 
@@ -67,7 +65,8 @@ class Stroke(object):
             data += struct.pack("<I", 360)
         data += struct.pack("<H", self.__nib_index)
         data += struct.pack("<b", self.__override_nib_angle)        
-        data += struct.pack("<I", self.__handle_size)
+        # backwards compatibility
+        data += struct.pack("<I", 0)
         # instances?
 
         data += struct.pack("<d", self.seed)
@@ -99,7 +98,7 @@ class Stroke(object):
         offset += struct.calcsize("<H")
         self.__override_nib_angle = struct.unpack_from("<b", data, offset)[0]
         offset += struct.calcsize("<b")
-        self.__handle_size = struct.unpack_from("<I", data, offset)[0]
+        # backwards compatibility
         offset += struct.calcsize("<I")
         self.seed = struct.unpack_from("<d", data, offset)[0]
 
@@ -644,21 +643,13 @@ class Stroke(object):
         if self.__bound_rect.contains(test_point):
             if self.__is_selected:
                 vertex = -1
-                path_num = 0
-                for curve in self.__curve_path:
-                    for i in range(0, curve.elementCount()):
-                        element = QtCore.QPointF(curve.elementAt(i))
-                        dist = math.sqrt(
-                            math.pow(element.x()-test_point.x(), 2) +
-                            math.pow(element.y()-test_point.y(), 2)
-                        )
-                        if dist < self.__handle_size:
-                           vertex = i + (path_num * 3)
-                           break
-                    if vertex > 0:
+                for i in range(0, len(self.__stroke_ctrl_verts)):
+                    vert_index = self.__stroke_ctrl_verts[i]
+                    vert_object = self.__char_set.get_item_by_index(vert_index)
+                    handle =  vert_object.contains(test_point)
+                    if handle:
+                        vertex = (i*3) + handle - 2
                         break
-
-                    path_num += 1
 
                 if is_inside:
                     # get exact point
