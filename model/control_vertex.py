@@ -32,6 +32,14 @@ class ControlVertex(object):
         self.__char_set = char_set
         self.__selected = None
 
+    def get_char_set(self):
+        return self.__char_set
+
+    def set_char_set(self, new_char_set):
+        self.__char_set = new_char_set
+
+    char_set = property(get_char_set, set_char_set)
+
     def serialize(self):
         data = struct.pack("<fH", self.__pressure, \
             self.__behavior)
@@ -63,7 +71,7 @@ class ControlVertex(object):
         self.__selected = None
 
     def contains(self, test_point):
-        handle_size = self.__char_set.user_preferences.preferences['handle_size_spin']
+        handle_size = self.char_set.user_preferences.preferences['handle_size_spin']
         test_rect = QtCore.QRectF(- handle_size / 2, - handle_size/2, \
                 handle_size, handle_size)
         
@@ -238,7 +246,7 @@ class ControlVertex(object):
     def draw(self, gc):
         vert = self.__handle_pos[KNOT]
 
-        handle_size = self.__char_set.user_preferences.preferences['handle_size_spin']
+        handle_size = self.char_set.user_preferences.preferences['handle_size_spin']
         KNOT_HANDLE_OBJ.size = handle_size
 
         gc.setPen(view.shared_qt.PEN_MD_GRAY)
