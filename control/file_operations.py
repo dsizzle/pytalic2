@@ -242,16 +242,23 @@ def update_controls(ui_ref, char_set):
 
     ui_ref.base_height_spin.setValue(char_set.base_height)
     ui_ref.guide_lines.base_height = char_set.base_height
+    ui_ref.guide_lines_fixed.base_height = char_set.base_height
     ui_ref.cap_height_spin.setValue(char_set.cap_height)
     ui_ref.guide_lines.cap_height = char_set.cap_height
+    ui_ref.guide_lines_fixed.cap_height = char_set.cap_height
     ui_ref.cap_height_spin.setMaximum(char_set.ascent_height)
     ui_ref.ascent_height_spin.setValue(char_set.ascent_height)
     ui_ref.guide_lines.ascent_height = char_set.ascent_height
+    ui_ref.guide_lines_fixed.ascent_height = char_set.ascent_height
     ui_ref.descent_height_spin.setValue(char_set.descent_height)
     ui_ref.guide_lines.descent_height = char_set.descent_height
+    ui_ref.guide_lines_fixed.descent_height = char_set.descent_height
     ui_ref.angle_spin.setValue(char_set.guide_angle)
     ui_ref.guide_lines.guide_angle = char_set.guide_angle
+    ui_ref.guide_lines_fixed.guide_angle = char_set.guide_angle
     ui_ref.char_set_nib_angle_spin.setValue(char_set.nib_angle)
     ui_ref.guide_lines.nib_angle = char_set.nib_angle
+    ui_ref.guide_lines_fixed.nib_angle = char_set.nib_angle
     ui_ref.nominal_width_spin.setValue(char_set.width)
     ui_ref.guide_lines.width = char_set.width
+    ui_ref.guide_lines_fixed.width = char_set.width

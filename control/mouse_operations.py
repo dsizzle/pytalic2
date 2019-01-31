@@ -307,6 +307,15 @@ class MouseController(object):
                     if glyph_id == first_glyph:
                         ui_ref.stroke_selector_list.setCurrentRow(i)
                         break
+            elif type(first_item).__name__ == 'CharacterInstance':
+                first_char = first_item.instanced_object
+
+                for i in range(0, ui_ref.char_selector_list.count()):
+                    cur_item = ui_ref.char_selector_list.item(i)
+                    char_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
+                    if char_id == first_char:
+                        ui_ref.char_selector_list.setCurrentRow(i)
+                        break
 
             ui_ref.stroke_override_nib_angle.setCheckState(check_state)
 

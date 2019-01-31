@@ -146,9 +146,10 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.main_view_tabs.currentChanged.connect(self.__parent.view_tab_changed_cb)
 
         self.guide_lines = guides.GuideLines()
+        self.guide_lines_fixed = guides.GuideLines()
         self.dwg_area.set_guidelines(self.guide_lines)
         self.stroke_dwg_area.set_guidelines(self.guide_lines)
-        self.preview_area.set_guidelines(self.guide_lines)
+        self.preview_area.set_guidelines(self.guide_lines_fixed)
 
     def create_menu(self):
         self.file_new.triggered.connect(self.__parent.file_new_cb)

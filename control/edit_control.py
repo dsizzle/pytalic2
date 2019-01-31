@@ -87,6 +87,7 @@ class EditorController(object):
         self.__ui.stroke_dwg_area.nib = self.__italic_nib
         self.__ui.preview_area.nib = self.__italic_nib
         self.__ui.guide_lines.nib_width = self.__italic_nib.width * 2
+        self.__ui.guide_lines_fixed.nib_width = self.__ui.guide_lines.nib_width
 
         self.file_new_cb(None)
         self.update_preferences()
@@ -522,44 +523,44 @@ class EditorController(object):
         prev_value = self.__char_set.base_height
 
         self.__property_controller.base_height_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_cap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.cap_height
 
         self.__property_controller.cap_height_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_ascent_changed_cb(self, new_value):
         prev_value = self.__char_set.ascent_height
 
         self.__property_controller.ascent_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_descent_changed_cb(self, new_value):
         prev_value = self.__char_set.descent_height
 
         self.__property_controller.descent_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_gap_height_changed_cb(self, new_value):
         prev_value = self.__char_set.gap_height
 
         self.__property_controller.gap_height_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_angle_changed_cb(self, new_value):
         prev_value = self.__char_set.guide_angle
 
         self.__property_controller.angle_changed(prev_value, \
-            new_value, [self.__char_set, self.__ui.guide_lines])
+            new_value, [self.__char_set, self.__ui.guide_lines, self.__ui.guide_lines_fixed])
 
     def guide_nominal_width_changed_cb(self, new_value):
         prev_value = self.__char_set.width
 
         ctrl_list = [self.__char_set]
-        if not self.__cur_char.override_spacing:
-            ctrl_list.append(self.__ui.guide_lines)
+        if not self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
+            ctrl_list.append(self.__ui.guide_lines, self.__ui.guide_lines_fixed)
 
         self.__property_controller.nominal_width_changed(prev_value, \
             new_value, ctrl_list)
@@ -568,8 +569,8 @@ class EditorController(object):
         prev_value = self.__char_set.left_spacing
 
         ctrl_list = [self.__char_set]
-        if not self.__cur_char.override_spacing:
-            ctrl_list.append(self.__ui.guide_lines)
+        if not self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
+            ctrl_list.append(self.__ui.guide_lines, self.__ui.guide_lines_fixed)
 
         self.__property_controller.char_set_left_space_changed(prev_value, \
             new_value, ctrl_list)
@@ -578,14 +579,15 @@ class EditorController(object):
         prev_value = self.__char_set.right_spacing
 
         ctrl_list = [self.__char_set]
-        if not self.__cur_char.override_spacing:
-            ctrl_list.append(self.__ui.guide_lines)
+        if not self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
+            ctrl_list.append(self.__ui.guide_lines, self.__ui.guide_lines_fixed)
 
         self.__property_controller.char_set_right_space_changed(prev_value, \
             new_value, ctrl_list)
 
     def guide_color_changed_cb(self, new_color):
         self.__ui.guide_lines.line_color = new_color
+        self.__ui.guide_lines_fixed.line_color = new_color
         self.__ui.repaint()
 
     def char_set_nib_angle_changed_cb(self, new_value):
@@ -599,7 +601,7 @@ class EditorController(object):
         prev_value = self.__cur_char.width
 
         ctrl_list = [self.__cur_char]
-        if self.__cur_char.override_spacing:
+        if self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
             ctrl_list.append(self.__ui.guide_lines)
 
         self.__property_controller.char_width_changed(prev_value, \
@@ -609,7 +611,7 @@ class EditorController(object):
         prev_value = self.__cur_char.left_spacing
 
         ctrl_list = [self.__cur_char]
-        if self.__cur_char.override_spacing:
+        if self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
             ctrl_list.append(self.__ui.guide_lines)
 
         self.__property_controller.char_left_space_changed(prev_value, \
@@ -619,7 +621,7 @@ class EditorController(object):
         prev_value = self.__cur_char.right_spacing
 
         ctrl_list = [self.__cur_char]
-        if self.__cur_char.override_spacing:
+        if self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
             ctrl_list.append(self.__ui.guide_lines)
 
         self.__property_controller.char_right_space_changed(prev_value, \
