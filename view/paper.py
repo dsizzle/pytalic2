@@ -386,9 +386,10 @@ class LayoutArea(Canvas):
          layout_bound = self.layout.bound_rect
          max_layout_dim = max(layout_bound.width(), layout_bound.height())
          if max_layout_dim:
-            self.scale = max_dim / max_layout_dim  
+            
 
-            self.origin_delta = QtCore.QPoint(self.origin.x() - self.layout.pos.x() - layout_bound.width() / 2, 0)
+            self.origin_delta = QtCore.QPoint(-self.layout.pos.x(), self.layout.pos.y())
+            self.scale = max_dim / (max_layout_dim * 1.1) 
             
     def paintEvent(self, event):
         if not self.nib:
