@@ -3,7 +3,7 @@ An experimental calligraphic editor.
 
 Based on my previous "pytalic" project, but refactoring to take advantage of more Qt features and Pythonic constructs, as well as improving performance.  
 
-Requires Python 2.x and PyQt4
+Requires Python 3.x and PyQt4
 
 Current screenshot of the editor:
 
