@@ -16,24 +16,24 @@ class Instance(object):
         self.__scale = 1
 
     def serialize(self):
-        data = struct.pack("<11s", self.__instanced_object)
+        data = struct.pack("<11s", self.__instanced_object.encode('utf-8'))
 
         data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
         # instances?
-        data += struct.pack("<15s", self.__obj_type)
+        data += struct.pack("<15s", self.__obj_type.encode('utf-8'))
         data += struct.pack("<f", self.__scale)
 
         return data
 
     def unserialize(self, data):
         offset = 0
-        self.__instanced_object = struct.unpack_from("<11s", data)[0]
+        self.__instanced_object = struct.unpack_from("<11s", data)[0].decode('utf-8')
         offset += struct.calcsize("<11s")
         (x, y) = struct.unpack_from("<dd", data, offset)
         offset += struct.calcsize("<dd")
         self.__pos = QtCore.QPoint(x, y)
         (self.__obj_type, self.__scale) = struct.unpack_from("<15sf", data, offset)
-        self.__obj_type = self.__obj_type.strip('\0')
+        self.__obj_type = self.__obj_type.decode('utf-8').strip('\0')
 
     def __del__(self):
         pass

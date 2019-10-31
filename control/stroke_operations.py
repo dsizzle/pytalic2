@@ -218,7 +218,7 @@ class StrokeController(object):
 
         char_index = ui_ref.char_selector_list.currentRow()
         glyph_item = ui_ref.stroke_selector_list.currentItem()
-        glyph_index = str(glyph_item.data(QtCore.Qt.UserRole).toString())
+        glyph_index = str(glyph_item.data(QtCore.Qt.UserRole))
         new_glyph_inst_id = char_set.new_glyph_instance(glyph_index)
 
         paste_glyph_saved_cmd = model.commands.Command('paste_glyph_saved_cmd')
@@ -1005,13 +1005,13 @@ class StrokeController(object):
 
         if len(selection.keys()):
             ui_ref = self.__main_ctrl.get_ui()
-            first_object = selection.keys()[0]
+            first_object = list(selection)[0]
             first_item = char_set.get_item_by_index(first_object)
             ui_ref.position_x_spin.setValue(first_item.pos.x())
             ui_ref.position_y_spin.setValue(first_item.pos.y())
 
             if len(selection[first_object].keys()):
-                first_vert = selection[first_object].keys()[0]
+                first_vert = list(selection[first_object])[0]
 
                 vert_item = char_set.get_item_by_index(first_vert)
                 ui_ref.vertex_x_spin.setValue(vert_item.get_pos_of_selected().x())

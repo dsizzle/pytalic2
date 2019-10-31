@@ -23,13 +23,13 @@ class Glyph(object):
         data = struct.pack("<I", len(self.__strokes))
 
         for strok in self.__strokes:
-            data += struct.pack("<11s", strok)
+            data += struct.pack("<11s", strok.encode('utf-8'))
 
         data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
         num_instances = len(self.__instances.keys())
         data += struct.pack("<I", num_instances)
         for inst in self.__instances.keys():
-            data += struct.pack("<11s", inst)
+            data += struct.pack("<11s", inst.encode('utf-8'))
 
         return data
 
@@ -39,7 +39,7 @@ class Glyph(object):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_strokes):
-            stroke_id = struct.unpack_from("<11s", data, offset)[0]
+            stroke_id = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.__strokes.append(stroke_id)
@@ -52,7 +52,7 @@ class Glyph(object):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_instances):
-            instance = struct.unpack_from("<11s", data, offset)[0]
+            instance = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.__instances[instance] = 1
@@ -150,8 +150,8 @@ class Glyph(object):
         try:
             self.__strokes.remove(stroke_to_delete)
         except ValueError:
-            print "ERROR: stroke to delete doesn't exist!", stroke_to_delete
-            print self.__strokes
+            print("ERROR: stroke to delete doesn't exist! {}".format(stroke_to_delete))
+            print(self.__strokes)
 
         self.calculate_bound_rect()
 
@@ -205,7 +205,10 @@ class Glyph(object):
 
         for sel_child in self.children:
             sel_child_item = self.char_set.get_item_by_index(sel_child)
-            sel_child_item.draw(gc, nib, draw_color)
+            if sel_child_item is None:
+                print("!!", sel_child)
+            else:
+                sel_child_item.draw(gc, nib, draw_color)
 
         if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
@@ -234,18 +237,18 @@ class Character(Glyph):
         data = struct.pack("<I", len(self.strokes))
 
         for strok in self.strokes:
-            data += struct.pack("<11s", strok)
+            data += struct.pack("<11s", strok.encode('utf-8'))
 
         data += struct.pack("<I", len(self.glyphs))
 
         for glyf in self.__glyphs:
-            data += struct.pack("<11s", glyf)
+            data += struct.pack("<11s", glyf.encode('utf-8'))
 
         data += struct.pack("<dd", self.pos.x(), self.pos.y())
         num_instances = len(self.instances.keys())
         data += struct.pack("<I", num_instances)
         for inst in self.instances.keys():
-            data += struct.pack("<11s", inst)
+            data += struct.pack("<11s", inst.encode('utf-8'))
 
         data += struct.pack("<i", self.__unicode_character)
         data += struct.pack("<fff", self.__width, \
@@ -260,7 +263,7 @@ class Character(Glyph):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_strokes):
-            stroke_id = struct.unpack_from("<11s", data, offset)[0]
+            stroke_id = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.strokes.append(stroke_id)
@@ -269,7 +272,7 @@ class Character(Glyph):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_glyphs):
-            glyph_id = struct.unpack_from("<11s", data, offset)[0]
+            glyph_id = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.glyphs.append(glyph_id)
@@ -282,7 +285,7 @@ class Character(Glyph):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_instances):
-            instance = struct.unpack_from("<11s", data, offset)[0]
+            instance = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.instances[instance] = 1

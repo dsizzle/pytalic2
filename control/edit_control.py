@@ -218,6 +218,9 @@ class EditorController(object):
             self.__user_preferences.save()
 
     def update_preferences(self):
+        if not len(self.__user_preferences.preferences.keys()):
+            return
+
         for ctrl_name in self.__user_preferences.preferences.keys():
             if hasattr(self.__ui, ctrl_name):
                 ui_control = getattr(self.__ui, ctrl_name)
@@ -253,7 +256,7 @@ class EditorController(object):
                 return
 
         self.__file_controller.file_new()
-        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
+        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole))
         self.__char_set.set_current_char_by_index(cur_char_idx)
         self.__cur_char = self.__char_set.get_current_char()
 
@@ -401,7 +404,7 @@ class EditorController(object):
 
     def char_selected_cb(self, event):
         self.__ui.setUpdatesEnabled(False)
-        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole).toString())
+        cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole))
         self.__char_set.set_current_char_by_index(cur_char_idx)
         self.__cur_char = self.__char_set.get_current_char()
         
@@ -437,7 +440,7 @@ class EditorController(object):
     def stroke_selected_cb(self, event):
         if self.__ui.stroke_selector_list.currentRow() >= 0:
             cur_item = self.__ui.stroke_selector_list.currentItem()
-            glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
+            glyph_id = str(cur_item.data(QtCore.Qt.UserRole))
             sel_saved_glyph = self.__char_set.get_saved_glyph(glyph_id)
 
             self.__ui.stroke_dwg_area.symbol = sel_saved_glyph
@@ -560,7 +563,8 @@ class EditorController(object):
 
         ctrl_list = [self.__char_set]
         if not self.__cur_char.override_spacing and self.__current_view_pane == self.__ui.dwg_area:
-            ctrl_list.append(self.__ui.guide_lines, self.__ui.guide_lines_fixed)
+            ctrl_list.append(self.__ui.guide_lines)
+            ctrl_list.append(self.__ui.guide_lines_fixed)
 
         self.__property_controller.nominal_width_changed(prev_value, \
             new_value, ctrl_list)
@@ -700,7 +704,7 @@ class EditorController(object):
     def stroke_nib_angle_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) == 1:
             sel_stroke = self.__char_set.get_item_by_index( \
-                self.__selection[self.__current_view_pane].keys()[0] \
+                list(self.__selection[self.__current_view_pane])[0] \
                 )
             if type(sel_stroke).__name__ == "CharacterInstance" or \
                 type(sel_stroke).__name__ == "GlyphInstance":
@@ -717,7 +721,7 @@ class EditorController(object):
             self.__state != DRAWING_NEW_STROKE:
             first_item = \
                 self.__char_set.get_item_by_index( \
-                    self.__selection[self.__current_view_pane].keys()[0] \
+                    list(self.__selection[self.__current_view_pane])[0] \
                     )
             prev_value = first_item.pos.x()
             if prev_value == new_value:
@@ -731,7 +735,7 @@ class EditorController(object):
             self.__state != DRAWING_NEW_STROKE:
             first_item = \
                 self.__char_set.get_item_by_index( \
-                    self.__selection[self.__current_view_pane].keys()[0] \
+                    list(self.__selection[self.__current_view_pane])[0] \
                     )
             prev_value = first_item.pos.y()
             if prev_value == new_value:
@@ -743,10 +747,10 @@ class EditorController(object):
     def vertex_x_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) and \
             self.__state != DRAWING_NEW_STROKE:
-            first_item = self.__selection[self.__current_view_pane].keys()[0]
+            first_item = list(self.__selection[self.__current_view_pane])[0]
             verts = self.__selection[self.__current_view_pane][first_item]
             if len(verts):
-                first_vert = verts.keys()[0]
+                first_vert = list(verts)[0]
 
                 vert_item = self.__char_set.get_item_by_index(first_vert)
                 prev_value = vert_item.get_pos_of_selected().x()
@@ -760,10 +764,10 @@ class EditorController(object):
     def vertex_y_changed_cb(self, new_value):
         if len(self.__selection[self.__current_view_pane].keys()) and \
             self.__state != DRAWING_NEW_STROKE:
-            first_item = self.__selection[self.__current_view_pane].keys()[0]
+            first_item = list(self.__selection[self.__current_view_pane])[0]
             verts = self.__selection[self.__current_view_pane][first_item]
             if len(verts):
-                first_vert = verts.keys()[0]
+                first_vert = list(verts)[0]
 
                 vert_item = self.__char_set.get_item_by_index(first_vert)
                 prev_value = vert_item.get_pos_of_selected().y()

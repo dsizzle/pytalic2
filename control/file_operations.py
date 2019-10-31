@@ -54,7 +54,7 @@ class FileController(object):
 
         for i in range(START_CHAR_CODE, END_CHAR_CODE):
             char_item = QtGui.QListWidgetItem()
-            char_item.setText(str(unichr(i)))
+            char_item.setText(str(chr(i)))
 
             char_id = char_set.new_character(i)
             char_item.setData(QtCore.Qt.UserRole, char_id)
@@ -163,9 +163,9 @@ class FileController(object):
                     i += 1
 
             for idx in range(0, ui_ref.char_selector_list.count()):
-                char_item = int(str(ui_ref.char_selector_list.item(idx).data(QtCore.Qt.UserRole+1).toString()))
+                char_item = int(str(ui_ref.char_selector_list.item(idx).data(QtCore.Qt.UserRole+1)))
                 sel_char = char_set.get_char_by_index(char_item)
-                if sel_char and sel_char.children > 0:
+                if sel_char and len(sel_char.children) > 0:
                     bitmap = ui_ref.dwg_area.draw_icon(None, sel_char.children)
                     ui_ref.char_selector_list.item(idx).setIcon(QtGui.QIcon(bitmap))
                 else:
@@ -186,13 +186,13 @@ class FileController(object):
         try:
             data_file_fd = open(file_name, 'wb')
         except IOError:
-            print "ERROR: Couldn't open %s for writing." % (file_name)
+            print("ERROR: Couldn't open {} for writing.".format(file_name))
             return 1
 
         try:
             char_set.save(data_file_fd)
         except IOError:
-            print "ERROR: Couldn't save file"
+            print("ERROR: Couldn't save file")
             if data_file_fd:
                 data_file_fd.close()
 
@@ -210,23 +210,23 @@ class FileController(object):
         try:
             data_file_fd = open(file_name, 'rb')
         except IOError:
-            print "ERROR: Couldn't open %s for reading." % (file_name)
+            print("ERROR: Couldn't open {} for reading.".format(file_name))
             return 1
 
         try:
             char_set.load(data_file_fd)
         except IOError:
-            print "ERROR: Couldn't load file"
+            print("ERROR: Couldn't load file")
 
             if data_file_fd:
                 data_file_fd.close()
 
             return 1
         except EOFError as eof_error:
-            print "ERROR: ", eof_error
+            print("ERROR: {}".format(eof_error))
             return 1
         except Exception as other_error:
-            print "ERROR: Problem reading file", other_error
+            print("ERROR: Problem reading file: {}".format(other_error))
             return 1
 
         if data_file_fd:

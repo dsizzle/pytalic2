@@ -154,7 +154,7 @@ class CharacterSet(object):
 
         if char_code:
             new_char.unicode_character = char_code
-            self.__character_xref[unichr(char_code)] = new_char_id
+            self.__character_xref[chr(char_code)] = new_char_id
 
         self.__current_char = new_char_id
 
@@ -165,7 +165,7 @@ class CharacterSet(object):
             char_code = self.__objects[CHAR_TYPE][char_to_delete].unicode_character
             self.__objects[CHAR_TYPE][char_to_delete] = None
             del self.__objects[CHAR_TYPE][char_to_delete]
-            del self.__character_xref[unichr(char_code)]
+            del self.__character_xref[chr(char_code)]
         elif char_to_delete in self.__character_xref:
             char = self.__character_xref[char_to_delete]
             self.__objects[CHAR_TYPE][char] = None
@@ -179,7 +179,7 @@ class CharacterSet(object):
         return None
 
     def set_current_char(self, char):
-        unicode_char = unichr(char)
+        unicode_char = chr(char)
         if unicode_char in self.__character_xref:
             self.__current_char = self.__character_xref[unicode_char]
         else:
@@ -192,7 +192,7 @@ class CharacterSet(object):
 
     def get_current_char_name(self):
         current_char_object = self.__objects[CHAR_TYPE][self.__current_char]
-        return unichr(current_char_object.unicode_character)
+        return chr(current_char_object.unicode_character)
 
     def get_current_char_index(self):
         return self.__current_char
@@ -226,7 +226,7 @@ class CharacterSet(object):
         return self.__objects[STROKE_TYPE]
 
     def get_char_by_index(self, char_index):
-        char_to_get = unichr(char_index)
+        char_to_get = chr(char_index)
         return self.get_char(char_to_get)
 
     @property
@@ -260,7 +260,7 @@ class CharacterSet(object):
         try:
             del self.__objects[GLYPH_TYPE][glyph_id]
         except IndexError:
-            print "ERROR: saved glyph to remove doesn't exist!"
+            print("ERROR: saved glyph to remove doesn't exist!")
 
     saved_glyph = property(get_saved_glyph, set_saved_glyph)
 
@@ -401,7 +401,7 @@ class CharacterSet(object):
         if not fd:
             return
 
-        fd.write(struct.pack("<4sd", "PTCS", VERSION))
+        fd.write(struct.pack("<4sd", "PTCS".encode('utf-8'), VERSION))
 
         char_set_metadata = struct.pack("<ffffffffII", \
             self.__nominal_width_nibs, \
@@ -419,10 +419,10 @@ class CharacterSet(object):
 
         for item_type in self.__objects:
             num_items = self.__ids[item_type]
-            fd.write(struct.pack("<cL", INV_TYPE_MAP[item_type], num_items))
+            fd.write(struct.pack("<cL", INV_TYPE_MAP[item_type].encode('utf-8'), num_items))
 
             for item_id in self.__objects[item_type]:
-                fd.write(struct.pack("<11s", item_id))
+                fd.write(struct.pack("<11s", item_id.encode('utf-8')))
 
                 item = self.__objects[item_type][item_id]
                 try:
@@ -432,8 +432,8 @@ class CharacterSet(object):
                 except IOError:
                     raise
                 except Exception as err:
-                    print "ERROR: Couldn't serialize", item_id
-                    print err
+                    print("ERROR: Couldn't serialize {}".format(item_id))
+                    print(err)
                     raise
 
     def load(self, fd):
@@ -468,12 +468,12 @@ class CharacterSet(object):
                     break
 
                 (item_type_key, num_items) = struct.unpack("<cL", num_items_raw)
-                item_type = TYPE_MAP[item_type_key]
+                item_type = TYPE_MAP[item_type_key.decode('utf-8')]
+
                 self.__ids[item_type] = num_items
 
                 for i in range(0, num_items):
-                    item_id = struct.unpack("<11s", fd.read(struct.calcsize("<11s")))[0]
-                    
+                    item_id = struct.unpack("<11s", fd.read(struct.calcsize("<11s")))[0].decode('utf-8')
                     data_size = struct.unpack("<L", fd.read(struct.calcsize("<L")))[0]
                     data_blob = fd.read(data_size)
 
@@ -492,7 +492,7 @@ class CharacterSet(object):
         for char_id in self.__objects[CHAR_TYPE].keys():
             char_item = self.get_item_by_index(char_id)
             if char_item.unicode_character >= 0:
-                self.__character_xref[unichr(char_item.unicode_character)] = char_id
+                self.__character_xref[chr(char_item.unicode_character)] = char_id
 
         for vert_id in self.__objects[VERTEX_TYPE].keys():
             vert_item = self.get_item_by_index(vert_id)

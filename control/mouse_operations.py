@@ -291,7 +291,7 @@ class MouseController(object):
             self.__main_ctrl.set_ui_state_selection(True)
             check_state = QtCore.Qt.Unchecked
             nib_angle_override = None
-            first_object = cur_view_selection.keys()[0]
+            first_object = list(cur_view_selection)[0]
             first_item = char_set.get_item_by_index(first_object)
             if type(first_item).__name__ != 'GlyphInstance' and \
                 type(first_item).__name__ != 'CharacterInstance' and \
@@ -303,7 +303,7 @@ class MouseController(object):
 
                 for i in range(0, ui_ref.stroke_selector_list.count()):
                     cur_item = ui_ref.stroke_selector_list.item(i)
-                    glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
+                    glyph_id = str(cur_item.data(QtCore.Qt.UserRole))
                     if glyph_id == first_glyph:
                         ui_ref.stroke_selector_list.setCurrentRow(i)
                         break
@@ -312,7 +312,7 @@ class MouseController(object):
 
                 for i in range(0, ui_ref.char_selector_list.count()):
                     cur_item = ui_ref.char_selector_list.item(i)
-                    char_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
+                    char_id = str(cur_item.data(QtCore.Qt.UserRole))
                     if char_id == first_char:
                         ui_ref.char_selector_list.setCurrentRow(i)
                         break
@@ -329,7 +329,7 @@ class MouseController(object):
                 ui_ref.stroke_nib_angle_spin.setValue(ui_ref.char_set_nib_angle_spin.value())
 
             if len(cur_view_selection[first_object].keys()):
-                first_vert = cur_view_selection[first_object].keys()[0]
+                first_vert = list(cur_view_selection[first_object])[0]
 
                 vert_item = char_set.get_item_by_index(first_vert)
                 if vert_item.get_pos_of_selected():

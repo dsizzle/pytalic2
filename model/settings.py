@@ -40,7 +40,7 @@ class UserPreferences(object):
 
 	def load(self):
 		if self.__filepath and os.path.exists(self.__filepath):
-			settings_fd = open(self.__filepath, "rb")
+			settings_fd = open(self.__filepath, "r")
 			try:
 				self.__preferences = json.load(settings_fd)
 			except ValueError:
@@ -54,7 +54,7 @@ class UserPreferences(object):
 
 	def save(self):
 		if self.__filepath:
-			settings_fd = open(self.__filepath, "wb")
+			settings_fd = open(self.__filepath, "w")
 			if settings_fd:
 				json.dump(self.preferences, settings_fd)
 				settings_fd.close()

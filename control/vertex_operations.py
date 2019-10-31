@@ -79,7 +79,7 @@ class VertexController(object):
 
         for vert_dict in vert_list:
             for i in range(0, len(vert_dict.keys())):
-                vert = vert_dict.keys()[i]
+                vert = list(vert_dict)[i]
                 vert_item = char_set.get_item_by_index(vert)
                 if use_same_behavior:
                     vert_item.behavior = behavior_list[0]

@@ -82,12 +82,12 @@ class Layout(object):
                 try:
                     char_object = self.object_list[char_obj_idx]
                 except IndexError:
-                    print char_obj_idx
+                    print("IndexError: {}".format(char_obj_idx))
                     break
 
                 char_object_actual = char_set.get_item_by_index(char_object)
 
-                while unichr(char_object_actual.character.unicode_character) != char:
+                while chr(char_object_actual.character.unicode_character) != char:
                     start_char_idx = char_obj_idx
                     char_obj_idx += 1
                     try:

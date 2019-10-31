@@ -56,7 +56,7 @@ class Stroke(object):
         data = struct.pack("<I", len(self.__stroke_ctrl_verts))
 
         for vert in self.__stroke_ctrl_verts:
-            data += struct.pack("<11s", vert)
+            data += struct.pack("<11s", vert.encode('utf-8'))
 
         data += struct.pack("<dd", self.__pos.x(), self.__pos.y())
         if self.__nib_angle:
@@ -79,7 +79,7 @@ class Stroke(object):
         offset += struct.calcsize("<I")
 
         for i in range(0, num_verts):
-            vert_id = struct.unpack_from("<11s", data, offset)[0]
+            vert_id = struct.unpack_from("<11s", data, offset)[0].decode('utf-8')
             offset += struct.calcsize("<11s")
 
             self.__stroke_ctrl_verts.append(vert_id)
@@ -548,7 +548,7 @@ class Stroke(object):
         random.seed(self.seed)
 
         if nib is None:
-            print "ERROR: No nib provided to draw stroke\n"
+            print("ERROR: No nib provided to draw stroke\n")
             return
 
         draw_nib = nib

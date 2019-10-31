@@ -77,17 +77,17 @@ class CommandStack(object):
 
     def dump_undo(self):
         for cmd in self.__undo_stack:
-            print cmd
+            print(cmd)
 
     def dump_redo(self):
         for cmd in self.__redo_stack:
-            print cmd
+            print(cmd)
 
     def dump_stacks(self):
-        print "UNDO\n"
+        print("UNDO\n")
         self.dump_undo()
 
-        print "\nREDO\n"
+        print("\nREDO\n")
         self.dump_redo()
 
 

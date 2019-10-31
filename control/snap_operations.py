@@ -52,11 +52,11 @@ class SnapController(object):
         snapped_points = []
 
         if len(cur_view_selection.keys()) == 1:
-            sel_stroke = cur_view_selection.keys()[0]
+            sel_stroke = list(cur_view_selection)[0]
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
             if len(cur_view_selection[sel_stroke].keys()) == 1:
-                sel_point = cur_view_selection[sel_stroke].keys()[0]
+                sel_point = list(cur_view_selection[sel_stroke])[0]
 
                 ctrl_verts = sel_stroke_item.get_ctrl_vertices(make_copy=False)
 
