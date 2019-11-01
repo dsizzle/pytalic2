@@ -1,7 +1,7 @@
 import os.path
 import json
 
-from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
 import view.widgets_qt
 
@@ -27,8 +27,8 @@ class UserPreferences(object):
 	def show_dialog(self):
 		if self.__dialog and self.__dialog.exec_():
 			widget_list = self.__dialog.findChildren(view.widgets_qt.SelectColorButton)
-			widget_list.extend(self.__dialog.findChildren(QtGui.QDoubleSpinBox))
-			widget_list.extend(self.__dialog.findChildren(QtGui.QSpinBox))
+			widget_list.extend(self.__dialog.findChildren(QtWidgets.QDoubleSpinBox))
+			widget_list.extend(self.__dialog.findChildren(QtWidgets.QSpinBox))
 
 			for widget in widget_list:
 				self.preferences[str(widget.objectName())] = widget.value()
