@@ -413,14 +413,21 @@ class LayoutArea(Canvas):
         if self.draw_guidelines and self.guide_lines:
             self.guide_lines.draw(dc, self.size(), self.origin + self.origin_delta)
 
+        bound_rect = self.frameRect()
+        bound_rect.setWidth(bound_rect.width() / self.scale)
+        bound_rect.setHeight(bound_rect.height() / self.scale)
+        bound_rect.translate(-(self.origin + self.origin_delta) / self.scale)
+        
         if self.layout:
             dc.save()
             dc.translate(self.layout.pos)
+            bound_rect.translate(-self.layout.pos)
 
             for symbol in self.layout.object_list:
                 symbol_item = self.char_set.get_item_by_index(symbol)
                 if symbol_item:
-                    symbol_item.draw(dc, self.nib)
+                    if bound_rect.contains(symbol_item.pos): 
+                        symbol_item.draw(dc, self.nib)
 
             dc.restore()
 
