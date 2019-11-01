@@ -62,8 +62,8 @@ class EditInterface(QtWidgets.QMainWindow, pytalic2_ui.Ui_MainWindow):
             self.__parent.char_set_right_space_changed_cb)
 
         self.guides_color_button.setColor(QtGui.QColor(200, 195, 180))
-        #self.guides_color_button.valueChanged.connect( \
-        #    self.__parent.guide_color_changed_cb)
+        self.guides_color_button.colorChanged.connect( \
+            self.__parent.guide_color_changed_cb)
         
         self.char_set_nib_angle_spin.valueChanged[int].connect( \
             self.__parent.char_set_nib_angle_changed_cb)
@@ -203,10 +203,10 @@ class EditInterface(QtWidgets.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.__glyph_context_menu.addAction(self.stroke_split_at_point)
 
     def about_cb(self, event):
-        reply = QtGui.QMessageBox.information(self, 'About PyTalic Editor', \
+        reply = QtWidgets.QMessageBox.information(self, 'About PyTalic Editor', \
             "PyTalic Editor\nby Dale Cieslak\n(c) 2007-2018" + \
             "\n\nhttps://github.com/dsizzle/pytalic2", \
-            QtGui.QMessageBox.Ok)
+            QtWidgets.QMessageBox.Ok)
 
     def mouseMoveEvent(self, event):
         self.__parent.mouse_event(event)

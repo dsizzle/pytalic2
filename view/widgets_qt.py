@@ -6,12 +6,15 @@ This file contains custom widgets.
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class SelectColorButton(QtWidgets.QPushButton):
+    colorChanged = QtCore.pyqtSignal(QtGui.QColor)
+
     def __init__(self, parent, default_color=None):
         QtWidgets.QPushButton.__init__(self)
         self.__color = QtGui.QColor()
         if default_color:
             self.__color = default_color
         self.__parent = parent
+        
         self.clicked.connect(self.changeColor)
 
     def setColor(self, newColor):
@@ -35,7 +38,7 @@ class SelectColorButton(QtWidgets.QPushButton):
     @QtCore.pyqtSlot()
     def updateColor(self):
         self.setStyleSheet("background-color: " + self.__color.name())
-        #self.valueChanged[QColor].emit(self.__color)
+        self.colorChanged.emit(self.__color)
 
     @QtCore.pyqtSlot()
     def changeColor(self):
