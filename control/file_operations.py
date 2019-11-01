@@ -1,7 +1,7 @@
 import os
 import os.path
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 import model.character_set
 import view.shared_qt
@@ -53,7 +53,7 @@ class FileController(object):
         ui_ref.stroke_selector_list.clear()
 
         for i in range(START_CHAR_CODE, END_CHAR_CODE):
-            char_item = QtGui.QListWidgetItem()
+            char_item = QtWidgets.QListWidgetItem()
             char_item.setText(str(chr(i)))
 
             char_id = char_set.new_character(i)
@@ -119,9 +119,9 @@ class FileController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
 
         file_path = None
-        file_path = ui_ref.file_open_dialog.getOpenFileName(ui_ref, \
-             "Open Character Set", self.__dir_name, \
-             "Character Set Files (*.cs)")
+        file_path, _filter = ui_ref.file_open_dialog.getOpenFileName(ui_ref, \
+             caption="Open Character Set", directory=self.__dir_name, \
+             filter="Character Set Files (*.cs)")
 
         if file_path:
             ui_ref.setUpdatesEnabled(False)
@@ -153,7 +153,7 @@ class FileController(object):
                     sel_stroke = saved_glyph_list[glyph_id]
                     bitmap = ui_ref.dwg_area.draw_icon(None, sel_stroke.strokes)
 
-                    glyph_item = QtGui.QListWidgetItem()
+                    glyph_item = QtWidgets.QListWidgetItem()
                     glyph_item.setText(str(i))
                     glyph_item.setData(QtCore.Qt.UserRole, glyph_id)
                     glyph_item.setIcon(QtGui.QIcon(bitmap))

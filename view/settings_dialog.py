@@ -1,13 +1,13 @@
 #!/usr/bin/python
 #
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 import pytalic2_prefs
 
-class UserPreferencesDialog(QtGui.QDialog, pytalic2_prefs.Ui_Dialog):
+class UserPreferencesDialog(QtWidgets.QDialog, pytalic2_prefs.Ui_Dialog):
     def __init__(self, parent):
-        QtGui.QDialog.__init__(self)
+        QtWidgets.QDialog.__init__(self)
        
         self.__parent = parent
 

@@ -1,4 +1,4 @@
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 import control.edit_control
 import model.commands
@@ -28,7 +28,7 @@ class MouseController(object):
 
         if current_view.underMouse() or current_view.rect().contains(event.pos()):
             scale_change = 0.0
-            if event.delta() > 0:
+            if event.angleDelta().y() > 0:
                 scale_change = -0.02
             else:
                 scale_change = 0.02
@@ -161,7 +161,7 @@ class MouseController(object):
         if self.__main_ctrl.state == control.edit_control.DRAWING_NEW_STROKE:
             stroke_ctrl = self.__main_ctrl.get_stroke_controller()
             stroke_ctrl.add_new_stroke()
-            QtGui.qApp.restoreOverrideCursor()
+            QtWidgets.qApp.restoreOverrideCursor()
 
     def __on_l_button_down_paper(self, pos, shift_down, alt_down):
         ui_ref = self.__main_ctrl.get_ui()
@@ -252,7 +252,7 @@ class MouseController(object):
                         break
 
             self.__main_ctrl.state = control.edit_control.IDLE
-            QtGui.qApp.restoreOverrideCursor()
+            QtWidgets.qApp.restoreOverrideCursor()
         elif self.__main_ctrl.state == control.edit_control.SPLIT_AT_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
@@ -263,7 +263,7 @@ class MouseController(object):
                         break
 
             self.__main_ctrl.state = control.edit_control.IDLE
-            QtGui.qApp.restoreOverrideCursor()
+            QtWidgets.qApp.restoreOverrideCursor()
         elif self.__main_ctrl.state == control.edit_control.SELECT_DRAGGING:
             self.__main_ctrl.state = control.edit_control.IDLE
             self.update_selection(paper_pos, shift_down, current_view.select_rect)

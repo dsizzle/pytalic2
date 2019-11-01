@@ -1,6 +1,6 @@
 import math
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 SNAP_TO_GRID        = 0x0001
 SNAP_TO_AXES        = 0x0002

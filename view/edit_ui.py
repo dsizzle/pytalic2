@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
 import pytalic2_ui
 
@@ -12,18 +12,18 @@ import view.widgets_qt
 ICON_SIZE = 40
 ICON_TEXT_SIZE = 30
 
-class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
+class EditInterface(QtWidgets.QMainWindow, pytalic2_ui.Ui_MainWindow):
     def __init__(self, parent, width, height, label):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
        
-        self.message_dialog = QtGui.QMessageBox()
-        self.file_open_dialog = QtGui.QFileDialog()
-        self.file_save_dialog = QtGui.QFileDialog()
+        self.message_dialog = QtWidgets.QMessageBox()
+        self.file_open_dialog = QtWidgets.QFileDialog()
+        self.file_save_dialog = QtWidgets.QFileDialog()
         self.__parent = parent
 
         self.setupUi(self)
-        self.__dwg_context_menu = QtGui.QMenu()
-        self.__glyph_context_menu = QtGui.QMenu()
+        self.__dwg_context_menu = QtWidgets.QMenu()
+        self.__glyph_context_menu = QtWidgets.QMenu()
         self.setWindowTitle(label)
 
         self.setAcceptDrops(True)
@@ -34,109 +34,83 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         
         self.stroke_selector_list.currentItemChanged.connect(self.__parent.stroke_selected_cb)
 
-        QtCore.QObject.connect(self.base_height_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.base_height_spin.valueChanged.connect( \
             self.__parent.guide_base_height_changed_cb)
         
-        QtCore.QObject.connect(self.cap_height_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.cap_height_spin.valueChanged.connect( \
             self.__parent.guide_cap_height_changed_cb)
 
-        QtCore.QObject.connect(self.ascent_height_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.ascent_height_spin.valueChanged.connect( \
             self.__parent.guide_ascent_changed_cb)
 
-        QtCore.QObject.connect(self.descent_height_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.descent_height_spin.valueChanged.connect( \
             self.__parent.guide_descent_changed_cb)
 
-        QtCore.QObject.connect(self.angle_spin, \
-            QtCore.SIGNAL("valueChanged(int)"), \
+        self.angle_spin.valueChanged.connect( \
             self.__parent.guide_angle_changed_cb)
 
-        QtCore.QObject.connect(self.gap_height_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.gap_height_spin.valueChanged.connect( \
             self.__parent.guide_gap_height_changed_cb)
 
-        QtCore.QObject.connect(self.nominal_width_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.nominal_width_spin.valueChanged.connect( \
             self.__parent.guide_nominal_width_changed_cb)
 
-        QtCore.QObject.connect(self.char_set_left_space_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.char_set_left_space_spin.valueChanged.connect( \
             self.__parent.char_set_left_space_changed_cb)
 
-        QtCore.QObject.connect(self.char_set_right_space_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.char_set_right_space_spin.valueChanged.connect( \
             self.__parent.char_set_right_space_changed_cb)
 
         self.guides_color_button.setColor(QtGui.QColor(200, 195, 180))
-        QtCore.QObject.connect(self.guides_color_button, \
-            QtCore.SIGNAL("valueChanged(QColor)"), \
-            self.__parent.guide_color_changed_cb)
+        #self.guides_color_button.valueChanged.connect( \
+        #    self.__parent.guide_color_changed_cb)
         
-        QtCore.QObject.connect(self.char_set_nib_angle_spin, \
-            QtCore.SIGNAL("valueChanged(int)"), \
+        self.char_set_nib_angle_spin.valueChanged[int].connect( \
             self.__parent.char_set_nib_angle_changed_cb)
 
-        QtCore.QObject.connect(self.char_width_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.char_width_spin.valueChanged.connect( \
             self.__parent.char_width_changed_cb)
 
-        QtCore.QObject.connect(self.left_space_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.left_space_spin.valueChanged.connect( \
             self.__parent.char_left_space_changed_cb)
 
-        QtCore.QObject.connect(self.right_space_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.right_space_spin.valueChanged.connect( \
             self.__parent.char_right_space_changed_cb)
 
-        QtCore.QObject.connect(self.override_char_set, \
-            QtCore.SIGNAL("stateChanged(int)"), \
+        self.override_char_set.stateChanged[int].connect( \
             self.__parent.override_char_set_changed_cb)
 
-        QtCore.QObject.connect(self.position_x_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.position_x_spin.valueChanged.connect( \
             self.__parent.position_x_changed_cb)
 
-        QtCore.QObject.connect(self.position_y_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.position_y_spin.valueChanged.connect( \
             self.__parent.position_y_changed_cb)
 
-        QtCore.QObject.connect(self.vertex_x_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.vertex_x_spin.valueChanged.connect( \
             self.__parent.vertex_x_changed_cb)
 
-        QtCore.QObject.connect(self.vertex_y_spin, \
-            QtCore.SIGNAL("valueChanged(double)"), \
+        self.vertex_y_spin.valueChanged.connect( \
             self.__parent.vertex_y_changed_cb)
 
-        QtCore.QObject.connect(self.behavior_combo, \
-            QtCore.SIGNAL("activated(int)"), \
+        self.behavior_combo.activated[int].connect( \
             self.__parent.vert_behavior_combo_changed_cb)
 
-        QtCore.QObject.connect(self.stroke_nib_combo, \
-            QtCore.SIGNAL("activated(int)"), \
+        self.stroke_nib_combo.activated[int].connect( \
             self.__parent.stroke_nib_combo_changed_cb)
 
-        QtCore.QObject.connect(self.stroke_override_nib_angle, \
-            QtCore.SIGNAL("stateChanged(int)"), \
+        self.stroke_override_nib_angle.stateChanged[int].connect( \
             self.__parent.stroke_override_nib_angle_changed_cb)
 
-        QtCore.QObject.connect(self.stroke_nib_angle_spin, \
-            QtCore.SIGNAL("valueChanged(int)"), \
+        self.stroke_nib_angle_spin.valueChanged[int].connect( \
             self.__parent.stroke_nib_angle_changed_cb)
 
-        QtCore.QObject.connect(self.layout_reset_button, \
-            QtCore.SIGNAL("clicked()"), \
+        self.layout_reset_button.clicked.connect( \
             self.__parent.layout_update_cb)
 
-        QtCore.QObject.connect(self.layout_combo, \
-            QtCore.SIGNAL("currentIndexChanged(int)"), \
+        self.layout_combo.currentIndexChanged[int].connect( \
             self.__parent.layout_changed_cb)
 
-        QtCore.QObject.connect(self.frame_layout_button, \
-            QtCore.SIGNAL("clicked()"), \
+        self.frame_layout_button.clicked.connect( \
             self.__parent.layout_frame_cb)
         
         self.create_menu()
@@ -250,7 +224,7 @@ class EditInterface(QtGui.QMainWindow, pytalic2_ui.Ui_MainWindow):
         self.__parent.key_event(event)
 
     def paintEvent(self, event):
-        QtGui.QMainWindow.paintEvent(self, event)
+        QtWidgets.QMainWindow.paintEvent(self, event)
 
     def closeEvent(self, event):
         close = self.__parent.quit_cb(event)

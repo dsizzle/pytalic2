@@ -1,6 +1,6 @@
 import math
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from model import nibs
 import view.shared_qt
@@ -8,9 +8,9 @@ import view.shared_qt
 """
 Canvas base class
 """
-class Canvas(QtGui.QFrame):
+class Canvas(QtWidgets.QFrame):
     def __init__(self, parent):
-        QtGui.QFrame.__init__(self, parent)
+        QtWidgets.QFrame.__init__(self, parent)
         
         self.__origin = None
         self.__origin_delta = QtCore.QPoint(0, 0)
@@ -186,7 +186,7 @@ class Canvas(QtGui.QFrame):
 
         dc.restore()
         dc.end()
-        QtGui.QFrame.paintEvent(self, event)
+        QtWidgets.QFrame.paintEvent(self, event)
 
 
 class DrawingArea(Canvas):
@@ -370,7 +370,7 @@ class DrawingArea(Canvas):
 
         dc.restore()
         dc.end()
-        QtGui.QFrame.paintEvent(self, event)
+        QtWidgets.QFrame.paintEvent(self, event)
 
 
 class LayoutArea(Canvas):
@@ -431,4 +431,4 @@ class LayoutArea(Canvas):
             
         dc.restore()
         dc.end()
-        QtGui.QFrame.paintEvent(self, event)
+        QtWidgets.QFrame.paintEvent(self, event)

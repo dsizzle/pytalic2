@@ -2,7 +2,7 @@
 import math
 import struct
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 import view.handle
 import view.shared_qt

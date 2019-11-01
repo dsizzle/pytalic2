@@ -1,6 +1,6 @@
 import struct
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 import model.instance
 import model.stroke

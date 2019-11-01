@@ -1,6 +1,6 @@
 import math
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 import control.edit_control
 import model.commands
@@ -37,7 +37,7 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
 
         self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
-        QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
+        QtWidgets.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
         ui_ref.setUpdatesEnabled(False)
         dwg_tab = ui_ref.main_view_tabs.indexOf(current_view.parent())

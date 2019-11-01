@@ -7,7 +7,7 @@ Contains EditorController class.
 """
 import os
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 import control.clipboard_operations
 import control.file_operations
@@ -187,10 +187,10 @@ class EditorController(object):
             reply = self.__ui.message_dialog.question(self.__ui, \
                 'Quit Program', \
                 "You have unsaved changes. Are you sure you want to quit?", \
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
-                QtGui.QMessageBox.No)
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, \
+                QtWidgets.QMessageBox.No)
 
-            if reply == QtGui.QMessageBox.Yes:
+            if reply == QtWidgets.QMessageBox.Yes:
                 self.__ui.close()
                 close = True
 
@@ -249,10 +249,10 @@ class EditorController(object):
             reply = self.__ui.message_dialog.question(self.__ui, \
                 'New Character Set', \
                 "You have unsaved changes. Are you sure you want to create a new character set?", \
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
-                QtGui.QMessageBox.No)
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, \
+                QtWidgets.QMessageBox.No)
 
-            if reply == QtGui.QMessageBox.No:
+            if reply == QtWidgets.QMessageBox.No:
                 return
 
         self.__file_controller.file_new()
@@ -278,10 +278,10 @@ class EditorController(object):
             reply = self.__ui.message_dialog.question(self.__ui, \
                 'Open File', \
                 "You have unsaved changes. Are you sure you want to open a file?", \
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, \
-                QtGui.QMessageBox.No)
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, \
+                QtWidgets.QMessageBox.No)
 
-            if reply == QtGui.QMessageBox.No:
+            if reply == QtWidgets.QMessageBox.No:
                 return
 
         file_path = self.__file_controller.file_open()

@@ -3,7 +3,7 @@ shared_qt.py
 
 a place to store some Qt objects that are shared amongst modules
 """
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 ICON_SIZE = 40
 

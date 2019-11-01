@@ -6,7 +6,7 @@ nibs class definitions
 import math
 import time
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 class Nib(object):
     def __init__(self, width=10, angle=40, color=QtGui.QColor(125, 125, 125)):

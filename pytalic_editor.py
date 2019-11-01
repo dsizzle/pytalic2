@@ -7,20 +7,20 @@ creating and editing character sets for use with pyTalic.
 import os
 import sys
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 from control import edit_control
 
 
-class PytalicEditorApp(QtGui.QApplication):
+class PytalicEditorApp(QtWidgets.QApplication):
     """
     PytalicEditorApp
 
     the main Qt Application class
     """
     def __init__(self, args):
-        QtGui.QApplication.__init__(self, args)
-        QtGui.qApp = self
+        QtWidgets.QApplication.__init__(self, args)
+        QtWidgets.qApp = self
 
 
 def main(args=None):
