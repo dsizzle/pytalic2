@@ -130,7 +130,7 @@ class StrokeController(object):
         ui_ref = self.__main_ctrl.get_ui()
 
         bitmap = ui_ref.dwg_area.draw_icon(None, saved_selection)
-        glyph_item = QtGui.QListWidgetItem()
+        glyph_item = QtWidgets.QListWidgetItem()
         glyph_item.setText(str(first_item))
         glyph_item.setData(QtCore.Qt.UserRole, glyph_instance.instanced_object)
         glyph_item.setIcon(QtGui.QIcon(bitmap))
@@ -378,7 +378,7 @@ class StrokeController(object):
 
         ui_ref = self.__main_ctrl.get_ui()
 
-        glyph_item = QtGui.QListWidgetItem()
+        glyph_item = QtWidgets.QListWidgetItem()
         glyph_item.setText(str(glyph_index))
         glyph_item.setData(QtCore.Qt.UserRole, glyph_id)
         glyph_item.setIcon(QtGui.QIcon(bitmap))
