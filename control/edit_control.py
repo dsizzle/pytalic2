@@ -141,6 +141,8 @@ class EditorController(object):
             char_object = self.__char_set.get_char(char)
             char_object.calculate_bound_rect()
 
+        self.__char_set.user_preferences = self.__user_preferences
+
     def get_state(self):
         return self.__state
 
