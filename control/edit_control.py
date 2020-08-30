@@ -258,6 +258,10 @@ class EditorController(object):
                 return
 
         self.__file_controller.file_new()
+        self.__ui.dwg_area.char_set = self.__char_set
+        self.__ui.stroke_dwg_area.char_set = self.__char_set
+        self.__ui.preview_area.char_set = self.__char_set
+        
         cur_char_idx = str(self.__ui.char_selector_list.currentItem().data(QtCore.Qt.UserRole))
         self.__char_set.set_current_char_by_index(cur_char_idx)
         self.__cur_char = self.__char_set.get_current_char()

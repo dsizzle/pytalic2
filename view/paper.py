@@ -3,6 +3,7 @@ import math
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from model import nibs
+import view.overlay
 import view.shared_qt
 
 """
@@ -332,6 +333,22 @@ class DrawingArea(Canvas):
             self.symbol.draw(dc, nib=self.nib, nib_glyph=self.nib, \
                 draw_color=self.__color_main, color_glyph=self.__color_instance)
             
+            selected_children = []
+            
+            for child in self.symbol.children:
+                child_item = self.char_set.get_item_by_index(child)
+                print(child_item)
+                if child_item and child_item.selected:
+                    dc.save()
+                    select_overlay = view.overlay.RectHandleOverlay(child_item.bound_rect)
+                    if type(child_item).__name__ != "GlyphInstance":
+                        dc.translate(child_item.pos)
+                    
+                    select_overlay.draw(dc)
+
+                    dc.restore()
+
+
         if len(self.__strokes_to_draw) > 0:
             dc.save()
             dc.translate(self.symbol.pos)
