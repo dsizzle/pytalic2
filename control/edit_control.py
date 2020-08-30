@@ -777,7 +777,7 @@ class EditorController(object):
                 if prev_value == new_value:
                     return
 
-                self.__stroke_controller.selection_position_changed_x(prev_value, \
+                self.__stroke_controller.selection_position_changed_y(prev_value, \
                     new_value)
 
     def layout_update_cb(self):
