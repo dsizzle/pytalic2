@@ -108,42 +108,40 @@ class ControlVertex(object):
                 self.__handle_pos[handle] = None
             return
 
+        knot_delta = self.__handle_pos[KNOT] - point
+
+        self.__handle_pos[handle] = QtCore.QPointF(point)
+
         if self.__handle_pos[LEFT_HANDLE]:
-            old_l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
+            l_delta = self.__handle_pos[LEFT_HANDLE] - self.__handle_pos[KNOT]
         else:
-            old_l_delta = QtCore.QPointF(0, 0)
-
-        old_knot_delta = self.__handle_pos[KNOT] - point
-
+            l_delta = QtCore.QPointF(0, 0)
+        
         if self.__handle_pos[RIGHT_HANDLE]:
-            old_r_delta = self.__handle_pos[KNOT] - self.__handle_pos[RIGHT_HANDLE]
+            r_delta = self.__handle_pos[KNOT] - self.__handle_pos[RIGHT_HANDLE]
         else:
-            old_r_delta = QtCore.QPointF(0, 0)
+            r_delta = QtCore.QPointF(0, 0)
 
-        left_len = math.sqrt(float(old_l_delta.x() * old_l_delta.x()) + \
-            float(old_l_delta.y() * old_l_delta.y()))
-        right_len = math.sqrt(float(old_r_delta.x() * old_r_delta.x()) + \
-            float(old_r_delta.y() * old_r_delta.y()))
+        left_len = math.sqrt(float(l_delta.x() * l_delta.x()) + \
+            float(l_delta.y() * l_delta.y()))
+        right_len = math.sqrt(float(r_delta.x() * r_delta.x()) + \
+            float(r_delta.y() * r_delta.y()))
 
         if handle == KNOT:
             if self.__handle_pos[LEFT_HANDLE]:
-                self.__handle_pos[LEFT_HANDLE] -= old_knot_delta
+                self.__handle_pos[LEFT_HANDLE] -= knot_delta
             if self.__handle_pos[RIGHT_HANDLE]:
-                self.__handle_pos[RIGHT_HANDLE] -= old_knot_delta
+                self.__handle_pos[RIGHT_HANDLE] -= knot_delta
 
         elif self.__behavior == SMOOTH:
             if handle == RIGHT_HANDLE and self.__handle_pos[LEFT_HANDLE]:
-                if right_len == 0:
-                    l_delta = old_l_delta
-                else:
-                    l_delta = -old_r_delta * left_len / right_len
-                self.__handle_pos[LEFT_HANDLE] = self.__handle_pos[KNOT] - l_delta
+                if right_len > 0:
+                    l_delta = r_delta * left_len / right_len
+                self.__handle_pos[LEFT_HANDLE] = self.__handle_pos[KNOT] + l_delta
             elif self.__handle_pos[RIGHT_HANDLE]:
-                if left_len == 0:
-                    r_delta = old_r_delta
-                else:
-                    r_delta = -old_l_delta * right_len / left_len
-                self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] + r_delta
+                if left_len > 0:
+                    r_delta = l_delta * right_len / left_len
+                self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] - r_delta
 
         elif self.__behavior == SYMMETRIC:
             if handle == RIGHT_HANDLE and self.__handle_pos[LEFT_HANDLE]:
@@ -151,7 +149,6 @@ class ControlVertex(object):
             elif self.__handle_pos[RIGHT_HANDLE]:
                 self.__handle_pos[RIGHT_HANDLE] = self.__handle_pos[KNOT] - old_l_delta
 
-        self.__handle_pos[handle] = QtCore.QPointF(point)
 
     def get_handle_pos_as_list(self):
         knot = [self.__handle_pos[KNOT].x(), self.__handle_pos[KNOT].y()]
