@@ -155,7 +155,7 @@ class Glyph(object):
 
         self.calculate_bound_rect()
 
-    def is_inside(self, point):
+    def is_inside(self, point, handle_size=None):
 
         test_point = point - self.pos
         if not self.bound_rect or self.bound_rect.isEmpty():
@@ -212,12 +212,6 @@ class Glyph(object):
 
         if not self.bound_rect or self.bound_rect.isEmpty():
             self.calculate_bound_rect()
-
-        if self.__is_selected:
-            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
-            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
-
-            gc.drawRect(self.bound_rect)
 
         gc.restore()
 
@@ -379,12 +373,6 @@ class Character(Glyph):
            
         if not self.bound_rect:
             self.calculate_bound_rect()
-
-        if self.selected:
-            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
-            gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT)
-
-            gc.drawRect(self.bound_rect)
 
         gc.restore()
 

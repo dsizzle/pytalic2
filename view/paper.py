@@ -201,6 +201,8 @@ class DrawingArea(Canvas):
         self.__color_instance = QtGui.QColor(25, 125, 25)
         self.__color_special = QtGui.QColor(25, 25, 125)
 
+        self.__handle_size = 10
+
     def set_draw_strokes(self, strokes):
         self.__strokes_to_draw = strokes
 
@@ -276,6 +278,8 @@ class DrawingArea(Canvas):
         if not self.nib:
             return
 
+        self.__handle_size = self.char_set.user_preferences.preferences['handle_size_spin']
+
         nib_pixmap = QtGui.QPixmap(20, 2)
 
         dc = QtGui.QPainter()
@@ -337,27 +341,42 @@ class DrawingArea(Canvas):
             
             for child in self.symbol.children:
                 child_item = self.char_set.get_item_by_index(child)
-                print(child_item)
                 if child_item and child_item.selected:
                     dc.save()
                     select_overlay = view.overlay.RectHandleOverlay(child_item.bound_rect)
                     if type(child_item).__name__ != "GlyphInstance":
                         dc.translate(child_item.pos)
-                    
-                    select_overlay.draw(dc)
+                        control_verts = child_item.get_ctrl_vertices(False)
+
+                        for vert in control_verts:
+                            vert_item = self.char_set.get_item_by_index(vert)
+                            vertex_overlay = view.overlay.VertexHandleOverlay(vert_item)
+
+                            vertex_overlay.draw(dc, self.__handle_size / self.scale)
+
+                    select_overlay.draw(dc, self.__handle_size * 2 / self.scale)
 
                     dc.restore()
 
 
         if len(self.__strokes_to_draw) > 0:
             dc.save()
-            dc.translate(self.symbol.pos)
-
             tmp_strokes = self.__strokes_to_draw[:]
 
             while len(tmp_strokes):
+                dc.translate(self.symbol.pos)
+    
                 strk = tmp_strokes.pop()
                 strk.draw(dc, nib=self.nib, draw_color=self.__color_special)
+
+                control_verts = strk.get_ctrl_vertices(False)
+
+                dc.translate(strk.pos)
+                for vert in control_verts:
+                    vert_item = self.char_set.get_item_by_index(vert)
+                    vertex_overlay = view.overlay.VertexHandleOverlay(vert_item)
+
+                    vertex_overlay.draw(dc, self.__handle_size / self.scale)
 
             dc.restore()
             
@@ -396,6 +415,8 @@ class LayoutArea(Canvas):
         self.__layout = None
         self.__strokes_to_draw = []
 
+        self.__handle_size = 10
+
     layout = property(Canvas.get_subject, Canvas.set_subject)
 
     def frame_layout(self):
@@ -411,6 +432,8 @@ class LayoutArea(Canvas):
     def paintEvent(self, event):
         if not self.nib:
             return
+
+        self.__handle_size = self.char_set.user_preferences.preferences['handle_size_spin']
 
         dc = QtGui.QPainter()
 
@@ -445,6 +468,12 @@ class LayoutArea(Canvas):
                 if symbol_item:
                     if bound_rect.contains(symbol_item.pos): 
                         symbol_item.draw(dc, self.nib)
+
+                        if symbol_item.selected:
+                            dc.translate(symbol_item.pos) 
+                            select_overlay = view.overlay.RectHandleOverlay(symbol_item.bound_rect)
+
+                            select_overlay.draw(dc, self.__handle_size * 2 / self.scale)
 
             dc.restore()
 

@@ -593,21 +593,6 @@ class Stroke(object):
         #     self.__end_serif.setAngle(nib.getAngle())
         #     self.__end_serif.draw(gc, nib)
 
-        if self.__is_selected:
-            gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
-            gc.setBrush(shared_qt.BRUSH_CLEAR)
-            gc.drawEllipse(QtCore.QPointF(0, 0), 10, 10)
-
-            for vert in self.__stroke_ctrl_verts:
-                vert_item = self.__char_set.get_item_by_index(vert)
-                vert_item.draw(gc)
-
-            if self.__bound_rect is not None:
-                gc.setBrush(shared_qt.BRUSH_CLEAR)
-                gc.setPen(shared_qt.PEN_MD_GRAY_DOT)
-
-                gc.drawRect(self.__bound_rect)
-
         gc.restore()
         draw_nib.angle = tmp_angle
         draw_nib.color = tmp_color
@@ -629,9 +614,10 @@ class Stroke(object):
 
         return False
 
-    def is_inside(self, point, get_closest_vert=False):
+    def is_inside(self, point, get_closest_vert=False, handle_size=40):
         test_point = point - self.__pos
-        test_box = QtCore.QRectF(test_point.x()-20, test_point.y()-20, 40, 40)
+        test_box = QtCore.QRectF(test_point.x()-handle_size/2, test_point.y()-handle_size/2, \
+            handle_size, handle_size)
         is_inside = False
 
         if self.__bound_path:
@@ -646,7 +632,7 @@ class Stroke(object):
                 for i in range(0, len(self.__stroke_ctrl_verts)):
                     vert_index = self.__stroke_ctrl_verts[i]
                     vert_object = self.__char_set.get_item_by_index(vert_index)
-                    handle =  vert_object.contains(test_point)
+                    handle =  vert_object.contains(test_point, handle_size)
                     if handle:
                         vertex = (i*3) + handle - 2
                         break

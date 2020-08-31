@@ -1,0 +1,9 @@
+SMOOTH      = 1
+SHARP       = 2
+SYMMETRIC   = 3
+
+LEFT_HANDLE     = 1
+KNOT            = 2
+RIGHT_HANDLE    = 3
+
+MAGIC_NONE = 987654321

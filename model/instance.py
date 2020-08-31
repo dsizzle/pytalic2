@@ -94,7 +94,7 @@ class Instance(object):
 
     selected = property(get_select_state, set_select_state)
 
-    def is_inside(self, point):
+    def is_inside(self, point, handle_size=None):
         if self.__instanced_object and self.__char_set:
             test_point = (point / self.__scale) - self.__pos
             is_inside =  self.actual_object.is_inside(test_point)
@@ -129,19 +129,6 @@ class Instance(object):
         object_to_draw.draw(gc, nib=nib, draw_color=draw_color)
         gc.restore()
 
-        bound_rect = object_to_draw.bound_rect
-
-        if self.__is_selected:
-            gc.save()
-            gc.scale(self.__scale, self.__scale)
-            gc.translate(self.__pos)
-            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
-            gc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_0)
-
-            gc.drawRect(bound_rect)
-
-            gc.restore()
-
 
 class StrokeInstance(Instance):
     def __init__(self, char_set=None, parent=None):
@@ -156,7 +143,7 @@ class StrokeInstance(Instance):
     def get_bound_rect(self):
         return self.stroke.get_bound_rect()
 
-    def is_inside(self, point):
+    def is_inside(self, point, handle_size=None):
         if self.stroke is not None:
             stroke_pos = self.stroke.pos
             test_point = point + stroke_pos - self.__pos

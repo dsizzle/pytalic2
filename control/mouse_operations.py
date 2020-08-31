@@ -352,6 +352,7 @@ class MouseController(object):
         cur_view_selection = selection[current_view]
         char_set = self.__main_ctrl.get_character_set()
         ui_ref = self.__main_ctrl.get_ui()
+        handle_size = char_set.user_preferences.preferences['handle_size_spin'] * 4 / current_view.scale
         
         if current_view == ui_ref.preview_area:
             layout_pos = ui_ref.preview_area.layout.pos
@@ -362,7 +363,7 @@ class MouseController(object):
         inside_strokes = {}
         for sel_stroke in cur_view_selection.keys():
             sel_stroke_item = char_set.get_item_by_index(sel_stroke)
-            inside_info = sel_stroke_item.is_inside(test_pos)
+            inside_info = sel_stroke_item.is_inside(test_pos, handle_size)
             if inside_info[0]:
                 inside_strokes[sel_stroke] = inside_info
 
