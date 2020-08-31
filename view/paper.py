@@ -470,11 +470,13 @@ class LayoutArea(Canvas):
                         symbol_item.draw(dc, self.nib)
 
                         if symbol_item.selected:
+                            dc.save()
                             dc.translate(symbol_item.pos) 
                             select_overlay = view.overlay.RectHandleOverlay(symbol_item.bound_rect)
 
                             select_overlay.draw(dc, self.__handle_size * 2 / self.scale)
-
+                            dc.restore()
+                            
             dc.restore()
 
         if self.select_rect:

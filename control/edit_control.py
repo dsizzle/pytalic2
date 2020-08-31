@@ -418,8 +418,11 @@ class EditorController(object):
         self.__ui.dwg_area.symbol = self.__cur_char
 
         check_state = QtCore.Qt.Unchecked
+        self.__ui.char_width_spin.blockSignals(True)
         self.__ui.char_width_spin.setEnabled(False)
+        self.__ui.left_space_spin.blockSignals(True)
         self.__ui.left_space_spin.setEnabled(False)
+        self.__ui.right_space_spin.blockSignals(True)
         self.__ui.right_space_spin.setEnabled(False)
         
         if self.__cur_char.override_spacing:
@@ -436,6 +439,10 @@ class EditorController(object):
             self.__ui.left_space_spin.setValue(left_spacing)
             self.__ui.right_space_spin.setValue(right_spacing)
             self.__ui.char_width_spin.setValue(width)
+        
+        self.__ui.char_width_spin.blockSignals(False)
+        self.__ui.left_space_spin.blockSignals(False)
+        self.__ui.right_space_spin.blockSignals(False)
         
         self.__ui.setUpdatesEnabled(True)
         self.clear_selection()
