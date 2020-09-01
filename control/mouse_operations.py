@@ -29,9 +29,9 @@ class MouseController(object):
         if current_view.underMouse() or current_view.rect().contains(event.pos()):
             scale_change = 0.0
             if event.angleDelta().y() > 0:
-                scale_change = -0.02
+                scale_change = -0.05 * current_view.scale
             else:
-                scale_change = 0.02
+                scale_change = 0.05 * current_view.scale
 
             current_view.scale += scale_change
 

@@ -105,8 +105,8 @@ class Canvas(QtWidgets.QFrame):
         self.__scale = new_scale
         if self.__scale < 0.01:
             self.__scale = 0.01
-        elif self.__scale > 10.0:
-            self.__scale = 10.0
+        elif self.__scale > 5.0:
+            self.__scale = 5.0
 
     scale = property(get_scale, set_scale)
 
