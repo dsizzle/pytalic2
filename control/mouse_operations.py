@@ -323,6 +323,10 @@ class MouseController(object):
 
             ui_ref.position_x_spin.setValue(first_item.pos.x())
             ui_ref.position_y_spin.setValue(first_item.pos.y())
+            ui_ref.position_x_spin.setEnabled(True)
+            ui_ref.position_y_spin.setEnabled(True)
+            ui_ref.vertex_x_spin.setEnabled(False)
+            ui_ref.vertex_y_spin.setEnabled(False)
             if type(first_item).__name__ != 'GlyphInstance' and \
                 type(first_item).__name__ != 'CharacterInstance' and \
                 nib_angle_override:
@@ -331,6 +335,10 @@ class MouseController(object):
                 ui_ref.stroke_nib_angle_spin.setValue(ui_ref.char_set_nib_angle_spin.value())
 
             if len(cur_view_selection[first_object].keys()):
+                ui_ref.position_x_spin.setEnabled(False)
+                ui_ref.position_y_spin.setEnabled(False)
+                ui_ref.vertex_x_spin.setEnabled(True)
+                ui_ref.vertex_y_spin.setEnabled(True)
                 first_vert = list(cur_view_selection[first_object])[0]
 
                 vert_item = char_set.get_item_by_index(first_vert)

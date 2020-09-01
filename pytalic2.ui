@@ -562,6 +562,9 @@
                   </item>
                   <item>
                    <widget class="QDoubleSpinBox" name="vertex_x_spin">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="keyboardTracking">
                      <bool>false</bool>
                     </property>
@@ -589,6 +592,9 @@
                   </item>
                   <item>
                    <widget class="QDoubleSpinBox" name="vertex_y_spin">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="keyboardTracking">
                      <bool>false</bool>
                     </property>
