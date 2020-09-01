@@ -219,29 +219,31 @@ class MouseController(object):
             ui_ref.position_y_spin.setValue(stroke_ctrl.tmp_stroke.pos.y())
 
         elif self.__main_ctrl.state == control.edit_control.DRAGGING:
-            move_cmd = model.commands.Command('move_stroke_cmd')
-            selection_copy = cur_view_selection.copy()
-            do_args = {
-                'strokes' : selection_copy,
-                'delta' : self.__move_delta,
-            }
+            if (self.__move_delta != QtCore.QPoint(0, 0)):
+                move_cmd = model.commands.Command('move_stroke_cmd')
+                selection_copy = cur_view_selection.copy()
+                do_args = {
+                    'strokes' : selection_copy,
+                    'delta' : self.__move_delta,
+                }
 
-            undo_args = {
-                'strokes' : selection_copy,
-                'delta' : QtCore.QPoint(0, 0) - self.__move_delta,
-            }
+                undo_args = {
+                    'strokes' : selection_copy,
+                    'delta' : QtCore.QPoint(0, 0) - self.__move_delta,
+                }
 
-            move_cmd.set_do_args(do_args)
-            move_cmd.set_undo_args(undo_args)
-            move_cmd.set_do_function(stroke_ctrl.move_selected)
-            move_cmd.set_undo_function(stroke_ctrl.move_selected)
+                move_cmd.set_do_args(do_args)
+                move_cmd.set_undo_args(undo_args)
+                move_cmd.set_do_function(stroke_ctrl.move_selected)
+                move_cmd.set_undo_function(stroke_ctrl.move_selected)
+  
+                cmd_stack.add_to_undo(move_cmd)
+                cmd_stack.save_count += 1
+                ui_ref.edit_undo.setEnabled(True)
 
-            cmd_stack.add_to_undo(move_cmd)
-            cmd_stack.save_count += 1
-            ui_ref.edit_undo.setEnabled(True)
+                self.__move_delta = QtCore.QPoint(0, 0)
 
             self.__main_ctrl.state = control.edit_control.IDLE
-            self.__move_delta = QtCore.QPoint(0, 0)
         elif self.__main_ctrl.state == control.edit_control.ADDING_CTRL_POINT:
             if len(cur_view_selection.keys()) > 0:
                 for sel_stroke in cur_view_selection.keys():
