@@ -344,8 +344,8 @@ class DrawingArea(Canvas):
                 if child_item and child_item.selected:
                     dc.save()
                     select_overlay = view.overlay.RectHandleOverlay(child_item.bound_rect)
+                    dc.translate(child_item.pos)
                     if type(child_item).__name__ != "GlyphInstance":
-                        dc.translate(child_item.pos)
                         control_verts = child_item.get_ctrl_vertices(False)
 
                         for vert in control_verts:
