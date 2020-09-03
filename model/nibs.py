@@ -105,9 +105,7 @@ class Nib(object):
         bound_path = []
         bound_rect = QtCore.QRectF()
 
-        for i in range(0, len(stroke.curve_path)):
-            new_curves = stroke.split_curve(self.__angle, i)
-            
+        for new_curves in stroke.curves:
             for curve in new_curves:
                 path1 = QtGui.QPainterPath(curve)
                 path2 = QtGui.QPainterPath(curve).toReversed()

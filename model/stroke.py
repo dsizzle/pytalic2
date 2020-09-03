@@ -51,6 +51,8 @@ class Stroke(object):
         self.__is_selected = False
 
         self.seed = time.time()
+        self.__cached_nib_angle = None
+        self.curves = []
 
     def serialize(self):
         data = struct.pack("<I", len(self.__stroke_ctrl_verts))
@@ -250,6 +252,8 @@ class Stroke(object):
         
             self.__curve_path.append(curve_path)
             offset += 3
+
+        self.__cached_nib_angle = None
 
     def split_curve(self, test_angle, path_num):
         left = []
@@ -544,7 +548,7 @@ class Stroke(object):
 
     parent = property(get_parent, set_parent)
 
-    def draw(self, gc, nib=None, draw_color=None):
+    def draw(self, gc, nib=None, draw_color=None, update_curves=False):
         random.seed(self.seed)
 
         if nib is None:
@@ -573,6 +577,15 @@ class Stroke(object):
         if len(verts) > 0:
             if not self.__curve_path:
                 self.calc_curve_points()
+
+            if update_curves or self.__cached_nib_angle != draw_nib.angle:
+                self.__cached_nib_angle = draw_nib.angle
+                self.curves = []
+
+                for i in range(0, len(self.__curve_path)):
+                    new_curves = self.split_curve(self.__cached_nib_angle, i)
+
+                    self.curves.append(new_curves)
 
             self.__bound_rect, self.__bound_path = draw_nib.draw(gc, self)
 

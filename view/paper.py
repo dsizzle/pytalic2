@@ -367,7 +367,7 @@ class DrawingArea(Canvas):
                 dc.translate(self.symbol.pos)
     
                 strk = tmp_strokes.pop()
-                strk.draw(dc, nib=self.nib, draw_color=self.__color_special)
+                strk.draw(dc, nib=self.nib, draw_color=self.__color_special, update_curves=True)
 
                 control_verts = strk.get_ctrl_vertices(False)
 
