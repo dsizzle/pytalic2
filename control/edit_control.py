@@ -312,11 +312,11 @@ class EditorController(object):
 
     def add_control_point_cb(self, event):
         self.state = ADDING_CTRL_POINT
-        QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
+        QtWidgets.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
     def split_at_point_cb(self, event):
         self.state = SPLIT_AT_POINT
-        QtGui.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
+        QtWidgets.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
     def delete_strokes_cb(self, event):
         selected_verts = 0
