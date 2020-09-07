@@ -78,6 +78,7 @@ class MouseController(object):
 
         if self.__main_ctrl.state == control.edit_control.MOVING_PAPER and left_up:
             self.__main_ctrl.state = control.edit_control.IDLE
+            QtWidgets.qApp.restoreOverrideCursor()
         else:
             if right_up:
                 self.__on_r_button_up_paper()
@@ -137,6 +138,7 @@ class MouseController(object):
         elif left_down and alt_down and self.__main_ctrl.state == control.edit_control.IDLE:
             self.__saved_mouse_pos_paper[current_view] = paper_pos
             self.__main_ctrl.state = control.edit_control.MOVING_PAPER
+            QtWidgets.qApp.setOverrideCursor(QtCore.Qt.ClosedHandCursor)
         elif left_down and self.__main_ctrl.state == control.edit_control.IDLE:
             self.__main_ctrl.state = control.edit_control.DRAGGING
             self.__saved_mouse_pos_paper[current_view] = paper_pos
