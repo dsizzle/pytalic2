@@ -94,9 +94,17 @@ class Instance(object):
 
     selected = property(get_select_state, set_select_state)
 
+    def get_scale(self):
+        return self.__scale
+
+    def set_scale(self, new_scale):
+        self.__scale = new_scale
+
+    scale = property(get_scale, set_scale)
+
     def is_inside(self, point, handle_size=None):
         if self.__instanced_object and self.__char_set:
-            test_point = (point / self.__scale) - self.__pos
+            test_point = (point - self.__pos) / self.__scale  #(point / self.__scale) - self.__pos
             is_inside =  self.actual_object.is_inside(test_point)
         else:
             is_inside = (False, -1, None)
@@ -122,10 +130,10 @@ class Instance(object):
         object_pos = object_to_draw.pos
 
         gc.save()
-        gc.scale(self.__scale, self.__scale)
+        
         gc.translate(-object_pos)
         gc.translate(self.__pos)
-
+        gc.scale(self.__scale, self.__scale)
         object_to_draw.draw(gc, nib=nib, draw_color=draw_color)
         gc.restore()
 

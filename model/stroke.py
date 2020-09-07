@@ -33,6 +33,7 @@ class Stroke(object):
             self.__nib = from_stroke.nib
             self.__nib_index = from_stroke.nib_index
             self.__override_nib_angle = from_stroke.override_nib_angle
+            self.__scale = from_stroke.scale
         else:
             self.__start_serif = None
             self.__end_serif = None
@@ -44,6 +45,7 @@ class Stroke(object):
             self.__nib = None
             self.__nib_index = 0
             self.__override_nib_angle = False
+            self.__scale = 1.0
 
         self.__instances = {}
         self.__parent = parent
@@ -164,6 +166,14 @@ class Stroke(object):
         return self.__nib_index
 
     nib_index = property(get_nib_index, set_nib_index)
+
+    def get_scale(self):
+        return self.__scale
+
+    def set_scale(self, new_scale):
+        self.__scale = new_scale
+
+    scale = property(get_scale, set_scale)
 
     def straighten(self):
         temp_ctrl_verts = []

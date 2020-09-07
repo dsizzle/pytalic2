@@ -19,11 +19,14 @@ class Overlay(object):
 
 
 class RectHandleOverlay(Overlay):
-	def __init__(self, rect = None):
+	def __init__(self, rect=None, scale=1):
 		self.__rect = rect
+		self.__scale = scale
 
 	def draw(self, gc, handle_size):
 		if self.__rect:
+			gc.save()
+			gc.scale(self.__scale, self.__scale)
 			gc.setBrush(view.shared_qt.BRUSH_CLEAR)
 			gc.setPen(view.shared_qt.PEN_MD_GRAY_DOT_0)
 
@@ -31,7 +34,7 @@ class RectHandleOverlay(Overlay):
 			gc.drawRect(self.__rect.bottomRight().x() - handle_size / 2, \
 				self.__rect.bottomRight().y() - handle_size / 2, \
 				handle_size, handle_size)
-
+			gc.restore()
 
 class VertexHandleOverlay(Overlay):
 	def __init__(self, vertex=None):
