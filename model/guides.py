@@ -33,14 +33,18 @@ class GuideLines(object):
         self.__angle_dx = math.tan(math.radians(self.__angle))
 
         self.__nib_width = 0
-        self.__line_color = None
+        self.__line_color = QtGui.QColor(0, 0, 0, 128)
         self.__line_color_lt = None
         self.__line_color_alpha = None
-        self.__line_pen_lt = None
-        self.__line_pen = None
-        self.__line_pen_2 = None
-        self.__line_pen_dotted = None
-        self.__spacer_brush = None
+        self.__line_pen_lt = QtGui.QPen(self.__line_color, 1, QtCore.Qt.SolidLine)
+        self.__line_pen_lt.setCosmetic(True)
+        self.__line_pen =  QtGui.QPen(self.__line_color, 1, QtCore.Qt.SolidLine)
+        self.__line_pen.setCosmetic(True)
+        self.__line_pen_2 = QtGui.QPen(self.__line_color, 2, QtCore.Qt.SolidLine)
+        self.__line_pen_2.setCosmetic(True)
+        self.__line_pen_dotted = QtGui.QPen(self.__line_color, 1, QtCore.Qt.DotLine)
+        self.__line_pen_dotted.setCosmetic(True)
+        self.__spacer_brush = QtGui.QBrush(self.__line_color, QtCore.Qt.SolidPattern)
 
         self.line_color = QtGui.QColor(200, 195, 180)
 
@@ -58,11 +62,11 @@ class GuideLines(object):
         self.__line_color_lt = linecolor.lighter(110) 
         self.__line_color_alpha = QtGui.QColor(self.__line_color_lt.red(), \
             self.__line_color_lt.green(), self.__line_color_lt.blue(), 128)
-        self.__line_pen_lt = QtGui.QPen(self.__line_color_lt, 1, QtCore.Qt.SolidLine)
-        self.__line_pen = QtGui.QPen(self.__line_color, 1, QtCore.Qt.SolidLine)
-        self.__line_pen_2 = QtGui.QPen(self.__line_color, 2, QtCore.Qt.SolidLine)
-        self.__line_pen_dotted = QtGui.QPen(self.__line_color, 1, QtCore.Qt.DotLine)
-        self.__spacer_brush = QtGui.QBrush(self.__line_color_alpha, QtCore.Qt.SolidPattern)
+        self.__line_pen_lt.setColor(self.__line_color_lt)
+        self.__line_pen.setColor(self.__line_color)
+        self.__line_pen_2.setColor(self.__line_color)
+        self.__line_pen_dotted.setColor(self.__line_color)
+        self.__spacer_brush.setColor(self.__line_color_alpha)
 
     def get_line_color(self):
         return self.__line_color
