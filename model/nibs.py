@@ -25,6 +25,7 @@ class Nib(object):
         self.seed = time.localtime()
         self.pen = QtGui.QPen(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 90), 2, QtCore.Qt.SolidLine)
+        self.pen.setCosmetic(True)
         self.guide_brush = QtGui.QBrush(QtGui.QColor(125, 125, 125, 50), QtCore.Qt.SolidPattern)
         self.brush = QtGui.QBrush(QtGui.QColor(self.__color.red(), self.__color.green(), \
             self.__color.blue(), 220), QtCore.Qt.SolidPattern)
