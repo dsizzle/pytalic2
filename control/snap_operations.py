@@ -2,6 +2,8 @@ import math
 
 from PyQt5 import QtCore
 
+import model.common
+
 SNAP_TO_GRID        = 0x0001
 SNAP_TO_AXES        = 0x0002
 SNAP_TO_NIB_AXES    = 0x0004
@@ -70,7 +72,7 @@ class SnapController(object):
                         vert_index -= 1
 
                 vert_item = char_set.get_item_by_index(ctrl_verts[vert_index])
-                vpos = vert_item.get_handle_pos(2)
+                vpos = vert_item.get_handle_pos(model.common.KNOT)
                 stroke_pos = sel_stroke_item.pos
 
                 if self.__snap & SNAP_TO_GRID:
@@ -146,7 +148,7 @@ class SnapController(object):
             for ctrl_vert in char_stroke_item.get_ctrl_vertices(False):
                 if sel_point is not ctrl_vert:
                     ctrl_vert_item = char_set.get_item_by_index(ctrl_vert)
-                    test_point = ctrl_vert_item.get_handle_pos(2) + char_stroke_item.pos
+                    test_point = ctrl_vert_item.get_handle_pos(model.common.KNOT) + char_stroke_item.pos
 
                     if test_point in test_rect:
                         snap_point = test_point
