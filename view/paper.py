@@ -350,7 +350,7 @@ class DrawingArea(Canvas):
 
                         for vert in control_verts:
                             vert_item = self.char_set.get_item_by_index(vert)
-                            vertex_overlay = view.overlay.VertexHandleOverlay(vert_item)
+                            vertex_overlay = view.overlay.VertexHandleOverlay(vert_item, child_item.scale)
 
                             vertex_overlay.draw(dc, self.__handle_size / self.scale)
 

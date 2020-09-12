@@ -993,13 +993,13 @@ class StrokeController(object):
                     stroke_pt_item = char_set.get_item_by_index(stroke_pt)
                     stroke_pt_item.select_handle(selection[sel_stroke][stroke_pt])
                     if snap_point:
-                        stroke_pt_item.selected_handle_pos = snap_point - sel_stroke_item.pos
-                    else:
+                        stroke_pt_item.selected_handle_pos = (snap_point - sel_stroke_item.pos) / sel_stroke_item.scale
+                    elif stroke_pt_item.selected_handle_pos:
                         stroke_pt_item.selected_handle_pos = \
-                            stroke_pt_item.selected_handle_pos + delta
+                            stroke_pt_item.selected_handle_pos + delta / sel_stroke_item.scale
             else:
                 sel_stroke_item.pos += delta
-
+                
             if type(sel_stroke_item).__name__ == 'Stroke':
                 sel_stroke_item.calc_curve_points()
 

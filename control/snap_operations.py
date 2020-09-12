@@ -84,20 +84,22 @@ class SnapController(object):
 
                 if self.__snap & SNAP_TO_AXES:
                     snap_point = self.snap_to_axes(stroke_pos, pos, vpos, \
-                        axis_angles=[0-char_set.guide_angle, 90])
+                        axis_angles=[0-char_set.guide_angle, 90], scale=sel_stroke_item.scale)
 
                     if snap_point != QtCore.QPoint(-1, -1):
                         snapped_points.append(snap_point)
-                        snapped_points.append(vpos + stroke_pos)
+                        snapped_points.append(vpos * sel_stroke_item.scale + stroke_pos)
+                        
                         return snapped_points
 
                 if self.__snap & SNAP_TO_NIB_AXES:
                     snap_point = self.snap_to_axes(stroke_pos, pos, vpos, \
-                        axis_angles=[char_set.nib_angle, char_set.nib_angle-90])
+                        axis_angles=[char_set.nib_angle, char_set.nib_angle-90], scale=sel_stroke_item.scale)
 
                     if snap_point != QtCore.QPoint(-1, -1):
                         snapped_points.append(snap_point)
-                        snapped_points.append(vpos + stroke_pos)
+                        snapped_points.append(vpos * sel_stroke_item.scale + stroke_pos)
+                        
                         return snapped_points
 
                 if self.__snap & SNAP_TO_CTRL_PTS:
@@ -109,13 +111,14 @@ class SnapController(object):
 
         return snapped_points
 
-    def snap_to_axes(self, stroke_pos, pos, vert_pos, tolerance=10, axis_angles=[]):
+    def snap_to_axes(self, stroke_pos, pos, vert_pos, tolerance=10, axis_angles=[], scale=1):
         snap_point = QtCore.QPoint(-1, -1)
 
         if len(axis_angles) == 0:
             return snap_point
 
-        delta = pos - vert_pos - stroke_pos
+        delta = (pos/scale) - vert_pos  - (stroke_pos/scale)
+
         vec_length = math.sqrt(float(delta.x())*float(delta.x()) + \
             float(delta.y())*float(delta.y()))
 
@@ -126,12 +129,11 @@ class SnapController(object):
 
             new_point = QtCore.QPoint(vec_length * math.sin(math.radians(angle)), \
                 vec_length * math.cos(math.radians(angle)))
-            new_point = new_point + vert_pos + stroke_pos
-
-            new_delta = pos - new_point
+            new_point = new_point + vert_pos + (stroke_pos / scale)
+            new_delta = (pos/scale) - new_point
 
             if abs(new_delta.x()) < tolerance:
-                snap_point = new_point
+                snap_point = new_point * scale
 
         return snap_point
 

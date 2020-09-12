@@ -580,6 +580,7 @@ class Stroke(object):
         gc.save()
         gc.translate(self.__pos)
 
+        gc.scale(self.__scale, self.__scale)
         gc.setPen(draw_nib.pen)
         gc.setBrush(shared_qt.BRUSH_CLEAR) #nib.brush)
 
@@ -638,7 +639,7 @@ class Stroke(object):
         return False
 
     def is_inside(self, point, get_closest_vert=False, handle_size=40):
-        test_point = point - self.__pos
+        test_point = (point - self.__pos) / self.__scale
         test_box = QtCore.QRectF(test_point.x()-handle_size/2, test_point.y()-handle_size/2, \
             handle_size, handle_size)
         is_inside = False

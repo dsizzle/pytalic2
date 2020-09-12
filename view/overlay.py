@@ -37,20 +37,24 @@ class RectHandleOverlay(Overlay):
 			gc.restore()
 
 class VertexHandleOverlay(Overlay):
-	def __init__(self, vertex=None):
+	def __init__(self, vertex=None, scale=1):
 		Overlay.__init__(self)
 		self.__vertex = vertex
+		self.__scale = scale
 
 	def draw(self, gc, handle_size):
 		if self.__vertex:
+			gc.save()
+			gc.scale(self.__scale, self.__scale)
 			knot_pos = self.__vertex.get_pos()
 
-			KNOT_HANDLE_OBJ.size = handle_size
+			KNOT_HANDLE_OBJ.size = handle_size / self.__scale
 
 			gc.setPen(view.shared_qt.PEN_MD_GRAY)
 
 			gc.save()
 			gc.translate(knot_pos)
+
 			KNOT_HANDLE_OBJ.draw(gc, self.__vertex.selected == model.common.KNOT, \
 				self.__vertex.selected and self.__vertex.selected != model.common.KNOT)
 			gc.restore()
@@ -62,7 +66,7 @@ class VertexHandleOverlay(Overlay):
 			else:
 				path = SYMMETRIC_HANDLE_OBJ
 
-			path.size = handle_size
+			path.size = handle_size / self.__scale
 
 			handle = self.__vertex.get_handle_pos(model.common.LEFT_HANDLE)
 			if handle:
@@ -85,3 +89,5 @@ class VertexHandleOverlay(Overlay):
 				gc.translate(handle)
 				path.draw(gc, self.__vertex.selected == model.common.RIGHT_HANDLE)
 				gc.restore()
+
+			gc.restore()
