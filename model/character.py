@@ -75,6 +75,9 @@ class Glyph(object):
         return self.__instances
 
     def get_bound_rect(self):
+        if self.__bound_rect is None:
+            self.calculate_bound_rect()
+
         return self.__bound_rect
 
     def set_bound_rect(self, new_bound_rect):
