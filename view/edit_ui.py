@@ -3,7 +3,7 @@
 
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
-import pytalic2_ui
+import pytalic2_editor_ui
 
 from model import guides
 import view.paper
@@ -12,7 +12,7 @@ import view.widgets_qt
 ICON_SIZE = 40
 ICON_TEXT_SIZE = 30
 
-class EditInterface(QtWidgets.QMainWindow, pytalic2_ui.Ui_MainWindow):
+class EditInterface(QtWidgets.QMainWindow, pytalic2_editor_ui.Ui_MainWindow):
     def __init__(self, parent, width, height, label):
         QtWidgets.QMainWindow.__init__(self)
        
