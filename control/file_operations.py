@@ -86,7 +86,7 @@ class FileController(object):
              "Character Set Files (*.cs)")
 
         if file_name:
-            (self.__dir_name, self.__file_name) = os.path.split(str(file_name))
+            (self.__dir_name, self.__file_name) = os.path.split(str(file_name[0]))
             (__, ext) = os.path.splitext(self.__file_name)
 
             if ext != ".cs":
