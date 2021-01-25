@@ -9,8 +9,8 @@ import os
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-import model.commands
-import view.pytalic_ui
+import shared.model.commands
+import project.view.pytalic_ui
 
 class PytalicController(object):
     """
@@ -18,7 +18,7 @@ class PytalicController(object):
     """
     def __init__(self, w, h, label, script_path):
         self.__label = label
-        self.__ui = view.pytalic_ui.PytalicInterface(self, w, h, label)
+        self.__ui = project.view.pytalic_ui.PytalicInterface(self, w, h, label)
         #self.__settings_dialog = view.settings_dialog.UserPreferencesDialog(self)
 
         #self.__settings_file = os.path.join(script_path, "user_settings.json")
@@ -29,7 +29,7 @@ class PytalicController(object):
 
         #self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__cmd_stack = model.commands.CommandStack(self)
+        self.__cmd_stack = shared.model.commands.CommandStack(self)
         self.__selection = {}
 
         self.__char_set = None

@@ -3,9 +3,9 @@
 
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
-import pytalic2_ui 
+import project.pytalic2_ui 
 
-class PytalicInterface(QtWidgets.QMainWindow, pytalic2_ui.Ui_MainWindow):
+class PytalicInterface(QtWidgets.QMainWindow, project.pytalic2_ui.Ui_MainWindow):
     def __init__(self, parent, width, height, label):
         QtWidgets.QMainWindow.__init__(self)
        

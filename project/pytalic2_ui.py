@@ -110,4 +110,4 @@ class Ui_MainWindow(object):
         self.actionCo_py.setText(_translate("MainWindow", "Cop&y"))
         self.action_Paste.setText(_translate("MainWindow", "&Paste"))
 
-import pytalic2_rc
+import shared.pytalic2_rc
