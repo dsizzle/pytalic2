@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import editor.control.edit_control
-import editor.model.commands
+import shared.model.commands
 
 class MouseController(object):
     def __init__(self, parent):
@@ -241,7 +241,7 @@ class MouseController(object):
 
         elif self.__main_ctrl.state == editor.control.edit_control.DRAGGING:
             if (self.__move_delta != QtCore.QPoint(0, 0)):
-                move_cmd = editor.model.commands.Command('move_stroke_cmd')
+                move_cmd = shared.model.commands.Command('move_stroke_cmd')
                 selection_copy = cur_view_selection.copy()
                 do_args = {
                     'strokes' : selection_copy,

@@ -17,7 +17,6 @@ import editor.control.property_operations
 import editor.control.snap_operations
 import editor.control.stroke_operations
 import editor.control.vertex_operations
-import editor.model.commands
 import editor.model.layouts
 import editor.model.nibs
 import editor.model.settings
@@ -25,6 +24,7 @@ import editor.view.edit_ui
 import editor.view.paper
 import editor.view.settings_dialog
 import editor.view.shared_qt
+import shared.model.commands
 
 IDLE = 0
 MOVING_PAPER = 1
@@ -53,7 +53,7 @@ class EditorController(object):
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__cmd_stack = editor.model.commands.CommandStack(self)
+        self.__cmd_stack = shared.model.commands.CommandStack(self)
         self.__selection = {}
 
         self.__char_set = None

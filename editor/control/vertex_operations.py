@@ -1,4 +1,4 @@
-import editor.model.commands
+import shared.model.commands
 import editor.model.control_vertex
 
 class VertexController(object):
@@ -39,7 +39,7 @@ class VertexController(object):
                 'behaviors' : behavior_list
             }
 
-            align_tangents_cmd = editor.model.commands.Command("align_tangents_cmd")
+            align_tangents_cmd = shared.model.commands.Command("align_tangents_cmd")
 
             align_tangents_cmd.set_do_args(do_args)
             align_tangents_cmd.set_undo_args(undo_args)
