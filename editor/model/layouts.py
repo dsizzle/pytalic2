@@ -1,6 +1,6 @@
 from PyQt5 import QtCore
 
-import model.instance
+#import editor.model.instance
 
 class Layout(object):
     def __init__(self):
@@ -134,7 +134,8 @@ class Layout(object):
         if ypos % line_height:
             ypos += line_height / 2.
         
-        self.__pos = QtCore.QPoint(-max_x / 2., -ypos)
+        #self.__pos = QtCore.QPoint(-max_x / 2., -ypos)
+        self.__pos = QtCore.QPoint(-self.__bound_rect.center().x(), -self.__bound_rect.center().y())
 
     def __lay_out_with_wrap(self, string_to_layout, line_width=13):
         token_list = string_to_layout.split()
@@ -167,3 +168,14 @@ class Layout(object):
         lines.append(line_string)
 
         return lines
+
+    def calculate_bound_rect(self, char_set):
+        self.__bound_rect = QtCore.QRectF()
+
+        for obj in self.__object_list:
+            actual_obj = char_set.get_item_by_index(obj)
+            #actual_obj.pos -= center_delta
+            if actual_obj.bound_rect:
+                self.__bound_rect = self.bound_rect.united( \
+                    actual_obj.bound_rect.translated(actual_obj.pos) \
+                )

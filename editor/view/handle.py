@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui
 
-import view.shared_qt
+import editor.view.shared_qt
 
 
 class Handle(object):
@@ -41,12 +41,12 @@ class Handle(object):
     path = property(get_path, set_path)
 
     def draw(self, gc, selected=False):
-        gc.setPen(view.shared_qt.PEN_MD_GRAY)
+        gc.setPen(editor.view.shared_qt.PEN_MD_GRAY)
 
         if selected:
-            gc.setBrush(view.shared_qt.BRUSH_GREEN_SOLID)
+            gc.setBrush(editor.view.shared_qt.BRUSH_GREEN_SOLID)
         else:
-            gc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            gc.setBrush(editor.view.shared_qt.BRUSH_CLEAR)
 
         gc.save()
         gc.scale(self.scale, self.scale)
@@ -93,11 +93,11 @@ class TristateHandle(Handle):
 
     def draw(self, gc, selected=False, child_selected=False):
         if selected:
-            gc.setBrush(view.shared_qt.BRUSH_GREEN_SOLID)
+            gc.setBrush(editor.view.shared_qt.BRUSH_GREEN_SOLID)
         elif child_selected:
-            gc.setBrush(view.shared_qt.BRUSH_YELLOW_SOLID)
+            gc.setBrush(editor.view.shared_qt.BRUSH_YELLOW_SOLID)
         else:
-            gc.setBrush(view.shared_qt.BRUSH_MD_GRAY_SOLID)
+            gc.setBrush(editor.view.shared_qt.BRUSH_MD_GRAY_SOLID)
 
         gc.save()
         gc.scale(self.scale, self.scale)

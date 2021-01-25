@@ -973,6 +973,6 @@ class Ui_MainWindow(object):
         self.action_constrain_to_y_axis.setShortcut(_translate("MainWindow", "Alt+Y"))
         self.edit_preferences.setText(_translate("MainWindow", "Preferences"))
 
-from view.paper import DrawingArea, LayoutArea
-from view.widgets_qt import SelectColorButton
-import pytalic2_rc
+from editor.view.paper import DrawingArea, LayoutArea
+from editor.view.widgets_qt import SelectColorButton
+import shared.pytalic2_rc

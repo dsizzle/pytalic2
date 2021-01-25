@@ -13,7 +13,7 @@ import struct
 from PyQt5 import QtCore, QtGui
 
 #import serif
-from view import shared_qt
+from editor.view import shared_qt
 
 DEBUG_BBOXES = False
 

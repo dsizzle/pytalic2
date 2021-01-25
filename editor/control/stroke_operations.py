@@ -2,9 +2,9 @@ import math
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import control.edit_control
-import model.commands
-import model.stroke
+import editor.control.edit_control
+import editor.model.commands
+import editor.model.stroke
 
 class StrokeController(object):
     def __init__(self, parent):
@@ -29,14 +29,14 @@ class StrokeController(object):
     stroke_pts = property(get_stroke_pts, set_stroke_pts)
 
     def create_new_stroke(self):
-        if self.__main_ctrl.state == control.edit_control.DRAWING_NEW_STROKE:
+        if self.__main_ctrl.state == editor.control.edit_control.DRAWING_NEW_STROKE:
             return
 
         current_view = self.__main_ctrl.get_current_view()
         ui_ref = self.__main_ctrl.get_ui()
         char_set = self.__main_ctrl.get_character_set()
 
-        self.__main_ctrl.state = control.edit_control.DRAWING_NEW_STROKE
+        self.__main_ctrl.state = editor.control.edit_control.DRAWING_NEW_STROKE
         QtWidgets.qApp.setOverrideCursor(QtCore.Qt.CrossCursor)
 
         ui_ref.setUpdatesEnabled(False)
@@ -48,7 +48,7 @@ class StrokeController(object):
         ui_ref.setUpdatesEnabled(True)
 
         self.__stroke_pts = []
-        self.__tmp_stroke = model.stroke.Stroke(char_set)
+        self.__tmp_stroke = editor.model.stroke.Stroke(char_set)
         current_view.strokes.append(self.__tmp_stroke)
         self.__tmp_stroke.selected = True
 
@@ -74,7 +74,7 @@ class StrokeController(object):
 
         item_num = ui_ref.stroke_selector_list.count()
 
-        save_glyph_cmd = model.commands.Command('save_glyph_cmd')
+        save_glyph_cmd = editor.model.commands.Command('save_glyph_cmd')
 
         do_args = {
             'strokes' : selected_strokes,
@@ -221,7 +221,7 @@ class StrokeController(object):
         glyph_index = str(glyph_item.data(QtCore.Qt.UserRole))
         new_glyph_inst_id = char_set.new_glyph_instance(glyph_index)
 
-        paste_glyph_saved_cmd = model.commands.Command('paste_glyph_saved_cmd')
+        paste_glyph_saved_cmd = editor.model.commands.Command('paste_glyph_saved_cmd')
 
         do_args = {
             'strokes' : new_glyph_inst_id,
@@ -304,7 +304,7 @@ class StrokeController(object):
         cur_item_icon = cur_item.icon()
         glyph_id = str(cur_item.data(QtCore.Qt.UserRole).toString())
 
-        delete_saved_glyph_cmd = model.commands.Command('delete_saved_glyph_cmd')
+        delete_saved_glyph_cmd = editor.model.commands.Command('delete_saved_glyph_cmd')
 
         do_args = {
             'glyph_index' : glyph_index,
@@ -411,7 +411,7 @@ class StrokeController(object):
             behaviors_before_list.append(behaviors_before)
             behaviors_after_list.append(behaviors_after)
 
-        stroke_straighten_cmd = model.commands.Command("stroke_straighten_cmd")
+        stroke_straighten_cmd = editor.model.commands.Command("stroke_straighten_cmd")
 
         undo_args = {
             'strokes' : cur_view_selection.keys(),
@@ -442,7 +442,7 @@ class StrokeController(object):
         ui_ref = self.__main_ctrl.get_ui()
 
         if len(cur_view_selection.keys()) > 1:
-            stroke_join_cmd = model.commands.Command("stroke_join_cmd")
+            stroke_join_cmd = editor.model.commands.Command("stroke_join_cmd")
             selection_copy = cur_view_selection.copy()
 
             new_stroke = self.join_strokes(selection_copy)
@@ -627,7 +627,7 @@ class StrokeController(object):
             'behaviors' : behaviors_before_list
         }
 
-        vert_delete_cmd = model.commands.Command("vert_delete_cmd")
+        vert_delete_cmd = editor.model.commands.Command("vert_delete_cmd")
         vert_delete_cmd.set_do_args(do_args)
         vert_delete_cmd.set_undo_args(undo_args)
         vert_delete_cmd.set_do_function(self.set_stroke_control_vertices_from_list)
@@ -744,7 +744,7 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
-        add_vertex_cmd = model.commands.Command('add_vertex_cmd')
+        add_vertex_cmd = editor.model.commands.Command('add_vertex_cmd')
 
         (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
         undo_args = {
@@ -777,7 +777,7 @@ class StrokeController(object):
         char_set = self.__main_ctrl.get_character_set()
         sel_stroke_item = char_set.get_item_by_index(sel_stroke)
 
-        split_at_cmd = model.commands.Command('split_at_cmd')
+        split_at_cmd = editor.model.commands.Command('split_at_cmd')
         (verts_before, behaviors_before) = sel_stroke_item.get_ctrl_vertices_as_list()
 
         (new_verts, new_behaviors) = sel_stroke_item.split_at_point(inside_info[2], inside_info[1])
@@ -820,7 +820,7 @@ class StrokeController(object):
 
         (verts, behaviors) = self.__tmp_stroke.get_ctrl_vertices_as_list()
         if len(verts) < 2:
-            self.__main_ctrl.state = control.edit_control.IDLE
+            self.__main_ctrl.state = editor.control.edit_control.IDLE
             self.__tmp_stroke = None
             self.__stroke_pts = []
             current_view.strokes = []
@@ -837,12 +837,12 @@ class StrokeController(object):
 
             return
 
-        self.__main_ctrl.state = control.edit_control.IDLE
+        self.__main_ctrl.state = editor.control.edit_control.IDLE
         self.__stroke_pts = []
 
         new_stroke_id = char_set.new_stroke(self.__tmp_stroke)
 
-        add_stroke_cmd = model.commands.Command('add_stroke_cmd')
+        add_stroke_cmd = editor.model.commands.Command('add_stroke_cmd')
         do_args = {
             'stroke' : new_stroke_id,
         }
@@ -886,7 +886,7 @@ class StrokeController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
-        flip_strokes_x_cmd = model.commands.Command("flip_strokes_x_cmd")
+        flip_strokes_x_cmd = editor.model.commands.Command("flip_strokes_x_cmd")
 
         do_args = {
             'strokes' : cur_view_selection.keys(),
@@ -932,7 +932,7 @@ class StrokeController(object):
         cmd_stack = self.__main_ctrl.get_command_stack()
         char_set = self.__main_ctrl.get_character_set()
 
-        flip_strokes_y_cmd = model.commands.Command("flip_strokes_y_cmd")
+        flip_strokes_y_cmd = editor.model.commands.Command("flip_strokes_y_cmd")
 
         do_args = {
             'strokes' : cur_view_selection.keys(),
@@ -1014,8 +1014,12 @@ class StrokeController(object):
                 first_vert = list(selection[first_object])[0]
 
                 vert_item = char_set.get_item_by_index(first_vert)
-                ui_ref.vertex_x_spin.setValue(vert_item.get_pos_of_selected().x())
-                ui_ref.vertex_y_spin.setValue(vert_item.get_pos_of_selected().y())
+                vert_pos = vert_item.get_pos_of_selected()
+                if vert_pos:
+                    ui_ref.vertex_x_spin.setValue(vert_pos.x())
+                    ui_ref.vertex_y_spin.setValue(vert_pos.y())
+                else:
+                    print(first_vert, vert_item)
 
     def selection_position_changed_x(self, prev_value, new_value):
         delta = QtCore.QPoint(new_value - prev_value, 0)
@@ -1037,7 +1041,7 @@ class StrokeController(object):
             'delta' : undelta
         }
 
-        position_x_cmd = model.commands.Command("position_x_cmd")
+        position_x_cmd = editor.model.commands.Command("position_x_cmd")
         position_x_cmd.set_do_args(do_args)
         position_x_cmd.set_undo_args(undo_args)
         position_x_cmd.set_do_function(self.move_selected)
@@ -1068,7 +1072,7 @@ class StrokeController(object):
             'delta' : undelta
         }
 
-        position_y_cmd = model.commands.Command("position_y_cmd")
+        position_y_cmd = editor.model.commands.Command("position_y_cmd")
         position_y_cmd.set_do_args(do_args)
         position_y_cmd.set_undo_args(undo_args)
         position_y_cmd.set_do_function(self.move_selected)

@@ -1,7 +1,7 @@
 from PyQt5 import QtCore
 
-import control.edit_control
-import model.commands
+import editor.control.edit_control
+import editor.model.commands
 
 class KeyboardController(object):
     def __init__(self, parent):
@@ -38,7 +38,7 @@ class KeyboardController(object):
         stroke_ctrl = self.__main_ctrl.get_stroke_controller()
         cmd_stack = self.__main_ctrl.get_command_stack()
 
-        if self.__main_ctrl.state == control.edit_control.IDLE:
+        if self.__main_ctrl.state == editor.control.edit_control.IDLE:
             if event.key() == QtCore.Qt.Key_Left:
                 move_delta = QtCore.QPoint() - self.__move_x
             elif event.key() == QtCore.Qt.Key_Right:
@@ -58,7 +58,7 @@ class KeyboardController(object):
             if move_delta != QtCore.QPoint() and \
                 len(cur_view_selection.keys()) > 0:
 
-                move_cmd = model.commands.Command('move_stroke_cmd')
+                move_cmd = editor.model.commands.Command('move_stroke_cmd')
                 selection_copy = cur_view_selection.copy()
                 do_args = {
                     'strokes' : selection_copy,

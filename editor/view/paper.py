@@ -2,9 +2,9 @@ import math
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from model import nibs
-import view.overlay
-import view.shared_qt
+from editor.model import nibs
+import editor.view.overlay
+import editor.view.shared_qt
 
 """
 Canvas base class
@@ -26,7 +26,7 @@ class Canvas(QtWidgets.QFrame):
         self.__subject = None
 
         self.__bitmap = None
-        self.__bitmap_size = view.shared_qt.ICON_SIZE
+        self.__bitmap_size = editor.view.shared_qt.ICON_SIZE
 
         self.__nib = None
         self.__select_rect = None
@@ -182,7 +182,7 @@ class Canvas(QtWidgets.QFrame):
             dc.restore()
 
         if self.__select_rect:
-            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setPen(editor.view.shared_qt.PEN_BLUE_DASH_DOT)
             dc.drawRect(self.__select_rect)
 
         dc.restore()
@@ -284,7 +284,7 @@ class DrawingArea(Canvas):
 
         dc = QtGui.QPainter()
 
-        nib_brush = view.shared_qt.BRUSH_GREEN_SOLID 
+        nib_brush = editor.view.shared_qt.BRUSH_GREEN_SOLID 
         dc.begin(nib_pixmap)
         dc.setRenderHint(QtGui.QPainter.Antialiasing)
         dc.setBrush(nib_brush)
@@ -329,8 +329,8 @@ class DrawingArea(Canvas):
             self.nib.horz_nib_width_scale(dc, nib_guide_base_pos_x, \
                 nib_guide_base_pos_y+self.nib.width*2, nib_guide_width)
 
-        dc.setPen(view.shared_qt.PEN_LT_GRAY)
-        dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+        dc.setPen(editor.view.shared_qt.PEN_LT_GRAY)
+        dc.setBrush(editor.view.shared_qt.BRUSH_CLEAR)
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10)     
 
         if self.symbol:
@@ -343,14 +343,14 @@ class DrawingArea(Canvas):
                 child_item = self.char_set.get_item_by_index(child)
                 if child_item and child_item.selected:
                     dc.save()
-                    select_overlay = view.overlay.RectHandleOverlay(child_item.bound_rect, child_item.scale)
+                    select_overlay = editor.view.overlay.RectHandleOverlay(child_item.bound_rect, child_item.scale)
                     dc.translate(child_item.pos)
                     if type(child_item).__name__ != "GlyphInstance":
                         control_verts = child_item.get_ctrl_vertices(False)
 
                         for vert in control_verts:
                             vert_item = self.char_set.get_item_by_index(vert)
-                            vertex_overlay = view.overlay.VertexHandleOverlay(vert_item, child_item.scale)
+                            vertex_overlay = editor.view.overlay.VertexHandleOverlay(vert_item, child_item.scale)
 
                             vertex_overlay.draw(dc, self.__handle_size / self.scale)
 
@@ -374,15 +374,15 @@ class DrawingArea(Canvas):
                 dc.translate(strk.pos)
                 for vert in control_verts:
                     vert_item = self.char_set.get_item_by_index(vert)
-                    vertex_overlay = view.overlay.VertexHandleOverlay(vert_item)
+                    vertex_overlay = editor.view.overlay.VertexHandleOverlay(vert_item)
 
                     vertex_overlay.draw(dc, self.__handle_size / self.scale)
 
             dc.restore()
             
         if len(self.__snap_points) > 0:
-            dc.setPen(view.shared_qt.PEN_DK_GRAY_DASH_2)
-            dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+            dc.setPen(editor.view.shared_qt.PEN_DK_GRAY_DASH_2)
+            dc.setBrush(editor.view.shared_qt.BRUSH_CLEAR)
 
             if len(self.__snap_points) > 1:
                 delta = self.__snap_points[0] - self.__snap_points[1]
@@ -400,8 +400,8 @@ class DrawingArea(Canvas):
                 dc.drawEllipse(self.__snap_points[0], 20, 20)
 
         if self.select_rect:
-            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
-            dc.setBrush(view.shared_qt.BRUSH_MD_GRAY_25)
+            dc.setPen(editor.view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setBrush(editor.view.shared_qt.BRUSH_MD_GRAY_25)
             dc.drawRect(self.select_rect)
 
         dc.restore()
@@ -420,15 +420,26 @@ class LayoutArea(Canvas):
     layout = property(Canvas.get_subject, Canvas.set_subject)
 
     def frame_layout(self):
-         max_dim = max(self.frameRect().width(), self.frameRect().height())
-         layout_bound = self.layout.bound_rect
-         max_layout_dim = max(layout_bound.width(), layout_bound.height())
-         if max_layout_dim:
-            
+        if self.layout.bound_rect.isEmpty():
+            self.layout.calculate_bound_rect(self.char_set)
 
-            self.origin_delta = QtCore.QPoint(-self.layout.pos.x(), self.layout.pos.y())
-            self.scale = max_dim / (max_layout_dim * 1.1) 
+        layout_bound = self.layout.bound_rect
+        max_dim = min(self.frameRect().width(), self.frameRect().height())
+         
+        max_layout_dim = max(layout_bound.width(), layout_bound.height())
+        # if layout_bound.width() > layout_bound.height():
+        #     self.scale = self.frameRect().width() / layout_bound.width()
+        # else:
+        #     self.scale = self.frameRect().height() / layout_bound.height()
+
+        layout_center = QtCore.QPoint(layout_bound.center().x(), layout_bound.center().y())
+        if max_layout_dim:
+            #self.origin_delta = self.layout.pos   
             
+            #self.scale = max_dim / (max_layout_dim * 1.1) 
+            self.origin_delta = (layout_center - self.origin) #* self.scale #QtCore.QPoint(-25, -100) #self.layout.pos #* self.scale
+            print (self.origin, self.origin_delta, self.layout.pos, layout_center, layout_bound)
+
     def paintEvent(self, event):
         if not self.nib:
             return
@@ -446,8 +457,8 @@ class LayoutArea(Canvas):
         dc.translate(self.origin + self.origin_delta)
         dc.scale(self.scale, self.scale)
 
-        dc.setPen(view.shared_qt.PEN_LT_GRAY)
-        dc.setBrush(view.shared_qt.BRUSH_CLEAR)
+        dc.setPen(editor.view.shared_qt.PEN_LT_GRAY)
+        dc.setBrush(editor.view.shared_qt.BRUSH_CLEAR)
         dc.drawEllipse(QtCore.QPoint(0, 0), 10, 10) 
 
         if self.draw_guidelines and self.guide_lines:
@@ -472,16 +483,22 @@ class LayoutArea(Canvas):
                         if symbol_item.selected:
                             dc.save()
                             dc.translate(symbol_item.pos) 
-                            select_overlay = view.overlay.RectHandleOverlay(symbol_item.bound_rect)
+                            select_overlay = editor.view.overlay.RectHandleOverlay(symbol_item.bound_rect)
 
                             select_overlay.draw(dc, self.__handle_size * 2 / self.scale)
                             dc.restore()
-                            
+                        
+            dc.setPen(editor.view.shared_qt.PEN_MD_GRAY)
+            dc.setBrush(editor.view.shared_qt.BRUSH_MD_GRAY_25)
+            if self.layout.bound_rect.isEmpty():
+                self.layout.calculate_bound_rect(self.char_set)
+
+            dc.drawRect(self.layout.bound_rect)   
             dc.restore()
 
         if self.select_rect:
-            dc.setPen(view.shared_qt.PEN_BLUE_DASH_DOT)
-            dc.setBrush(view.shared_qt.BRUSH_MD_GRAY_25)
+            dc.setPen(editor.view.shared_qt.PEN_BLUE_DASH_DOT)
+            dc.setBrush(editor.view.shared_qt.BRUSH_MD_GRAY_25)
             dc.drawRect(self.select_rect)
             
         dc.restore()

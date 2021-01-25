@@ -2,9 +2,9 @@ import struct
 
 from PyQt5 import QtCore
 
-import model.instance
-import model.stroke
-import view.shared_qt
+#import editor.model.instance
+import editor.model.stroke
+#import editor.view.shared_qt
 
 STROKE = 'stroke'
 
@@ -140,7 +140,7 @@ class Glyph(object):
         return new_stroke
 
     def add_stroke_instance(self, inst):
-        if not isinstance(inst, model.stroke.Stroke):
+        if not isinstance(inst, editor.model.stroke.Stroke):
             self.__strokes.append(inst)
             inst.set_parent(self)
 

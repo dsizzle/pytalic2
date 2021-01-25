@@ -248,4 +248,4 @@ class Ui_Dialog(object):
         self.groupBox.setTitle(_translate("Dialog", "UI"))
         self.label_16.setText(_translate("Dialog", "Handle size"))
 
-from view.widgets_qt import SelectColorButton
+from editor.view.widgets_qt import SelectColorButton

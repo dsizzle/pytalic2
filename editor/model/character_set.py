@@ -1,9 +1,9 @@
 import struct
 
-from model.character import Character, Glyph
-from model.instance import CharacterInstance, GlyphInstance, StrokeInstance
-from model.stroke import Stroke
-from model.control_vertex import ControlVertex
+from editor.model.character import Character, Glyph
+from editor.model.instance import CharacterInstance, GlyphInstance, StrokeInstance
+from editor.model.stroke import Stroke
+from editor.model.control_vertex import ControlVertex
 
 CHAR_TYPE = type(Character(None)).__name__
 STROKE_TYPE = type(Stroke(None)).__name__

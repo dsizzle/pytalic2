@@ -1,4 +1,4 @@
-import model.commands
+import editor.model.commands
 
 class ClipboardController(object):
     def __init__(self, parent):

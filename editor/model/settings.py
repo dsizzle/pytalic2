@@ -3,7 +3,7 @@ import json
 
 from PyQt5 import QtWidgets
 
-import view.widgets_qt
+import editor.view.widgets_qt
 
 class UserPreferences(object):
 	def __init__(self, file_path=None, dialog=None):
@@ -26,7 +26,7 @@ class UserPreferences(object):
 
 	def show_dialog(self):
 		if self.__dialog and self.__dialog.exec_():
-			widget_list = self.__dialog.findChildren(view.widgets_qt.SelectColorButton)
+			widget_list = self.__dialog.findChildren(editor.view.widgets_qt.SelectColorButton)
 			widget_list.extend(self.__dialog.findChildren(QtWidgets.QDoubleSpinBox))
 			widget_list.extend(self.__dialog.findChildren(QtWidgets.QSpinBox))
 

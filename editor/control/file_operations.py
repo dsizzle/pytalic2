@@ -3,8 +3,8 @@ import os.path
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-import model.character_set
-import view.shared_qt
+import editor.model.character_set
+import editor.view.shared_qt
 
 START_CHAR_CODE = 32
 END_CHAR_CODE = 128
@@ -15,7 +15,7 @@ class FileController(object):
         self.__file_name = None
         self.__dir_name = os.getcwd()
 
-        self.__blank_pixmap = QtGui.QPixmap(view.shared_qt.ICON_SIZE, view.shared_qt.ICON_SIZE)
+        self.__blank_pixmap = QtGui.QPixmap(editor.view.shared_qt.ICON_SIZE, editor.view.shared_qt.ICON_SIZE)
         self.__blank_pixmap.fill(QtGui.QColor(240, 240, 240))
 
     @property
@@ -40,7 +40,7 @@ class FileController(object):
         ui_ref.stroke_dwg_area.subject = None
         ui_ref.preview_area.subject = None
 
-        self.__main_ctrl.set_character_set(model.character_set.CharacterSet())
+        self.__main_ctrl.set_character_set(editor.model.character_set.CharacterSet())
         char_set = self.__main_ctrl.get_character_set()
 
         ui_ref.base_height_spin.setValue(char_set.base_height)

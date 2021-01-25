@@ -9,7 +9,7 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from control import edit_control
+from editor.control import edit_control
 
 
 class PytalicEditorApp(QtWidgets.QApplication):

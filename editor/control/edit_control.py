@@ -9,22 +9,22 @@ import os
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-import control.clipboard_operations
-import control.file_operations
-import control.key_operations
-import control.mouse_operations
-import control.property_operations
-import control.snap_operations
-import control.stroke_operations
-import control.vertex_operations
-import model.commands
-import model.layouts
-import model.nibs
-import model.settings
-import view.edit_ui
-import view.paper
-import view.settings_dialog
-import view.shared_qt
+import editor.control.clipboard_operations
+import editor.control.file_operations
+import editor.control.key_operations
+import editor.control.mouse_operations
+import editor.control.property_operations
+import editor.control.snap_operations
+import editor.control.stroke_operations
+import editor.control.vertex_operations
+import editor.model.commands
+import editor.model.layouts
+import editor.model.nibs
+import editor.model.settings
+import editor.view.edit_ui
+import editor.view.paper
+import editor.view.settings_dialog
+import editor.view.shared_qt
 
 IDLE = 0
 MOVING_PAPER = 1
@@ -33,6 +33,7 @@ DRAGGING = 3
 ADDING_CTRL_POINT = 4
 SPLIT_AT_POINT = 5
 SELECT_DRAGGING = 6
+SCALING = 7
 
 
 class EditorController(object):
@@ -41,18 +42,18 @@ class EditorController(object):
     """
     def __init__(self, w, h, label, script_path):
         self.__label = label
-        self.__ui = view.edit_ui.EditInterface(self, w, h, label)
-        self.__settings_dialog = view.settings_dialog.UserPreferencesDialog(self)
+        self.__ui = editor.view.edit_ui.EditInterface(self, w, h, label)
+        self.__settings_dialog = editor.view.settings_dialog.UserPreferencesDialog(self)
 
         self.__settings_file = os.path.join(script_path, "user_settings.json")
 
-        self.__user_preferences = model.settings.UserPreferences(self.__settings_file, \
+        self.__user_preferences = editor.model.settings.UserPreferences(self.__settings_file, \
             dialog=self.__settings_dialog)
         self.__user_preferences.load()
 
         self.__color = QtGui.QColor(125, 25, 25)
 
-        self.__cmd_stack = model.commands.CommandStack(self)
+        self.__cmd_stack = editor.model.commands.CommandStack(self)
         self.__selection = {}
 
         self.__char_set = None
@@ -62,25 +63,25 @@ class EditorController(object):
 
         self.__ui.create_ui()
 
-        self.__ui.dwg_area.bitmap_size = view.shared_qt.ICON_SIZE
+        self.__ui.dwg_area.bitmap_size = editor.view.shared_qt.ICON_SIZE
 
         self.__current_view_pane = \
-            self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
+            self.__ui.main_view_tabs.currentWidget().findChild(editor.view.paper.Canvas)
         self.__selection[self.__current_view_pane] = {}
 
-        self.__clipboard_controller = control.clipboard_operations.ClipboardController(self)
-        self.__file_controller = control.file_operations.FileController(self)
-        self.__property_controller = control.property_operations.PropertyController(self)
-        self.__mouse_controller = control.mouse_operations.MouseController(self)
-        self.__key_controller = control.key_operations.KeyboardController(self)
-        self.__snap_controller = control.snap_operations.SnapController(self)
-        self.__stroke_controller = control.stroke_operations.StrokeController(self)
-        self.__vertex_controller = control.vertex_operations.VertexController(self)
+        self.__clipboard_controller = editor.control.clipboard_operations.ClipboardController(self)
+        self.__file_controller = editor.control.file_operations.FileController(self)
+        self.__property_controller = editor.control.property_operations.PropertyController(self)
+        self.__mouse_controller = editor.control.mouse_operations.MouseController(self)
+        self.__key_controller = editor.control.key_operations.KeyboardController(self)
+        self.__snap_controller = editor.control.snap_operations.SnapController(self)
+        self.__stroke_controller = editor.control.stroke_operations.StrokeController(self)
+        self.__vertex_controller = editor.control.vertex_operations.VertexController(self)
 
         self.__layouts = []
         
-        self.__italic_nib = model.nibs.Nib(width=20, color=self.__color)
-        self.__round_nib = model.nibs.PenNib(width=4, color=self.__color)
+        self.__italic_nib = editor.model.nibs.Nib(width=20, color=self.__color)
+        self.__round_nib = editor.model.nibs.PenNib(width=4, color=self.__color)
         self.__nibs = [self.__italic_nib, self.__round_nib]
 
         self.__ui.dwg_area.nib = self.__italic_nib
@@ -472,7 +473,7 @@ class EditorController(object):
     def view_tab_changed_cb(self, event):
         previous_pane = self.__current_view_pane
         self.__current_view_pane = \
-            self.__ui.main_view_tabs.currentWidget().findChild(view.paper.Canvas)
+            self.__ui.main_view_tabs.currentWidget().findChild(editor.view.paper.Canvas)
         self.__ui.view_guides.setChecked(self.__current_view_pane.draw_guidelines)
 
         if self.__current_view_pane == self.__ui.dwg_area:
@@ -814,7 +815,7 @@ class EditorController(object):
         for i in range(0, num_layouts):
             layout_string = str(self.__ui.layout_combo.itemText(i))
 
-            new_layout = model.layouts.Layout()
+            new_layout = editor.model.layouts.Layout()
             new_layout.init_with_string(layout_string, self.__char_set, \
                 nib_width=self.__ui.dwg_area.nib.width * 2)
 

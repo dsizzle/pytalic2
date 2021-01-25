@@ -3,9 +3,9 @@
 
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 
-import pytalic2_prefs
+import editor.pytalic2_prefs
 
-class UserPreferencesDialog(QtWidgets.QDialog, pytalic2_prefs.Ui_Dialog):
+class UserPreferencesDialog(QtWidgets.QDialog, editor.pytalic2_prefs.Ui_Dialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self)
        

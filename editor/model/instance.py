@@ -2,7 +2,7 @@ import struct
 
 from PyQt5 import QtCore
 
-import view.shared_qt
+#import editor.view.shared_qt
 
 class Instance(object):
     def __init__(self, char_set=None, parent=None):
