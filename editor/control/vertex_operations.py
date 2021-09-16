@@ -1,5 +1,5 @@
 import shared.model.commands
-import editor.model.control_vertex
+import editor.model.common
 
 class VertexController(object):
     def __init__(self, parent):
@@ -53,13 +53,13 @@ class VertexController(object):
             ui_ref.repaint()
 
     def align_tangents_symmetrical(self):
-        self.align_tangents(editor.model.control_vertex.SYMMETRIC)
+        self.align_tangents(editor.model.common.SYMMETRIC)
 
     def align_tangents_smooth(self):
-        self.align_tangents(editor.model.control_vertex.SMOOTH)
+        self.align_tangents(editor.model.common.SMOOTH)
 
     def break_tangents(self):
-        self.align_tangents(editor.model.control_vertex.SHARP)
+        self.align_tangents(editor.model.common.SHARP)
 
     def set_ctrl_vertex_behavior(self, args):
         ui_ref = self.__main_ctrl.get_ui()
