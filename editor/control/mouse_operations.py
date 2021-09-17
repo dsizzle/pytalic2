@@ -109,9 +109,9 @@ class MouseController(object):
         norm_paper_pos = current_view.get_normalized_position(paper_pos)
 
         if self.__main_ctrl.state == editor.control.edit_control.MOVING_PAPER:
-            delta = norm_paper_pos - self.__saved_mouse_pos_paper[current_view]
+            delta = paper_pos - self.__saved_mouse_pos_paper[current_view]
             current_view.origin_delta += delta
-            self.__saved_mouse_pos_paper[current_view] = norm_paper_pos
+            self.__saved_mouse_pos_paper[current_view] = paper_pos
                 
         elif self.__main_ctrl.state == editor.control.edit_control.DRAGGING:
             snap_ctrl = self.__main_ctrl.get_snap_controller()
@@ -139,7 +139,7 @@ class MouseController(object):
 
             stroke_ctrl.move_selected(args)
         elif left_down and alt_down and self.__main_ctrl.state == editor.control.edit_control.IDLE:
-            self.__saved_mouse_pos_paper[current_view] = norm_paper_pos
+            self.__saved_mouse_pos_paper[current_view] = paper_pos
             self.__main_ctrl.state = editor.control.edit_control.MOVING_PAPER
            
             QtWidgets.qApp.setOverrideCursor(QtCore.Qt.ClosedHandCursor)
