@@ -473,7 +473,7 @@
   <customwidget>
    <class>SelectColorButton</class>
    <extends>QPushButton</extends>
-   <header>view/widgets_qt</header>
+   <header>editor/view/widgets_qt</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -20,7 +20,7 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="pytalic2.qrc">
+   <iconset resource="../shared/pytalic2.qrc">
     <normaloff>:/icons/pytalic.ico</normaloff>:/icons/pytalic.ico</iconset>
   </property>
   <widget class="QWidget" name="main_widget">
@@ -398,746 +398,755 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QTabWidget" name="property_tabs">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="char_prop_tab">
-            <attribute name="title">
-             <string>Character</string>
-            </attribute>
-            <layout class="QFormLayout" name="formLayout_2">
-             <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-             </property>
-             <item row="1" column="0" colspan="2">
-              <widget class="QGroupBox" name="stroke_group_box">
-               <property name="title">
-                <string>Stroke</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_6">
-                  <item>
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>X</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="position_x_spin">
-                    <property name="keyboardTracking">
-                     <bool>false</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>-100000.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100000.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_7">
-                  <item>
-                   <widget class="QLabel" name="label_19">
-                    <property name="text">
-                     <string>Y</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="position_y_spin">
-                    <property name="keyboardTracking">
-                     <bool>false</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>-100000.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100000.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_8">
-                  <item>
-                   <widget class="QCheckBox" name="stroke_override_nib_angle">
-                    <property name="text">
-                     <string>Override Character Set</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_11">
-                  <item>
-                   <widget class="QLabel" name="label_23">
-                    <property name="text">
-                     <string>Nib type</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="stroke_nib_combo">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Italic</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Round</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_9">
-                  <item>
-                   <widget class="QLabel" name="label_21">
-                    <property name="text">
-                     <string>Nib angle</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="stroke_nib_angle_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="maximum">
-                     <number>90</number>
-                    </property>
-                    <property name="value">
-                     <number>40</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="3" column="0" colspan="2">
-              <widget class="QGroupBox" name="vertex_group_box">
-               <property name="title">
-                <string>Vertex</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_3">
-                  <item>
-                   <widget class="QLabel" name="label_17">
-                    <property name="text">
-                     <string>X</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="vertex_x_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="keyboardTracking">
-                     <bool>false</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>-100000.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100000.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4">
-                  <item>
-                   <widget class="QLabel" name="label_22">
-                    <property name="text">
-                     <string>Y</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="vertex_y_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="keyboardTracking">
-                     <bool>false</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>-100000.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100000.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_5">
-                  <item>
-                   <widget class="QLabel" name="label_20">
-                    <property name="text">
-                     <string>Vertex behavior</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="behavior_combo">
-                    <property name="frame">
-                     <bool>true</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>----</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Smooth</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Sharp</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Symmetric</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="0" column="0" colspan="2">
-              <widget class="QGroupBox" name="character_group_box">
-               <property name="title">
+          <widget class="QWidget" name="side_holder" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QTabWidget" name="property_tabs">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="char_prop_tab">
+               <attribute name="title">
                 <string>Character</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_10">
-                  <item>
-                   <widget class="QLabel" name="label_13">
-                    <property name="text">
-                     <string>Note: All units are nib-widths.</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+               </attribute>
+               <layout class="QFormLayout" name="formLayout_2">
+                <property name="fieldGrowthPolicy">
+                 <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                </property>
+                <item row="1" column="0" colspan="2">
+                 <widget class="QGroupBox" name="stroke_group_box">
+                  <property name="title">
+                   <string>Stroke</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                     <item>
+                      <widget class="QLabel" name="label_18">
+                       <property name="text">
+                        <string>X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="position_x_spin">
+                       <property name="keyboardTracking">
+                        <bool>false</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>-100000.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>100000.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                     <item>
+                      <widget class="QLabel" name="label_19">
+                       <property name="text">
+                        <string>Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="position_y_spin">
+                       <property name="keyboardTracking">
+                        <bool>false</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>-100000.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>100000.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                     <item>
+                      <widget class="QCheckBox" name="stroke_override_nib_angle">
+                       <property name="text">
+                        <string>Override Character Set</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_11">
+                     <item>
+                      <widget class="QLabel" name="label_23">
+                       <property name="text">
+                        <string>Nib type</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="stroke_nib_combo">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>Italic</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Round</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_9">
+                     <item>
+                      <widget class="QLabel" name="label_21">
+                       <property name="text">
+                        <string>Nib angle</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="stroke_nib_angle_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="maximum">
+                        <number>90</number>
+                       </property>
+                       <property name="value">
+                        <number>40</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_12">
-                  <item>
-                   <widget class="QCheckBox" name="override_char_set">
-                    <property name="text">
-                     <string>Override Character Set</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                <item row="3" column="0" colspan="2">
+                 <widget class="QGroupBox" name="vertex_group_box">
+                  <property name="title">
+                   <string>Vertex</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_4">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <widget class="QLabel" name="label_17">
+                       <property name="text">
+                        <string>X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="vertex_x_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="keyboardTracking">
+                        <bool>false</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>-100000.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>100000.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                     <item>
+                      <widget class="QLabel" name="label_22">
+                       <property name="text">
+                        <string>Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="vertex_y_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="keyboardTracking">
+                        <bool>false</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>-100000.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>100000.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QLabel" name="label_20">
+                       <property name="text">
+                        <string>Vertex behavior</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="behavior_combo">
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>----</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Smooth</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Sharp</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Symmetric</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_13">
-                  <item>
-                   <widget class="QLabel" name="label_14">
-                    <property name="text">
-                     <string>Character Width</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="char_width_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>4.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_15">
-                  <item>
-                   <widget class="QLabel" name="label_15">
-                    <property name="text">
-                     <string>Left spacing</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="left_space_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <double>3.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_14">
-                  <item>
-                   <widget class="QLabel" name="label_16">
-                    <property name="text">
-                     <string>Right spacing</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="right_space_spin">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <double>3.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="char_set_prop_tab">
-            <attribute name="title">
-             <string>Character Set</string>
-            </attribute>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="1" column="0" colspan="2">
-              <widget class="QGroupBox" name="nib_group_box">
-               <property name="title">
-                <string>Nib</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_8">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_27">
-                  <item>
-                   <widget class="QLabel" name="label_12">
-                    <property name="text">
-                     <string>Nib angle</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="char_set_nib_angle_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="maximum">
-                     <number>90</number>
-                    </property>
-                    <property name="value">
-                     <number>40</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="0" column="0" colspan="2">
-              <widget class="QGroupBox" name="metrics_grpup_box">
-               <property name="title">
-                <string>Metrics</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_16">
-                  <item>
-                   <widget class="QLabel" name="label">
-                    <property name="text">
-                     <string>Note: All units are nib-widths.</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_17">
-                  <item>
-                   <widget class="QLabel" name="label_2">
-                    <property name="text">
-                     <string>X-height</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="base_height_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="frame">
-                     <bool>true</bool>
-                    </property>
-                    <property name="buttonSymbols">
-                     <enum>QAbstractSpinBox::UpDownArrows</enum>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_18">
-                  <item>
-                   <widget class="QLabel" name="label_3">
-                    <property name="text">
-                     <string>Capital height</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="cap_height_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>2.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_19">
-                  <item>
-                   <widget class="QLabel" name="label_4">
-                    <property name="text">
-                     <string>Ascent height</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="ascent_height_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_20">
-                  <item>
-                   <widget class="QLabel" name="label_5">
-                    <property name="text">
-                     <string>Descent height</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="descent_height_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_21">
-                  <item>
-                   <widget class="QLabel" name="label_6">
-                    <property name="text">
-                     <string>Guide angle</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="angle_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="maximum">
-                     <number>45</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_22">
-                  <item>
-                   <widget class="QLabel" name="label_7">
-                    <property name="text">
-                     <string>Gap distance</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="gap_height_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>4.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_23">
-                  <item>
-                   <widget class="QLabel" name="label_8">
-                    <property name="text">
-                     <string>Nominal width</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="nominal_width_spin">
-                    <property name="wrapping">
-                     <bool>true</bool>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.500000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>4.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_24">
-                  <item>
-                   <widget class="QLabel" name="label_9">
-                    <property name="text">
-                     <string>Left spacing</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="char_set_left_space_spin">
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <double>3.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_25">
-                  <item>
-                   <widget class="QLabel" name="label_10">
-                    <property name="text">
-                     <string>Right spacing</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="char_set_right_space_spin">
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="maximum">
-                     <double>3.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_26">
-                  <item>
-                   <widget class="QLabel" name="label_11">
-                    <property name="text">
-                     <string>Guideline color</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="SelectColorButton" name="guides_color_button">
-                    <property name="autoFillBackground">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                <item row="0" column="0" colspan="2">
+                 <widget class="QGroupBox" name="character_group_box">
+                  <property name="title">
+                   <string>Character</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_6">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_10">
+                     <item>
+                      <widget class="QLabel" name="label_13">
+                       <property name="text">
+                        <string>Note: All units are nib-widths.</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_12">
+                     <item>
+                      <widget class="QCheckBox" name="override_char_set">
+                       <property name="text">
+                        <string>Override Character Set</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_13">
+                     <item>
+                      <widget class="QLabel" name="label_14">
+                       <property name="text">
+                        <string>Character Width</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="char_width_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>4.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_15">
+                     <item>
+                      <widget class="QLabel" name="label_15">
+                       <property name="text">
+                        <string>Left spacing</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="left_space_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <double>3.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>1.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_14">
+                     <item>
+                      <widget class="QLabel" name="label_16">
+                       <property name="text">
+                        <string>Right spacing</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="right_space_spin">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <double>3.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>1.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
-             </item>
-            </layout>
-           </widget>
+              <widget class="QWidget" name="char_set_prop_tab">
+               <attribute name="title">
+                <string>Character Set</string>
+               </attribute>
+               <layout class="QFormLayout" name="formLayout">
+                <item row="1" column="0" colspan="2">
+                 <widget class="QGroupBox" name="nib_group_box">
+                  <property name="title">
+                   <string>Nib</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_8">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_27">
+                     <item>
+                      <widget class="QLabel" name="label_12">
+                       <property name="text">
+                        <string>Nib angle</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="char_set_nib_angle_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="maximum">
+                        <number>90</number>
+                       </property>
+                       <property name="value">
+                        <number>40</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="2">
+                 <widget class="QGroupBox" name="metrics_grpup_box">
+                  <property name="title">
+                   <string>Metrics</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_7">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                     <item>
+                      <widget class="QLabel" name="label">
+                       <property name="text">
+                        <string>Note: All units are nib-widths.</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <widget class="QLabel" name="label_2">
+                       <property name="text">
+                        <string>X-height</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="base_height_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::UpDownArrows</enum>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_18">
+                     <item>
+                      <widget class="QLabel" name="label_3">
+                       <property name="text">
+                        <string>Capital height</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="cap_height_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>2.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_19">
+                     <item>
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>Ascent height</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="ascent_height_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_20">
+                     <item>
+                      <widget class="QLabel" name="label_5">
+                       <property name="text">
+                        <string>Descent height</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="descent_height_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_21">
+                     <item>
+                      <widget class="QLabel" name="label_6">
+                       <property name="text">
+                        <string>Guide angle</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="angle_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="maximum">
+                        <number>45</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_22">
+                     <item>
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Gap distance</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="gap_height_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>4.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>1.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_23">
+                     <item>
+                      <widget class="QLabel" name="label_8">
+                       <property name="text">
+                        <string>Nominal width</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="nominal_width_spin">
+                       <property name="wrapping">
+                        <bool>true</bool>
+                       </property>
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="minimum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="maximum">
+                        <double>10.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.500000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>4.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_24">
+                     <item>
+                      <widget class="QLabel" name="label_9">
+                       <property name="text">
+                        <string>Left spacing</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="char_set_left_space_spin">
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <double>3.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>1.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_25">
+                     <item>
+                      <widget class="QLabel" name="label_10">
+                       <property name="text">
+                        <string>Right spacing</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="char_set_right_space_spin">
+                       <property name="decimals">
+                        <number>1</number>
+                       </property>
+                       <property name="maximum">
+                        <double>3.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                       <property name="value">
+                        <double>1.000000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_26">
+                     <item>
+                      <widget class="QLabel" name="label_11">
+                       <property name="text">
+                        <string>Guideline color</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="SelectColorButton" name="guides_color_button">
+                       <property name="autoFillBackground">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget"/>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -1308,7 +1317,7 @@
   </widget>
   <action name="file_new">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_add.png</normaloff>:/icons/script_add.png</iconset>
    </property>
    <property name="text">
@@ -1323,7 +1332,7 @@
   </action>
   <action name="file_open">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_go.png</normaloff>:/icons/script_go.png</iconset>
    </property>
    <property name="text">
@@ -1341,7 +1350,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_save.png</normaloff>:/icons/script_save.png</iconset>
    </property>
    <property name="text">
@@ -1356,7 +1365,7 @@
   </action>
   <action name="file_save_as">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/save_as.png</normaloff>:/icons/save_as.png</iconset>
    </property>
    <property name="text">
@@ -1382,7 +1391,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/arrow_undo.png</normaloff>:/icons/arrow_undo.png</iconset>
    </property>
    <property name="text">
@@ -1397,7 +1406,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/arrow_redo.png</normaloff>:/icons/arrow_redo.png</iconset>
    </property>
    <property name="text">
@@ -1412,7 +1421,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/cut.png</normaloff>:/icons/cut.png</iconset>
    </property>
    <property name="text">
@@ -1427,7 +1436,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/page_white_copy.png</normaloff>:/icons/page_white_copy.png</iconset>
    </property>
    <property name="text">
@@ -1442,7 +1451,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/page_white_paste.png</normaloff>:/icons/page_white_paste.png</iconset>
    </property>
    <property name="text">
@@ -1462,7 +1471,7 @@
   </action>
   <action name="view_reset_zoom">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/zoom_actual.png</normaloff>:/icons/zoom_actual.png</iconset>
    </property>
    <property name="text">
@@ -1508,7 +1517,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/transform_move.png</normaloff>:/icons/transform_move.png</iconset>
    </property>
    <property name="text">
@@ -1526,7 +1535,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/transform_path.png</normaloff>:/icons/transform_path.png</iconset>
    </property>
    <property name="text">
@@ -1541,7 +1550,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/grid.png</normaloff>:/icons/grid.png</iconset>
    </property>
    <property name="text">
@@ -1556,7 +1565,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/edit_path.png</normaloff>:/icons/edit_path.png</iconset>
    </property>
    <property name="text">
@@ -1582,7 +1591,7 @@
   </action>
   <action name="stroke_new">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/draw_path.png</normaloff>:/icons/draw_path.png</iconset>
    </property>
    <property name="text">
@@ -1600,7 +1609,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
    </property>
    <property name="text">
@@ -1750,7 +1759,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/arrow_right.png</normaloff>:/icons/arrow_right.png</iconset>
    </property>
    <property name="text">
@@ -1768,7 +1777,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/arrow_down.png</normaloff>:/icons/arrow_down.png</iconset>
    </property>
    <property name="text">
@@ -1788,23 +1797,23 @@
   <customwidget>
    <class>SelectColorButton</class>
    <extends>QPushButton</extends>
-   <header>view/widgets_qt</header>
+   <header>editor/view/widgets_qt</header>
   </customwidget>
   <customwidget>
    <class>DrawingArea</class>
    <extends>QFrame</extends>
-   <header>view/paper</header>
+   <header>editor/view/paper</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LayoutArea</class>
    <extends>QFrame</extends>
-   <header>view/paper</header>
+   <header>editor/view/paper</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="pytalic2.qrc"/>
+  <include location="../shared/pytalic2.qrc"/>
  </resources>
  <connections/>
 </ui>
