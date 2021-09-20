@@ -45,40 +45,13 @@ VERSION = 1.0
 
 class CharacterSet(object):
     def __init__(self, user_settings=None):
-        self.__nominal_width_nibs = 4.0
-        self.__left_spacing = 1.0
-        self.__right_spacing = 1.0
-        self.__base_height_nibs = 5.0
-        self.__ascent_height_nibs = 3.0
-        self.__descent_height_nibs = 3.0
-        self.__cap_height_nibs = 2.0
-        self.__gap_height_nibs = 1.0
-        self.__guide_angle = 5
-        self.__nib_angle = 40
-
-        self.__user_preferences = user_settings
-
-        self.__current_char = None
-
         self.__objects = {}
-        self.__objects[CHAR_TYPE] = {}
-        self.__objects[STROKE_TYPE] = {}
-        self.__objects[GLYPH_TYPE] = {}
-        self.__objects[CHAR_INST_TYPE] = {}
-        self.__objects[STROKE_INST_TYPE] = {}
-        self.__objects[GLYPH_INST_TYPE] = {}
-        self.__objects[VERTEX_TYPE] = {}
         
         self.__ids = {}
-        self.__ids[CHAR_TYPE] = 0
-        self.__ids[STROKE_TYPE] = 0
-        self.__ids[GLYPH_TYPE] = 0
-        self.__ids[CHAR_INST_TYPE] = 0
-        self.__ids[STROKE_INST_TYPE] = 0
-        self.__ids[GLYPH_INST_TYPE] = 0
-        self.__ids[VERTEX_TYPE] = 0
 
-        self.__character_xref = {}
+        self.reset()
+        self.__user_preferences = user_settings
+
 
     def reset(self):
         self.__nominal_width_nibs = 4.0
