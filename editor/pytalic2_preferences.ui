@@ -62,7 +62,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="base_height_spin_2">
+       <widget class="QDoubleSpinBox" name="base_height_spin">
         <property name="wrapping">
          <bool>true</bool>
         </property>
