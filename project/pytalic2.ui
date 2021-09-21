@@ -85,7 +85,7 @@
   </widget>
   <action name="file_open">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_go.png</normaloff>:/icons/script_go.png</iconset>
    </property>
    <property name="text">
@@ -94,7 +94,7 @@
   </action>
   <action name="file_new">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_add.png</normaloff>:/icons/script_add.png</iconset>
    </property>
    <property name="text">
@@ -103,7 +103,7 @@
   </action>
   <action name="file_save">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/script_save.png</normaloff>:/icons/script_save.png</iconset>
    </property>
    <property name="text">
@@ -112,7 +112,7 @@
   </action>
   <action name="file_save_as">
    <property name="icon">
-    <iconset resource="pytalic2.qrc">
+    <iconset resource="../shared/pytalic2.qrc">
      <normaloff>:/icons/save_as.png</normaloff>:/icons/save_as.png</iconset>
    </property>
    <property name="text">
@@ -151,7 +151,7 @@
   </action>
  </widget>
  <resources>
-  <include location="pytalic2.qrc"/>
+  <include location="../shared/pytalic2.qrc"/>
  </resources>
  <connections/>
 </ui>
