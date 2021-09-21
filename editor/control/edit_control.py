@@ -62,7 +62,7 @@ class EditorController(object):
         self.__state = 0
 
         self.__ui.create_ui()
-
+        self.__ui.setUpdatesEnabled(False)
         self.__ui.dwg_area.bitmap_size = editor.view.shared_qt.ICON_SIZE
 
         self.__current_view_pane = \
@@ -94,6 +94,8 @@ class EditorController(object):
         self.update_preferences()
         self.__char_set.user_preferences = self.__user_preferences
         self.__cmd_stack.clear()
+        self.__ui.setUpdatesEnabled(True)
+        
         self.__ui.repaint()
 
         self.__ui.dwg_area.char_set = self.__char_set
@@ -119,6 +121,9 @@ class EditorController(object):
             self.__ui.file_save.setEnabled(True)
 
         self.__ui.setWindowTitle(self.__label + " - " + file_path + " *")
+
+    def get_user_preferences(self):
+        return self.__user_preferences
 
     def get_ui(self):
         return self.__ui
@@ -246,6 +251,11 @@ class EditorController(object):
         self.__ui.stroke_dwg_area.instance_color = instance_color
         self.__ui.dwg_area.special_color = special_color
         self.__ui.stroke_dwg_area.special_color = special_color
+
+        self.__ui.guide_lines.left_spacing = self.__user_preferences.preferences['char_set_left_space_spin']
+        self.__ui.guide_lines.right_spacing = self.__user_preferences.preferences['char_set_right_space_spin']
+        self.__ui.guide_lines.width = self.__user_preferences.preferences['nominal_width_spin']
+        self.__ui.guide_lines.guide_angle = self.__user_preferences.preferences['guide_angle_spin']
 
     def file_new_cb(self, event):
         if self.__cmd_stack.save_count:

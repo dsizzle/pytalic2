@@ -4,6 +4,7 @@ from editor.model.character import Character, Glyph
 from editor.model.instance import CharacterInstance, GlyphInstance, StrokeInstance
 from editor.model.stroke import Stroke
 from editor.model.control_vertex import ControlVertex
+import editor.model.common
 
 CHAR_TYPE = type(Character(None)).__name__
 STROKE_TYPE = type(Stroke(None)).__name__
@@ -49,21 +50,26 @@ class CharacterSet(object):
         
         self.__ids = {}
 
-        self.reset()
+        self.__nominal_width_nibs = 0.0
+        self.__left_spacing = 0.0
+        self.__right_spacing = 0.0
+        self.__base_height_nibs = 0.0
+        self.__ascent_height_nibs = 0.0
+        self.__descent_height_nibs = 0.0
+        self.__cap_height_nibs = 0.0
+        self.__gap_height_nibs = 0.0
+        self.__guide_angle = 0
+        self.__nib_angle = 0
         self.__user_preferences = user_settings
 
+        self.reset()
 
     def reset(self):
-        self.__nominal_width_nibs = 4.0
-        self.__left_spacing = 1.0
-        self.__right_spacing = 1.0
-        self.__base_height_nibs = 5.0
-        self.__ascent_height_nibs = 3.0
-        self.__descent_height_nibs = 3.0
-        self.__cap_height_nibs = 2.0
-        self.__gap_height_nibs = 1.0
-        self.__guide_angle = 5
-        self.__nib_angle = 40
+        if self.__user_preferences:
+            for preference in self.__user_preferences.preferences.keys():
+                if preference in editor.model.common.SETTINGS_CONTROLS_TO_SETTINGS:
+                    setattr(self, editor.model.common.SETTINGS_CONTROLS_TO_SETTINGS[preference], \
+                        self.__user_preferences.preferences[preference])
 
         self.__current_char = None
 

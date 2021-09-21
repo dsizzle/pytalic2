@@ -40,15 +40,14 @@ class FileController(object):
         ui_ref.stroke_dwg_area.subject = None
         ui_ref.preview_area.subject = None
 
-        self.__main_ctrl.set_character_set(editor.model.character_set.CharacterSet())
+        self.__main_ctrl.set_character_set(editor.model.character_set.CharacterSet(self.__main_ctrl.get_user_preferences()))
         char_set = self.__main_ctrl.get_character_set()
 
         ui_ref.base_height_spin.setValue(char_set.base_height)
         ui_ref.cap_height_spin.setValue(char_set.cap_height)
-        ui_ref.cap_height_spin.setMaximum(char_set.ascent_height)
         ui_ref.ascent_height_spin.setValue(char_set.ascent_height)
         ui_ref.descent_height_spin.setValue(char_set.descent_height)
-        ui_ref.angle_spin.setValue(5)
+        ui_ref.angle_spin.setValue(char_set.guide_angle)
 
         ui_ref.stroke_selector_list.clear()
 

@@ -36,7 +36,8 @@ class PropertyController(object):
         cmd_stack.do_command(change_cmd)
         ui_ref.edit_undo.setEnabled(True)
 
-        ui_ref.preview_area.layout.update_layout(char_set, \
+        if ui_ref.preview_area.layout:
+            ui_ref.preview_area.layout.update_layout(char_set, \
                 nib_width=ui_ref.dwg_area.nib.width*2)
         ui_ref.repaint()
 

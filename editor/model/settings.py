@@ -1,9 +1,10 @@
 import os.path
 import json
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtGui, QtWidgets
 
 import editor.view.widgets_qt
+import editor.model.common
 
 class UserPreferences(object):
 	def __init__(self, file_path=None, dialog=None):
@@ -42,15 +43,22 @@ class UserPreferences(object):
 		if self.__filepath and os.path.exists(self.__filepath):
 			settings_fd = open(self.__filepath, "r")
 			try:
-				self.__preferences = json.load(settings_fd)
+				self.preferences = json.load(settings_fd)
 			except ValueError:
 				pass
 				
 			settings_fd.close()
-			
-			for ctrl_name in self.preferences.keys():
+		
+		if not len(self.preferences.keys()):
+			for preference in editor.model.common.DEFAULT_SETTINGS:
+				self.preferences[preference] = editor.model.common.DEFAULT_SETTINGS[preference]
+
+		for ctrl_name in self.preferences.keys():
+			try:
 				ui_control = getattr(self.__dialog, ctrl_name)
 				ui_control.setValue(self.preferences[ctrl_name])
+			except AttributeError:
+				pass
 
 	def save(self):
 		if self.__filepath:
