@@ -6,8 +6,7 @@ from PyQt5 import QtCore, QtGui, uic, QtWidgets
 import editor.pytalic2_editor_ui
 
 from editor.model import guides
-#import editor.view.paper
-#import editor.view.widgets_qt
+
 
 ICON_SIZE = 40
 ICON_TEXT_SIZE = 30
