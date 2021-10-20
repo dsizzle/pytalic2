@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui
 
 #import serif
 from editor.view import shared_qt
+import editor.model.common
 
 DEBUG_BBOXES = False
 
@@ -478,6 +479,7 @@ class Stroke(object):
         p2 = points[true_index - 1]
         p1 = points[true_index - 2]
         p0 = points[true_index - 3]
+        true_index = int(true_index)
 
         new_points = []
         for i in range(0, 5):
@@ -656,7 +658,7 @@ class Stroke(object):
                 for i in range(0, len(self.__stroke_ctrl_verts)):
                     vert_index = self.__stroke_ctrl_verts[i]
                     vert_object = self.__char_set.get_item_by_index(vert_index)
-                    handle =  vert_object.contains(test_point, handle_size)
+                    handle = vert_object.contains(test_point, handle_size)
                     if handle:
                         vertex = (i*3) + handle - 2
                         break
@@ -665,20 +667,37 @@ class Stroke(object):
                     # get exact point
                     hit_point = None
                     path_num = 0
+                    max_dist = 99999999
+                    max_path_num = 0
                     for curve in self.__curve_path:
-                        for i in range(0, 100):
-                            pct = float(i) / 100.0
+                        for i in range(0, 10):
+                            pct = float(i) / 10.0
                             curve_point = curve.pointAtPercent(pct)
-                            if test_box.contains(int(curve_point.x()), int(curve_point.y())):
+                            dist = editor.model.common.dist_between_pts([curve_point.x(), curve_point.y()], 
+                                [test_point.x(), test_point.y()])
+                            if dist < max_dist:
+                                max_dist = dist
                                 hit_point = pct
-                                break
-                        if hit_point:
-                            break
-
+                                max_path_num = path_num    
+                        
                         path_num += 1
 
+                    if hit_point:    
+                        curve = self.__curve_path[max_path_num]
+                        for i in range(-50, 50):
+                            pct = (float(i) / 1000.0)+hit_point
+                            if pct >= 0.0 and pct <= 1.0:
+                                curve_point = curve.pointAtPercent(pct)
+                                dist = editor.model.common.dist_between_pts([curve_point.x(), curve_point.y()], 
+                                    [test_point.x(), test_point.y()])
+                                if dist < max_dist:
+                                    max_dist = dist
+                                    hit_point = pct
+
+                        path_num = max_path_num
+                            
                     if hit_point:
-                        if vertex < 0 and get_closest_vert:
+                        if get_closest_vert:
                             vertex = int(math.ceil(path_num + hit_point))
                             
                         return (True, vertex, hit_point)
