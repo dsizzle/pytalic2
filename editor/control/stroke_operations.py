@@ -5,6 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import editor.control.edit_control
 import shared.model.commands
 import editor.model.stroke
+import editor.model.common
 
 class StrokeController(object):
     def __init__(self, parent):
@@ -494,10 +495,10 @@ class StrokeController(object):
                 del cur_view_selection[cur_stroke]
                 cur_stroke_item.selected = False
 
-            dist1 = dist_between_pts(cur_verts[0], vert_list[0])
-            dist2 = dist_between_pts(cur_verts[-1], vert_list[0])
-            dist3 = dist_between_pts(cur_verts[0], vert_list[-1])
-            dist4 = dist_between_pts(cur_verts[-1], vert_list[-1])
+            dist1 = editor.model.common.dist_between_pts(cur_verts[0], vert_list[0])
+            dist2 = editor.model.common.dist_between_pts(cur_verts[-1], vert_list[0])
+            dist3 = editor.model.common.dist_between_pts(cur_verts[0], vert_list[-1])
+            dist4 = editor.model.common.dist_between_pts(cur_verts[-1], vert_list[-1])
 
             point_list = [dist1, dist2, dist3, dist4]
             point_list.sort()
@@ -1083,6 +1084,3 @@ class StrokeController(object):
 
         ui_ref.repaint()
 
-
-def dist_between_pts(p0, p1):
-    return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))

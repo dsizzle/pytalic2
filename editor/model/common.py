@@ -1,3 +1,5 @@
+import math
+
 SMOOTH      = 1
 SHARP       = 2
 SYMMETRIC   = 3
@@ -41,3 +43,6 @@ SETTINGS_CONTROLS_TO_SETTINGS = {
 
 }
 
+
+def dist_between_pts(p0, p1):
+    return math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]))
