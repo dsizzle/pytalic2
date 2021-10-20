@@ -475,11 +475,12 @@ class Stroke(object):
         if len(points) < true_index:
             true_index /= 3
 
+        true_index = int(true_index)
+        
         p3 = points[true_index]
         p2 = points[true_index - 1]
         p1 = points[true_index - 2]
         p0 = points[true_index - 3]
-        true_index = int(true_index)
 
         new_points = []
         for i in range(0, 5):
