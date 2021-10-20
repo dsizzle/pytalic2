@@ -696,11 +696,11 @@ class Stroke(object):
                                     hit_point = pct
 
                         path_num = max_path_num
-                            
+
                     if hit_point:
                         if get_closest_vert:
                             vertex = int(math.ceil(path_num + hit_point))
-                            
+ 
                         return (True, vertex, hit_point)
                     else:
                         return (True, vertex, None)
