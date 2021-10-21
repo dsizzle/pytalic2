@@ -69,7 +69,7 @@ def _get_roots(v1, v2, v3):
     l = math.sqrt(d) / (2*a)
     return [f-l, f+l]
 
-def _rotate_verts(verts, angle):
+def rotate_verts(verts, angle):
     rot_verts = []
 
     for vert in verts:
@@ -86,7 +86,7 @@ def _u_cubic(t):
 
     return one_minus_t3 / (t3+one_minus_t3)
 
-def _ratio_cubic(t)
+def _ratio_cubic(t):
     one_minus_t3 = math.pow(1-t, 3)
     t3 = t*t*t
 
