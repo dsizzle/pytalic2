@@ -15,6 +15,7 @@ from PyQt5 import QtCore, QtGui
 #import serif
 from editor.view import shared_qt
 import editor.model.common
+import editor.model.bezier
 
 DEBUG_BBOXES = False
 
@@ -282,30 +283,35 @@ class Stroke(object):
 
         cur_curve = self.__curve_path[path_num]
 
-        for i in range(0, 500):
-            pct = float(i) / 500.0
-            try:
-                angle = int(cur_curve.angleAtPercent(pct))
-            except ValueError:
-                continue
+        rot_verts = editor.model.bezier.rotate_verts(verts, math.radians(test_angle))
 
-            if (angle >= test_angle - tolerance and angle <= test_angle + tolerance) or \
-                (angle >= opp_test_angle - tolerance and angle <= opp_test_angle + tolerance):
-                (left, right) = self.divide_curve_at_point(verts, pct, 1)
-                left.append(right[0])
+        d1 = editor.model.bezier.first_derivative(rot_verts)
+        r = editor.model.bezier.roots(d1[0], d1[1], d1[2])
+        r.sort()
+        
+        count = 0
+        while(len(r) and count < 25):
+            (left, right) = self.divide_curve_at_point(verts, r[0], 1)
+            left.append(right[0])
+ 
+            cur_curve = QtGui.QPainterPath()
+            cur_curve.moveTo(left[0][0], left[0][1])
+            cur_curve.cubicTo(left[1][0], left[1][1], left[2][0], \
+                left[2][1], left[3][0], left[3][1])
+            new_curves.append(cur_curve)
+            verts = right
+            cur_curve = QtGui.QPainterPath()
+            cur_curve.moveTo(verts[0][0], verts[0][1])
+            cur_curve.cubicTo(verts[1][0], verts[1][1], verts[2][0], \
+                verts[2][1], verts[3][0], verts[3][1])
 
-                cur_curve = QtGui.QPainterPath()
-                cur_curve.moveTo(left[0][0], left[0][1])
-                cur_curve.cubicTo(left[1][0], left[1][1], left[2][0], \
-                    left[2][1], left[3][0], left[3][1])
-                new_curves.append(cur_curve)
-                verts = right
-                cur_curve = QtGui.QPainterPath()
-                cur_curve.moveTo(verts[0][0], verts[0][1])
-                cur_curve.cubicTo(verts[1][0], verts[1][1], verts[2][0], \
-                    verts[2][1], verts[3][0], verts[3][1])
-                i = 0
+            rot_verts = editor.model.bezier.rotate_verts(verts, math.radians(test_angle))
 
+            d1 = editor.model.bezier.first_derivative(rot_verts)
+            r = editor.model.bezier.roots(d1[0], d1[1], d1[2])
+            r.sort()
+            count += 1
+            
         while len(verts) > 3:
             cur_curve = QtGui.QPainterPath()
             cur_curve.moveTo(verts[0][0], verts[0][1])
