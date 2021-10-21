@@ -1,19 +1,19 @@
 import math
 
-def _first_derivative(points):
+def first_derivative(points):
     a = points[0]
     b = points[1]
     c = points[2]
     d = points[3]
 
-    return [scal(3, sub(b,a)), scal(3, sub(c,b)), scal(3, sub(d,c))]
+    return [_pscal(3, _psub(b,a)), _pscal(3, _psub(c,b)), _pscal(3, _psub(d,c))]
 
-def _second_derivative(points):
+def second_derivative(points):
     a = points[0]
     b = points[1]
     c = points[2]
 
-    return [scal(2, sub(b,a)), scal(2, sub(c,b))]
+    return [_pscal(2, _psub(b,a)), _pscal(2, _psub(c,b))]
 
 def _padd(point1, point2):
     return [point1[0]+point2[0], point1[1]+point2[1]]
@@ -24,7 +24,7 @@ def _psub(point1, point2):
 def _pscal(v, point):
     return [v*point[0], v*point[1]]
 
-def _roots(v1, v2, v3):
+def roots(v1, v2, v3):
     x = _get_roots(v1[0], v2[0], v3[0])
     y = _get_roots(v1[1], v2[1], v3[1])
 
