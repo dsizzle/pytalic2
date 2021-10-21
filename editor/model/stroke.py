@@ -29,7 +29,7 @@ class Stroke(object):
             self.__end_serif = from_stroke.get_end_serif()
             self.__stroke_ctrl_verts = from_stroke.get_ctrl_vertices()
             self.__pos = QtCore.QPointF(from_stroke.pos)
-            self.__curve_path = self.calc_curve_points()
+            self.calc_curve_points()
             self.__bound_rect = from_stroke.get_bound_rect()
             self.__nib_angle = from_stroke.nib_angle
             self.__nib = from_stroke.nib
