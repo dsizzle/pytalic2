@@ -24,9 +24,16 @@ def _psub(point1, point2):
 def _pscal(v, point):
     return [v*point[0], v*point[1]]
 
-def roots(v1, v2, v3):
-    x = _get_roots(v1[0], v2[0], v3[0])
-    y = _get_roots(v1[1], v2[1], v3[1])
+def roots(v1, v2, v3=None):
+    if v3 is None:
+        v3x = None
+        v3y = None
+    else:
+        v3x = v3[0]
+        v3y = v3[1]
+
+    x = _get_roots(v1[0], v2[0], v3x)
+    y = _get_roots(v1[1], v2[1], v3y)
 
     root_list = []
 
