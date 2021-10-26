@@ -1016,7 +1016,7 @@ class StrokeController(object):
 
                 vert_item = char_set.get_item_by_index(first_vert)
                 vert_pos = vert_item.get_pos_of_selected()
-                if vert_pos:
+                if vert_pos is not None:
                     ui_ref.vertex_x_spin.setValue(vert_pos.x())
                     ui_ref.vertex_y_spin.setValue(vert_pos.y())
                 else:
