@@ -2,3 +2,7 @@
 shapes\*.pyc
 thirdparty\*.pyc
 .idea
+*.BAD
+project/pytalic2_ui.py
+project/pytalic2_ui.py
+editor/pytalic2_editor_ui.py
