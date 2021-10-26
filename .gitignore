@@ -5,4 +5,5 @@ thirdparty\*.pyc
 *.BAD
 project/pytalic2_ui.py
 project/pytalic2_ui.py
+editor/pytalic2_prefs.py
 editor/pytalic2_editor_ui.py
