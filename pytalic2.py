@@ -9,7 +9,7 @@ import sys
 
 from PyQt5 import QtWidgets
 
-from control import edit_control
+from project.control import pytalic_control
 
 
 class PytalicEditorApp(QtWidgets.QApplication):
@@ -31,7 +31,7 @@ def main(args=None):
     script_file_path = os.path.realpath(__file__)
     script_path = os.path.split(script_file_path)[0]
 
-    my_qt_ctrl = edit_control.EditorController(1024, 768, "Pytalic Character Editor", script_path)
+    my_qt_ctrl = pytalic_control.PytalicController(1024, 768, "Pytalic", script_path)
 
     my_qt_ctrl.activate()
 
